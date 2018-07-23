@@ -24,7 +24,7 @@ contract Library {
   }
 
   function getLibraryItem(string identity, uint16 index) public view returns (string contentId) {
-    if (index >= libraries[identity].size) return "";
+    require (index < libraries[identity].size);
     return libraries[identity].content[index];
   }
 
