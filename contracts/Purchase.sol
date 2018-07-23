@@ -16,14 +16,14 @@ contract Purchase {
     if (msg.sender == owner) _;
   }
 
-  function setDelegrateAddresses(address priceAddr, address libAddr) public restricted {
+  function setDelegateAddresses(address priceAddr, address libAddr) public restricted {
     p = Price(priceAddr);
     lib = Library(libAddr);
   }
 
-  function purchase(string identity, string contentId, uint16 cost) public {
-    uint16 price = p.getPrice(contentId);
-    require (price != cost);
+  function purchase(string identity, string contentId, string hContentId, uint16 cost) public {
+    uint16 price = p.getPrice(hContentId);
+    require (price == cost);
     // call ARA token contract transfer() function with cost
     lib.addLibraryItem(identity, contentId);
     emit Purchased(contentId);

@@ -29,7 +29,9 @@ contract Library {
   }
 
   function addLibraryItem(string identity, string contentId) public {
-    libraries[identity].content[libraries[identity].size] = contentId;
+    uint16 libSize = libraries[identity].size;
+    require (bytes(libraries[identity].content[libSize]).length == 0);
+    libraries[identity].content[libSize] = contentId;
     libraries[identity].size++;
     emit Added(contentId);
   }
