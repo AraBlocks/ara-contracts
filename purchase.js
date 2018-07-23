@@ -78,7 +78,7 @@ async function purchase({
 
   const contentId = await libDeployed.methods.getLibraryItem(hIdentity, size - 1).call()
 
-  info(contentId, 'added to library; new size:', size)
+  info(contentId, `added to library (${size})`)
 }
 
 async function _checkLibrary(hIdentity, contentDid) {
