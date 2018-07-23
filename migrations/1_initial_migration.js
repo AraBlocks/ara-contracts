@@ -1,5 +1,7 @@
-var Migrations = artifacts.require("./Migrations.sol");
+/* eslint no-undef: "off" */
 
-module.exports = function(deployer) {
-  deployer.deploy(Migrations);
-};
+const Migrations = artifacts.require('./Migrations.sol')
+
+module.exports = (deployer) => {
+  deployer.deploy(Migrations)
+}
