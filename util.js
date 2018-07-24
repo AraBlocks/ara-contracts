@@ -5,7 +5,7 @@ const {
 } = require('./constants')
 
 function hashIdentity(did) {
-  return blake2b(Buffer.from(did)).toString('hex')
+  return blake2b(Buffer.from(did, 'hex')).toString('hex')
 }
 
 function hasDIDMethod(did) {
