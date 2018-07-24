@@ -1,5 +1,6 @@
+/* eslint-disable no-await-in-loop */
+
 const { abi: libAbi } = require('./build/contracts/Library.json')
-const debug = require('debug')('ara-contracts:library')
 const { kLibraryAddress } = require('./constants')
 const { web3 } = require('ara-context')()
 
