@@ -87,13 +87,11 @@ async function purchase({
 async function _checkLibrary(hIdentity, contentDid) {
   const libDeployed = new web3.eth.Contract(libAbi, kLibraryAddress)
   const libSize = await libDeployed.methods.getLibrarySize(hIdentity).call()
-  const lib = []
   for (let i = 0; i < libSize; i++) {
     const item = await libDeployed.methods.getLibraryItem(hIdentity, i).call()
     if (item == contentDid) {
       throw new Error('Item is already in user library and cannot be purchased again')
     }
-    lib.push(item)
   }
 }
 
