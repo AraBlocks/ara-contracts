@@ -1,10 +1,8 @@
-const debug = require('debug')('ara-contracts:purchase')
+/* eslint-disable no-await-in-loop */
+
 const { abi: purchaseAbi } = require('./build/contracts/Purchase.json')
 const { abi: libAbi } = require('./build/contracts/Library.json')
-const { 
-  hashIdentity,
-  normalize
-} = require('./util')
+const debug = require('debug')('ara-contracts:purchase')
 const { web3 } = require('ara-context')()
 const { info } = require('ara-console')
 
@@ -13,6 +11,11 @@ const {
   kPurchaseAddress,
   kLibraryAddress,
 } = require('./constants')
+
+const {
+  hashIdentity,
+  normalize
+} = require('./util')
 
 async function setPurchaseDelegates({
   priceAddress = kPriceAddress,
@@ -54,7 +57,7 @@ async function purchase({
   requesterDid = normalize(requesterDid)
   contentDid = normalize(contentDid)
 
-  debug(requesterDid, "purchasing", contentDid)
+  debug(requesterDid, 'purchasing', contentDid, 'for', price)
 
   const hIdentity = hashIdentity(requesterDid)
   const hContentIdentity = hashIdentity(contentDid)
@@ -69,7 +72,7 @@ async function purchase({
     throw err
   }
 
-  await purchaseDeployed.methods.purchase(hIdentity, contentDid, hashIdentity(contentDid), price).send({
+  await purchaseDeployed.methods.purchase(hIdentity, contentDid, hContentIdentity, price).send({
     from: accounts[0],
     gas: 500000
   })
