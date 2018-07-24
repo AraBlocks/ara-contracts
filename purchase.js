@@ -7,9 +7,15 @@ const { web3 } = require('ara-context')()
 const { info } = require('ara-console')
 
 const {
+  checkLibrary,
+  getLibrarySize,
+  getLibraryItem
+} = require('./library')
+
+const {
   kPriceAddress,
   kPurchaseAddress,
-  kLibraryAddress,
+  kLibraryAddress
 } = require('./constants')
 
 const {
@@ -61,13 +67,14 @@ async function purchase({
 
   const hIdentity = hashIdentity(requesterDid)
   const hContentIdentity = hashIdentity(contentDid)
+  console.log(hContentIdentity)
 
   const accounts = await web3.eth.getAccounts()
   const purchaseDeployed = new web3.eth.Contract(purchaseAbi, kPurchaseAddress)
   const libDeployed = new web3.eth.Contract(libAbi, kLibraryAddress)
 
   try {
-    await _checkLibrary(hIdentity, contentDid)
+    await checkLibrary(requesterDid, contentDid)
   } catch (err) {
     throw err
   }
@@ -77,22 +84,11 @@ async function purchase({
     gas: 500000
   })
 
-  const size = await libDeployed.methods.getLibrarySize(hIdentity).call()
+  const size = await getLibrarySize(requesterDid)
 
-  const contentId = await libDeployed.methods.getLibraryItem(hIdentity, size - 1).call()
+  const contentId = await getLibraryItem(requesterDid, size - 1)
 
   info(contentId, `added to library (${size})`)
-}
-
-async function _checkLibrary(hIdentity, contentDid) {
-  const libDeployed = new web3.eth.Contract(libAbi, kLibraryAddress)
-  const libSize = await libDeployed.methods.getLibrarySize(hIdentity).call()
-  for (let i = 0; i < libSize; i++) {
-    const item = await libDeployed.methods.getLibraryItem(hIdentity, i).call()
-    if (item == contentDid) {
-      throw new Error('Item is already in user library and cannot be purchased again')
-    }
-  }
 }
 
 module.exports = {
