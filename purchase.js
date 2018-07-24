@@ -1,7 +1,6 @@
 /* eslint-disable no-await-in-loop */
 
 const { abi: purchaseAbi } = require('./build/contracts/Purchase.json')
-const { abi: libAbi } = require('./build/contracts/Library.json')
 const debug = require('debug')('ara-contracts:purchase')
 const { web3 } = require('ara-context')()
 const { info } = require('ara-console')
@@ -67,11 +66,9 @@ async function purchase({
 
   const hIdentity = hashIdentity(requesterDid)
   const hContentIdentity = hashIdentity(contentDid)
-  console.log(hContentIdentity)
 
   const accounts = await web3.eth.getAccounts()
   const purchaseDeployed = new web3.eth.Contract(purchaseAbi, kPurchaseAddress)
-  const libDeployed = new web3.eth.Contract(libAbi, kLibraryAddress)
 
   try {
     await checkLibrary(requesterDid, contentDid)
