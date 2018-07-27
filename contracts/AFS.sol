@@ -1,22 +1,5 @@
 pragma solidity ^0.4.24;
 
-// contract Library {
-//   function addLibraryItem(string _identity, string _contentId) public;
-// }
-
-// contract ARAToken {
-//     mapping(address => uint256) balances;
-//     function totalSupply() public view returns (uint256);
-//     function balanceOf(address _owner) public view returns (uint256);
-//     function allowance(address owner, address spender) public view returns (uint256);
-//     function transfer(address _to, uint _value) public returns (bool success);
-//     function approve(address spender, uint value) public returns (bool);
-//     function transferFrom(address from, address to, uint value) public returns (bool);
-
-//     event Transfer(address indexed from, address indexed to, uint256 value);
-//     event Approval(address indexed owner, address indexed spender, uint256 value);
-// }
-
 import "./Library.sol";
 import "./ARAToken.sol";
 
