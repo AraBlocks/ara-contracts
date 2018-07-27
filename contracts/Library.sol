@@ -2,21 +2,27 @@ pragma solidity ^0.4.24;
 
 contract Library {
   address public owner;
-  mapping (string => Lib) libraries;
+  mapping (string => Lib) private libraries;
+  Registry registry_;
 
   struct Lib {
     uint16 size;
     mapping (uint16 => string) content;
   }
 
-  event Added(string contentId);
+  event LogAdded(string contentId);
 
-  constructor() public {
+  constructor(address _registry) public {
     owner = msg.sender;
+    registry_ = Registry(_registry);
   }
 
   modifier restricted() {
     if (msg.sender == owner) _;
+  }
+
+  modifier fromStandard(address _standard) {
+    if (msg.sender == registry_.standard_) _;
   }
 
   function getLibrarySize(string identity) public view returns (uint16 size) {
@@ -28,11 +34,15 @@ contract Library {
     return libraries[identity].content[index];
   }
 
-  function addLibraryItem(string identity, string contentId) public {
+  function addLibraryItem(string identity, string contentId) public fromStandard {
     uint16 libSize = libraries[identity].size;
     require (bytes(libraries[identity].content[libSize]).length == 0);
     libraries[identity].content[libSize] = contentId;
     libraries[identity].size++;
-    emit Added(contentId);
+    emit LogAdded(contentId);
   }
+}
+
+contract Registry {
+  address public standard_;
 }

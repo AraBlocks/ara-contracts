@@ -76,6 +76,8 @@ async function purchase({
     throw err
   }
 
+  // call token contract to approve
+
   await purchaseDeployed.methods.purchase(hIdentity, contentDid, hContentIdentity, price).send({
     from: accounts[0],
     gas: 500000
