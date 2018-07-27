@@ -11,7 +11,7 @@ contract ARAToken is ERC20, BasicToken {
   string  public version = "1.0";
 
   // format decimals.
-  function formatDecimals(uint256 _value) internal pure returns (uint256 ) {
+  function formatDecimals(uint256 _value) internal pure returns (uint256) {
       return _value * 10 ** decimals;
   }
 
