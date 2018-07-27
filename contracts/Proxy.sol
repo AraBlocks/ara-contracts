@@ -1,16 +1,25 @@
 pragma solidity ^0.4.24;
 
+import "./Registry.sol";
+
 /**
  * @title Proxy
  * @dev Gives the possibility to delegate any call to a foreign implementation.
  */
 contract Proxy {
+  Registry registry_;
+
+  constructor(address _registry) public {
+    registry_ = Registry(_registry);
+  }
 
   /**
   * @dev Tells the address of the implementation where every call will be delegated.
   * @return address of the implementation to which it will be delegated
   */
-  function implementation() public view returns (address);
+  function implementation() public view returns (address) {
+    return registry_.standard_();
+  }
 
   /**
   * @dev Fallback function allowing to perform a delegatecall to the given implementation.
