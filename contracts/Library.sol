@@ -1,5 +1,7 @@
 pragma solidity ^0.4.24;
 
+import "./Registry.sol";
+
 contract Library {
   address public owner;
   mapping (string => Lib) private libraries;
@@ -21,8 +23,8 @@ contract Library {
     if (msg.sender == owner) _;
   }
 
-  modifier fromStandard(address _standard) {
-    if (msg.sender == registry_.standard_) _;
+  modifier fromStandard() {
+    if (msg.sender == registry_.standard_()) _;
   }
 
   function getLibrarySize(string identity) public view returns (uint16 size) {
@@ -41,8 +43,4 @@ contract Library {
     libraries[identity].size++;
     emit LogAdded(contentId);
   }
-}
-
-contract Registry {
-  address public standard_;
 }

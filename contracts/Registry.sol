@@ -1,5 +1,7 @@
 pragma solidity 0.4.24;
 
+import "./Proxy.sol";
+
 contract Registry {
   address public owner_;
   mapping (string => address) private proxies_; // contentId => proxy contract address
@@ -7,14 +9,14 @@ contract Registry {
   string public version_;
 
   constructor() public {
-    owner = msg.sender;
+    owner_ = msg.sender;
   }
 
   modifier restricted() {
-    if (msg.sender == owner) _;
+    if (msg.sender == owner_) _;
   }
 
-  function getProxyAddress(string _contentId) external returns (address) {
+  function getProxyAddress(string _contentId) external view returns (address) {
     return proxies_[_contentId];
   }
 
@@ -22,7 +24,7 @@ contract Registry {
     Proxy proxy = Proxy(_address);
     address standard = proxy.implementation();
     assert(standard == standard_);
-    proxies_[contentId] = _address;
+    proxies_[_contentId] = _address;
   }
 
   function addStandardVersion(string _version, address _address) public restricted {

@@ -1,6 +1,26 @@
 pragma solidity ^0.4.24;
 
-contract AFSBase {
+// contract Library {
+//   function addLibraryItem(string _identity, string _contentId) public;
+// }
+
+// contract ARAToken {
+//     mapping(address => uint256) balances;
+//     function totalSupply() public view returns (uint256);
+//     function balanceOf(address _owner) public view returns (uint256);
+//     function allowance(address owner, address spender) public view returns (uint256);
+//     function transfer(address _to, uint _value) public returns (bool success);
+//     function approve(address spender, uint value) public returns (bool);
+//     function transferFrom(address from, address to, uint value) public returns (bool);
+
+//     event Transfer(address indexed from, address indexed to, uint256 value);
+//     event Approval(address indexed owner, address indexed spender, uint256 value);
+// }
+
+import "./Library.sol";
+import "./ARAToken.sol";
+
+contract AFS {
   address  public owner_;
 
   string   public version_ = "1";
@@ -13,7 +33,7 @@ contract AFSBase {
   uint256  public price_;
 
   mapping(bytes32 => uint256) internal rewards_;
-  mapping(bytes32 => bool) internal purchasers_;
+  mapping(bytes32 => bool)    internal purchasers_;
 
   event Commit(string _did, uint8 _file, uint256 _offset, bytes _buffer);
   event Unlisted(string _did);
@@ -38,37 +58,6 @@ contract AFSBase {
     uint256[] offsets;
     bool invalid;
   }
-
-  function setPrice(uint256 _price) external;
-
-  function depositReward(uint256 _reward) public returns (bool success);
-  function distributeReward(address[] _address, uint256[] _amounts) external returns (bool success);
-
-  function purchase(string _purchaser, bool _download) external returns (bool success);
-
-  // Storage methods (random-access-contract)
-  function write(uint8 _file, uint256 _offset, bytes _buffer, bool _last_write) external returns (bool success);
-  function read(uint8 _file, uint256 _offset) public view returns (bytes buffer);
-  function unlist() public returns (bool success);
-}
-
-contract Library {
-  function addLibraryItem(string _identity, string _contentId) public;
-}
-
-contract ARAToken {
-    function totalSupply() public constant returns (uint);
-    function balanceOf(address tokenOwner) public constant returns (uint balance);
-    function allowance(address owner, address spender) public constant returns (uint remaining);
-    function transfer(address to, uint tokens) public returns (bool success);
-    function approve(address spender, uint tokens) public returns (bool success);
-    function transferFrom(address from, address to, uint tokens) public returns (bool success);
-
-    event Transfer(address indexed from, address indexed to, uint tokens);
-    event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
-}
-
-contract AFS is AFSBase {
 
   constructor(address _lib, address _token, string _did) public {
     owner_    = msg.sender;
