@@ -42,11 +42,11 @@ contract AFS {
     bool invalid;
   }
 
-  constructor(address _lib, address _token, string _did) public {
+  constructor(address _lib, address _token) public {
     owner_    = msg.sender;
     token_    = ARAToken(_token);
     lib_      = Library(_lib);
-    did_      = _did;
+    // did_      = _did;
     listed_   = true;
     price_    = 0;
   }
