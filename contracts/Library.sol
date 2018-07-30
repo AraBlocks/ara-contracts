@@ -20,11 +20,13 @@ contract Library {
   }
 
   modifier restricted() {
-    if (msg.sender == owner_) _;
+    require (msg.sender == owner_);
+     _;
   }
 
   modifier fromStandard() {
-    if (msg.sender == registry_.standard_()) _;
+    require (msg.sender == registry_.standard_());
+     _;
   }
 
   function getLibrarySize(string _identity) public view returns (uint16 size) {
