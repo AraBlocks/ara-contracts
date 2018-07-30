@@ -12,7 +12,6 @@ const {
 } = require('./library')
 
 const {
-  kPriceAddress,
   kAfsAddress,
   kLibraryAddress
 } = require('./constants')
