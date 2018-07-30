@@ -11,7 +11,7 @@ contract Proxy {
   Registry registry_;
 
   constructor(address _registry) public {
-    owner_ msg.sender;
+    owner_ = msg.sender;
     registry_ = Registry(_registry);
   }
 
