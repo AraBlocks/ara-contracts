@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 
-const { abi: purchaseAbi } = require('./build/contracts/Purchase.json')
+const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
 const { web3 } = require('ara-context')()
 const { info } = require('ara-console')
@@ -13,7 +13,7 @@ const {
 
 const {
   kPriceAddress,
-  kPurchaseAddress,
+  kAfsAddress,
   kLibraryAddress
 } = require('./constants')
 
@@ -21,30 +21,6 @@ const {
   hashIdentity,
   normalize
 } = require('./util')
-
-async function setPurchaseDelegates({
-  priceAddress = kPriceAddress,
-  libAddress = kLibraryAddress
-} = {}) {
-  if (null == priceAddress || 'string' !== typeof priceAddress || !priceAddress) {
-    throw TypeError('ara-contracts.purchase: Expecting non-empty price address')
-  }
-
-  if (null == libAddress || 'string' !== typeof libAddress || !libAddress) {
-    throw TypeError('ara-contracts.purchase: Expecting non-empty library address')
-  }
-
-  const accounts = await web3.eth.getAccounts()
-  const purchaseDeployed = new web3.eth.Contract(purchaseAbi, kPurchaseAddress)
-
-  await purchaseDeployed.methods.setDelegateAddresses(kPriceAddress, kLibraryAddress).send({
-    from: accounts[0],
-    gas: 500000
-  })
-
-  debug('price contract address set to:', priceAddress)
-  debug('library contract address set to:', libAddress)
-}
 
 async function purchase({
   requesterDid = '',
@@ -68,7 +44,7 @@ async function purchase({
   const hContentIdentity = hashIdentity(contentDid)
 
   const accounts = await web3.eth.getAccounts()
-  const purchaseDeployed = new web3.eth.Contract(purchaseAbi, kPurchaseAddress)
+  const afsDeployed = new web3.eth.Contract(afsAbi, kAfsAddress)
 
   try {
     await checkLibrary(requesterDid, contentDid)
@@ -78,7 +54,7 @@ async function purchase({
 
   // call token contract to approve
 
-  await purchaseDeployed.methods.purchase(hIdentity, contentDid, hContentIdentity, price).send({
+  await afsDeployed.methods.purchase(hIdentity, true).send({
     from: accounts[0],
     gas: 500000
   })
