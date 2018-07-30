@@ -16,13 +16,19 @@ contract Registry {
     if (msg.sender == owner_) _;
   }
 
+  modifier onlyProxyOwner(string _contentId) {
+    address proxyAddress = proxies_[_contentId];
+    Proxy proxy = Proxy(proxyAddress);
+    if (proxyAddress == address(0) || proxy.owner_() == msg.sender) _;
+  }
+
   function getProxyAddress(string _contentId) external view returns (address) {
     return proxies_[_contentId];
   }
 
-  function addProxyAddress(string _contentId, address _address) public {
+  function addProxyAddress(string _contentId, address _address) public onlyProxyOwner(_contentId) {
     Proxy proxy = Proxy(_address);
-    address standard = proxy.implementation();
+    address standard = proxy.implementation(); // call
     assert(standard == standard_);
     proxies_[_contentId] = _address;
   }

@@ -7,9 +7,11 @@ import "./Registry.sol";
  * @dev Gives the possibility to delegate any call to a foreign implementation.
  */
 contract Proxy {
+  address public owner_;
   Registry registry_;
 
   constructor(address _registry) public {
+    owner_ msg.sender;
     registry_ = Registry(_registry);
   }
 

@@ -3,8 +3,8 @@ pragma solidity ^0.4.24;
 import "./Registry.sol";
 
 contract Library {
-  address public owner;
-  mapping (string => Lib) private libraries;
+  address public owner_;
+  mapping (string => Lib) private libraries_;
   Registry registry_;
 
   struct Lib {
@@ -20,27 +20,27 @@ contract Library {
   }
 
   modifier restricted() {
-    if (msg.sender == owner) _;
+    if (msg.sender == owner_) _;
   }
 
   modifier fromStandard() {
     if (msg.sender == registry_.standard_()) _;
   }
 
-  function getLibrarySize(string identity) public view returns (uint16 size) {
-    return libraries[identity].size;
+  function getLibrarySize(string _identity) public view returns (uint16 size) {
+    return libraries_[_identity].size;
   }
 
-  function getLibraryItem(string identity, uint16 index) public view returns (string contentId) {
-    require (index < libraries[identity].size && index >= 0);
-    return libraries[identity].content[index];
+  function getLibraryItem(string _identity, uint16 _index) public view returns (string contentId) {
+    require (index < libraries_[_identity].size && _index >= 0);
+    return libraries_[_identity].content[_index];
   }
 
-  function addLibraryItem(string identity, string contentId) public fromStandard {
-    uint16 libSize = libraries[identity].size;
-    require (bytes(libraries[identity].content[libSize]).length == 0);
-    libraries[identity].content[libSize] = contentId;
-    libraries[identity].size++;
+  function addLibraryItem(string _identity, string _contentId) public fromStandard {
+    uint16 libSize = libraries_[_identity].size;
+    require (bytes(libraries_[_identity].content[libSize]).length == 0);
+    libraries_[_identity].content[libSize] = _contentId;
+    libraries_[_identity].size++;
     emit LogAdded(contentId);
   }
 }
