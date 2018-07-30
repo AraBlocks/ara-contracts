@@ -6,15 +6,15 @@ const { web3 } = require('ara-context')()
 const { info } = require('ara-console')
 
 const {
+  kAfsAddress,
+  kLibraryAddress
+} = require('./constants')
+
+const {
   checkLibrary,
   getLibrarySize,
   getLibraryItem
 } = require('./library')
-
-const {
-  kAfsAddress,
-  kLibraryAddress
-} = require('./constants')
 
 const {
   hashIdentity,

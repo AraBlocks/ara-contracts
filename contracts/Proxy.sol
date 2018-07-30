@@ -2,17 +2,30 @@ pragma solidity ^0.4.24;
 
 import "./Registry.sol";
 
-/**
- * @title Proxy
- * @dev Gives the possibility to delegate any call to a foreign implementation.
- */
 contract Proxy {
-  address public owner_;
-  Registry registry_;
+  address  public owner_;
+  Registry public registry_;
 
-  constructor(address _registry) public {
-    owner_ = msg.sender;
+  string   public did_;
+  bool     public listed_;
+  uint256  public price_;
+
+  mapping(bytes32 => uint256) public rewards_;
+  mapping(bytes32 => bool)    public purchasers_;
+
+  mapping(uint8 => Buffers) public metadata_;
+  struct Buffers {
+    mapping (uint256 => bytes) buffers;
+    uint256[] offsets;
+    bool invalid;
+  }
+
+  constructor(address _registry, string _did) public {
+    owner_    = msg.sender;
     registry_ = Registry(_registry);
+    did_      = _did;
+    listed_   = true;
+    price_    = 0;
   }
 
   /**

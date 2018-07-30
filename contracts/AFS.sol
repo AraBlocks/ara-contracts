@@ -11,13 +11,6 @@ contract AFS {
   ARAToken public token_;
   Library  public lib_;
 
-  string   public did_;
-  bool     public listed_;
-  uint256  public price_;
-
-  mapping(bytes32 => uint256) internal rewards_;
-  mapping(bytes32 => bool)    internal purchasers_;
-
   event Commit(string _did, uint8 _file, uint256 _offset, bytes _buffer);
   event Unlisted(string _did);
   event PriceSet(string _did, uint256 _price);
@@ -34,19 +27,10 @@ contract AFS {
       _;
   }
 
-  // Storage (random-access-contract)
-  mapping(uint8 => Buffers) metadata_;
-  struct Buffers {
-    mapping (uint256 => bytes) buffers;
-    uint256[] offsets;
-    bool invalid;
-  }
-
   constructor(address _lib, address _token) public {
     owner_    = msg.sender;
     token_    = ARAToken(_token);
     lib_      = Library(_lib);
-    // did_      = _did;
     listed_   = true;
     price_    = 0;
   }
