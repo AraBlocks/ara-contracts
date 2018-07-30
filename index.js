@@ -1,4 +1,5 @@
 const { error } = require('ara-console')
+const rc = require('./rc')
 
 const {
   kTempOwnerDid,
@@ -19,5 +20,6 @@ const {
 }())
 
 module.exports = {
-  purchase
+  purchase,
+  rc
 }
