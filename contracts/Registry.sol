@@ -13,7 +13,8 @@ contract Registry {
   }
 
   modifier restricted() {
-    if (msg.sender == owner_) _;
+    require (msg.sender == owner_);
+     _;
   }
 
   modifier onlyProxyOwner(string _contentId, address _address) {
