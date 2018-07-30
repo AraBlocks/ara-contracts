@@ -15,7 +15,7 @@ contract Library {
   event LogAdded(string contentId);
 
   constructor(address _registry) public {
-    owner = msg.sender;
+    owner_ = msg.sender;
     registry_ = Registry(_registry);
   }
 
@@ -32,7 +32,7 @@ contract Library {
   }
 
   function getLibraryItem(string _identity, uint16 _index) public view returns (string contentId) {
-    require (index < libraries_[_identity].size && _index >= 0);
+    require (_index < libraries_[_identity].size && _index >= 0);
     return libraries_[_identity].content[_index];
   }
 
@@ -41,6 +41,6 @@ contract Library {
     require (bytes(libraries_[_identity].content[libSize]).length == 0);
     libraries_[_identity].content[libSize] = _contentId;
     libraries_[_identity].size++;
-    emit LogAdded(contentId);
+    emit LogAdded(_contentId);
   }
 }
