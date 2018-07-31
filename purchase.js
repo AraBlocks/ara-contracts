@@ -5,8 +5,8 @@ const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
 const { kARATokenAddress } = require('./constants')
 const account = require('ara-web3/account')
-const { call } = require('ara-web3/call')
 const { info } = require('ara-console')
+const call = require('ara-web3/call')
 const tx = require('ara-web3/tx')
 
 const {
@@ -36,7 +36,7 @@ const {
  */
 async function purchase(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('ara-contracts.library: Expecting opts object.')
+    throw new TypeError('ara-contracts.purchase: Expecting opts object.')
   } else if (null == opts.requesterDid || 'string' !== typeof opts.requesterDid || !opts.requesterDid) {
     throw TypeError('ara-contracts.purchase: Expecting non-empty requester DID')
   } else if (null == opts.contentDid || 'string' !== typeof opts.contentDid || !opts.contentDid) {

@@ -1,7 +1,7 @@
 const { abi } = require('./build/contracts/Registry.json')
 const contract = require('ara-web3/contract')
 const account = require('ara-web3/account')
-const { call } = require('ara-web3/call')
+const call = require('ara-web3/call')
 const tx = require('ara-web3/tx')
 const solc = require('solc')
 const rc = require('./rc')
