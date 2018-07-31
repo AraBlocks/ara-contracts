@@ -17,6 +17,12 @@ const {
   normalize
 } = require('./util')
 
+/**
+ * Gets the proxy contract address for contentDid
+ * @param  {String} contentDid
+ * @return {string}
+ * @throws {Error,TypeError}
+ */
 async function getProxyAddress(contentDid = '') {
   if (null == contentDid || 'string' !== typeof contentDid || !contentDid) {
     throw TypeError('ara-contracts.registry: Expecting non-empty content DID')
@@ -38,6 +44,11 @@ async function getProxyAddress(contentDid = '') {
   }
 }
 
+/**
+ * Gets the current AFS contract stndard
+ * @return {Object}
+ * @throws {Error}
+ */
 async function getCurrentStandard() {
   try{
     const address = await call({
@@ -128,4 +139,10 @@ async function deployNewStandard(opts) {
     }
   })
   await tx.sendSignedTransaction(transaction)
+}
+
+module.exports = {
+  getProxyAddress,
+  getCurrentStandard,
+  deployNewStandard
 }
