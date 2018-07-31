@@ -2,8 +2,9 @@
 
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
-const { web3 } = require('ara-context')()
+const account = require('ara-web3/account')
 const { info } = require('ara-console')
+const tx = require('ara-web3/tx')
 
 const {
   kAfsAddress,
@@ -18,49 +19,67 @@ const {
 
 const {
   hashIdentity,
-  normalize
+  normalize,
+  validate
 } = require('./util')
 
 async function purchase({
   requesterDid = '',
   contentDid = '',
+  password = '',
   price = -1
 } = {}) {
   if (null == requesterDid || 'string' !== typeof requesterDid || !requesterDid) {
     throw TypeError('ara-contracts.purchase: Expecting non-empty requester DID')
-  }
-
-  if (null == contentDid || 'string' !== typeof contentDid || !contentDid) {
+  } else if (null == contentDid || 'string' !== typeof contentDid || !contentDid) {
     throw TypeError('ara-contracts.purchase: Expecting non-empty content DID')
+  } else if (null == password || 'string' != typeof password || !password) {
+    throw TypeError('ara-contracts.purchase: Expecting non-empty password')
   }
-
-  requesterDid = normalize(requesterDid)
-  contentDid = normalize(contentDid)
-
-  debug(requesterDid, 'purchasing', contentDid, 'for', price)
-
-  const hIdentity = hashIdentity(requesterDid)
-  const hContentIdentity = hashIdentity(contentDid)
-
-  const accounts = await web3.eth.getAccounts()
-  const afsDeployed = new web3.eth.Contract(afsAbi, kAfsAddress)
 
   try {
-    await checkLibrary(requesterDid, contentDid)
+    ({ did } = await validate({ did: requesterDid, password, label: 'purchase' }))
   } catch (err) {
     throw err
   }
 
-  // call token contract to approve
+  contentDid = normalize(contentDid)
 
-  await afsDeployed.methods.purchase(hIdentity, true).send({
-    from: accounts[0],
-    gas: 500000
+  debug(did, 'purchasing', contentDid, 'for', price)
+
+  const hIdentity = hashIdentity(did)
+  const hContentIdentity = hashIdentity(contentDid)
+
+  const acct = await account.get({ did, password })
+  const afsDeployed = new web3.eth.Contract(afsAbi, kAfsAddress)
+
+  try {
+    await checkLibrary(did, contentDid)
+  } catch (err) {
+    throw err
+  }
+
+  // (1) call token contract to approve
+
+  // (2) ask registry for proxy
+
+  const transaction = tx.create({
+    account: acct,
+    to: kAFSAddress, // change to proxy
+    data: {
+      afsAbi,
+      name: 'purchase',
+      values: [
+        hIdentity,
+        true
+      ]
+    }
   })
+  tx.sendSignedTransaction(transaction)
 
-  const size = await getLibrarySize(requesterDid)
+  const size = await getLibrarySize(did)
 
-  const contentId = await getLibraryItem(requesterDid, size - 1)
+  const contentId = await getLibraryItem(did, size - 1)
 
   info(contentId, `added to library (${size})`)
 }
