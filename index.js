@@ -1,15 +1,12 @@
+const { purchase } = require('./purchase')
 const { error } = require('ara-console')
-const rc = require('./rc')
+const library = require('./library')
+const registry = require('./registry')
 
 const {
   kTempOwnerDid,
   kTempAFSDid
 } = require('./constants')
-
-const {
-  purchase,
-  setPurchaseDelegates
-} = require('./purchase');
 
 (async function main() {
   await setPurchaseDelegates()
@@ -21,5 +18,6 @@ const {
 
 module.exports = {
   purchase,
-  rc
+  registry,
+  library
 }
