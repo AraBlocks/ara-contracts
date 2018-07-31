@@ -1,8 +1,9 @@
 /* eslint-disable no-await-in-loop */
 
-const { abi: libAbi } = require('./build/contracts/Library.json')
+const { abi } = require('./build/contracts/Library.json')
 const { kLibraryAddress } = require('./constants')
-const { web3 } = require('ara-context')()
+const account = require('ara-web3/account')
+const { call } = require('ara-web3/call')
 
 const {
   hashIdentity,
@@ -17,20 +18,35 @@ async function getLibrary(requesterDid = '') {
   return checkLibrary(requesterDid)
 }
 
-async function checkLibrary(requesterDid = '', contentDid = '') {
-  if (null == requesterDid || 'string' !== typeof requesterDid || !requesterDid) {
+/**
+ * Checks to see if contentDid is in the requesterDid's library and returns the library if not
+ * @param  {Object} opts
+ * @param  {String} opts.requesterDid
+ * @param  {String} opts.contentDid
+ * @param  {String} opts.password
+ * @return {Array}
+ * @throws {Error,TypeError}
+ */
+async function checkLibrary(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('ara-contracts.library: Expecting opts object.')
+  } else if (null == opts.requesterDid || 'string' !== typeof opts.requesterDid || !opts.requesterDid) {
     throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
-  }
+  } else if (null == opts.contentDid || 'string' !== typeof opts.contentDid || !opts.contentDid) {
+    throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
+  } else if (null == opts.password || 'string' !== typeof opts.password || !opts.password) {
+    throw TypeError('ara-contracts.registry: Expecting non-empty password')
+  } 
+
+  const { requesterDid, contentDid, password } = opts
 
   requesterDid = normalize(requesterDid)
   contentDid = normalize(contentDid)
-  const hIdentity = hashIdentity(requesterDid)
 
-  const libDeployed = new web3.eth.Contract(libAbi, kLibraryAddress)
-  const libSize = await libDeployed.methods.getLibrarySize(hIdentity).call()
+  const libSize = await getLibrarySize(requesterDid)
   const lib = []
   for (let i = 0; i < libSize; i++) {
-    const item = await libDeployed.methods.getLibraryItem(hIdentity, i).call()
+    const item = await getLibraryItem(requesterDid, i)
     if (contentDid && item == contentDid) {
       throw new Error('Item is already in user library and cannot be purchased again')
     }
@@ -47,8 +63,14 @@ async function getLibrarySize(requesterDid = '') {
   requesterDid = normalize(requesterDid)
   const hIdentity = hashIdentity(requesterDid)
 
-  const libDeployed = new web3.eth.Contract(libAbi, kLibraryAddress)
-  return libDeployed.methods.getLibrarySize(hIdentity).call()
+  return call({
+    abi,
+    address: kLibraryAddress,
+    functionName: 'getLibrarySize',
+    arguments: [
+      hIdentity
+    ]
+  })
 }
 
 async function getLibraryItem(requesterDid = '', index = -1) {
@@ -67,8 +89,15 @@ async function getLibraryItem(requesterDid = '', index = -1) {
     throw Error('ara-contracts.library: Invalid index')
   }
 
-  const libDeployed = new web3.eth.Contract(libAbi, kLibraryAddress)
-  return libDeployed.methods.getLibraryItem(hIdentity, index).call()
+  return call({
+      abi,
+      address: kLibraryAddress,
+      functionName: 'getLibraryItem',
+      arguments: [
+        hIdentity,
+        i
+      ]
+    })
 }
 
 module.exports = {

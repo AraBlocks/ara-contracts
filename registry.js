@@ -61,6 +61,15 @@ async function getCurrentStandard() {
   }
 }
 
+/**
+ * Deploys a new AFS Stndard
+ * @param  {Object} opts
+ * @param  {String} opts.requesterDid
+ * @param  {String} opts.password
+ * @param  {String} opts.version
+ * @param  {String} opts.path
+ * @throws {Error,TypeError}
+ */
 async function deployNewStandard(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('ara-contracts.registry: Expecting opts object.')

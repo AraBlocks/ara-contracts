@@ -63,7 +63,7 @@ async function purchase({
 
   // (2) ask registry for proxy
 
-  const transaction = tx.create({
+  const transaction = await tx.create({
     account: acct,
     to: kAFSAddress, // change to proxy
     data: {
@@ -75,7 +75,7 @@ async function purchase({
       ]
     }
   })
-  tx.sendSignedTransaction(transaction)
+  await tx.sendSignedTransaction(transaction)
 
   const size = await getLibrarySize(did)
 
