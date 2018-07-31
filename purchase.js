@@ -1,18 +1,14 @@
 /* eslint-disable no-await-in-loop */
 
 const { abi: tokenAbi } = require('./build/contracts/ARAToken.json')
-const { abi: regAbi } = require('./build/contracts/Registry.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
+const { kARATokenAddress } = require('./constants')
+const { getProxyAddress } = require('./registry')
 const account = require('ara-web3/account')
 const { call } = require('ara-web3/call')
 const { info } = require('ara-console')
 const tx = require('ara-web3/tx')
-
-const {
-  kARATokenAddress,
-  kRegistryAddress
-} = require('./constants')
 
 const {
   checkLibrary,
