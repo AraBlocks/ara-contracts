@@ -4,11 +4,15 @@ const { abi: tokenAbi } = require('./build/contracts/ARAToken.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
 const { kARATokenAddress } = require('./constants')
-const { getProxyAddress } = require('./registry')
 const account = require('ara-web3/account')
 const { call } = require('ara-web3/call')
 const { info } = require('ara-console')
 const tx = require('ara-web3/tx')
+
+const {
+  proxyExists,
+  getProxyAddress
+} = require('./registry')
 
 const {
   checkLibrary,
@@ -60,6 +64,10 @@ async function purchase(opts) {
 
   try {
     await checkLibrary(did, contentDid)
+
+    if (await proxyExists(contentDid)) {
+      throw new Error('ara-contracts.purchase: This content does not have a valid proxy contract')
+    }
 
     const proxy = await getProxyAddress(contentDid)
 

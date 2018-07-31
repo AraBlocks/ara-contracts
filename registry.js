@@ -20,6 +20,15 @@ const {
   validate
 } = require('./util')
 
+async function proxyExists(contentDid = '') {
+  try {
+    const address = await getProxyAddress(contentDid)
+    return !/^0x0+$/.test(address)
+  } catch (err) {
+    return false
+  }
+}
+
 /**
  * Gets the proxy contract address for contentDid
  * @param  {String} contentDid
@@ -236,6 +245,7 @@ async function deployNewStandard(opts) {
 }
 
 module.exports = {
+  proxyExists,
   getCurrentStandard,
   deployNewStandard,
   getProxyAddress,
