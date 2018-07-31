@@ -1,12 +1,18 @@
 /* eslint-disable no-await-in-loop */
 
+const { abi: tokenAbi } = require('./build/contracts/ARAToken.json')
+const { abi: regAbi } = require('./build/contracts/Registry.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
 const account = require('ara-web3/account')
+const { call } = require('ara-web3/call')
 const { info } = require('ara-console')
 const tx = require('ara-web3/tx')
 
-const { kAFSAddress } = require('./constants')
+const {
+  kARATokenAddress,
+  kRegistryAddress
+} = require('./constants')
 
 const {
   checkLibrary,
@@ -59,34 +65,59 @@ async function purchase(opts) {
 
   try {
     await checkLibrary(did, contentDid)
+
+    const proxy = await call({
+      abi: regAbi,
+      address: kRegistryAddress,
+      functionName: 'getProxyAddress',
+      arguments: [
+        hContentIdentity
+      ]
+    })
+
+    const price = await call({
+      abi: afsAbi,
+      address: proxy,
+      functionName: 'price_'
+    })
+
+    const approveTx = await tx.create({
+      account: acct,
+      to: kARATokenAddress,
+      data: {
+        tokenAbi,
+        functionName: 'approve',
+        values: [
+          proxy,
+          price
+        ]
+      }
+    })
+
+    await tx.sendSignedTransaction(approveTx)
+
+    const purchaseTx = await tx.create({
+      account: acct,
+      to: proxy,
+      data: {
+        afsAbi,
+        functionName: 'purchase',
+        values: [
+          hIdentity,
+          true
+        ]
+      }
+    })
+    await tx.sendSignedTransaction(purchaseTx)
+
+    const size = await getLibrarySize(did)
+
+    const contentId = await getLibraryItem(did, size - 1)
+
+    info(contentId, `added to library (${size})`)
   } catch (err) {
     throw err
   }
-
-  // (1) call token contract to approve
-
-  // (2) ask registry for proxy
-
-  const transaction = await tx.create({
-    account: acct,
-    // change to proxy
-    to: kAFSAddress,
-    data: {
-      afsAbi,
-      functionName: 'purchase',
-      values: [
-        hIdentity,
-        true
-      ]
-    }
-  })
-  await tx.sendSignedTransaction(transaction)
-
-  const size = await getLibrarySize(did)
-
-  const contentId = await getLibraryItem(did, size - 1)
-
-  info(contentId, `added to library (${size})`)
 }
 
 module.exports = {
