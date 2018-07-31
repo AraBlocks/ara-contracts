@@ -2,7 +2,6 @@
 
 const { abi } = require('./build/contracts/Library.json')
 const { kLibraryAddress } = require('./constants')
-const account = require('ara-web3/account')
 const { call } = require('ara-web3/call')
 
 const {
@@ -28,7 +27,6 @@ async function getLibrary(requesterDid = '') {
  * @param  {Object} opts
  * @param  {String} opts.requesterDid
  * @param  {String} opts.contentDid
- * @param  {String} opts.password
  * @return {Array}
  * @throws {Error,TypeError}
  */
@@ -39,11 +37,9 @@ async function checkLibrary(opts) {
     throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
   } else if (null == opts.contentDid || 'string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
-  } else if (null == opts.password || 'string' !== typeof opts.password || !opts.password) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty password')
-  } 
+  }
 
-  const { requesterDid, contentDid, password } = opts
+  let { requesterDid, contentDid } = opts
 
   requesterDid = normalize(requesterDid)
   contentDid = normalize(contentDid)
@@ -108,14 +104,14 @@ async function getLibraryItem(requesterDid = '', index = -1) {
   }
 
   return call({
-      abi,
-      address: kLibraryAddress,
-      functionName: 'getLibraryItem',
-      arguments: [
-        hIdentity,
-        i
-      ]
-    })
+    abi,
+    address: kLibraryAddress,
+    functionName: 'getLibraryItem',
+    arguments: [
+      hIdentity,
+      index
+    ]
+  })
 }
 
 module.exports = {

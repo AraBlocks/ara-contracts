@@ -2,7 +2,8 @@ const { blake2b } = require('ara-crypto')
 
 const {
   kAidPrefix,
-  kDidPrefix
+  kDidPrefix,
+  kOwnerSuffix
 } = require('./constants')
 
 function hashIdentity(did) {
@@ -27,7 +28,26 @@ function normalize(did) {
   return did
 }
 
+function getDocumentOwner(ddo, shouldNormalize = true) {
+  if (!ddo || null == ddo || 'object' !== typeof ddo) {
+    throw new TypeError('Expecting DDO')
+  }
+
+  let pk
+  if (ddo.authentication) {
+    pk = ddo.authentication[0].authenticationKey
+  } else if (ddo.didDocument) {
+    pk = ddo.didDocument.authentication[0].authenticationKey
+  }
+
+  const suffixLength = kOwnerSuffix.length
+  const id = pk.slice(0, pk.length - suffixLength)
+
+  return shouldNormalize ? normalize(id) : id
+}
+
 module.exports = {
+  getDocumentOwner,
   hashIdentity,
   normalize
 }
