@@ -59,21 +59,13 @@ async function purchase(opts) {
   debug(did, 'purchasing', contentDid)
 
   const hIdentity = hashIdentity(did)
-  const hContentIdentity = hashIdentity(contentDid)
 
   const acct = await account.get({ did, password })
 
   try {
     await checkLibrary(did, contentDid)
 
-    const proxy = await call({
-      abi: regAbi,
-      address: kRegistryAddress,
-      functionName: 'getProxyAddress',
-      arguments: [
-        hContentIdentity
-      ]
-    })
+    const proxy = await getProxyAddress(contentDid)
 
     const price = await call({
       abi: afsAbi,
