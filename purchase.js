@@ -23,19 +23,26 @@ const {
   validate
 } = require('./util')
 
-async function purchase({
-  requesterDid = '',
-  contentDid = '',
-  password = '',
-  price = -1
-} = {}) {
-  if (null == requesterDid || 'string' !== typeof requesterDid || !requesterDid) {
+/**
+ * Purchase contentDid
+ * @param  {Object} opts
+ * @param  {String} opts.requesterDid
+ * @param  {String} opts.contentDid
+ * @param  {String} opts.password
+ * @throws {Error,TypeError}
+ */
+async function purchase(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('ara-contracts.library: Expecting opts object.')
+  } else if (null == opts.requesterDid || 'string' !== typeof opts.requesterDid || !opts.requesterDid) {
     throw TypeError('ara-contracts.purchase: Expecting non-empty requester DID')
-  } else if (null == contentDid || 'string' !== typeof contentDid || !contentDid) {
+  } else if (null == opts.contentDid || 'string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('ara-contracts.purchase: Expecting non-empty content DID')
-  } else if (null == password || 'string' != typeof password || !password) {
+  } else if (null == opts.password || 'string' != typeof opts.password || !opts.assword) {
     throw TypeError('ara-contracts.purchase: Expecting non-empty password')
   }
+
+  const { requesterDid, contentDid, password } = opts
 
   try {
     ({ did } = await validate({ did: requesterDid, password, label: 'purchase' }))
@@ -85,6 +92,5 @@ async function purchase({
 }
 
 module.exports = {
-  purchase,
-  setPurchaseDelegates
+  purchase
 }

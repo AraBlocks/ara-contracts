@@ -10,6 +10,11 @@ const {
   normalize
 } = require('./util')
 
+/**
+ * Returns requesterDid's library
+ * @return {Array}
+ * @throws {TypeError}
+ */
 async function getLibrary(requesterDid = '') {
   if (null == requesterDid || 'string' !== typeof requesterDid || !requesterDid) {
     throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
@@ -19,7 +24,7 @@ async function getLibrary(requesterDid = '') {
 }
 
 /**
- * Checks to see if contentDid is in the requesterDid's library and returns the library if not
+ * Checks to see if contentDid is in the requesterDid's library
  * @param  {Object} opts
  * @param  {String} opts.requesterDid
  * @param  {String} opts.contentDid
@@ -55,6 +60,12 @@ async function checkLibrary(opts) {
   return lib
 }
 
+/**
+ * Gets the size of requesterDid's library
+ * @param  {String} requesterDid
+ * @return {int}
+ * @throws {TypeError}
+ */
 async function getLibrarySize(requesterDid = '') {
   if (null == requesterDid || 'string' !== typeof requesterDid || !requesterDid) {
     throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
@@ -73,6 +84,13 @@ async function getLibrarySize(requesterDid = '') {
   })
 }
 
+/**
+ * Gets the address of the item at index in requesterDid's library
+ * @param  {String} requesterDid
+ * @param  {int} index
+ * @return {string}
+ * @throws {Error, TypeError}
+ */
 async function getLibraryItem(requesterDid = '', index = -1) {
   if (null == requesterDid || 'string' !== typeof requesterDid || !requesterDid) {
     throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
