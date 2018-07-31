@@ -6,10 +6,7 @@ const account = require('ara-web3/account')
 const { info } = require('ara-console')
 const tx = require('ara-web3/tx')
 
-const {
-  kAfsAddress,
-  kLibraryAddress
-} = require('./constants')
+const { kAFSAddress } = require('./constants')
 
 const {
   checkLibrary,
@@ -42,8 +39,9 @@ async function purchase(opts) {
     throw TypeError('ara-contracts.purchase: Expecting non-empty password')
   }
 
-  const { requesterDid, contentDid, password } = opts
-
+  const { requesterDid, password } = opts
+  let { contentDid } = opts
+  let did
   try {
     ({ did } = await validate({ did: requesterDid, password, label: 'purchase' }))
   } catch (err) {
@@ -52,13 +50,12 @@ async function purchase(opts) {
 
   contentDid = normalize(contentDid)
 
-  debug(did, 'purchasing', contentDid, 'for', price)
+  debug(did, 'purchasing', contentDid)
 
   const hIdentity = hashIdentity(did)
   const hContentIdentity = hashIdentity(contentDid)
 
   const acct = await account.get({ did, password })
-  const afsDeployed = new web3.eth.Contract(afsAbi, kAfsAddress)
 
   try {
     await checkLibrary(did, contentDid)
@@ -72,10 +69,11 @@ async function purchase(opts) {
 
   const transaction = await tx.create({
     account: acct,
-    to: kAFSAddress, // change to proxy
+    // change to proxy
+    to: kAFSAddress,
     data: {
       afsAbi,
-      name: 'purchase',
+      functionName: 'purchase',
       values: [
         hIdentity,
         true
