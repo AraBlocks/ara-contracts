@@ -59,17 +59,18 @@ async function purchase(opts) {
   debug(did, 'purchasing', contentDid)
 
   const hIdentity = hashIdentity(did)
+  const hContentIdentity = hashIdentity(contentDid)
 
   const acct = await account.get({ did, password })
 
   try {
     await checkLibrary(did, contentDid)
 
-    if (await proxyExists(contentDid)) {
+    if (await proxyExists(hContentIdentity) {
       throw new Error('ara-contracts.purchase: This content does not have a valid proxy contract')
     }
 
-    const proxy = await getProxyAddress(contentDid)
+    const proxy = await getProxyAddress(hContentIdentity)
 
     const price = await call({
       abi: afsAbi,
