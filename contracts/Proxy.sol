@@ -1,22 +1,38 @@
 pragma solidity ^0.4.24;
 
+import './Registry.sol';
+
 /**
  * @title Proxy
  * @dev Gives the possibility to delegate any call to a foreign implementation.
  */
 contract Proxy {
+
+  bytes32 private constant registryPosition = keccak256("io.arablocks.proxy.registry");
+
   /**
-  * @dev Tells the address of the implementation where every call will be delegated.
-  * @return address of the implementation to which it will be delegated
+  * @dev the constructor sets the registry address
   */
-  function implementation() public view returns (address);
+  constructor(address registry) public {
+    bytes32 position = registryPosition;
+    assembly {
+      sstore(position, registry)
+    }
+  }
 
   /**
   * @dev Fallback function allowing to perform a delegatecall to the given implementation.
   * This function will return whatever the implementation call returns
   */
   function () payable public {
-    address _impl = implementation();
+    bytes32 position = registryPosition;
+    address registry;
+    assembly {
+      registry := sload(position)
+    }
+    Registry reg = Registry(registry);
+    address _impl = reg.proxyImpls_(address(this));
+    
     require(_impl != address(0));
 
     assembly {
