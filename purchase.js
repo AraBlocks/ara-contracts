@@ -5,8 +5,8 @@ const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
 const { kARATokenAddress } = require('./constants')
 const account = require('ara-web3/account')
-const { call } = require('ara-web3/call')
 const { info } = require('ara-console')
+const call = require('ara-web3/call')
 const tx = require('ara-web3/tx')
 
 const {
@@ -36,7 +36,7 @@ const {
  */
 async function purchase(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('ara-contracts.library: Expecting opts object.')
+    throw new TypeError('ara-contracts.purchase: Expecting opts object.')
   } else if (null == opts.requesterDid || 'string' !== typeof opts.requesterDid || !opts.requesterDid) {
     throw TypeError('ara-contracts.purchase: Expecting non-empty requester DID')
   } else if (null == opts.contentDid || 'string' !== typeof opts.contentDid || !opts.contentDid) {
@@ -59,17 +59,18 @@ async function purchase(opts) {
   debug(did, 'purchasing', contentDid)
 
   const hIdentity = hashIdentity(did)
+  const hContentIdentity = hashIdentity(contentDid)
 
   const acct = await account.get({ did, password })
 
   try {
     await checkLibrary(did, contentDid)
 
-    if (await proxyExists(contentDid)) {
+    if (await proxyExists(hContentIdentity) {
       throw new Error('ara-contracts.purchase: This content does not have a valid proxy contract')
     }
 
-    const proxy = await getProxyAddress(contentDid)
+    const proxy = await getProxyAddress(hContentIdentity)
 
     const price = await call({
       abi: afsAbi,

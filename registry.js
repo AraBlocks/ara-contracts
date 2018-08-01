@@ -1,7 +1,7 @@
 const { abi } = require('./build/contracts/Registry.json')
 const contract = require('ara-web3/contract')
 const account = require('ara-web3/account')
-const { call } = require('ara-web3/call')
+const call = require('ara-web3/call')
 const tx = require('ara-web3/tx')
 const solc = require('solc')
 const rc = require('./rc')
@@ -79,17 +79,15 @@ async function deployProxy(opts) {
   let { contentDid } = opts
 
   let did
-  let ddo
   try {
-    ({ did, ddo } = await validate({ did: requesterDid, password, label: 'registry' }))
+    ({ did } = await validate({ did: requesterDid, password, label: 'registry' }))
   } catch (err) {
     throw err
   }
 
   contentDid = hashIdentity(normalize(contentDid))
 
-  const owner = getDocumentOwner(ddo, true)
-  const acct = await account.load({ did: owner, password })
+  const acct = await account.load({ did, password })
 
   const source = fs.readFileSync(rc.proxy, 'utf8')
   const compiledFile = solc.compile(source, 1)
