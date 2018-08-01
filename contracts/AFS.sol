@@ -5,6 +5,21 @@ import "./ARAToken.sol";
 
 contract AFS {
   address  public owner_;
+  Registry public registry_;
+
+  string   public did_;
+  bool     public listed_;
+  uint256  public price_;
+
+  mapping(bytes32 => uint256) public rewards_;
+  mapping(bytes32 => bool)    public purchasers_;
+
+  mapping(uint8 => Buffers) public metadata_;
+  struct Buffers {
+    mapping (uint256 => bytes) buffers;
+    uint256[] offsets;
+    bool invalid;
+  }
 
   string   public version_ = "1";
 
