@@ -1,3 +1,4 @@
+const hasDIDMethod = require('has-did-method')
 const { blake2b } = require('ara-crypto')
 
 const {
@@ -8,10 +9,6 @@ const {
 
 function hashIdentity(did) {
   return blake2b(Buffer.from(did, 'hex')).toString('hex')
-}
-
-function hasDIDMethod(did) {
-  return 0 === did.indexOf(kDidPrefix)
 }
 
 function normalize(did) {
