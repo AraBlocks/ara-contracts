@@ -5,7 +5,10 @@ import "./ARAToken.sol";
 
 contract AFS {
   address  public owner_;
-  Registry public registry_;
+  string   public version_ = "1";
+
+  ARAToken public token_;
+  Library  public lib_;
 
   string   public did_;
   bool     public listed_;
@@ -13,18 +16,13 @@ contract AFS {
 
   mapping(bytes32 => uint256) public rewards_;
   mapping(bytes32 => bool)    public purchasers_;
-
   mapping(uint8 => Buffers) public metadata_;
+
   struct Buffers {
     mapping (uint256 => bytes) buffers;
     uint256[] offsets;
     bool invalid;
   }
-
-  string   public version_ = "1";
-
-  ARAToken public token_;
-  Library  public lib_;
 
   event Commit(string _did, uint8 _file, uint256 _offset, bytes _buffer);
   event Unlisted(string _did);
@@ -43,6 +41,15 @@ contract AFS {
   }
 
   constructor(address _lib, address _token) public {
+    owner_    = msg.sender;
+    token_    = ARAToken(_token);
+    lib_      = Library(_lib);
+    listed_   = true;
+    price_    = 0;
+  }
+
+  // how are bytes used here?
+  function init(bytes _data) {
     owner_    = msg.sender;
     token_    = ARAToken(_token);
     lib_      = Library(_lib);
