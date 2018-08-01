@@ -24,8 +24,8 @@ contract Library {
      _;
   }
 
-  modifier fromStandard() {
-    require (msg.sender == registry_.standard_());
+  modifier fromStandard(string _contentId) {
+    require (msg.sender == registry_.proxyImpls_(registry_.getProxyAddress(_contentId)));
      _;
   }
 
@@ -38,7 +38,7 @@ contract Library {
     return libraries_[_identity].content[_index];
   }
 
-  function addLibraryItem(string _identity, string _contentId) public fromStandard {
+  function addLibraryItem(string _identity, string _contentId) public fromStandard(_contentId) {
     uint16 libSize = libraries_[_identity].size;
     require (bytes(libraries_[_identity].content[libSize]).length == 0);
     libraries_[_identity].content[libSize] = _contentId;

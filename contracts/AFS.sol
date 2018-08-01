@@ -40,19 +40,11 @@ contract AFS {
       _;
   }
 
-  constructor(address _lib, address _token) public {
+  function init(bytes _data) public {
     owner_    = msg.sender;
-    token_    = ARAToken(_token);
-    lib_      = Library(_lib);
-    listed_   = true;
-    price_    = 0;
-  }
-
-  // how are bytes used here?
-  function init(bytes _data) {
-    owner_    = msg.sender;
-    token_    = ARAToken(_token);
-    lib_      = Library(_lib);
+    _data;
+    // token_    = ARAToken(_token);
+    // lib_      = Library(_lib);
     listed_   = true;
     price_    = 0;
   }
