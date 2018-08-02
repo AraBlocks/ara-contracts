@@ -5,9 +5,9 @@ const { kLibraryAddress } = require('./constants')
 const call = require('ara-web3/call')
 
 const {
-  hashIdentity,
+  hashDID,
   normalize
-} = require('./util')
+} = require('ara-util')
 
 /**
  * Returns requesterDid's library
@@ -67,8 +67,7 @@ async function getLibrarySize(requesterDid = '') {
     throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
   }
 
-  requesterDid = normalize(requesterDid)
-  const hIdentity = hashIdentity(requesterDid)
+  const hIdentity = hashDID(requesterDid)
 
   return call({
     abi,
@@ -96,8 +95,7 @@ async function getLibraryItem(requesterDid = '', index = -1) {
     throw Error('ara-contracts.library: Expecting a whole number index')
   }
 
-  requesterDid = normalize(requesterDid)
-  const hIdentity = hashIdentity(requesterDid)
+  const hIdentity = hashDID(requesterDid)
 
   if (await getLibrarySize(requesterDid) <= index) {
     throw Error('ara-contracts.library: Invalid index')

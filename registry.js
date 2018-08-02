@@ -7,6 +7,8 @@ const solc = require('solc')
 const rc = require('./rc')
 const fs = require('fs')
 
+const { web3 } = require('ara-context')()
+
 const {
   kLibraryAddress,
   kRegistryAddress,
@@ -15,10 +17,9 @@ const {
 
 const {
   getDocumentOwner,
-  hashIdentity,
-  normalize,
+  hashDID,
   validate
-} = require('./util')
+} = require('ara-util')
 
 async function proxyExists(contentDid = '') {
   try {
@@ -31,7 +32,7 @@ async function proxyExists(contentDid = '') {
 
 /**
  * Gets the proxy contract address for contentDid
- * @param  {String} contentDid
+ * @param  {String} contentDid //unhashed
  * @return {string}
  * @throws {Error,TypeError}
  */
@@ -40,7 +41,7 @@ async function getProxyAddress(contentDid = '') {
     throw TypeError('ara-contracts.registry: Expecting non-empty content DID')
   }
 
-  contentDid = hashIdentity(normalize(contentDid))
+  contentDid = hashDid(contentDid)
 
   try {
     return call({
@@ -59,8 +60,9 @@ async function getProxyAddress(contentDid = '') {
 /**
  * Deploys a proxy contract for opts.contentDid
  * @param  {String} opts.requesterDid
- * @param  {String} opts.contentDid
+ * @param  {String} opts.contentDid // unhashed
  * @param  {String} opts.password
+ * @param  {String} opts.version
  * @return {string}
  * @throws {Error,TypeError}
  */
@@ -78,6 +80,8 @@ async function deployProxy(opts) {
   const { requesterDid, password } = opts
   let { contentDid } = opts
 
+  const version = opts.version || '1'
+
   let did
   try {
     ({ did } = await validate({ did: requesterDid, password, label: 'registry' }))
@@ -85,71 +89,66 @@ async function deployProxy(opts) {
     throw err
   }
 
-  contentDid = hashIdentity(normalize(contentDid))
+  contentDid = hashDID(contentDid)
 
   const acct = await account.load({ did, password })
 
-  const source = fs.readFileSync(rc.proxy, 'utf8')
-  const compiledFile = solc.compile(source, 1)
-  const compiledContract = compiledFile.contracts.Proxy
-  const proxyAbi = compiledContract.interface
-  const { bytecode } = compiledContract
-
   try {
-    const proxy = await contract.deploy({
-      account: acct,
-      abi: proxyAbi,
-      bytecode,
-      arguments: [
-        kRegistryAddress,
-        did
-      ]
-    })
-
     const transaction = await tx.create({
       account: acct,
       to: kRegistryAddress,
       data: {
         abi,
-        functionName: 'addProxyAddress',
-        value: [
+        functionName: 'createAFS',
+        values: [
           contentDid,
-          proxy.options.address
+          version,
+          web3.eth.encodeParameters(['address', 'address'], [kARATokenAddress, kLibraryAddress])
         ]
       }
     })
 
-    await tx.sendSignedTransaction(transaction)
-
-    return proxy.options.address
+    return tx.sendSignedTransaction(transaction)
   } catch (err) {
     throw err
   }
 }
 
 /**
- * Gets the current AFS contract stndard
- * @return {Object}
+ * Gets the latest AFS contract stndard
+ * @return {String}
  * @throws {Error}
  */
-async function getCurrentStandard() {
+async function getLatestStandard() {
+  try {
+    const version = await call({
+      abi,
+      address: kRegistryAddress,
+      functionName: 'latestVersion_'
+    })
+    return getStandard(version)
+  } catch (err) {
+    throw err
+  }
+}
+
+/**
+ * Gets an AFS contract stndard
+ * @param  {String} version
+ * @return {String}
+ * @throws {Error}
+ */
+async function getStandard(version) {
   try {
     const address = await call({
       abi,
       address: kRegistryAddress,
-      functionName: 'standard_'
+      functionName: 'getImplementation',
+      arguments: [
+        version
+      ]
     })
-
-    const version = await call({
-      abi,
-      address: kRegistryAddress,
-      functionName: 'version_'
-    })
-
-    return {
-      address,
-      version
-    }
+    return address
   } catch (err) {
     throw err
   }
@@ -244,7 +243,8 @@ async function deployNewStandard(opts) {
 
 module.exports = {
   proxyExists,
-  getCurrentStandard,
+  getLatestStandard,
+  getStandard,
   deployNewStandard,
   getProxyAddress,
   deployProxy

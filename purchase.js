@@ -21,8 +21,7 @@ const {
 } = require('./library')
 
 const {
-  hashIdentity,
-  normalize,
+  hashDID,
   validate
 } = require('./util')
 
@@ -58,8 +57,8 @@ async function purchase(opts) {
 
   debug(did, 'purchasing', contentDid)
 
-  const hIdentity = hashIdentity(did)
-  const hContentIdentity = hashIdentity(contentDid)
+  const hIdentity = hashDID(did)
+  const hContentIdentity = hashDID(contentDid)
 
   const acct = await account.get({ did, password })
 
