@@ -23,21 +23,6 @@ contract Registry {
     _;
   }
 
-  /**
-   * @dev AFS Proxy Factory
-   * @param _contentId The methodless content DID
-   * @param _version The implementation version to use with this Proxy
-   * @param _data AFS initialization data
-   */
-  function createAFS(string _contentId, string _version, bytes _data) public {
-    require(proxies_[_contentId] == address(0));
-    Proxy proxy = new Proxy(address(this));
-    upgradeProxy(_contentId, _version);
-    require(address(proxy).call(bytes4(keccak256("init(bytes)")), _data));
-    proxies_[_contentId] = proxy;
-    proxyOwners_[_contentId] = msg.sender;
-  }
-
   function getProxyAddress(string _contentId) external view returns (address) {
     return proxies_[_contentId];
   }
@@ -48,6 +33,20 @@ contract Registry {
 
   function getImplementation(string _version) external view returns (address) {
     return versions_[_version];
+  }
+
+  /**
+   * @dev AFS Proxy Factory
+   * @param _contentId The methodless content DID
+   * @param _version The implementation version to use with this Proxy
+   * @param _data AFS initialization data
+   */
+  function createAFS(string _contentId, string _version, bytes _data) public {
+    require(proxies_[_contentId] == address(0));
+    Proxy proxy = new Proxy(address(this));
+    proxies_[_contentId] = proxy;
+    upgradeProxyAndCall(_contentId, _version, _data);
+    proxyOwners_[_contentId] = msg.sender;
   }
 
   /**
@@ -73,7 +72,13 @@ contract Registry {
     require(address(proxy).call(bytes4(keccak256("init(bytes)")), _data));
   }
 
+  /**
+   * @dev Adds a new AFS implementation standard
+   * @param _version The implementation version name
+   * @param _address The address of the new AFS implementation
+   */
   function addStandardVersion(string _version, address _address) public restricted {
+    require(versions_[_version] == address(0));
     versions_[_version] = _address;
   }
 }
