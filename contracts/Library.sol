@@ -9,7 +9,7 @@ contract Library {
 
   struct Lib {
     uint16 size;
-    mapping (uint16 => string) content;
+    mapping (uint16 => string) content; // index => contentId (unhashed)
   }
 
   event LogAdded(string contentId);

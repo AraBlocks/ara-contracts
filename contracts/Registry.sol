@@ -4,10 +4,11 @@ import "./Proxy.sol";
 
 contract Registry {
   address public owner_;
-  mapping (string => address) private proxies_; // contentId => proxy
-  mapping (string => address) private proxyOwners_; // contentId => owner
+  mapping (string => address) private proxies_; // hash(contentId) => proxy
+  mapping (string => address) private proxyOwners_; // hash(contentId) => owner
   mapping (string => address) private versions_; // version => implementation
   mapping (address => address) public proxyImpls_; // proxy => implementation
+  string public latestVersion_;
 
   constructor() public {
     owner_ = msg.sender;
@@ -40,13 +41,15 @@ contract Registry {
    * @param _contentId The methodless content DID
    * @param _version The implementation version to use with this Proxy
    * @param _data AFS initialization data
+   * @return address of the newly deployed Proxy
    */
-  function createAFS(string _contentId, string _version, bytes _data) public {
+  function createAFS(string _contentId, string _version, bytes _data) public returns (address) {
     require(proxies_[_contentId] == address(0));
     Proxy proxy = new Proxy(address(this));
     proxies_[_contentId] = proxy;
     upgradeProxyAndCall(_contentId, _version, _data);
     proxyOwners_[_contentId] = msg.sender;
+    return proxy;
   }
 
   /**
@@ -69,7 +72,7 @@ contract Registry {
     require(versions_[_version] != address(0));
     Proxy proxy = Proxy(proxies_[_contentId]);
     proxyImpls_[proxy] = versions_[_version];
-    require(address(proxy).call(bytes4(keccak256("init(bytes)")), _data));
+    if(!address(proxy).call(address(proxy).call(abi.encodeWithSignature("init(bytes)", _data)))) revert();
   }
 
   /**
