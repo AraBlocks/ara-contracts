@@ -1,0 +1,161 @@
+#!/usr/bin/env node
+
+const debug = require('debug')('ara-contracts:cli:deploy')
+const { info, warn, error, log } = require('ara-console')
+const { createProgram } = require('../lib/program')
+const registry = require('../registry')
+const inquirer = require('inquirer')
+const { web3 } = require('ara-context')()
+const account = require('ara-web3/account')
+const { getAFSOwnerIdentity } = require('ara-util')
+
+const toLower = x => String(x).toLowerCase()
+
+// yargs program command line interface instance
+const program = createProgram({
+  usage: `
+usage: act deploy: [-h] [--help] [options]
+`
+})
+
+// Parse program arguments based on yargs spec
+const { argv } = program
+  .option('proxy', {
+    alias: 'P',
+    type: `boolean`,
+    describe: 'Flag to indicate proxy deployment',
+  })
+  .option('standard', {
+    alias: 'S',
+    type: `boolean`,
+    describe: 'Flag to indicate AFS standard deployment',
+  })
+  .option('did', {
+    alias: 'd',
+    describe: 'The content DID if proxy flag is set.\n Otherwise the Registry contract owner DID',
+  })
+  .option('path', {
+    alias: 'p',
+    describe: 'The path of the new AFS standard',
+  })
+  .option('version', {
+    alias: 'v',
+    describe: 'The version number of the AFS standard to deploy'
+  })
+  .option('fund', {
+    alias: 'f',
+    type: 'boolean',
+    describe: 'TEST OPTION TO FUND ACCOUNT'
+  })
+  .conflicts('P', ['S', 'p'])
+
+// Emit program usage help
+if (0 == argv._.length && argv.help) {
+  program.showHelp()
+  process.exit(0)
+}
+
+// Main program entry
+module.exports = (async function main() {
+  // console.log(argv)
+  const { proxy, standard } = argv
+  let { did, version, path } = argv
+  const { password } = await promptForPassword()
+
+  if (argv.fund) {
+    const owner = 'did:ara:4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4'
+    const acct = await account.load({ did: owner, password })
+    const defaultAccounts = await web3.eth.getAccounts()
+    const { address } = acct
+    const oneEthInWei = web3.utils.toWei('1', 'ether')
+    console.log("funding", address, "with", oneEthInWei, "wei")
+    await supplyAccount(address, defaultAccounts, oneEthInWei)
+  }
+
+  if (!did) {
+    ({ did } = proxy ? await promptForDID("Please provide the content DID that this Proxy will be deployed for.")
+      : await promptForDID("Please provide the DID of the Registry contract owner."))
+  }
+  if (!version) {
+    ({ version } = proxy ? await promptForVersion("Please provide the AFS standard version you would like to use with this Proxy.")
+      : await promptForVersion("Please provide the version name of the new AFS standard to be deployed."))
+  }
+  if (!path && standard) {
+    ({ path } = await promptForPath())
+  }
+
+  if (proxy) {
+    const address = await registry.deployProxy({
+      contentDid: did,
+      password,
+      version
+    })
+    info("Proxy deployed at address", address, "for content", did)
+  } else {
+    const address = await registry.deployNewStandard({
+      requesterDid: did,
+      password,
+      version,
+      path
+    })
+    info("New AFS standard version", version, "deployed at address", address)
+  }
+}())
+
+async function promptForPassword() {
+  return await inquirer.prompt([{
+    type: 'password',
+    name: 'password',
+    message:
+    "Please provide the passphrase for your identity. This is needed to " +
+    "complete this action.\n" +
+    "Passphrase:"
+  }]) 
+}
+
+async function promptForDID(message) {
+  return await inquirer.prompt([{
+    name: 'did',
+    message
+  }])
+}
+
+async function promptForVersion(message) {
+  return await inquirer.prompt([{
+    name: 'version',
+    message
+  }])
+}
+
+async function promptForPath() {
+  return await inquirer.prompt([{
+    name: 'path',
+    message: 'Please provide the path to the source code (.sol) of the new AFS standard to be deployed.'
+  }])
+}
+
+function onfatal(err) {
+  if (err) {
+    debug(err)
+    error("fatal:", err.message)
+  }
+  process.exit(1)
+}
+
+async function supplyAccount(address, accounts, transferAmount) {
+    let balance = 0
+    let i = 0
+    while (balance < 1) {
+      if (!accounts[i]) {
+        break
+      }
+      // eslint-disable-next-line no-await-in-loop
+      balance = await web3.eth.getBalance(accounts[i])
+      balance = Number(web3.utils.fromWei(balance, 'ether'))
+      i++
+    }
+
+    if (accounts[i]) {
+      await web3.eth.sendTransaction({ from: accounts[i], to: address, value: transferAmount })
+    }
+  }

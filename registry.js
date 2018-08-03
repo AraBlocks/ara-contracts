@@ -1,7 +1,9 @@
 const { abi } = require('./build/contracts/Registry.json')
+const debug = require('debug')('ara-contracts:registry')
 const contract = require('ara-web3/contract')
 const account = require('ara-web3/account')
-const call = require('ara-web3/call')
+const { call } = require('ara-web3/call')
+const web3Abi = require('ara-web3/abi')
 const tx = require('ara-web3/tx')
 const solc = require('solc')
 const rc = require('./rc')
@@ -10,6 +12,7 @@ const fs = require('fs')
 const { web3 } = require('ara-context')()
 
 const {
+  kAidPrefix,
   kLibraryAddress,
   kRegistryAddress,
   kARATokenAddress
@@ -24,6 +27,7 @@ const {
 async function proxyExists(contentDid = '') {
   try {
     const address = await getProxyAddress(contentDid)
+    debug("proxy address", address)
     return !/^0x0+$/.test(address)
   } catch (err) {
     return false
@@ -41,9 +45,10 @@ async function getProxyAddress(contentDid = '') {
     throw TypeError('ara-contracts.registry: Expecting non-empty content DID')
   }
 
-  contentDid = hashDid(contentDid)
+  contentDid = hashDID(contentDid)
 
   try {
+    debug("get proxy address of", contentDid)
     return call({
       abi,
       address: kRegistryAddress,
@@ -59,7 +64,6 @@ async function getProxyAddress(contentDid = '') {
 
 /**
  * Deploys a proxy contract for opts.contentDid
- * @param  {String} opts.requesterDid
  * @param  {String} opts.contentDid // unhashed
  * @param  {String} opts.password
  * @param  {String} opts.version
@@ -69,46 +73,82 @@ async function getProxyAddress(contentDid = '') {
 async function deployProxy(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('ara-contracts.registry: Expecting opts object.')
-  } else if (null == opts.requesterDid || 'string' !== typeof opts.requesterDid || !opts.requesterDid) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty requester DID')
   } else if (null == opts.contentDid || 'string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('ara-contracts.registry: Expecting non-empty content DID')
   } else if (null == opts.password || 'string' !== typeof opts.password || !opts.password) {
     throw TypeError('ara-contracts.registry: Expecting non-empty password')
   }
 
-  const { requesterDid, password } = opts
+  const { password } = opts
   let { contentDid } = opts
 
   const version = opts.version || '1'
 
   let did
   try {
-    ({ did } = await validate({ did: requesterDid, password, label: 'registry' }))
+    ({ did } = await validate({ did: contentDid, password, label: 'registry' }))
   } catch (err) {
     throw err
   }
 
   contentDid = hashDID(contentDid)
+  const prefixedDid = kAidPrefix + did
 
-  const acct = await account.load({ did, password })
+  const acct = await account.load({ did: prefixedDid, password })
 
   try {
+    debug("creating tx to deploy proxy for", contentDid)
     const transaction = await tx.create({
       account: acct,
       to: kRegistryAddress,
+      gasLimit: 6721975,
       data: {
         abi,
         functionName: 'createAFS',
         values: [
           contentDid,
           version,
-          web3.eth.encodeParameters(['address', 'address'], [kARATokenAddress, kLibraryAddress])
+          web3Abi.encodeParameters(['address', 'address'], [kARATokenAddress, kLibraryAddress])
         ]
       }
     })
 
-    return tx.sendSignedTransaction(transaction)
+    // listen to ProxyDeployed event for proxy address
+    const registry = await contract.get(abi, kRegistryAddress)
+    let proxyAddress
+    const deployedEvent = await registry.events.ProxyDeployed({fromBlock: 0, function(error, event){ console.log(error) }})
+      .on('data', (log) => {
+        // console.log(log)
+        let { returnValues: { _contentId, _address }, blockNumber } = log
+        if (_contentId === contentDid) {
+          console.log("PROXY DEPLOYED!!!!!")
+          proxyAddress = _address
+        }
+      })
+      .on('changed', (log) => {
+        console.log(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        console.log(`error:  ${log}`)
+      })
+
+      // listen to ProxyUpgraded event for proxy address
+    const upgradedEvent = await registry.events.ProxyUpgraded({fromBlock: 0, function(error, event){ console.log(error) }})
+      .on('data', (log) => {
+        // console.log(log)
+        let { returnValues: { _contentId, _version }, blockNumber } = log
+        if (_contentId === contentDid)
+          console.log("PROXY UPGRADED!!!!!")
+      })
+      .on('changed', (log) => {
+        console.log(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        console.log(`error:  ${log}`)
+      })
+
+    await tx.sendSignedTransaction(transaction)
+    return proxyAddress
   } catch (err) {
     throw err
   }
@@ -186,12 +226,13 @@ async function deployNewStandard(opts) {
 
   let did
   try {
-    ({ did } = await validate({ did: requesterDid, password, label: 'registry' }))
+    ({ did } = await validate({ owner: requesterDid, password, label: 'registry' }))
   } catch (err) {
     throw err
   }
 
-  const acct = await account.load({ did, password })
+  const prefixedDid = kAidPrefix + did
+  const acct = await account.load({ did: prefixedDid, password })
 
   const registryOwner = await call({
     abi,
