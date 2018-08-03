@@ -10,6 +10,10 @@ contract Registry {
   mapping (address => address) public proxyImpls_; // proxy => implementation
   string public latestVersion_;
 
+  event ProxyDeployed(string _contentId, address _address);
+  event ProxyUpgraded(string _contentId, string _version);
+  event StandardAdded(string _version, address _address);
+
   constructor() public {
     owner_ = msg.sender;
   }
@@ -47,9 +51,9 @@ contract Registry {
     require(proxies_[_contentId] == address(0));
     Proxy proxy = new Proxy(address(this));
     proxies_[_contentId] = proxy;
-    upgradeProxyAndCall(_contentId, _version, _data);
     proxyOwners_[_contentId] = msg.sender;
-    return proxy;
+    upgradeProxyAndCall(_contentId, _version, _data);
+    emit ProxyDeployed(_contentId, address(proxy));
   }
 
   /**
@@ -60,6 +64,7 @@ contract Registry {
   function upgradeProxy(string _contentId, string _version) public onlyProxyOwner(_contentId) {
     require(versions_[_version] != address(0));
     proxyImpls_[proxies_[_contentId]] = versions_[_version];
+    emit ProxyUpgraded(_contentId, _version);
   }
 
   /**
@@ -69,10 +74,11 @@ contract Registry {
    * @param _data AFS initialization data
    */
   function upgradeProxyAndCall(string _contentId, string _version, bytes _data) public onlyProxyOwner(_contentId) {
-    require(versions_[_version] != address(0));
+    // require(versions_[_version] != address(0));
     Proxy proxy = Proxy(proxies_[_contentId]);
     proxyImpls_[proxy] = versions_[_version];
-    if(!address(proxy).call(address(proxy).call(abi.encodeWithSignature("init(bytes)", _data)))) revert();
+    // if(!address(proxy).call(address(proxy).call(abi.encodeWithSignature("init(bytes)", _data)))) revert();
+    emit ProxyUpgraded(_contentId, _version);
   }
 
   /**
@@ -83,5 +89,6 @@ contract Registry {
   function addStandardVersion(string _version, address _address) public restricted {
     require(versions_[_version] == address(0));
     versions_[_version] = _address;
+    emit StandardAdded(_version, _address);
   }
 }

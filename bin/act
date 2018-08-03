@@ -1,0 +1,187 @@
+#!/usr/bin/env node
+
+const { kFromACTParentFlag, createProgram } = require('../lib/program')
+const { info, warn, error, log } = require('ara-console')
+const debug = require('debug')('ara-contracts:cli')
+const { basename, resolve } = require('path')
+const { version } = require('../package')
+const registry = require('../registry')
+const purchase = require('../purchase')
+const library = require('../library')
+const spawn = require('cross-spawn')
+const which = require('which')
+const pify = require('pify')
+
+const noop = () => void 0
+const toLower = (x) => String(x).toLowerCase()
+const $0 = basename(process.argv[1] || package.name)
+const kOriginalProgramArguments =
+  Object.freeze(Object.seal(Object.assign([], process.argv.slice(2))))
+
+process.on('unhandledRejection', onfatal)
+process.on('uncaughtExeption', onfatal)
+
+// yargs program command line interface instance
+const program = createProgram({
+  usage: `
+usage: act: [-hDV] [--help] [--version]
+            [--debug] <command> [<args>]
+
+Below are some useful act commands:
+
+  act deploy     Deploy an ARA proxy or standard contract
+  act library    Interact with the ARA library
+  act purchase   Purchase an AFS in the ARA network
+`
+})
+
+const { argv } = program
+  .option('debug', {
+    alias: 'D',
+    describe: "Enable debug output (Sets 'DEBUG+=ara-contracts:*')",
+  })
+
+// Emit program version
+if (0 == argv._.length && argv.version) {
+  console.log(version)
+  process.exit(0)
+}
+
+// Emit program usage help
+if ((0 == argv._.length && argv.help) || 0 == kOriginalProgramArguments.length) {
+  program.showHelp()
+  process.exit(0)
+}
+
+// if debug given, but nothing else show help and bail
+if (true == argv.debug && 0 == argv._.length) {
+  program.showHelp()
+  process.exit(1)
+}
+
+void (async function main() {
+  // The program command name sits in head position with the rest of its
+  // arguments following after
+  const shortCommandName = (argv._[0] || argv.debug).split(' ')
+
+  if (null == shortCommandName) {
+    if ('-' == kOriginalProgramArguments[0][0]) {
+      console.error('Unknown option: %s', kOriginalProgramArguments[0])
+    }
+
+    program.showHelp()
+    process.exit(1)
+  }
+
+  const canonicalCommandName = `act-${shortCommandName[0]}`
+
+  // Determine if child canonical command program name is in
+  // user path (PATH or PATHEXT)
+  debug("Searching for command afs command '%s'", canonicalCommandName)
+
+  try { await pify(which)(canonicalCommandName) } catch (err) {
+    error(
+      "'%s' is not a act command. See 'act --help'.",
+      shortCommandName
+    )
+  }
+
+  // Spawn child program with command line arguments given inheriting
+  // this processes stdio (stdin, stdout, stderr)
+  const child = spawn(
+    canonicalCommandName,
+    // Flags to pass to child process
+    [ kFromACTParentFlag ].concat(shortCommandName.slice(1), kOriginalProgramArguments.slice(1)),
+    {
+      stdio: 'inherit',
+      env: Object.assign({}, process.env, {
+        DEBUG: String(process.env.DEBUG) + (argv.debug ? ',ara-contracts*' : '')
+      }),
+    }
+  )
+
+  child.on('exit', (code, signal) => {
+    debug('%s exited with code %s and signal %s', code, signal)
+    process.nextTick(() => process.exit(code))
+  })
+
+  // Emit child program error and exit
+  child.on('error', () => {
+    error(
+      "An error occured when invoking '%s' command. See 'act --help'.",
+      shortCommandName
+    )
+  })
+}())
+
+
+
+// const { argv } = program
+//   .usage("usage: $0 [-hDV] [command]")
+//   .option('debug', {
+//     type: 'boolean',
+//     alias: 'D',
+//     describe: "Enable debug output"
+//   })
+//   .option('help', {
+//     alias: 'h',
+//     describe: "Show this help message"
+//   })
+//   .option('version', {
+//     alias: 'V',
+//     describe: "Show program version"
+//   })
+//   .option('force', {
+//     alias: 'f',
+//     type: 'boolean',
+//     describe: 'Force operation',
+//   })
+//   .command("deploy [(-P|-S) <did> -- <path>]", "Deploy a AFS proxy or AFS standard contract", (program) => {
+//     // ([(-P | --proxy) [--] <did>] | [(-S | --standard) [--] <did> <path>])
+//     program
+//       .option('proxy', {
+//         alias: 'P',
+//         type: 'boolean',
+//         default: false,
+//         describe: 'Flag to indicate deployment of proxy'
+//       })
+//       .option('standard', {
+//         alias: 'S',
+//         type: 'boolean',
+//         default: false,
+//         describe: 'Flag to indicate deployment of AFS standard'
+//       })
+//       .positional('did', {
+//         type: 'string',
+//         describe: 'The content DID if proxy flag is set'
+//       })
+//       .positional('path', {
+//         type: 'string',
+//         describe: 'The path of the new AFS standard to deploy'
+//       })
+//   }, ontest)
+
+//   void async function main() {
+//     if (0 == argv._.length || argv.help) {
+//       program.showHelp()
+//       process.exit(0)
+//     }
+//     if (argv.debug) {
+//       require('debug').enable('ara-filesystem*')
+//     }
+//   }()
+  
+//   async function ontest(argv) {
+//     console.log(argv)
+//     const proxy = argv.P || argv.proxy
+//     console.log("proxy?", proxy)
+//   }
+
+  function onfatal(err) {
+    if (err) {
+      debug(err)
+      error("fatal:", err.message)
+    }
+    process.exit(1)
+  }
+

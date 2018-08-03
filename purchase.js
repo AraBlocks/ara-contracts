@@ -65,7 +65,7 @@ async function purchase(opts) {
   try {
     await checkLibrary(did, contentDid)
 
-    if (await proxyExists(hContentIdentity) {
+    if (await proxyExists(hContentIdentity)) {
       throw new Error('ara-contracts.purchase: This content does not have a valid proxy contract')
     }
 
