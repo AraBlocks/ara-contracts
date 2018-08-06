@@ -1,4 +1,5 @@
 const { abi } = require('./build/contracts/Registry.json')
+const { abi: aAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:registry')
 const contract = require('ara-web3/contract')
 const account = require('ara-web3/account')
@@ -99,6 +100,7 @@ async function deployProxy(opts) {
 
   try {
     debug("creating tx to deploy proxy for", contentDid)
+    const encodedData = web3Abi.encodeParameters(['address', 'address'], [kARATokenAddress, kLibraryAddress])
     const transaction = await tx.create({
       account: acct,
       to: kRegistryAddress,
@@ -109,7 +111,7 @@ async function deployProxy(opts) {
         values: [
           contentDid,
           version,
-          web3Abi.encodeParameters(['address', 'address'], [kARATokenAddress, kLibraryAddress])
+          encodedData
         ]
       }
     })
@@ -149,6 +151,18 @@ async function deployProxy(opts) {
       })
 
     await tx.sendSignedTransaction(transaction)
+    const tokenAddress = await call({
+      abi: aAbi,
+      address: proxyAddress,
+      functionName: 'token_'
+    })
+    console.log("token address set to", tokenAddress)
+    const libAddress = await call({
+      abi: aAbi,
+      address: proxyAddress,
+      functionName: 'lib_'
+    })
+    console.log("lib address set to", libAddress)
     return proxyAddress
   } catch (err) {
     throw err
@@ -289,6 +303,22 @@ async function deployNewStandard(opts) {
         ]
       }
     })
+
+    const registry = await contract.get(abi, kRegistryAddress)
+    const standardAddedEvent = await registry.events.StandardAdded({ fromBlock: 0, function(error, event){ console.log(error) } })
+      .on('data', (log) => {
+        // console.log(log)
+        let { returnValues: { _version, _address }, blockNumber } = log
+        if (_version === version)
+          console.log("STANDARD v", _version, "added at", _address)
+      })
+      .on('changed', (log) => {
+        console.log(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        console.log(`error:  ${log}`)
+      })
+
     await tx.sendSignedTransaction(transaction)
     return afs._address
   } catch (err) {

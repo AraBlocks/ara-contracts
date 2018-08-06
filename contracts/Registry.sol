@@ -74,10 +74,10 @@ contract Registry {
    * @param _data AFS initialization data
    */
   function upgradeProxyAndCall(string _contentId, string _version, bytes _data) public onlyProxyOwner(_contentId) {
-    // require(versions_[_version] != address(0));
+    require(versions_[_version] != address(0));
     Proxy proxy = Proxy(proxies_[_contentId]);
     proxyImpls_[proxy] = versions_[_version];
-    // if(!address(proxy).call(address(proxy).call(abi.encodeWithSignature("init(bytes)", _data)))) revert();
+    if(!address(proxy).call(abi.encodeWithSignature("init(bytes)", _data))) revert();
     emit ProxyUpgraded(_contentId, _version);
   }
 
