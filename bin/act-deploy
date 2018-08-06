@@ -56,7 +56,13 @@ if (0 == argv._.length && argv.help) {
 module.exports = (async function main() {
   const { proxy, standard } = argv
   let { did, version } = argv
-  const [...paths] = argv._
+  let [...paths] = argv._
+
+  if (!paths || !paths.length) {
+    onfatal(new Error("Missing local file paths. See 'act deploy --help'."))
+    process.exit(0)
+  }
+
   const { password } = await promptForPassword()
 
   if (argv.fund) {
@@ -78,11 +84,10 @@ module.exports = (async function main() {
     ({ version } = proxy ? await promptForVersion("Please provide the AFS standard version you would like to use with this Proxy.")
       : await promptForVersion("Please provide the version name of the new AFS standard to be deployed."))
   }
-  // if (!path && standard) {
-  //   ({ path } = await promptForPath())
-  // }
+
   info('deploying', proxy ? 'new proxy...' : 'new standard...')
   if (proxy) {
+    // act deploy -P -f -d 4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4 -v 1
     const address = await registry.deployProxy({
       contentDid: did,
       password,
@@ -90,6 +95,7 @@ module.exports = (async function main() {
     })
     info("Proxy deployed at address", address, "for content", did)
   } else {
+    // act deploy -S -f -d 4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4 -v 1 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/ARAToken.sol
     const address = await registry.deployNewStandard({
       requesterDid: did,
       password,
@@ -125,13 +131,6 @@ async function promptForVersion(message) {
   }])
 }
 
-async function promptForPath() {
-  return await inquirer.prompt([{
-    name: 'path',
-    message: 'Please provide the path to the source code (.sol) of the new AFS standard to be deployed.'
-  }])
-}
-
 function onfatal(err) {
   if (err) {
     debug(err)
@@ -141,19 +140,19 @@ function onfatal(err) {
 }
 
 async function supplyAccount(address, accounts, transferAmount) {
-    let balance = 0
-    let i = 0
-    while (balance < 1) {
-      if (!accounts[i]) {
-        break
-      }
-      // eslint-disable-next-line no-await-in-loop
-      balance = await web3.eth.getBalance(accounts[i])
-      balance = Number(web3.utils.fromWei(balance, 'ether'))
-      i++
+  let balance = 0
+  let i = 0
+  while (balance < 1) {
+    if (!accounts[i]) {
+      break
     }
-
-    if (accounts[i]) {
-      await web3.eth.sendTransaction({ from: accounts[i], to: address, value: transferAmount })
-    }
+    // eslint-disable-next-line no-await-in-loop
+    balance = await web3.eth.getBalance(accounts[i])
+    balance = Number(web3.utils.fromWei(balance, 'ether'))
+    i++
   }
+
+  if (accounts[i]) {
+    await web3.eth.sendTransaction({ from: accounts[i], to: address, value: transferAmount })
+  }
+}

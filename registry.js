@@ -121,10 +121,8 @@ async function deployProxy(opts) {
     let proxyAddress
     const deployedEvent = await registry.events.ProxyDeployed({ fromBlock: 0, function(error, event){ console.log(error) }})
       .on('data', (log) => {
-        // console.log(log)
         let { returnValues: { _contentId, _address }, blockNumber } = log
         if (_contentId === contentDid) {
-          console.log("PROXY DEPLOYED!!!!!")
           proxyAddress = _address
         }
       })
@@ -134,35 +132,6 @@ async function deployProxy(opts) {
       .on('error', (log) => {
         console.log(`error:  ${log}`)
       })
-
-      // listen to ProxyUpgraded event for proxy address
-    const upgradedEvent = await registry.events.ProxyUpgraded({ fromBlock: 0, function(error, event){ console.log(error) }})
-      .on('data', (log) => {
-        // console.log(log)
-        let { returnValues: { _contentId, _version }, blockNumber } = log
-        if (_contentId === contentDid)
-          console.log("PROXY UPGRADED!!!!!")
-      })
-      .on('changed', (log) => {
-        console.log(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        console.log(`error:  ${log}`)
-      })
-
-    await tx.sendSignedTransaction(transaction)
-    const tokenAddress = await call({
-      abi: aAbi,
-      address: proxyAddress,
-      functionName: 'token_'
-    })
-    console.log("token address set to", tokenAddress)
-    const libAddress = await call({
-      abi: aAbi,
-      address: proxyAddress,
-      functionName: 'lib_'
-    })
-    console.log("lib address set to", libAddress)
     return proxyAddress
   } catch (err) {
     throw err
@@ -265,20 +234,18 @@ async function deployNewStandard(opts) {
     throw new Error('ara-contracts.registry: Only the owner of the Registry contract may deploy a new standard.')
   }
 
+  // compile AFS sources and dependencies
   let sources = {
     'openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol', 'utf8'),
     'openzeppelin-solidity/contracts/token/ERC20/ERC20.sol':      fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol', 'utf8'),
     'openzeppelin-solidity/contracts/token/ERC20/BasicToken.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/token/ERC20/BasicToken.sol', 'utf8'),
     'openzeppelin-solidity/contracts/math/SafeMath.sol':          fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol', 'utf8')
   }
-
   paths.forEach((path) => {
     const src = fs.readFileSync(path, 'utf8')
     path = parse(path).base
     sources[path] = src
   })
-
-  // const source = fs.readFileSync(path, 'utf8')
   const compiledFile = solc.compile({ sources }, 1)
   const compiledContract = compiledFile.contracts['AFS.sol:AFS']
   const afsAbi = JSON.parse(compiledContract.interface)
@@ -303,22 +270,6 @@ async function deployNewStandard(opts) {
         ]
       }
     })
-
-    const registry = await contract.get(abi, kRegistryAddress)
-    const standardAddedEvent = await registry.events.StandardAdded({ fromBlock: 0, function(error, event){ console.log(error) } })
-      .on('data', (log) => {
-        // console.log(log)
-        let { returnValues: { _version, _address }, blockNumber } = log
-        if (_version === version)
-          console.log("STANDARD v", _version, "added at", _address)
-      })
-      .on('changed', (log) => {
-        console.log(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        console.log(`error:  ${log}`)
-      })
-
     await tx.sendSignedTransaction(transaction)
     return afs._address
   } catch (err) {
