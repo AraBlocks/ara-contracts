@@ -81,7 +81,7 @@ module.exports = (async function main() {
   // if (!path && standard) {
   //   ({ path } = await promptForPath())
   // }
-
+  info('deploying', proxy ? 'new proxy...' : 'new standard...')
   if (proxy) {
     const address = await registry.deployProxy({
       contentDid: did,

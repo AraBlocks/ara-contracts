@@ -117,7 +117,7 @@ async function deployProxy(opts) {
     // listen to ProxyDeployed event for proxy address
     const registry = await contract.get(abi, kRegistryAddress)
     let proxyAddress
-    const deployedEvent = await registry.events.ProxyDeployed({fromBlock: 0, function(error, event){ console.log(error) }})
+    const deployedEvent = await registry.events.ProxyDeployed({ fromBlock: 0, function(error, event){ console.log(error) }})
       .on('data', (log) => {
         // console.log(log)
         let { returnValues: { _contentId, _address }, blockNumber } = log
@@ -134,7 +134,7 @@ async function deployProxy(opts) {
       })
 
       // listen to ProxyUpgraded event for proxy address
-    const upgradedEvent = await registry.events.ProxyUpgraded({fromBlock: 0, function(error, event){ console.log(error) }})
+    const upgradedEvent = await registry.events.ProxyUpgraded({ fromBlock: 0, function(error, event){ console.log(error) }})
       .on('data', (log) => {
         // console.log(log)
         let { returnValues: { _contentId, _version }, blockNumber } = log
@@ -257,7 +257,7 @@ async function deployNewStandard(opts) {
     'openzeppelin-solidity/contracts/token/ERC20/BasicToken.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/token/ERC20/BasicToken.sol', 'utf8'),
     'openzeppelin-solidity/contracts/math/SafeMath.sol':          fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol', 'utf8')
   }
-  
+
   paths.forEach((path) => {
     const src = fs.readFileSync(path, 'utf8')
     path = parse(path).base
@@ -271,35 +271,27 @@ async function deployNewStandard(opts) {
   const { bytecode } = compiledContract
 
   try {
-    console.log(1)
     const afs = await contract.deploy({
       account: acct,
       abi: afsAbi,
-      bytecode,
-      arguments: [
-        kLibraryAddress,
-        kARATokenAddress
-      ]
+      bytecode
     })
-    console.log(2)
+
     const transaction = await tx.create({
       account: acct,
       to: kRegistryAddress,
       data: {
-        afsAbi,
+        abi,
         functionName: 'addStandardVersion',
         values: [
           version,
-          afs.options.address
+          afs._address
         ]
       }
     })
-    console.log(3)
     await tx.sendSignedTransaction(transaction)
-    console.log(4)
-    return afs.options.address
+    return afs._address
   } catch (err) {
-    console.log("i made nono")
     throw err
   }
 }
