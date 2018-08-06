@@ -43,8 +43,18 @@ contract AFS {
   function init(bytes _data) public {
     owner_    = msg.sender;
     _data;
-    // token_    = ARAToken(_token);
-    // lib_      = Library(_lib);
+    uint256 btsptr;
+    /* solium-disable-next-line security/no-inline-assembly */
+    address tokenAddr;
+    address libAddr;
+    assembly {
+        btsptr := add(_data, /*BYTES_HEADER_SIZE*/32)
+        tokenAddr := mload(btsptr)
+        btsptr := add(_data, /*BYTES_HEADER_SIZE*/64)
+        libAddr := mload(btsptr)
+    }
+    token_    = ARAToken(tokenAddr);
+    lib_      = Library(libAddr);
     listed_   = true;
     price_    = 0;
   }
