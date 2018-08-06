@@ -5,6 +5,7 @@ const account = require('ara-web3/account')
 const { call } = require('ara-web3/call')
 const web3Abi = require('ara-web3/abi')
 const tx = require('ara-web3/tx')
+const { parse } = require('path')
 const solc = require('solc')
 const rc = require('./rc')
 const fs = require('fs')
@@ -207,21 +208,27 @@ async function getStandard(version) {
 async function deployNewStandard(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('ara-contracts.registry: Expecting opts object.')
-  } else if (null == opts.requesterDid || 'string' !== typeof opts.requesterDid || !opts.requesterDid) {
+  } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
     throw TypeError('ara-contracts.registry: Expecting non-empty requester DID')
-  } else if (null == opts.password || 'string' !== typeof opts.password || !opts.password) {
+  } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('ara-contracts.registry: Expecting non-empty password')
-  } else if (null == opts.version || 'string' !== typeof opts.version || !opts.version) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty stadard version')
-  } else if (null == opts.path || 'string' !== typeof opts.path || !opts.path) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty path')
+  } else if (!opts.paths || !opts.paths.length) {
+    throw TypeError('ara-contracts.registry: Expecting one or more paths')
   }
+
+  if (null == opts.version || 'string' !== typeof opts.version || !opts.version) {
+    if ('number' === typeof opts.version) {
+      opts.version = opts.version.toString()
+    } else {
+      throw TypeError('ara-contracts.registry: Expecting non-empty standard version')
+    }
+  } 
 
   const {
     requesterDid,
     password,
     version,
-    path
+    paths
   } = opts
 
   let did
@@ -244,13 +251,27 @@ async function deployNewStandard(opts) {
     throw new Error('ara-contracts.registry: Only the owner of the Registry contract may deploy a new standard.')
   }
 
-  const source = fs.readFileSync(path, 'utf8')
-  const compiledFile = solc.compile(source, 1)
-  const compiledContract = compiledFile.contracts.AFS
-  const afsAbi = compiledContract.interface
+  let sources = {
+    'openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol', 'utf8'),
+    'openzeppelin-solidity/contracts/token/ERC20/ERC20.sol':      fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol', 'utf8'),
+    'openzeppelin-solidity/contracts/token/ERC20/BasicToken.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/token/ERC20/BasicToken.sol', 'utf8'),
+    'openzeppelin-solidity/contracts/math/SafeMath.sol':          fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol', 'utf8')
+  }
+  
+  paths.forEach((path) => {
+    const src = fs.readFileSync(path, 'utf8')
+    path = parse(path).base
+    sources[path] = src
+  })
+
+  // const source = fs.readFileSync(path, 'utf8')
+  const compiledFile = solc.compile({ sources }, 1)
+  const compiledContract = compiledFile.contracts['AFS.sol:AFS']
+  const afsAbi = JSON.parse(compiledContract.interface)
   const { bytecode } = compiledContract
 
   try {
+    console.log(1)
     const afs = await contract.deploy({
       account: acct,
       abi: afsAbi,
@@ -260,7 +281,7 @@ async function deployNewStandard(opts) {
         kARATokenAddress
       ]
     })
-
+    console.log(2)
     const transaction = await tx.create({
       account: acct,
       to: kRegistryAddress,
@@ -273,11 +294,12 @@ async function deployNewStandard(opts) {
         ]
       }
     })
-
+    console.log(3)
     await tx.sendSignedTransaction(transaction)
-
+    console.log(4)
     return afs.options.address
   } catch (err) {
+    console.log("i made nono")
     throw err
   }
 }

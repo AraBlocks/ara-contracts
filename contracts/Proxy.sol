@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import './Registry.sol';
+import "./Registry.sol";
 
 /**
  * @title Proxy

@@ -14,7 +14,8 @@ const toLower = x => String(x).toLowerCase()
 // yargs program command line interface instance
 const program = createProgram({
   usage: `
-usage: act deploy: [-h] [--help] [options]
+usage: act deploy: [-h] [--help] 
+                   [options] [--] <pathspec>...
 `
 })
 
@@ -33,10 +34,6 @@ const { argv } = program
   .option('did', {
     alias: 'd',
     describe: 'The content DID if proxy flag is set.\n Otherwise the Registry contract owner DID',
-  })
-  .option('path', {
-    alias: 'p',
-    describe: 'The path of the new AFS standard',
   })
   .option('version', {
     alias: 'v',
@@ -57,13 +54,14 @@ if (0 == argv._.length && argv.help) {
 
 // Main program entry
 module.exports = (async function main() {
-  // console.log(argv)
   const { proxy, standard } = argv
-  let { did, version, path } = argv
+  let { did, version } = argv
+  const [...paths] = argv._
   const { password } = await promptForPassword()
 
   if (argv.fund) {
     const owner = 'did:ara:4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4'
+    // private key: 0xa38a74ba8d89e22841f1d705c0ae0b3c8355da9d56a0f2192b477563e4ee3d07
     const acct = await account.load({ did: owner, password })
     const defaultAccounts = await web3.eth.getAccounts()
     const { address } = acct
@@ -80,9 +78,9 @@ module.exports = (async function main() {
     ({ version } = proxy ? await promptForVersion("Please provide the AFS standard version you would like to use with this Proxy.")
       : await promptForVersion("Please provide the version name of the new AFS standard to be deployed."))
   }
-  if (!path && standard) {
-    ({ path } = await promptForPath())
-  }
+  // if (!path && standard) {
+  //   ({ path } = await promptForPath())
+  // }
 
   if (proxy) {
     const address = await registry.deployProxy({
@@ -96,7 +94,7 @@ module.exports = (async function main() {
       requesterDid: did,
       password,
       version,
-      path
+      paths
     })
     info("New AFS standard version", version, "deployed at address", address)
   }
