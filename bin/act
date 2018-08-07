@@ -114,74 +114,11 @@ void (async function main() {
   })
 }())
 
-
-
-// const { argv } = program
-//   .usage("usage: $0 [-hDV] [command]")
-//   .option('debug', {
-//     type: 'boolean',
-//     alias: 'D',
-//     describe: "Enable debug output"
-//   })
-//   .option('help', {
-//     alias: 'h',
-//     describe: "Show this help message"
-//   })
-//   .option('version', {
-//     alias: 'V',
-//     describe: "Show program version"
-//   })
-//   .option('force', {
-//     alias: 'f',
-//     type: 'boolean',
-//     describe: 'Force operation',
-//   })
-//   .command("deploy [(-P|-S) <did> -- <path>]", "Deploy a AFS proxy or AFS standard contract", (program) => {
-//     // ([(-P | --proxy) [--] <did>] | [(-S | --standard) [--] <did> <path>])
-//     program
-//       .option('proxy', {
-//         alias: 'P',
-//         type: 'boolean',
-//         default: false,
-//         describe: 'Flag to indicate deployment of proxy'
-//       })
-//       .option('standard', {
-//         alias: 'S',
-//         type: 'boolean',
-//         default: false,
-//         describe: 'Flag to indicate deployment of AFS standard'
-//       })
-//       .positional('did', {
-//         type: 'string',
-//         describe: 'The content DID if proxy flag is set'
-//       })
-//       .positional('path', {
-//         type: 'string',
-//         describe: 'The path of the new AFS standard to deploy'
-//       })
-//   }, ontest)
-
-//   void async function main() {
-//     if (0 == argv._.length || argv.help) {
-//       program.showHelp()
-//       process.exit(0)
-//     }
-//     if (argv.debug) {
-//       require('debug').enable('ara-filesystem*')
-//     }
-//   }()
-  
-//   async function ontest(argv) {
-//     console.log(argv)
-//     const proxy = argv.P || argv.proxy
-//     console.log("proxy?", proxy)
-//   }
-
-  function onfatal(err) {
-    if (err) {
-      debug(err)
-      error("fatal:", err.message)
-    }
-    process.exit(1)
+function onfatal(err) {
+  if (err) {
+    debug(err)
+    error("fatal:", err.message)
   }
+  process.exit(1)
+}
 
