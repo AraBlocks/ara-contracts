@@ -7,7 +7,6 @@ const registry = require('../registry')
 const inquirer = require('inquirer')
 const { web3 } = require('ara-context')()
 const account = require('ara-web3/account')
-const { getAFSOwnerIdentity } = require('ara-util')
 
 const toLower = x => String(x).toLowerCase()
 
@@ -39,11 +38,6 @@ const { argv } = program
     alias: 'v',
     describe: 'The version number of the AFS standard to deploy'
   })
-  .option('fund', {
-    alias: 'f',
-    type: 'boolean',
-    describe: 'TEST OPTION TO FUND ACCOUNT'
-  })
   .conflicts('P', ['S', 'p'])
 
 // Emit program usage help
@@ -55,7 +49,6 @@ if (0 == argv._.length && argv.help) {
 // Main program entry
 module.exports = (async function main() {
   const { proxy, standard } = argv
-  let { did, version } = argv
   let [...paths] = argv._
 
   if ((!paths || !paths.length) && standard) {
@@ -64,17 +57,7 @@ module.exports = (async function main() {
   }
 
   const { password } = await promptForPassword()
-
-  if (argv.fund) {
-    const owner = 'did:ara:4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4'
-    // private key: 0xa38a74ba8d89e22841f1d705c0ae0b3c8355da9d56a0f2192b477563e4ee3d07
-    const acct = await account.load({ did: owner, password })
-    const defaultAccounts = await web3.eth.getAccounts()
-    const { address } = acct
-    const oneEthInWei = web3.utils.toWei('1', 'ether')
-    console.log("funding", address, "with", oneEthInWei, "wei")
-    await supplyAccount(address, defaultAccounts, oneEthInWei)
-  }
+  let { did, version } = argv
 
   if (!did) {
     ({ did } = proxy ? await promptForDID("Please provide the content DID that this Proxy will be deployed for.")
@@ -86,23 +69,27 @@ module.exports = (async function main() {
   }
 
   info('deploying', proxy ? 'new proxy...' : 'new standard...')
-  if (proxy) {
-    // DEBUG=* act deploy -P -f -d 4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4 -v 1
-    const address = await registry.deployProxy({
-      contentDid: did,
-      password,
-      version
-    })
-    info("Proxy deployed at address", address, "for content", did)
-  } else {
-    // DEBUG=* act deploy -S -f -d 4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4 -v 1 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/ARAToken.sol
-    const address = await registry.deployNewStandard({
-      requesterDid: did,
-      password,
-      version,
-      paths
-    })
-    info("New AFS standard version", version, "deployed at address", address)
+  try {
+    if (proxy) {
+      // DEBUG=* act deploy -P -d 4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4 -v 1
+      const address = await registry.deployProxy({
+        contentDid: did,
+        password,
+        version
+      })
+      info("Proxy deployed at address", address, "for content", did)
+    } else {
+      // DEBUG=* act deploy -S -d 4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4 -v 1 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/ARAToken.sol
+      const address = await registry.deployNewStandard({
+        requesterDid: did,
+        password,
+        version,
+        paths
+      })
+      info("New AFS standard version", version, "deployed at address", address)
+    }
+  } catch (err) {
+    onfatal(err)
   }
 }())
 
@@ -137,22 +124,4 @@ function onfatal(err) {
     error("fatal:", err.message)
   }
   process.exit(1)
-}
-
-async function supplyAccount(address, accounts, transferAmount) {
-  let balance = 0
-  let i = 0
-  while (balance < 1) {
-    if (!accounts[i]) {
-      break
-    }
-    // eslint-disable-next-line no-await-in-loop
-    balance = await web3.eth.getBalance(accounts[i])
-    balance = Number(web3.utils.fromWei(balance, 'ether'))
-    i++
-  }
-
-  if (accounts[i]) {
-    await web3.eth.sendTransaction({ from: accounts[i], to: address, value: transferAmount })
-  }
 }
