@@ -44,8 +44,8 @@ module.exports = (async function main() {
     const defaultAccounts = await web3.eth.getAccounts()
 
     const addr = await web3.eth.personal.importRawKey(privateKey, password)
-    web3.eth.defaultAccount = defaultAccounts[10]
-    const success = await web3.eth.personal.unlockAccount(web3.eth.defaultAccount, password, 1)
+    web3.eth.defaultAccount = addr
+    const success = await web3.eth.personal.unlockAccount(addr, password, 1)
     info("set", address, "as default account")
 
     if (fund) {
