@@ -58,7 +58,7 @@ module.exports = (async function main() {
   let { did, version } = argv
   let [...paths] = argv._
 
-  if (!paths || !paths.length) {
+  if ((!paths || !paths.length) && standard) {
     onfatal(new Error("Missing local file paths. See 'act deploy --help'."))
     process.exit(0)
   }
@@ -87,7 +87,7 @@ module.exports = (async function main() {
 
   info('deploying', proxy ? 'new proxy...' : 'new standard...')
   if (proxy) {
-    // act deploy -P -f -d 4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4 -v 1
+    // DEBUG=* act deploy -P -f -d 4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4 -v 1
     const address = await registry.deployProxy({
       contentDid: did,
       password,
@@ -95,7 +95,7 @@ module.exports = (async function main() {
     })
     info("Proxy deployed at address", address, "for content", did)
   } else {
-    // act deploy -S -f -d 4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4 -v 1 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/ARAToken.sol
+    // DEBUG=* act deploy -S -f -d 4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4 -v 1 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/ARAToken.sol
     const address = await registry.deployNewStandard({
       requesterDid: did,
       password,

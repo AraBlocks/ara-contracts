@@ -65,6 +65,75 @@ async function getProxyAddress(contentDid = '') {
 }
 
 /**
+ * Upgrades a proxy to a new version
+ * @param  {String} opts.contentDid // unhashed
+ * @param  {String} opts.password
+ * @param  {String} opts.version
+ * @return {Bool}
+ * @throws {Error,TypeError}
+ */
+async function upgradeProxy(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('ara-contracts.registry: Expecting opts object.')
+  } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
+    throw TypeError('ara-contracts.registry: Expecting non-empty content DID')
+  } else if (null == opts.password || 'string' !== typeof opts.password || !opts.password) {
+    throw TypeError('ara-contracts.registry: Expecting non-empty password')
+  } else if ('string' !== typeof opts.version || !opts.version) {
+    throw TypeError('ara-contracts.registry: Expecting non-empty version string')
+  }
+
+  contentDid = hashDID(contentDid)
+
+  let did
+  try {
+    ({ did } = await validate({ did: contentDid, password, label: 'registry' }))
+  } catch (err) {
+    throw err
+  }
+
+  const prefixedDid = kAidPrefix + did
+
+  const acct = await account.load({ did: prefixedDid, password })
+
+  try {
+    const transaction = await tx.create({
+      account: acct,
+      to: kRegistryAddress,
+      gasLimit: 6721975,
+      data: {
+        abi,
+        functionName: 'upgradeProxy',
+        values: [
+          contentDid,
+          version
+        ]
+      }
+    })
+
+    const registry = await contract.get(abi, kRegistryAddress)
+    // listen to ProxyUpgraded event for proxy address
+    let upgraded
+    const upgradedEvent = await registry.events.ProxyUpgraded({ fromBlock: 0, function(error, event){ console.log(error) }})
+      .on('data', (log) => {
+        let { returnValues: { _contentId, _version }, blockNumber } = log
+        if (_contentId === contentDid)
+          upgraded = true
+      })
+      .on('changed', (log) => {
+        console.log(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        console.log(`error:  ${log}`)
+      })
+    await tx.sendSignedTransaction(transaction)
+    return upgraded
+  } catch (err) {
+    throw err
+  }
+}
+
+/**
  * Deploys a proxy contract for opts.contentDid
  * @param  {String} opts.contentDid // unhashed
  * @param  {String} opts.password
@@ -93,18 +162,18 @@ async function deployProxy(opts) {
     throw err
   }
 
+  debug("creating tx to deploy proxy for", contentDid)
   contentDid = hashDID(contentDid)
   const prefixedDid = kAidPrefix + did
 
   const acct = await account.load({ did: prefixedDid, password })
 
   try {
-    debug("creating tx to deploy proxy for", contentDid)
     const encodedData = web3Abi.encodeParameters(['address', 'address'], [kARATokenAddress, kLibraryAddress])
     const transaction = await tx.create({
       account: acct,
       to: kRegistryAddress,
-      gasLimit: 6721975,
+      gasLimit: 1000000,
       data: {
         abi,
         functionName: 'createAFS',
@@ -132,6 +201,8 @@ async function deployProxy(opts) {
       .on('error', (log) => {
         console.log(`error:  ${log}`)
       })
+    const receipt = await tx.sendSignedTransaction(transaction)
+    debug("gas used", receipt.gasUsed)
     return proxyAddress
   } catch (err) {
     throw err
@@ -270,7 +341,8 @@ async function deployNewStandard(opts) {
         ]
       }
     })
-    await tx.sendSignedTransaction(transaction)
+    const receipt = await tx.sendSignedTransaction(transaction)
+    debug("gas used", receipt.gasUsed)
     return afs._address
   } catch (err) {
     throw err
@@ -279,9 +351,10 @@ async function deployNewStandard(opts) {
 
 module.exports = {
   proxyExists,
-  getLatestStandard,
+  deployProxy,
   getStandard,
-  deployNewStandard,
+  upgradeProxy,
   getProxyAddress,
-  deployProxy
+  getLatestStandard,
+  deployNewStandard
 }
