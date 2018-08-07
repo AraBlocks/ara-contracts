@@ -89,6 +89,7 @@ contract Registry {
   function addStandardVersion(string _version, address _address) public restricted {
     require(versions_[_version] == address(0));
     versions_[_version] = _address;
+    latestVersion_ = _version;
     emit StandardAdded(_version, _address);
   }
 }

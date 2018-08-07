@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+
+const debug = require('debug')('ara-contracts:cli:library')
+const { info, warn, error, log } = require('ara-console')
+const { createProgram } = require('../lib/program')
+const library = require('../library')
+const inquirer = require('inquirer')
+const { web3 } = require('ara-context')()
+const account = require('ara-web3/account')
+
+const toLower = x => String(x).toLowerCase()
+
+// yargs program command line interface instance
+const program = createProgram({
+  usage: `
+usage: act library: [-h] [--help] 
+                   [options] [--] <pathspec>...
+`
+})

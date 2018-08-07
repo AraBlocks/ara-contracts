@@ -29,7 +29,6 @@ const {
 async function proxyExists(contentDid = '') {
   try {
     const address = await getProxyAddress(contentDid)
-    debug("proxy address", address)
     return !/^0x0+$/.test(address)
   } catch (err) {
     return false
@@ -328,7 +327,6 @@ async function deployNewStandard(opts) {
       abi: afsAbi,
       bytecode
     })
-
     const transaction = await tx.create({
       account: acct,
       to: kRegistryAddress,
