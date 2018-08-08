@@ -24,7 +24,7 @@ const {
   hashDID,
   validate,
   normalize
-} = require('./util')
+} = require('ara-util')
 
 /**
  * Purchase contentDid
