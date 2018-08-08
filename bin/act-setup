@@ -39,7 +39,7 @@ module.exports = (async function main() {
 
   const { fund } = argv
   try {
-    let did = argv._[0]
+    const did = argv._[0]
     const { address, privateKey } = await account.load({ did, password })
     const defaultAccounts = await web3.eth.getAccounts()
 
