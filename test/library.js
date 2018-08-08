@@ -1,3 +1,2 @@
 const test = require('ava')
-const { kLibraryAddress } = require('./constants')
-
+const { kLibraryAddress } = require('./_constants')
