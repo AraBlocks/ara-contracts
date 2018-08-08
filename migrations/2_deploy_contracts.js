@@ -1,6 +1,7 @@
 /* eslint no-undef: "off" */
 
 const { kDefaultAddress } = require('../constants')
+
 const Library = artifacts.require('./Library.sol')
 const Token = artifacts.require('./ARAToken.sol')
 const Registry = artifacts.require('./Registry.sol')

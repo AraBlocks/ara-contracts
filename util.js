@@ -3,7 +3,6 @@ const { blake2b } = require('ara-crypto')
 
 const {
   kAidPrefix,
-  kDidPrefix,
   kOwnerSuffix
 } = require('./constants')
 

@@ -1,5 +1,4 @@
 const { abi } = require('./build/contracts/Registry.json')
-const { abi: aAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:registry')
 const contract = require('ara-web3/contract')
 const account = require('ara-web3/account')
@@ -8,10 +7,7 @@ const web3Abi = require('ara-web3/abi')
 const tx = require('ara-web3/tx')
 const { parse } = require('path')
 const solc = require('solc')
-const rc = require('./rc')
 const fs = require('fs')
-
-const { web3 } = require('ara-context')()
 
 const {
   kAidPrefix,
@@ -21,7 +17,6 @@ const {
 } = require('./constants')
 
 const {
-  getDocumentOwner,
   hashDID,
   validate
 } = require('ara-util')
@@ -49,7 +44,7 @@ async function getProxyAddress(contentDid = '') {
   contentDid = hashDID(contentDid)
 
   try {
-    debug("get proxy address of", contentDid)
+    debug('get proxy address of', contentDid)
     return call({
       abi,
       address: kRegistryAddress,
@@ -82,6 +77,9 @@ async function upgradeProxy(opts) {
     throw TypeError('ara-contracts.registry: Expecting non-empty version string')
   }
 
+  let { contentDid } = opts
+  const { password, version } = opts
+
   contentDid = hashDID(contentDid)
 
   let did
@@ -113,11 +111,12 @@ async function upgradeProxy(opts) {
     const registry = await contract.get(abi, kRegistryAddress)
     // listen to ProxyUpgraded event for proxy address
     let upgraded
-    const upgradedEvent = await registry.events.ProxyUpgraded({ fromBlock: 0, function(error, event){ console.log(error) }})
+    await registry.events.ProxyUpgraded({ fromBlock: 0, function(error) { console.log(error) } })
       .on('data', (log) => {
-        let { returnValues: { _contentId, _version }, blockNumber } = log
-        if (_contentId === contentDid)
+        const { returnValues: { _contentId } } = log
+        if (_contentId === contentDid) {
           upgraded = true
+        }
       })
       .on('changed', (log) => {
         console.log(`Changed: ${log}`)
@@ -161,7 +160,7 @@ async function deployProxy(opts) {
     throw err
   }
 
-  debug("creating tx to deploy proxy for", contentDid)
+  debug('creating tx to deploy proxy for', contentDid)
   contentDid = hashDID(contentDid)
   const prefixedDid = kAidPrefix + did
 
@@ -187,9 +186,9 @@ async function deployProxy(opts) {
     // listen to ProxyDeployed event for proxy address
     const registry = await contract.get(abi, kRegistryAddress)
     let proxyAddress
-    const deployedEvent = await registry.events.ProxyDeployed({ fromBlock: 0, function(error, event){ console.log(error) }})
+    await registry.events.ProxyDeployed({ fromBlock: 0, function(error) { console.log(error) } })
       .on('data', (log) => {
-        let { returnValues: { _contentId, _address }, blockNumber } = log
+        const { returnValues: { _contentId, _address } } = log
         if (_contentId === contentDid) {
           proxyAddress = _address
         }
@@ -201,7 +200,7 @@ async function deployProxy(opts) {
         console.log(`error:  ${log}`)
       })
     const receipt = await tx.sendSignedTransaction(transaction)
-    debug("gas used", receipt.gasUsed)
+    debug('gas used', receipt.gasUsed)
     return proxyAddress
   } catch (err) {
     throw err
@@ -275,7 +274,7 @@ async function deployNewStandard(opts) {
     } else {
       throw TypeError('ara-contracts.registry: Expecting non-empty standard version')
     }
-  } 
+  }
 
   const {
     requesterDid,
@@ -305,11 +304,11 @@ async function deployNewStandard(opts) {
   }
 
   // compile AFS sources and dependencies
-  let sources = {
+  const sources = {
     'openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol', 'utf8'),
-    'openzeppelin-solidity/contracts/token/ERC20/ERC20.sol':      fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol', 'utf8'),
+    'openzeppelin-solidity/contracts/token/ERC20/ERC20.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol', 'utf8'),
     'openzeppelin-solidity/contracts/token/ERC20/BasicToken.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/token/ERC20/BasicToken.sol', 'utf8'),
-    'openzeppelin-solidity/contracts/math/SafeMath.sol':          fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol', 'utf8')
+    'openzeppelin-solidity/contracts/math/SafeMath.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol', 'utf8')
   }
   paths.forEach((path) => {
     const src = fs.readFileSync(path, 'utf8')
@@ -340,7 +339,7 @@ async function deployNewStandard(opts) {
       }
     })
     const receipt = await tx.sendSignedTransaction(transaction)
-    debug("gas used", receipt.gasUsed)
+    debug('gas used', receipt.gasUsed)
     return afs._address
   } catch (err) {
     throw err

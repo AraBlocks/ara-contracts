@@ -22,7 +22,8 @@ const {
 
 const {
   hashDID,
-  validate
+  validate,
+  normalize
 } = require('./util')
 
 /**
