@@ -232,6 +232,10 @@ async function getLatestStandard() {
  * @throws {Error}
  */
 async function getStandard(version) {
+  if ('string' !== typeof version || !version) {
+    throw TypeError('ara-contracts.registry: Expecting non-empty version string.')
+  }
+
   try {
     const address = await call({
       abi,
