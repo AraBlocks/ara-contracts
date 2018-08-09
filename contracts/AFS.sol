@@ -2,8 +2,12 @@ pragma solidity ^0.4.24;
 
 import "./Library.sol";
 import "./ARAToken.sol";
+import "bytes/BytesLib.sol";
 
 contract AFS {
+
+  using BytesLib for bytes;
+
   address  public owner_;
   string   public version_ = "1";
 
@@ -20,16 +24,18 @@ contract AFS {
 
   struct Buffers {
     mapping (uint256 => bytes) buffers;
-    uint256[] offsets;
     bool invalid;
   }
 
-  event Commit(string _did, uint8 _file, uint256 _offset, bytes _buffer);
+  event Commit(string _did);
   event Unlisted(string _did);
   event PriceSet(string _did, uint256 _price);
   event RewardDeposited(string _did, uint256 _reward);
   event RewardDistributed(string _did, uint256 _distributed, uint256 _returned);
   event Purchased(string _purchaser, string _did, bool _download);
+
+  uint8 constant mtBufferSize_ = 40;
+  uint8 constant msBufferSize_ = 64;
 
   modifier onlyBy(address _account)
   {
@@ -131,18 +137,49 @@ contract AFS {
     }
   }
 
-  // Storage methods (random-access-contract)
-  function write(uint8 _file, uint256 _offset, bytes _buffer, bool _last_write) external onlyBy(owner_) returns (bool success){
-    // make sure AFS hasn't been removed
-    require(!metadata_[_file].invalid);
+  function append(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
+    bytes _msBuffer) external onlyBy(owner_) {
+    
+    require(!metadata_[0].invalid);
+    
+    uint256 maxOffsetLength = _mtOffsets.length > _msOffsets.length ? _mtOffsets.length : _msOffsets.length;
 
-    metadata_[_file].buffers[_offset] = _buffer;
-    metadata_[_file].offsets.push(_offset);
+    for (uint i = 0; i < maxOffsetLength; i++) {
+      // metadata/tree
+      if (i <= _mtOffsets.length - 1) {
+        metadata_[0].buffers[_mtOffsets[i]] = _mtBuffer.slice(i * mtBufferSize_, mtBufferSize_);
+      }
 
-    if (_last_write) {
-      emit Commit(did_, _file, _offset, _buffer);
+      // metadata/signatures
+      if (i <= _msOffsets.length - 1) {
+        metadata_[1].buffers[_msOffsets[i]] = _msBuffer.slice(i * msBufferSize_, msBufferSize_);
+      }
     }
-    return true;
+
+    emit Commit(did_);
+  }
+
+  function write(uint256[] _mtOffsets, uint256[] _msOffsets, uint8[] _mtSizes,
+    uint8[] _msSizes, bytes _mtBuffer, bytes _msBuffer) public onlyBy(owner_) {
+
+    require(!metadata_[0].invalid);
+    require(_mtOffsets.length == _mtSizes.length && _msOffsets.length == _msSizes.length);
+
+    uint256 maxOffsetLength = _mtOffsets.length > _msOffsets.length ? _mtOffsets.length : _msOffsets.length;
+
+    for (uint i = 0; i < maxOffsetLength; i++) {
+      // metadata/tree
+      if (i <= _mtOffsets.length - 1) {
+        metadata_[0].buffers[_mtOffsets[i]] = _mtBuffer.slice(_mtOffsets[i], _mtSizes[i]);
+      }
+      
+      // metadata/signatures
+      if (i <= _msOffsets.length - 1) {
+        metadata_[1].buffers[_msOffsets[i]] = _msBuffer.slice(_msOffsets[i], _msSizes[i]);
+      }
+    }
+
+    emit Commit(did_);
   }
 
   function read(uint8 _file, uint256 _offset) public view returns (bytes buffer) {
@@ -150,6 +187,10 @@ contract AFS {
       return ""; // empty bytes
     }
     return metadata_[_file].buffers[_offset];
+  }
+
+  function hasBuffer(uint8 _file, uint256 _offset, bytes _buffer) public view returns (bool exists) {
+    return metadata_[_file].buffers[_offset].equal(_buffer);
   }
 
   function unlist() public onlyBy(owner_) returns (bool success) {
