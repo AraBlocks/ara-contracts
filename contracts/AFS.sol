@@ -142,7 +142,9 @@ contract AFS {
     
     require(!metadata_[0].invalid);
     
-    uint256 maxOffsetLength = _mtOffsets.length > _msOffsets.length ? _mtOffsets.length : _msOffsets.length;
+    uint256 maxOffsetLength = _mtOffsets.length > _msOffsets.length 
+      ? _mtOffsets.length 
+      : _msOffsets.length;
 
     for (uint i = 0; i < maxOffsetLength; i++) {
       // metadata/tree
@@ -159,23 +161,28 @@ contract AFS {
     emit Commit(did_);
   }
 
-  function write(uint256[] _mtOffsets, uint256[] _msOffsets, uint8[] _mtSizes,
-    uint8[] _msSizes, bytes _mtBuffer, bytes _msBuffer) public onlyBy(owner_) {
+  function write(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
+    bytes _msBuffer) public onlyBy(owner_) {
 
     require(!metadata_[0].invalid);
-    require(_mtOffsets.length == _mtSizes.length && _msOffsets.length == _msSizes.length);
 
-    uint256 maxOffsetLength = _mtOffsets.length > _msOffsets.length ? _mtOffsets.length : _msOffsets.length;
+    uint256 maxOffsetLength = _mtOffsets.length > _msOffsets.length 
+      ? _mtOffsets.length 
+      : _msOffsets.length;
 
-    for (uint i = 0; i < maxOffsetLength; i++) {
+    // add headers
+    metadata_[0].buffers[0] = _mtBuffer.slice(0, 32);
+    metadata_[1].buffers[1] = _msBuffer.slice(0, 32);
+
+    for (uint i = 1; i < maxOffsetLength; i++) {
       // metadata/tree
       if (i <= _mtOffsets.length - 1) {
-        metadata_[0].buffers[_mtOffsets[i]] = _mtBuffer.slice(_mtOffsets[i], _mtSizes[i]);
+        metadata_[0].buffers[_mtOffsets[i]] = _mtBuffer.slice(_mtOffsets[i], mtBufferSize_);
       }
       
       // metadata/signatures
       if (i <= _msOffsets.length - 1) {
-        metadata_[1].buffers[_msOffsets[i]] = _msBuffer.slice(_msOffsets[i], _msSizes[i]);
+        metadata_[1].buffers[_msOffsets[i]] = _msBuffer.slice(_msOffsets[i], msBufferSize_);
       }
     }
 
