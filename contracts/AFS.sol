@@ -32,7 +32,8 @@ contract AFS {
   event PriceSet(string _did, uint256 _price);
   event RewardDeposited(string _did, uint256 _reward);
   event RewardDistributed(string _did, uint256 _distributed, uint256 _returned);
-  event Purchased(string _purchaser, string _did, bool _download);
+  event Purchased(string _purchaser, string _did);
+  event TEST(address sender);
 
   uint8 constant mtBufferSize_ = 40;
   uint8 constant msBufferSize_ = 64;
@@ -47,18 +48,20 @@ contract AFS {
   }
 
   function init(bytes _data) public {
-    owner_    = msg.sender;
-    _data;
     uint256 btsptr;
-    /* solium-disable-next-line security/no-inline-assembly */
+    address ownerAddr;
     address tokenAddr;
     address libAddr;
+    /* solium-disable-next-line security/no-inline-assembly */
     assembly {
-        btsptr := add(_data, /*BYTES_HEADER_SIZE*/32)
+        btsptr := add(_data, 32)
+        ownerAddr := mload(btsptr)
+        btsptr := add(_data, 64)
         tokenAddr := mload(btsptr)
-        btsptr := add(_data, /*BYTES_HEADER_SIZE*/64)
+        btsptr := add(_data, 96)
         libAddr := mload(btsptr)
     }
+    owner_    = ownerAddr;
     token_    = ARAToken(tokenAddr);
     lib_      = Library(libAddr);
     listed_   = true;
@@ -117,19 +120,19 @@ contract AFS {
     return success;
   }
 
-  function purchase(string _purchaser, bool _download) external returns (bool success) {
-    uint256 allowance = token_.allowance(msg.sender, address(this));
-    require (allowance >= price_); // check if purchaser approved purchase
+  function purchase(string _purchaser) external returns (bool success) {
+    // uint256 balance = token.balanceOf(msg.sender);
+    // require (balance >= price_); // check that purchaser has sufficient funds
 
     if (token_.transferFrom(msg.sender, owner_, price_)) {
       bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
       purchasers_[hashedAddress] = true;
       lib_.addLibraryItem(_purchaser, did_);
-      emit Purchased(_purchaser, did_, _download);
+      emit Purchased(_purchaser, did_);
 
-      if (_download && allowance > price_) {
-        depositReward(allowance - price_);
-      }
+      // if (_download && allowance > price_) {
+      //   depositReward(allowance - price_);
+      // }
 
       return true;
     } else {

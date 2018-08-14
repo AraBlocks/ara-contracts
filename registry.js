@@ -18,7 +18,8 @@ const {
 
 const {
   hashDID,
-  validate
+  validate,
+  getDocumentOwner
 } = require('ara-util')
 
 async function proxyExists(contentDid = '') {
@@ -154,20 +155,22 @@ async function deployProxy(opts) {
   const version = opts.version || '1'
 
   let did
+  let ddo
   try {
-    ({ did } = await validate({ did: contentDid, password, label: 'registry' }))
+    ({ did, ddo } = await validate({ did: contentDid, password, label: 'registry' }))
   } catch (err) {
     throw err
   }
 
   debug('creating tx to deploy proxy for', contentDid)
   contentDid = hashDID(contentDid)
-  const prefixedDid = kAidPrefix + did
-
-  const acct = await account.load({ did: prefixedDid, password })
+  let owner = getDocumentOwner(ddo, true)
+  owner = kAidPrefix + owner
+  debug("owner", owner)
+  const acct = await account.load({ did: owner, password })
 
   try {
-    const encodedData = web3Abi.encodeParameters(['address', 'address'], [kARATokenAddress, kLibraryAddress])
+    const encodedData = web3Abi.encodeParameters(['address', 'address', 'address'], [acct.address, kARATokenAddress, kLibraryAddress])
     const transaction = await tx.create({
       account: acct,
       to: kRegistryAddress,
@@ -312,7 +315,8 @@ async function deployNewStandard(opts) {
     'openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol', 'utf8'),
     'openzeppelin-solidity/contracts/token/ERC20/ERC20.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol', 'utf8'),
     'openzeppelin-solidity/contracts/token/ERC20/BasicToken.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/token/ERC20/BasicToken.sol', 'utf8'),
-    'openzeppelin-solidity/contracts/math/SafeMath.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol', 'utf8')
+    'openzeppelin-solidity/contracts/math/SafeMath.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol', 'utf8'),
+    'bytes/BytesLib.sol': fs.readFileSync('./installed_contracts/bytes/contracts/BytesLib.sol', 'utf8')
   }
   paths.forEach((path) => {
     const src = fs.readFileSync(path, 'utf8')
