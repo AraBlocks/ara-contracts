@@ -1,0 +1,55 @@
+#!/usr/bin/env node
+
+const debug = require('debug')('ara-contracts:cli:purchase')
+const { info, warn, error, log } = require('ara-console')
+const { createProgram } = require('../lib/program')
+const { purchase } = require('../purchase')
+
+// yargs program command line interface instance
+const program = createProgram({
+  usage: `
+usage: act purchase: [-h] [--help] [options]
+`
+})
+
+const { argv } = program
+  .option('purchaser', {
+    alias: 'p',
+    describe: 'The purchaser DID.'
+  })
+  .option('did', {
+    alias: 'd',
+    describe: 'The content DID to purchase.'
+  })
+
+// Emit program usage help
+if (0 == argv._.length && argv.help) {
+  program.showHelp()
+  process.exit(0)
+}
+
+// Main program entry
+module.exports = (async function main() {
+  let { purchaser, did } = argv
+
+  if (!purchaser) {
+    onfatal(new Error("Please provide the DID of the purchaser. See 'act purchase --help'."))
+    process.exit(0)
+  } else if (!did) {
+    onfatal(new Error("Please provide a content DID to purchase. See 'act purchase --help'."))
+    process.exit(0)
+  }
+
+  const { password } = await promptForPassword()
+
+  info('purchasing', did)
+  try {
+    await purchase({
+      requesterDid: purchaser,
+      contentDid: did,
+      password
+    })
+  } catch (err) {
+    onfatal(err)
+  }
+}())
