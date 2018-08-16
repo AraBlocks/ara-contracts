@@ -42,12 +42,12 @@ contract Registry {
 
   /**
    * @dev AFS Proxy Factory
-   * @param _contentId The methodless content DID
+   * @param _contentId The hashed methodless content DID
    * @param _version The implementation version to use with this Proxy
    * @param _data AFS initialization data
    * @return address of the newly deployed Proxy
    */
-  function createAFS(string _contentId, string _version, bytes _data) public returns (address) {
+  function createAFS(string _contentId, string _version, bytes _data) public {
     require(proxies_[_contentId] == address(0));
     Proxy proxy = new Proxy(address(this));
     proxies_[_contentId] = proxy;

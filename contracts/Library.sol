@@ -4,15 +4,15 @@ import "./Registry.sol";
 
 contract Library {
   address public owner_;
-  mapping (string => Lib) private libraries_;
+  mapping (bytes32 => Lib) private libraries_;
   Registry registry_;
 
   struct Lib {
     uint16 size;
-    mapping (uint16 => string) content; // index => contentId (unhashed)
+    mapping (uint16 => bytes32) content; // index => contentId (unhashed)
   }
 
-  event LogAdded(string contentId);
+  event LogAdded(bytes32 contentId);
 
   constructor(address _registry) public {
     owner_ = msg.sender;
@@ -24,7 +24,7 @@ contract Library {
      _;
   }
 
-  modifier fromStandard(string _contentId) {
+  modifier fromStandard(bytes32 _contentId) {
     require (msg.sender == registry_.proxyImpls_(registry_.getProxyAddress(_contentId)));
      _;
   }
@@ -38,7 +38,7 @@ contract Library {
     return libraries_[_identity].content[_index];
   }
 
-  function addLibraryItem(string _identity, string _contentId) public fromStandard(_contentId) {
+  function addLibraryItem(string _identity, bytes32 _contentId) public fromStandard(_contentId) {
     uint16 libSize = libraries_[_identity].size;
     require (bytes(libraries_[_identity].content[libSize]).length == 0);
     libraries_[_identity].content[libSize] = _contentId;

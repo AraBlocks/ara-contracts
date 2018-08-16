@@ -14,12 +14,12 @@ contract AFS {
   ARAToken public token_;
   Library  public lib_;
 
-  string   public did_;
+  bytes32  public did_;
   bool     public listed_;
   uint256  public price_;
 
   mapping(bytes32 => uint256) public rewards_;
-  mapping(bytes32 => bool)    public purchasers_;
+  mapping(bytes32 => bool)    public purchasers_; // keccak256 hashes of buyer addresses
   mapping(uint8 => Buffers) public metadata_;
 
   struct Buffers {
@@ -27,13 +27,13 @@ contract AFS {
     bool invalid;
   }
 
-  event Commit(string _did);
-  event Unlisted(string _did);
-  event PriceSet(string _did, uint256 _price);
-  event RewardDeposited(string _did, uint256 _reward);
-  event RewardDistributed(string _did, uint256 _distributed, uint256 _returned);
-  event Purchased(string _purchaser, string _did);
-  event TEST(address sender);
+  event Commit(bytes32 _did);
+  event Unlisted(bytes32 _did);
+  event PriceSet(bytes32 _did, uint256 _price);
+  event RewardDeposited(bytes32 _did, uint256 _reward);
+  event RewardDistributed(bytes32 _did, uint256 _distributed, uint256 _returned);
+  event Purchased(string _purchaser, bytes32 _did, bool _download);
+  event TEST(address _sender);
 
   uint8 constant mtBufferSize_ = 40;
   uint8 constant msBufferSize_ = 64;
@@ -52,6 +52,7 @@ contract AFS {
     address ownerAddr;
     address tokenAddr;
     address libAddr;
+    bytes32 did;
     /* solium-disable-next-line security/no-inline-assembly */
     assembly {
         btsptr := add(_data, 32)
@@ -60,14 +61,18 @@ contract AFS {
         tokenAddr := mload(btsptr)
         btsptr := add(_data, 96)
         libAddr := mload(btsptr)
+        btsptr := add(_data, 128)
+        did := mload(btsptr)
     }
     owner_    = ownerAddr;
     token_    = ARAToken(tokenAddr);
     lib_      = Library(libAddr);
+    did_      = did;
     listed_   = true;
     price_    = 0;
   }
 
+  // tested
   function setPrice(uint256 _price) external onlyBy(owner_) {
     price_ = _price;
     emit PriceSet(did_, price_);
@@ -120,24 +125,32 @@ contract AFS {
     return success;
   }
 
-  function purchase(string _purchaser) external returns (bool success) {
-    // uint256 balance = token.balanceOf(msg.sender);
-    // require (balance >= price_); // check that purchaser has sufficient funds
-
+  /**
+   * @dev Purchases this AFS and adds it to _purchaser's library. 
+   *      If _download is true, deposits any remaining allowance 
+   *      as rewards for this purchase
+   * @param _purchaser The hashed methodless did of the purchaser
+   * @param _download Whether to deposit additional allowance as rewards
+   */
+  function purchase(string _purchaser, bool _download) external {
+    // address(this) == proxy address
+    uint256 allowance = token_.allowance(msg.sender, address(this));
+    require (allowance >= price_);
     if (token_.transferFrom(msg.sender, owner_, price_)) {
-      bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
-      purchasers_[hashedAddress] = true;
-      lib_.addLibraryItem(_purchaser, did_);
-      emit Purchased(_purchaser, did_);
+      // bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
+      // purchasers_[hashedAddress] = true;
+      // lib_.addLibraryItem(_purchaser, did_);
+      emit Purchased(_purchaser, did_, _download);
 
       // if (_download && allowance > price_) {
       //   depositReward(allowance - price_);
       // }
-
-      return true;
-    } else {
-      return false;
     }
+
+    //   return true;
+    // } else {
+    //   return false;
+    // }
   }
 
   function append(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 

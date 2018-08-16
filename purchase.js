@@ -3,11 +3,22 @@
 const { abi: tokenAbi } = require('./build/contracts/ARAToken.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
-const { kARATokenAddress } = require('./constants')
-const account = require('ara-web3/account')
+// const account = require('ara-web3/account')
 const { info } = require('ara-console')
-const call = require('ara-web3/call')
-const tx = require('ara-web3/tx')
+// const call = require('ara-web3/call')
+// const tx = require('ara-web3/tx')
+
+const {
+  tx,
+  call,
+  account,
+  contract
+} = require('ara-web3')
+
+const {
+  kAidPrefix,
+  kARATokenAddress
+} = require('./constants')
 
 const {
   proxyExists,
@@ -37,11 +48,11 @@ const {
 async function purchase(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('ara-contracts.purchase: Expecting opts object.')
-  } else if (null == opts.requesterDid || 'string' !== typeof opts.requesterDid || !opts.requesterDid) {
+  } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
     throw TypeError('ara-contracts.purchase: Expecting non-empty requester DID')
-  } else if (null == opts.contentDid || 'string' !== typeof opts.contentDid || !opts.contentDid) {
+  } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('ara-contracts.purchase: Expecting non-empty content DID')
-  } else if (null == opts.password || 'string' != typeof opts.password || !opts.assword) {
+  } else if ('string' != typeof opts.password || !opts.password) {
     throw TypeError('ara-contracts.purchase: Expecting non-empty password')
   }
 
@@ -59,19 +70,19 @@ async function purchase(opts) {
   debug(did, 'purchasing', contentDid)
 
   const hIdentity = hashDID(did)
-  const hContentIdentity = hashDID(contentDid)
-
-  const acct = await account.get({ did, password })
+  debug("hashed id", hIdentity)
+  did = kAidPrefix + did
+  const acct = await account.load({ did, password })
 
   try {
-    await checkLibrary(did, contentDid)
+    await checkLibrary({ requesterDid: did, contentDid })
 
-    if (await proxyExists(hContentIdentity)) {
+    if (!(await proxyExists(contentDid))) {
       throw new Error('ara-contracts.purchase: This content does not have a valid proxy contract')
     }
 
-    const proxy = await getProxyAddress(hContentIdentity)
-
+    const proxy = await getProxyAddress(contentDid)
+    debug("proxy address", proxy)
     const price = await call({
       abi: afsAbi,
       address: proxy,
@@ -82,7 +93,7 @@ async function purchase(opts) {
       account: acct,
       to: kARATokenAddress,
       data: {
-        tokenAbi,
+        abi: tokenAbi,
         functionName: 'approve',
         values: [
           proxy,
@@ -91,20 +102,56 @@ async function purchase(opts) {
       }
     })
 
-    await tx.sendSignedTransaction(approveTx)
-
+    const receipt = await tx.sendSignedTransaction(approveTx)
+    const allowance = await call({
+      abi: tokenAbi,
+      address: kARATokenAddress,
+      functionName: 'allowance',
+      arguments: [
+        acct.address,
+        proxy
+      ]
+    })
+    debug("approved", allowance)
     const purchaseTx = await tx.create({
       account: acct,
       to: proxy,
       data: {
-        afsAbi,
+        abi: afsAbi,
         functionName: 'purchase',
         values: [
           hIdentity,
-          true
+          false
         ]
       }
     })
+    // listen to ARAToken event for proxy address
+    // const proxyContract = await contract.get(afsAbi, proxy)
+    // await proxyContract.events.TEST({ fromBlock: 'latest', function(error) { debug(error) } })
+    //   .on('data', (log) => {
+    //     const { returnValues: { _sender } } = log
+    //     debug("sender address", _sender)
+    //   })
+    //   .on('changed', (log) => {
+    //     debug(`Changed: ${log}`)
+    //   })
+    //   .on('error', (log) => {
+    //     debug(`error:  ${log}`)
+    //   })
+
+    const proxyContract = await contract.get(afsAbi, proxy)
+    await proxyContract.events.Purchased({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { _purchaser, _did, _download } } = log
+        debug("purchaser", _purchaser, "did", _did, "download", _download)
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
+
     await tx.sendSignedTransaction(purchaseTx)
 
     const size = await getLibrarySize(did)
