@@ -29,18 +29,18 @@ contract Library {
      _;
   }
 
-  function getLibrarySize(string _identity) public view returns (uint16 size) {
+  function getLibrarySize(bytes32 _identity) public view returns (uint16 size) {
     return libraries_[_identity].size;
   }
 
-  function getLibraryItem(string _identity, uint16 _index) public view returns (string contentId) {
+  function getLibraryItem(bytes32 _identity, uint16 _index) public view returns (bytes32 contentId) {
     require (_index < libraries_[_identity].size);
     return libraries_[_identity].content[_index];
   }
 
-  function addLibraryItem(string _identity, bytes32 _contentId) public fromStandard(_contentId) {
+  function addLibraryItem(bytes32 _identity, bytes32 _contentId) public fromStandard(_contentId) {
     uint16 libSize = libraries_[_identity].size;
-    require (bytes(libraries_[_identity].content[libSize]).length == 0);
+    require (libraries_[_identity].content[libSize].length == 0);
     libraries_[_identity].content[libSize] = _contentId;
     libraries_[_identity].size++;
     emit LogAdded(_contentId);

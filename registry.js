@@ -4,6 +4,7 @@ const contract = require('ara-web3/contract')
 const account = require('ara-web3/account')
 const { call } = require('ara-web3/call')
 const web3Abi = require('ara-web3/abi')
+const { ethify } = require('./util')
 const tx = require('ara-web3/tx')
 const { parse } = require('path')
 const solc = require('solc')
@@ -52,7 +53,7 @@ async function getProxyAddress(contentDid = '') {
       address: kRegistryAddress,
       functionName: 'getProxyAddress',
       arguments: [
-        contentDid
+        ethify(contentDid)
       ]
     })
   } catch (err) {
@@ -104,7 +105,7 @@ async function upgradeProxy(opts) {
         abi,
         functionName: 'upgradeProxy',
         values: [
-          contentDid,
+          ethify(contentDid),
           version
         ]
       }
@@ -116,7 +117,7 @@ async function upgradeProxy(opts) {
     await registry.events.ProxyUpgraded({ fromBlock: 0, function(error) { console.log(error) } })
       .on('data', (log) => {
         const { returnValues: { _contentId } } = log
-        if (_contentId === contentDid) {
+        if (_contentId === ethify(contentDid)) {
           upgraded = true
         }
       })
@@ -169,9 +170,9 @@ async function deployProxy(opts) {
   owner = kAidPrefix + owner
   debug("owner", owner)
   const acct = await account.load({ did: owner, password })
-  const zeroDid = '0x' + contentDid
+
   try {
-    const encodedData = web3Abi.encodeParameters(['address', 'address', 'address', 'bytes32'], [acct.address, kARATokenAddress, kLibraryAddress, zeroDid])
+    const encodedData = web3Abi.encodeParameters(['address', 'address', 'address', 'bytes32'], [acct.address, kARATokenAddress, kLibraryAddress, ethify(contentDid)])
     const transaction = await tx.create({
       account: acct,
       to: kRegistryAddress,
@@ -180,7 +181,7 @@ async function deployProxy(opts) {
         abi,
         functionName: 'createAFS',
         values: [
-          hContentIdentity,
+          ethify(hContentIdentity),
           version,
           encodedData
         ]
@@ -195,7 +196,7 @@ async function deployProxy(opts) {
     })
       .on('data', (log) => {
         const { returnValues: { _contentId, _address } } = log
-        if (_contentId === hContentIdentity) {
+        if (_contentId === ethify(hContentIdentity)) {
           proxyAddress = _address
         }
       })

@@ -32,7 +32,7 @@ contract AFS {
   event PriceSet(bytes32 _did, uint256 _price);
   event RewardDeposited(bytes32 _did, uint256 _reward);
   event RewardDistributed(bytes32 _did, uint256 _distributed, uint256 _returned);
-  event Purchased(string _purchaser, bytes32 _did, bool _download);
+  event Purchased(bytes32 _purchaser, bytes32 _did, bool _download);
   event TEST(address _sender);
 
   uint8 constant mtBufferSize_ = 40;
@@ -132,7 +132,7 @@ contract AFS {
    * @param _purchaser The hashed methodless did of the purchaser
    * @param _download Whether to deposit additional allowance as rewards
    */
-  function purchase(string _purchaser, bool _download) external {
+  function purchase(bytes32 _purchaser, bool _download) external {
     // address(this) == proxy address
     uint256 allowance = token_.allowance(msg.sender, address(this));
     require (allowance >= price_);

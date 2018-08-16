@@ -3,6 +3,7 @@
 const { abi } = require('./build/contracts/Library.json')
 const { kLibraryAddress } = require('./constants')
 const { call } = require('ara-web3/call')
+const { ethify } = require('./util')
 
 const {
   hashDID,
@@ -11,6 +12,7 @@ const {
 
 /**
  * Returns requesterDid's library
+ * @param  {string} unhashed did
  * @return {Array}
  * @throws {TypeError}
  */
@@ -48,7 +50,7 @@ async function checkLibrary(opts) {
   const lib = []
   for (let i = 0; i < libSize; i++) {
     const item = await getLibraryItem(requesterDid, i)
-    if (contentDid && item == contentDid) {
+    if (contentDid && item == ethify(contentDid)) {
       throw new Error('Item is already in user library and cannot be purchased again')
     }
     lib.push(item)
@@ -58,7 +60,7 @@ async function checkLibrary(opts) {
 
 /**
  * Gets the size of requesterDid's library
- * @param  {String} requesterDid
+ * @param  {String} unhashd requesterDid
  * @return {int}
  * @throws {TypeError}
  */
@@ -74,14 +76,14 @@ async function getLibrarySize(requesterDid = '') {
     address: kLibraryAddress,
     functionName: 'getLibrarySize',
     arguments: [
-      hIdentity
+      ethify(hIdentity)
     ]
   })
 }
 
 /**
  * Gets the address of the item at index in requesterDid's library
- * @param  {String} requesterDid
+ * @param  {String} unhashed requesterDid
  * @param  {int} index
  * @return {string}
  * @throws {Error, TypeError}
@@ -106,7 +108,7 @@ async function getLibraryItem(requesterDid = '', index = -1) {
     address: kLibraryAddress,
     functionName: 'getLibraryItem',
     arguments: [
-      hIdentity,
+      ethify(hIdentity),
       index
     ]
   })

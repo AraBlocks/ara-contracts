@@ -3,10 +3,8 @@
 const { abi: tokenAbi } = require('./build/contracts/ARAToken.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
-// const account = require('ara-web3/account')
 const { info } = require('ara-console')
-// const call = require('ara-web3/call')
-// const tx = require('ara-web3/tx')
+const { ethify } = require('./util')
 
 const {
   tx,
@@ -120,7 +118,7 @@ async function purchase(opts) {
         abi: afsAbi,
         functionName: 'purchase',
         values: [
-          hIdentity,
+          ethify(hIdentity),
           false
         ]
       }
