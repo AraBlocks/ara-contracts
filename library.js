@@ -17,11 +17,11 @@ const {
  * @throws {TypeError}
  */
 async function getLibrary(requesterDid = '') {
-  if (null == requesterDid || 'string' !== typeof requesterDid || !requesterDid) {
+  if ('string' !== typeof requesterDid || !requesterDid) {
     throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
   }
 
-  return checkLibrary(requesterDid)
+  return checkLibrary({ requesterDid })
 }
 
 /**
@@ -35,16 +35,17 @@ async function getLibrary(requesterDid = '') {
 async function checkLibrary(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('ara-contracts.library: Expecting opts object.')
-  } else if (null == opts.requesterDid || 'string' !== typeof opts.requesterDid || !opts.requesterDid) {
+  } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
     throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
-  } else if (null == opts.contentDid || 'string' !== typeof opts.contentDid || !opts.contentDid) {
-    throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
+  } else if (opts.contentDid && 'string' !== typeof opts.contentDid) {
+    throw TypeError('ara-contracts.library: Expecting valid content DID')
   }
 
   let { requesterDid, contentDid } = opts
 
   requesterDid = normalize(requesterDid)
-  contentDid = normalize(contentDid)
+  if (contentDid)
+    contentDid = normalize(contentDid)
 
   const libSize = await getLibrarySize(requesterDid)
   const lib = []
@@ -65,7 +66,7 @@ async function checkLibrary(opts) {
  * @throws {TypeError}
  */
 async function getLibrarySize(requesterDid = '') {
-  if (null == requesterDid || 'string' !== typeof requesterDid || !requesterDid) {
+  if ('string' !== typeof requesterDid || !requesterDid) {
     throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
   }
 
@@ -89,7 +90,7 @@ async function getLibrarySize(requesterDid = '') {
  * @throws {Error, TypeError}
  */
 async function getLibraryItem(requesterDid = '', index = -1) {
-  if (null == requesterDid || 'string' !== typeof requesterDid || !requesterDid) {
+  if ('string' !== typeof requesterDid || !requesterDid) {
     throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
   }
 
