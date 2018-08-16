@@ -8,6 +8,7 @@ const tx = require('ara-web3/tx')
 const { parse } = require('path')
 const solc = require('solc')
 const fs = require('fs')
+const { web3 } = require('ara-context')()
 
 const {
   kAidPrefix,
@@ -163,23 +164,23 @@ async function deployProxy(opts) {
   }
 
   debug('creating tx to deploy proxy for', contentDid)
-  contentDid = hashDID(contentDid)
+  const hContentIdentity = hashDID(contentDid)
   let owner = getDocumentOwner(ddo, true)
   owner = kAidPrefix + owner
   debug("owner", owner)
   const acct = await account.load({ did: owner, password })
-
+  const zeroDid = '0x' + contentDid
   try {
-    const encodedData = web3Abi.encodeParameters(['address', 'address', 'address'], [acct.address, kARATokenAddress, kLibraryAddress])
+    const encodedData = web3Abi.encodeParameters(['address', 'address', 'address', 'bytes32'], [acct.address, kARATokenAddress, kLibraryAddress, zeroDid])
     const transaction = await tx.create({
       account: acct,
       to: kRegistryAddress,
-      gasLimit: 1000000,
+      gasLimit: 3000000,
       data: {
         abi,
         functionName: 'createAFS',
         values: [
-          contentDid,
+          hContentIdentity,
           version,
           encodedData
         ]
@@ -189,10 +190,12 @@ async function deployProxy(opts) {
     // listen to ProxyDeployed event for proxy address
     const registry = await contract.get(abi, kRegistryAddress)
     let proxyAddress
-    await registry.events.ProxyDeployed({ fromBlock: 0, function(error) { console.log(error) } })
+    registry.events.ProxyDeployed({ fromBlock: 'latest' }, (error) => {
+      debug("error", error)
+    })
       .on('data', (log) => {
         const { returnValues: { _contentId, _address } } = log
-        if (_contentId === contentDid) {
+        if (_contentId === hContentIdentity) {
           proxyAddress = _address
         }
       })
@@ -202,7 +205,9 @@ async function deployProxy(opts) {
       .on('error', (log) => {
         console.log(`error:  ${log}`)
       })
+
     const receipt = await tx.sendSignedTransaction(transaction)
+    debug('proxy deployed at', proxyAddress)
     debug('gas used', receipt.gasUsed)
     return proxyAddress
   } catch (err) {
