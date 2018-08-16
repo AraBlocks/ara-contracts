@@ -133,19 +133,18 @@ contract AFS {
    * @param _download Whether to deposit additional allowance as rewards
    */
   function purchase(bytes32 _purchaser, bool _download) external {
-    // address(this) == proxy address
     uint256 allowance = token_.allowance(msg.sender, address(this));
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
     require (!purchasers_[hashedAddress] && allowance >= price_);
-    
+
     if (token_.transferFrom(msg.sender, owner_, price_)) {
       purchasers_[hashedAddress] = true;
       lib_.addLibraryItem(_purchaser, did_);
       emit Purchased(_purchaser, did_, _download);
 
-      // if (_download && allowance > price_) {
-      //   depositReward(allowance - price_);
-      // }
+      if (_download && allowance > price_) {
+        depositReward(allowance - price_);
+      }
     }
   }
 
