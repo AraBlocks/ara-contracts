@@ -14,7 +14,7 @@ module.exports = {
   kTempOwnerDid: 'did:ara:4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4',
   // private key: 0xa38a74ba8d89e22841f1d705c0ae0b3c8355da9d56a0f2192b477563e4ee3d07
   kDefaultAddress: '0xe6ecdb604957700f7e3c3057672dfe1b3ad60d64',
-  kTempAFSDid: 'did:ara:48a06e7fd8db67f2b12d41bffc777b4099a20bbaae4b28f9c72ebaba182e2d79'
+  kTempAFSDid: 'did:ara:cc700815af0dafcb54ebfea253dae67e07960c21143793a69e41aee0566073fb'
 }
 
 // AFS standard: '0xBcf229176416A2E889DB0e7d78AC375fC4B28d68'

@@ -4,14 +4,14 @@ import "./Proxy.sol";
 
 contract Registry {
   address public owner_;
-  mapping (string => address) private proxies_; // hash(contentId) => proxy
-  mapping (string => address) private proxyOwners_; // hash(contentId) => owner
+  mapping (bytes32 => address) private proxies_; // hash(contentId) => proxy
+  mapping (bytes32 => address) private proxyOwners_; // hash(contentId) => owner
   mapping (string => address) private versions_; // version => implementation
   mapping (address => address) public proxyImpls_; // proxy => implementation
   string public latestVersion_;
 
-  event ProxyDeployed(string _contentId, address _address);
-  event ProxyUpgraded(string _contentId, string _version);
+  event ProxyDeployed(bytes32 _contentId, address _address);
+  event ProxyUpgraded(bytes32 _contentId, string _version);
   event StandardAdded(string _version, address _address);
 
   constructor() public {
@@ -23,16 +23,16 @@ contract Registry {
      _;
   }
 
-  modifier onlyProxyOwner(string _contentId) {
+  modifier onlyProxyOwner(bytes32 _contentId) {
     require(proxyOwners_[_contentId] == msg.sender);
     _;
   }
 
-  function getProxyAddress(string _contentId) external view returns (address) {
+  function getProxyAddress(bytes32 _contentId) external view returns (address) {
     return proxies_[_contentId];
   }
 
-  function getProxyOwner(string _contentId) external view returns (address) {
+  function getProxyOwner(bytes32 _contentId) external view returns (address) {
     return proxyOwners_[_contentId];
   }
 
@@ -47,7 +47,7 @@ contract Registry {
    * @param _data AFS initialization data
    * @return address of the newly deployed Proxy
    */
-  function createAFS(string _contentId, string _version, bytes _data) public {
+  function createAFS(bytes32 _contentId, string _version, bytes _data) public {
     require(proxies_[_contentId] == address(0));
     Proxy proxy = new Proxy(address(this));
     proxies_[_contentId] = proxy;
@@ -61,7 +61,7 @@ contract Registry {
    * @param _contentId The methodless content DID
    * @param _version The implementation version to upgrade this Proxy to
    */
-  function upgradeProxy(string _contentId, string _version) public onlyProxyOwner(_contentId) {
+  function upgradeProxy(bytes32 _contentId, string _version) public onlyProxyOwner(_contentId) {
     require(versions_[_version] != address(0));
     proxyImpls_[proxies_[_contentId]] = versions_[_version];
     emit ProxyUpgraded(_contentId, _version);
@@ -73,7 +73,7 @@ contract Registry {
    * @param _version The implementation version to upgrade this Proxy to
    * @param _data AFS initialization data
    */
-  function upgradeProxyAndCall(string _contentId, string _version, bytes _data) public onlyProxyOwner(_contentId) {
+  function upgradeProxyAndCall(bytes32 _contentId, string _version, bytes _data) public onlyProxyOwner(_contentId) {
     require(versions_[_version] != address(0));
     Proxy proxy = Proxy(proxies_[_contentId]);
     proxyImpls_[proxy] = versions_[_version];
