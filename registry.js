@@ -19,8 +19,8 @@ const {
 } = require('./constants')
 
 const {
-  hashDID,
   validate,
+  normalize,
   getDocumentOwner
 } = require('ara-util')
 
@@ -44,10 +44,9 @@ async function getProxyAddress(contentDid = '') {
     throw TypeError('ara-contracts.registry: Expecting non-empty content DID')
   }
 
-  contentDid = hashDID(contentDid)
+  contentDid = normalize(contentDid)
 
   try {
-    debug('get proxy address of', contentDid)
     return call({
       abi,
       address: kRegistryAddress,
@@ -83,7 +82,7 @@ async function upgradeProxy(opts) {
   let { contentDid } = opts
   const { password, version } = opts
 
-  contentDid = hashDID(contentDid)
+  contentDid = normalize(contentDid)
 
   let did
   try {
@@ -165,7 +164,7 @@ async function deployProxy(opts) {
   }
 
   debug('creating tx to deploy proxy for', contentDid)
-  const hContentIdentity = hashDID(contentDid)
+  contentDid = normalize(contentDid)
   let owner = getDocumentOwner(ddo, true)
   owner = kAidPrefix + owner
   debug("owner", owner)
@@ -181,7 +180,7 @@ async function deployProxy(opts) {
         abi,
         functionName: 'createAFS',
         values: [
-          ethify(hContentIdentity),
+          ethify(contentDid),
           version,
           encodedData
         ]
@@ -196,7 +195,7 @@ async function deployProxy(opts) {
     })
       .on('data', (log) => {
         const { returnValues: { _contentId, _address } } = log
-        if (_contentId === ethify(hContentIdentity)) {
+        if (_contentId === ethify(contentDid)) {
           proxyAddress = _address
         }
       })
