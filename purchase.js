@@ -1,6 +1,7 @@
 /* eslint-disable no-await-in-loop */
 
 const { abi: tokenAbi } = require('./build/contracts/ARAToken.json')
+const { abi: libAbi } = require('./build/contracts/library.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
 const { info } = require('ara-console')
@@ -15,6 +16,7 @@ const {
 
 const {
   kAidPrefix,
+  kLibraryAddress,
   kARATokenAddress
 } = require('./constants')
 
@@ -68,7 +70,6 @@ async function purchase(opts) {
   debug(did, 'purchasing', contentDid)
 
   const hIdentity = hashDID(did)
-  debug("hashed id", hIdentity)
   did = kAidPrefix + did
   const acct = await account.load({ did, password })
 
@@ -80,7 +81,6 @@ async function purchase(opts) {
     }
 
     const proxy = await getProxyAddress(contentDid)
-    debug("proxy address", proxy)
     const price = await call({
       abi: afsAbi,
       address: proxy,
@@ -101,6 +101,7 @@ async function purchase(opts) {
     })
 
     const receipt = await tx.sendSignedTransaction(approveTx)
+
     const allowance = await call({
       abi: tokenAbi,
       address: kARATokenAddress,
@@ -110,10 +111,11 @@ async function purchase(opts) {
         proxy
       ]
     })
-    debug("approved", allowance)
+
     const purchaseTx = await tx.create({
       account: acct,
       to: proxy,
+      gasLimit: 1000000,
       data: {
         abi: afsAbi,
         functionName: 'purchase',
@@ -123,25 +125,25 @@ async function purchase(opts) {
         ]
       }
     })
-    // listen to ARAToken event for proxy address
-    // const proxyContract = await contract.get(afsAbi, proxy)
-    // await proxyContract.events.TEST({ fromBlock: 'latest', function(error) { debug(error) } })
-    //   .on('data', (log) => {
-    //     const { returnValues: { _sender } } = log
-    //     debug("sender address", _sender)
-    //   })
-    //   .on('changed', (log) => {
-    //     debug(`Changed: ${log}`)
-    //   })
-    //   .on('error', (log) => {
-    //     debug(`error:  ${log}`)
-    //   })
+
+    const libContract = await contract.get(libAbi, kLibraryAddress)
+    await libContract.events.AddedToLib({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { _contentDid } } = log
+        debug(_contentDid, "added to library")
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
 
     const proxyContract = await contract.get(afsAbi, proxy)
     await proxyContract.events.Purchased({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { _purchaser, _did, _download } } = log
-        debug("purchaser", _purchaser, "did", _did, "download", _download)
+        debug(_purchaser, "purchased", _did)
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)

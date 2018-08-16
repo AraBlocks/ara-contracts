@@ -4,8 +4,8 @@ import "./Proxy.sol";
 
 contract Registry {
   address public owner_;
-  mapping (bytes32 => address) private proxies_; // hash(contentId) => proxy
-  mapping (bytes32 => address) private proxyOwners_; // hash(contentId) => owner
+  mapping (bytes32 => address) private proxies_; // contentId (unhashed) => proxy
+  mapping (bytes32 => address) private proxyOwners_; // contentId (unhashed) => owner
   mapping (string => address) private versions_; // version => implementation
   mapping (address => address) public proxyImpls_; // proxy => implementation
   string public latestVersion_;
@@ -42,7 +42,7 @@ contract Registry {
 
   /**
    * @dev AFS Proxy Factory
-   * @param _contentId The hashed methodless content DID
+   * @param _contentId The unhashed methodless content DID
    * @param _version The implementation version to use with this Proxy
    * @param _data AFS initialization data
    * @return address of the newly deployed Proxy
@@ -58,7 +58,7 @@ contract Registry {
 
   /**
    * @dev Upgrades proxy implementation version
-   * @param _contentId The methodless content DID
+   * @param _contentId The unhashed methodless content DID
    * @param _version The implementation version to upgrade this Proxy to
    */
   function upgradeProxy(bytes32 _contentId, string _version) public onlyProxyOwner(_contentId) {
@@ -69,7 +69,7 @@ contract Registry {
 
   /**
    * @dev Upgrades proxy implementation version with initialization
-   * @param _contentId The methodless content DID
+   * @param _contentId The unhashed methodless content DID
    * @param _version The implementation version to upgrade this Proxy to
    * @param _data AFS initialization data
    */
