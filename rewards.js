@@ -38,7 +38,7 @@ const {
  * @param  {number}         opts.job.budget
  * @throws {Error,TypeError}
  */
-async function submitBudget(opts) {
+async function submit(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('ara-contracts.rewards: Expecting opts object.')
   } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
@@ -248,14 +248,14 @@ async function allocate(opts) {
 }
 
 /**
- * Claim rewards
+ * Redeem balance from AFS contract
  * @param  {Object}         opts
  * @param  {String}         opts.requesterDid
  * @param  {String}         opts.contentDid
  * @param  {String}         opts.password
  * @throws {Error,TypeError}
  */
-async function claim(opts) {
+async function redeem(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('ara-contracts.rewards: Expecting opts object.')
   } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
@@ -277,7 +277,7 @@ async function claim(opts) {
 
   contentDid = normalize(contentDid)
 
-  debug(did 'claiming rewards for', contentDid)
+  debug(did 'redeeming balance from', contentDid)
   did = kAidPrefix + did
   const acct = await account.load({ did, password })
 
@@ -288,13 +288,13 @@ async function claim(opts) {
 
     const proxy = await getProxyAddress(contentDid)
 
-    const claimTx = await tx.create({
+    const redeemTx = await tx.create({
       account: acct,
       to: proxy,
       gasLimit: 1000000,
       data: {
         abi: afsAbi,
-        functionName: 'claimRewards'
+        functionName: 'redeemBalance'
       }
     })
 
@@ -302,7 +302,7 @@ async function claim(opts) {
     await tokenContract.events.Transfer({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { from, to, value } } = log
-        info(to, 'claimed', value, 'rewards from', from)
+        info(to, 'redeemed', value, 'tokens from', from)
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)
@@ -311,14 +311,14 @@ async function claim(opts) {
         debug(`error:  ${log}`)
       })
 
-    await tx.sendSignedTransaction(claimTx)
+    await tx.sendSignedTransaction(redeemTx)
   } catch (err) {
     throw err
   }
 }
 
 module.exports = {
-  claim,
-  allocate,
-  submitBudget
+  submit,
+  redeem,
+  allocate
 }
