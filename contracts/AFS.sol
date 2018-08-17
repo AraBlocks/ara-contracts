@@ -33,7 +33,7 @@ contract AFS {
   event PriceSet(bytes32 indexed _did, uint256 _price);
   event BudgetSubmitted(bytes32 _did, bytes32 indexed _jobId, uint256 _budget);
   event RewardsAllocated(bytes32 _did, uint256 _allocated, uint256 _returned);
-  event Purchased(bytes32 indexed _purchaser, bytes32 _did, bool _download);
+  event Purchased(bytes32 indexed _purchaser, bytes32 _did);
   event Redeemed(address indexed _sender);
 
   uint8 constant mtBufferSize_ = 40;
@@ -59,7 +59,7 @@ contract AFS {
   modifier budgetSubmitted(bytes32 _jobId)
   {
     require(
-      jobsBudgets_[_jobId] > 0
+      jobBudgets_[_jobId] > 0
     );
     _;
   }
@@ -152,7 +152,7 @@ contract AFS {
     if (token_.transferFrom(msg.sender, owner_, price_)) {
       purchasers_[hashedAddress] = true;
       lib_.addLibraryItem(_purchaser, did_);
-      emit Purchased(_purchaser, did_, _download);
+      emit Purchased(_purchaser, did_);
 
       if (_jobId != bytes32(0) && _budget > 0) {
         submitBudget(_jobId, _budget);
