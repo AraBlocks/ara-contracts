@@ -34,7 +34,7 @@ contract AFS {
   event BudgetSubmitted(bytes32 _did, bytes32 indexed _jobId, uint256 _budget);
   event RewardsAllocated(bytes32 _did, uint256 _allocated, uint256 _returned);
   event Purchased(bytes32 indexed _purchaser, bytes32 _did, bool _download);
-  event TEST(address _sender);
+  event Redeemed(address indexed _sender);
 
   uint8 constant mtBufferSize_ = 40;
   uint8 constant msBufferSize_ = 64;
@@ -107,64 +107,34 @@ contract AFS {
   }
 
   function allocateRewards(bytes32 _jobId, bytes32[] _farmers, uint256[] _rewards) public budgetSubmitted(_jobId) {
+    require(_farmers.length == _rewards.length);
     uint256 totalRewards;
-    for (uint256 i = 0; i < _rewards.length; i++) {
+    for (uint8 i = 0; i < _rewards.length; i++) {
       totalRewards += _rewards[i];
     }
     require(totalRewards <= jobBudgets_[_jobId]);
+    for (uint8 j = 0; j < _farmers.length; j++) {
+      rewards_[_farmers[j]] = _rewards[j];
+      jobBudgets_[_jobId] -= _rewards[j];
+      assert(jobBudgets_[_jobId] > 0);
+    }
+    uint256 remaining = jobBudgets_[_jobId];
+    if (remaining > 0) {
+      rewards_[keccak256(abi.encodePacked(msg.sender))] = remaining;
+      jobBudgets_[_jobId] = 0;
+      redeemBalance();
+    }
+    emit RewardsAllocated(did_, totalRewards, remaining);
   }
 
-  function claimRewards() public {
+  function redeemBalance() public {
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
     require(rewards_[hashedAddress] > 0);
     if (token_.transfer(msg.sender, rewards_[hashedAddress])) {
       rewards_[hashedAddress] = 0;
+      emit Redeemed(msg.sender);
     }
   }
-
-  // function depositRewards(uint256 _reward) public {
-  //   bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
-  //   uint256 allowance = token_.allowance(msg.sender, address(this));
-  //   require(purchasers_[hashedAddress] && allowance >= _reward);
-
-  //   if (token_.transferFrom(msg.sender, address(this), _reward)) {
-  //     rewards_[hashedAddress] += _reward;
-  //     assert(rewards_[hashedAddress] <= token_.balanceOf(address(this)));
-  //     emit RewardDeposited(did_, _reward);
-  //   }
-  // }
-
-  // function allocateRewards(address[] _addresses, uint256[] _amounts) external returns (bool success) {
-  //   bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
-  //   require(rewards_[hashedAddress] > 0 && _addresses.length == _amounts.length);
-
-  //   uint256 totalRewards;
-  //   for (uint256 i = 0; i < _amounts.length; i++) {
-  //     totalRewards += _amounts[i];
-  //   }
-  //   require(rewards_[hashedAddress] <= token_.balanceOf(address(this)) 
-  //     && rewards_[hashedAddress] >= totalRewards);
-
-  //   success = true;
-  //   for (uint256 j = 0; j < _addresses.length; j++) {
-  //     bool transferred = token_.transferFrom(address(this), _addresses[j], _amounts[j]);
-  //     if (transferred) {
-  //       rewards_[hashedAddress] -= _amounts[j];
-  //     }
-  //     success = success && transferred;
-  //   }
-
-  //   uint256 returned = 0;
-  //   if (rewards_[hashedAddress] > 0 
-  //     && token_.transferFrom(address(this), msg.sender, rewards_[hashedAddress])) {
-  //     returned = rewards_[hashedAddress];
-  //     rewards_[hashedAddress] = 0;
-  //   }
-
-  //   emit RewardDistributed(did_, totalRewards - returned, returned);
-
-  //   return success;
-  // }
 
   /**
    * @dev Purchases this AFS and adds it to _purchaser's library. 
