@@ -39,9 +39,18 @@ function isValidJobId(jobId) {
   }
 }
 
+function isValidArray(arr, fn) {
+  if (arr && Array.isArray(arr) && arr.length > 0) {
+    arr.forEach(fn)
+    return true
+  }
+  return false
+}
+
 module.exports = {
   toHex,
   ethify,
   fromHex,
-  isValidJobId
+  isValidJobId,
+  isValidArray
 }

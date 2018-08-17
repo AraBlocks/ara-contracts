@@ -28,12 +28,12 @@ contract AFS {
     bool invalid;
   }
 
-  event Commit(bytes32 _did);
-  event Unlisted(bytes32 _did);
-  event PriceSet(bytes32 _did, uint256 _price);
-  event BudgetSubmitted(bytes32 _did, bytes32 _jobId, uint256 _budget);
-  event RewardDistributed(bytes32 _did, uint256 _distributed, uint256 _returned);
-  event Purchased(bytes32 _purchaser, bytes32 _did, bool _download);
+  event Commit(bytes32 indexed _did);
+  event Unlisted(bytes32 indexed _did);
+  event PriceSet(bytes32 indexed _did, uint256 _price);
+  event BudgetSubmitted(bytes32 _did, bytes32 indexed _jobId, uint256 _budget);
+  event RewardsAllocated(bytes32 _did, uint256 _allocated, uint256 _returned);
+  event Purchased(bytes32 indexed _purchaser, bytes32 _did, bool _download);
   event TEST(address _sender);
 
   uint8 constant mtBufferSize_ = 40;
@@ -44,14 +44,6 @@ contract AFS {
     require(
       msg.sender == _account,
       "Sender not authorized."
-    );
-    _;
-  }
-
-  modifier onlyFarmer(bytes32 _farmerId)
-  {
-    require(
-      keccak256(abi.encodePacked(msg.sender)) == _farmerId
     );
     _;
   }
@@ -115,11 +107,19 @@ contract AFS {
   }
 
   function allocateRewards(bytes32 _jobId, bytes32[] _farmers, uint256[] _rewards) public budgetSubmitted(_jobId) {
-
+    uint256 totalRewards;
+    for (uint256 i = 0; i < _rewards.length; i++) {
+      totalRewards += _rewards[i];
+    }
+    require(totalRewards <= jobBudgets_[_jobId]);
   }
 
-  function claimRewards(bytes32 _farmerId) public onlyFarmer(_farmerId) {
-
+  function claimRewards() public {
+    bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
+    require(rewards_[hashedAddress] > 0);
+    if (token_.transfer(msg.sender, rewards_[hashedAddress])) {
+      rewards_[hashedAddress] = 0;
+    }
   }
 
   // function depositRewards(uint256 _reward) public {
