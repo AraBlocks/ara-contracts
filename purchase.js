@@ -169,7 +169,7 @@ async function purchase(opts) {
     const proxyContract = await contract.get(afsAbi, proxy)
     await proxyContract.events.Purchased({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
-        const { returnValues: { _purchaser, _did, _download } } = log
+        const { returnValues: { _purchaser, _did } } = log
         debug(_purchaser, "purchased", _did)
       })
       .on('changed', (log) => {
