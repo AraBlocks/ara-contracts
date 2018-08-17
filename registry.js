@@ -9,7 +9,6 @@ const tx = require('ara-web3/tx')
 const { parse } = require('path')
 const solc = require('solc')
 const fs = require('fs')
-const { web3 } = require('ara-context')()
 
 const {
   kAidPrefix,

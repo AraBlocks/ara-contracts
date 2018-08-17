@@ -1,18 +1,8 @@
-/* eslint-disable no-await-in-loop */
-
 const { abi: tokenAbi } = require('./build/contracts/ARAToken.json')
 const { abi: libAbi } = require('./build/contracts/library.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
 const { info } = require('ara-console')
-const { ethify } = require('./util')
-
-const {
-  tx,
-  call,
-  account,
-  contract
-} = require('ara-web3')
 
 const {
   kAidPrefix,
@@ -37,12 +27,25 @@ const {
   normalize
 } = require('ara-util')
 
+const {
+  tx,
+  call,
+  account,
+  contract
+} = require('ara-web3')
+
+const {
+  ethify,
+  isValidJobId
+} = require('./util')
+
 /**
  * Purchase contentDid
  * @param  {Object} opts
  * @param  {String} opts.requesterDid
  * @param  {String} opts.contentDid
  * @param  {String} opts.password
+ * @param  {Object} opts.job
  * @throws {Error,TypeError}
  */
 async function purchase(opts) {
@@ -51,12 +54,35 @@ async function purchase(opts) {
   } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
     throw TypeError('ara-contracts.purchase: Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
-    throw TypeError('ara-contracts.purchase: Expecting non-empty content DID')
-  } else if ('string' != typeof opts.password || !opts.password) {
-    throw TypeError('ara-contracts.purchase: Expecting non-empty password')
+    throw TypeError('ara-contracts.purchase: Expecting non-empty content DID.')
+  } else if ('string' !== typeof opts.password || !opts.password) {
+    throw TypeError('ara-contracts.purchase: Expecting non-empty password.')
+  } else if (opts.job && 'object' !== typeof opts.job) {
+    throw TypeError('ara-contracts.purchase: Expecting job object.')
   }
 
-  const { requesterDid, password } = opts
+  const {
+    requesterDid,
+    password,
+    job: {
+      jobId,
+      budget
+    }
+  } = opts
+
+  if (job) {
+    const validJobId = jobId && isValidJobId(jobId)
+    const validBudget = budget && 'number' === typeof budget && budget > 0
+
+    if (!validJobId || validBudget) {
+      throw TypeError('ara-contracts.purchase: Expecting job Id and budget.')
+    }
+
+    if (jobId.length === 64) {
+      jobId = ethify(jobId, 'string' !== typeof jobId)
+    }
+  }
+
   let { contentDid } = opts
   let did
   try {
@@ -95,22 +121,22 @@ async function purchase(opts) {
         functionName: 'approve',
         values: [
           proxy,
-          price
+          job ? price + budget : price
         ]
       }
     })
 
-    const receipt = await tx.sendSignedTransaction(approveTx)
+    await tx.sendSignedTransaction(approveTx)
 
-    const allowance = await call({
-      abi: tokenAbi,
-      address: kARATokenAddress,
-      functionName: 'allowance',
-      arguments: [
-        acct.address,
-        proxy
-      ]
-    })
+    // const allowance = await call({
+    //   abi: tokenAbi,
+    //   address: kARATokenAddress,
+    //   functionName: 'allowance',
+    //   arguments: [
+    //     acct.address,
+    //     proxy
+    //   ]
+    // })
 
     const purchaseTx = await tx.create({
       account: acct,
@@ -121,23 +147,24 @@ async function purchase(opts) {
         functionName: 'purchase',
         values: [
           ethify(hIdentity),
-          false
+          job ? jobId : ethify(Buffer.alloc(32), true),
+          job ? budget : 0
         ]
       }
     })
 
-    const libContract = await contract.get(libAbi, kLibraryAddress)
-    await libContract.events.AddedToLib({ fromBlock: 'latest', function(error) { debug(error) } })
-      .on('data', (log) => {
-        const { returnValues: { _contentDid } } = log
-        debug(_contentDid, "added to library")
-      })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
+    // const libContract = await contract.get(libAbi, kLibraryAddress)
+    // await libContract.events.AddedToLib({ fromBlock: 'latest', function(error) { debug(error) } })
+    //   .on('data', (log) => {
+    //     const { returnValues: { _contentDid } } = log
+    //     debug(_contentDid, "added to library")
+    //   })
+    //   .on('changed', (log) => {
+    //     debug(`Changed: ${log}`)
+    //   })
+    //   .on('error', (log) => {
+    //     debug(`error:  ${log}`)
+    //   })
 
     const proxyContract = await contract.get(afsAbi, proxy)
     await proxyContract.events.Purchased({ fromBlock: 'latest', function(error) { debug(error) } })
