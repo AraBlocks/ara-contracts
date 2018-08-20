@@ -128,16 +128,6 @@ async function purchase(opts) {
 
     await tx.sendSignedTransaction(approveTx)
 
-    // const allowance = await call({
-    //   abi: tokenAbi,
-    //   address: kARATokenAddress,
-    //   functionName: 'allowance',
-    //   arguments: [
-    //     acct.address,
-    //     proxy
-    //   ]
-    // })
-
     const purchaseTx = await tx.create({
       account: acct,
       to: proxy,
@@ -152,19 +142,6 @@ async function purchase(opts) {
         ]
       }
     })
-
-    // const libContract = await contract.get(libAbi, kLibraryAddress)
-    // await libContract.events.AddedToLib({ fromBlock: 'latest', function(error) { debug(error) } })
-    //   .on('data', (log) => {
-    //     const { returnValues: { _contentDid } } = log
-    //     debug(_contentDid, "added to library")
-    //   })
-    //   .on('changed', (log) => {
-    //     debug(`Changed: ${log}`)
-    //   })
-    //   .on('error', (log) => {
-    //     debug(`error:  ${log}`)
-    //   })
 
     const proxyContract = await contract.get(afsAbi, proxy)
     await proxyContract.events.Purchased({ fromBlock: 'latest', function(error) { debug(error) } })

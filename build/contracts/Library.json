@@ -109,14 +109,14 @@
     "absolutePath": "/Users/ericjiang/Littlstar/ara-contracts/contracts/Library.sol",
     "exportedSymbols": {
       "Library": [
-        1297
+        1374
       ]
     },
-    "id": 1298,
+    "id": 1375,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1143,
+        "id": 1220,
         "literals": [
           "solidity",
           "^",
@@ -129,10 +129,10 @@
       {
         "absolutePath": "/Users/ericjiang/Littlstar/ara-contracts/contracts/Registry.sol",
         "file": "./Registry.sol",
-        "id": 1144,
+        "id": 1221,
         "nodeType": "ImportDirective",
-        "scope": 1298,
-        "sourceUnit": 1709,
+        "scope": 1375,
+        "sourceUnit": 1786,
         "src": "26:24:2",
         "symbolAliases": [],
         "unitAlias": ""
@@ -143,19 +143,19 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 1297,
+        "id": 1374,
         "linearizedBaseContracts": [
-          1297
+          1374
         ],
         "name": "Library",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 1146,
+            "id": 1223,
             "name": "owner_",
             "nodeType": "VariableDeclaration",
-            "scope": 1297,
+            "scope": 1374,
             "src": "73:21:2",
             "stateVariable": true,
             "storageLocation": "default",
@@ -164,7 +164,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 1145,
+              "id": 1222,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "73:7:2",
@@ -178,21 +178,21 @@
           },
           {
             "constant": false,
-            "id": 1150,
+            "id": 1227,
             "name": "libraries_",
             "nodeType": "VariableDeclaration",
-            "scope": 1297,
+            "scope": 1374,
             "src": "98:43:2",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1159_storage_$",
+              "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1236_storage_$",
               "typeString": "mapping(bytes32 => struct Library.Lib)"
             },
             "typeName": {
-              "id": 1149,
+              "id": 1226,
               "keyType": {
-                "id": 1147,
+                "id": 1224,
                 "name": "bytes32",
                 "nodeType": "ElementaryTypeName",
                 "src": "107:7:2",
@@ -204,18 +204,18 @@
               "nodeType": "Mapping",
               "src": "98:24:2",
               "typeDescriptions": {
-                "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1159_storage_$",
+                "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1236_storage_$",
                 "typeString": "mapping(bytes32 => struct Library.Lib)"
               },
               "valueType": {
                 "contractScope": null,
-                "id": 1148,
+                "id": 1225,
                 "name": "Lib",
                 "nodeType": "UserDefinedTypeName",
-                "referencedDeclaration": 1159,
+                "referencedDeclaration": 1236,
                 "src": "118:3:2",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Lib_$1159_storage_ptr",
+                  "typeIdentifier": "t_struct$_Lib_$1236_storage_ptr",
                   "typeString": "struct Library.Lib"
                 }
               }
@@ -225,26 +225,26 @@
           },
           {
             "constant": false,
-            "id": 1152,
+            "id": 1229,
             "name": "registry_",
             "nodeType": "VariableDeclaration",
-            "scope": 1297,
+            "scope": 1374,
             "src": "187:18:2",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_Registry_$1708",
+              "typeIdentifier": "t_contract$_Registry_$1785",
               "typeString": "contract Registry"
             },
             "typeName": {
               "contractScope": null,
-              "id": 1151,
+              "id": 1228,
               "name": "Registry",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 1708,
+              "referencedDeclaration": 1785,
               "src": "187:8:2",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Registry_$1708",
+                "typeIdentifier": "t_contract$_Registry_$1785",
                 "typeString": "contract Registry"
               }
             },
@@ -253,14 +253,14 @@
           },
           {
             "canonicalName": "Library.Lib",
-            "id": 1159,
+            "id": 1236,
             "members": [
               {
                 "constant": false,
-                "id": 1154,
+                "id": 1231,
                 "name": "size",
                 "nodeType": "VariableDeclaration",
-                "scope": 1159,
+                "scope": 1236,
                 "src": "227:11:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -269,7 +269,7 @@
                   "typeString": "uint16"
                 },
                 "typeName": {
-                  "id": 1153,
+                  "id": 1230,
                   "name": "uint16",
                   "nodeType": "ElementaryTypeName",
                   "src": "227:6:2",
@@ -283,10 +283,10 @@
               },
               {
                 "constant": false,
-                "id": 1158,
+                "id": 1235,
                 "name": "content",
                 "nodeType": "VariableDeclaration",
-                "scope": 1159,
+                "scope": 1236,
                 "src": "244:35:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -295,9 +295,9 @@
                   "typeString": "mapping(uint16 => bytes32)"
                 },
                 "typeName": {
-                  "id": 1157,
+                  "id": 1234,
                   "keyType": {
-                    "id": 1155,
+                    "id": 1232,
                     "name": "uint16",
                     "nodeType": "ElementaryTypeName",
                     "src": "253:6:2",
@@ -313,7 +313,7 @@
                     "typeString": "mapping(uint16 => bytes32)"
                   },
                   "valueType": {
-                    "id": 1156,
+                    "id": 1233,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "263:7:2",
@@ -329,27 +329,27 @@
             ],
             "name": "Lib",
             "nodeType": "StructDefinition",
-            "scope": 1297,
+            "scope": 1374,
             "src": "210:107:2",
             "visibility": "public"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 1163,
+            "id": 1240,
             "name": "AddedToLib",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 1162,
+              "id": 1239,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1161,
+                  "id": 1238,
                   "indexed": true,
                   "name": "_contentId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1163,
+                  "scope": 1240,
                   "src": "338:26:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -358,7 +358,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1160,
+                    "id": 1237,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "338:7:2",
@@ -377,25 +377,25 @@
           },
           {
             "body": {
-              "id": 1179,
+              "id": 1256,
               "nodeType": "Block",
               "src": "408:67:2",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 1171,
+                    "id": 1248,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 1168,
+                      "id": 1245,
                       "name": "owner_",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1146,
+                      "referencedDeclaration": 1223,
                       "src": "414:6:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -408,18 +408,18 @@
                       "argumentTypes": null,
                       "expression": {
                         "argumentTypes": null,
-                        "id": 1169,
+                        "id": 1246,
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2156,
+                        "referencedDeclaration": 2233,
                         "src": "423:3:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
                           "typeString": "msg"
                         }
                       },
-                      "id": 1170,
+                      "id": 1247,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -439,28 +439,28 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 1172,
+                  "id": 1249,
                   "nodeType": "ExpressionStatement",
                   "src": "414:19:2"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 1177,
+                    "id": 1254,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 1173,
+                      "id": 1250,
                       "name": "registry_",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1152,
+                      "referencedDeclaration": 1229,
                       "src": "439:9:2",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_Registry_$1708",
+                        "typeIdentifier": "t_contract$_Registry_$1785",
                         "typeString": "contract Registry"
                       }
                     },
@@ -471,11 +471,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 1175,
+                          "id": 1252,
                           "name": "_registry",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1165,
+                          "referencedDeclaration": 1242,
                           "src": "460:9:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -490,18 +490,18 @@
                             "typeString": "address"
                           }
                         ],
-                        "id": 1174,
+                        "id": 1251,
                         "name": "Registry",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1708,
+                        "referencedDeclaration": 1785,
                         "src": "451:8:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_Registry_$1708_$",
+                          "typeIdentifier": "t_type$_t_contract$_Registry_$1785_$",
                           "typeString": "type(contract Registry)"
                         }
                       },
-                      "id": 1176,
+                      "id": 1253,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -511,24 +511,24 @@
                       "nodeType": "FunctionCall",
                       "src": "451:19:2",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_Registry_$1708",
+                        "typeIdentifier": "t_contract$_Registry_$1785",
                         "typeString": "contract Registry"
                       }
                     },
                     "src": "439:31:2",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Registry_$1708",
+                      "typeIdentifier": "t_contract$_Registry_$1785",
                       "typeString": "contract Registry"
                     }
                   },
-                  "id": 1178,
+                  "id": 1255,
                   "nodeType": "ExpressionStatement",
                   "src": "439:31:2"
                 }
               ]
             },
             "documentation": null,
-            "id": 1180,
+            "id": 1257,
             "implemented": true,
             "isConstructor": true,
             "isDeclaredConst": false,
@@ -536,15 +536,15 @@
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1166,
+              "id": 1243,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1165,
+                  "id": 1242,
                   "name": "_registry",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1180,
+                  "scope": 1257,
                   "src": "382:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -553,7 +553,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1164,
+                    "id": 1241,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "382:7:2",
@@ -570,12 +570,12 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 1167,
+              "id": 1244,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "408:0:2"
             },
-            "scope": 1297,
+            "scope": 1374,
             "src": "370:105:2",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -583,7 +583,7 @@
           },
           {
             "body": {
-              "id": 1190,
+              "id": 1267,
               "nodeType": "Block",
               "src": "501:49:2",
               "statements": [
@@ -597,7 +597,7 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 1186,
+                        "id": 1263,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -606,18 +606,18 @@
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 1183,
+                            "id": 1260,
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2156,
+                            "referencedDeclaration": 2233,
                             "src": "516:3:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
                               "typeString": "msg"
                             }
                           },
-                          "id": 1184,
+                          "id": 1261,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -635,11 +635,11 @@
                         "operator": "==",
                         "rightExpression": {
                           "argumentTypes": null,
-                          "id": 1185,
+                          "id": 1262,
                           "name": "owner_",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1146,
+                          "referencedDeclaration": 1223,
                           "src": "530:6:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -660,21 +660,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 1182,
+                      "id": 1259,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        2159,
-                        2160
+                        2236,
+                        2237
                       ],
-                      "referencedDeclaration": 2159,
+                      "referencedDeclaration": 2236,
                       "src": "507:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 1187,
+                    "id": 1264,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -688,23 +688,23 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1188,
+                  "id": 1265,
                   "nodeType": "ExpressionStatement",
                   "src": "507:30:2"
                 },
                 {
-                  "id": 1189,
+                  "id": 1266,
                   "nodeType": "PlaceholderStatement",
                   "src": "544:1:2"
                 }
               ]
             },
             "documentation": null,
-            "id": 1191,
+            "id": 1268,
             "name": "restricted",
             "nodeType": "ModifierDefinition",
             "parameters": {
-              "id": 1181,
+              "id": 1258,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "498:2:2"
@@ -714,7 +714,7 @@
           },
           {
             "body": {
-              "id": 1206,
+              "id": 1283,
               "nodeType": "Block",
               "src": "593:80:2",
               "statements": [
@@ -728,7 +728,7 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 1202,
+                        "id": 1279,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -737,18 +737,18 @@
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 1196,
+                            "id": 1273,
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2156,
+                            "referencedDeclaration": 2233,
                             "src": "608:3:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
                               "typeString": "msg"
                             }
                           },
-                          "id": 1197,
+                          "id": 1274,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -769,11 +769,11 @@
                           "arguments": [
                             {
                               "argumentTypes": null,
-                              "id": 1200,
+                              "id": 1277,
                               "name": "_contentId",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1193,
+                              "referencedDeclaration": 1270,
                               "src": "648:10:2",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_bytes32",
@@ -790,32 +790,32 @@
                             ],
                             "expression": {
                               "argumentTypes": null,
-                              "id": 1198,
+                              "id": 1275,
                               "name": "registry_",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1152,
+                              "referencedDeclaration": 1229,
                               "src": "622:9:2",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_Registry_$1708",
+                                "typeIdentifier": "t_contract$_Registry_$1785",
                                 "typeString": "contract Registry"
                               }
                             },
-                            "id": 1199,
+                            "id": 1276,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "getProxyAddress",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 1498,
+                            "referencedDeclaration": 1575,
                             "src": "622:25:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_external_view$_t_bytes32_$returns$_t_address_$",
                               "typeString": "function (bytes32) view external returns (address)"
                             }
                           },
-                          "id": 1201,
+                          "id": 1278,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -843,21 +843,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 1195,
+                      "id": 1272,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        2159,
-                        2160
+                        2236,
+                        2237
                       ],
-                      "referencedDeclaration": 2159,
+                      "referencedDeclaration": 2236,
                       "src": "599:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 1203,
+                    "id": 1280,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -871,31 +871,31 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1204,
+                  "id": 1281,
                   "nodeType": "ExpressionStatement",
                   "src": "599:61:2"
                 },
                 {
-                  "id": 1205,
+                  "id": 1282,
                   "nodeType": "PlaceholderStatement",
                   "src": "667:1:2"
                 }
               ]
             },
             "documentation": null,
-            "id": 1207,
+            "id": 1284,
             "name": "fromProxy",
             "nodeType": "ModifierDefinition",
             "parameters": {
-              "id": 1194,
+              "id": 1271,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1193,
+                  "id": 1270,
                   "name": "_contentId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1207,
+                  "scope": 1284,
                   "src": "573:18:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -904,7 +904,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1192,
+                    "id": 1269,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "573:7:2",
@@ -924,7 +924,7 @@
           },
           {
             "body": {
-              "id": 1219,
+              "id": 1296,
               "nodeType": "Block",
               "src": "754:44:2",
               "statements": [
@@ -935,25 +935,25 @@
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 1214,
+                        "id": 1291,
                         "name": "libraries_",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1150,
+                        "referencedDeclaration": 1227,
                         "src": "767:10:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1159_storage_$",
+                          "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1236_storage_$",
                           "typeString": "mapping(bytes32 => struct Library.Lib storage ref)"
                         }
                       },
-                      "id": 1216,
+                      "id": 1293,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 1215,
+                        "id": 1292,
                         "name": "_identity",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1209,
+                        "referencedDeclaration": 1286,
                         "src": "778:9:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -967,33 +967,33 @@
                       "nodeType": "IndexAccess",
                       "src": "767:21:2",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Lib_$1159_storage",
+                        "typeIdentifier": "t_struct$_Lib_$1236_storage",
                         "typeString": "struct Library.Lib storage ref"
                       }
                     },
-                    "id": 1217,
+                    "id": 1294,
                     "isConstant": false,
                     "isLValue": true,
                     "isPure": false,
                     "lValueRequested": false,
                     "memberName": "size",
                     "nodeType": "MemberAccess",
-                    "referencedDeclaration": 1154,
+                    "referencedDeclaration": 1231,
                     "src": "767:26:2",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint16",
                       "typeString": "uint16"
                     }
                   },
-                  "functionReturnParameters": 1213,
-                  "id": 1218,
+                  "functionReturnParameters": 1290,
+                  "id": 1295,
                   "nodeType": "Return",
                   "src": "760:33:2"
                 }
               ]
             },
             "documentation": null,
-            "id": 1220,
+            "id": 1297,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -1001,15 +1001,15 @@
             "name": "getLibrarySize",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1210,
+              "id": 1287,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1209,
+                  "id": 1286,
                   "name": "_identity",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1220,
+                  "scope": 1297,
                   "src": "701:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1018,7 +1018,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1208,
+                    "id": 1285,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "701:7:2",
@@ -1035,15 +1035,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 1213,
+              "id": 1290,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1212,
+                  "id": 1289,
                   "name": "size",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1220,
+                  "scope": 1297,
                   "src": "741:11:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1052,7 +1052,7 @@
                     "typeString": "uint16"
                   },
                   "typeName": {
-                    "id": 1211,
+                    "id": 1288,
                     "name": "uint16",
                     "nodeType": "ElementaryTypeName",
                     "src": "741:6:2",
@@ -1067,7 +1067,7 @@
               ],
               "src": "740:13:2"
             },
-            "scope": 1297,
+            "scope": 1374,
             "src": "677:121:2",
             "stateMutability": "view",
             "superFunction": null,
@@ -1075,7 +1075,7 @@
           },
           {
             "body": {
-              "id": 1245,
+              "id": 1322,
               "nodeType": "Block",
               "src": "900:106:2",
               "statements": [
@@ -1089,18 +1089,18 @@
                           "typeIdentifier": "t_uint16",
                           "typeString": "uint16"
                         },
-                        "id": 1235,
+                        "id": 1312,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "argumentTypes": null,
-                          "id": 1230,
+                          "id": 1307,
                           "name": "_index",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1224,
+                          "referencedDeclaration": 1301,
                           "src": "915:6:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint16",
@@ -1115,25 +1115,25 @@
                             "argumentTypes": null,
                             "baseExpression": {
                               "argumentTypes": null,
-                              "id": 1231,
+                              "id": 1308,
                               "name": "libraries_",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1150,
+                              "referencedDeclaration": 1227,
                               "src": "924:10:2",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1159_storage_$",
+                                "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1236_storage_$",
                                 "typeString": "mapping(bytes32 => struct Library.Lib storage ref)"
                               }
                             },
-                            "id": 1233,
+                            "id": 1310,
                             "indexExpression": {
                               "argumentTypes": null,
-                              "id": 1232,
+                              "id": 1309,
                               "name": "_identity",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1222,
+                              "referencedDeclaration": 1299,
                               "src": "935:9:2",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_bytes32",
@@ -1147,18 +1147,18 @@
                             "nodeType": "IndexAccess",
                             "src": "924:21:2",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Lib_$1159_storage",
+                              "typeIdentifier": "t_struct$_Lib_$1236_storage",
                               "typeString": "struct Library.Lib storage ref"
                             }
                           },
-                          "id": 1234,
+                          "id": 1311,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "size",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 1154,
+                          "referencedDeclaration": 1231,
                           "src": "924:26:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint16",
@@ -1179,21 +1179,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 1229,
+                      "id": 1306,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        2159,
-                        2160
+                        2236,
+                        2237
                       ],
-                      "referencedDeclaration": 2159,
+                      "referencedDeclaration": 2236,
                       "src": "906:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 1236,
+                    "id": 1313,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1207,7 +1207,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1237,
+                  "id": 1314,
                   "nodeType": "ExpressionStatement",
                   "src": "906:45:2"
                 },
@@ -1220,25 +1220,25 @@
                         "argumentTypes": null,
                         "baseExpression": {
                           "argumentTypes": null,
-                          "id": 1238,
+                          "id": 1315,
                           "name": "libraries_",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1150,
+                          "referencedDeclaration": 1227,
                           "src": "964:10:2",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1159_storage_$",
+                            "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1236_storage_$",
                             "typeString": "mapping(bytes32 => struct Library.Lib storage ref)"
                           }
                         },
-                        "id": 1240,
+                        "id": 1317,
                         "indexExpression": {
                           "argumentTypes": null,
-                          "id": 1239,
+                          "id": 1316,
                           "name": "_identity",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1222,
+                          "referencedDeclaration": 1299,
                           "src": "975:9:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bytes32",
@@ -1252,32 +1252,32 @@
                         "nodeType": "IndexAccess",
                         "src": "964:21:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Lib_$1159_storage",
+                          "typeIdentifier": "t_struct$_Lib_$1236_storage",
                           "typeString": "struct Library.Lib storage ref"
                         }
                       },
-                      "id": 1241,
+                      "id": 1318,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "content",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 1158,
+                      "referencedDeclaration": 1235,
                       "src": "964:29:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_mapping$_t_uint16_$_t_bytes32_$",
                         "typeString": "mapping(uint16 => bytes32)"
                       }
                     },
-                    "id": 1243,
+                    "id": 1320,
                     "indexExpression": {
                       "argumentTypes": null,
-                      "id": 1242,
+                      "id": 1319,
                       "name": "_index",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1224,
+                      "referencedDeclaration": 1301,
                       "src": "994:6:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint16",
@@ -1295,15 +1295,15 @@
                       "typeString": "bytes32"
                     }
                   },
-                  "functionReturnParameters": 1228,
-                  "id": 1244,
+                  "functionReturnParameters": 1305,
+                  "id": 1321,
                   "nodeType": "Return",
                   "src": "957:44:2"
                 }
               ]
             },
             "documentation": null,
-            "id": 1246,
+            "id": 1323,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -1311,15 +1311,15 @@
             "name": "getLibraryItem",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1225,
+              "id": 1302,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1222,
+                  "id": 1299,
                   "name": "_identity",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1246,
+                  "scope": 1323,
                   "src": "826:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1328,7 +1328,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1221,
+                    "id": 1298,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "826:7:2",
@@ -1342,10 +1342,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1224,
+                  "id": 1301,
                   "name": "_index",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1246,
+                  "scope": 1323,
                   "src": "845:13:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1354,7 +1354,7 @@
                     "typeString": "uint16"
                   },
                   "typeName": {
-                    "id": 1223,
+                    "id": 1300,
                     "name": "uint16",
                     "nodeType": "ElementaryTypeName",
                     "src": "845:6:2",
@@ -1371,15 +1371,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 1228,
+              "id": 1305,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1227,
+                  "id": 1304,
                   "name": "contentId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1246,
+                  "scope": 1323,
                   "src": "881:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1388,7 +1388,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1226,
+                    "id": 1303,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "881:7:2",
@@ -1403,7 +1403,7 @@
               ],
               "src": "880:19:2"
             },
-            "scope": 1297,
+            "scope": 1374,
             "src": "802:204:2",
             "stateMutability": "view",
             "superFunction": null,
@@ -1411,21 +1411,21 @@
           },
           {
             "body": {
-              "id": 1295,
+              "id": 1372,
               "nodeType": "Block",
               "src": "1102:246:2",
               "statements": [
                 {
                   "assignments": [
-                    1257
+                    1334
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 1257,
+                      "id": 1334,
                       "name": "libSize",
                       "nodeType": "VariableDeclaration",
-                      "scope": 1296,
+                      "scope": 1373,
                       "src": "1108:14:2",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -1434,7 +1434,7 @@
                         "typeString": "uint16"
                       },
                       "typeName": {
-                        "id": 1256,
+                        "id": 1333,
                         "name": "uint16",
                         "nodeType": "ElementaryTypeName",
                         "src": "1108:6:2",
@@ -1447,32 +1447,32 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 1262,
+                  "id": 1339,
                   "initialValue": {
                     "argumentTypes": null,
                     "expression": {
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 1258,
+                        "id": 1335,
                         "name": "libraries_",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1150,
+                        "referencedDeclaration": 1227,
                         "src": "1125:10:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1159_storage_$",
+                          "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1236_storage_$",
                           "typeString": "mapping(bytes32 => struct Library.Lib storage ref)"
                         }
                       },
-                      "id": 1260,
+                      "id": 1337,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 1259,
+                        "id": 1336,
                         "name": "_identity",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1248,
+                        "referencedDeclaration": 1325,
                         "src": "1136:9:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -1486,18 +1486,18 @@
                       "nodeType": "IndexAccess",
                       "src": "1125:21:2",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Lib_$1159_storage",
+                        "typeIdentifier": "t_struct$_Lib_$1236_storage",
                         "typeString": "struct Library.Lib storage ref"
                       }
                     },
-                    "id": 1261,
+                    "id": 1338,
                     "isConstant": false,
                     "isLValue": true,
                     "isPure": false,
                     "lValueRequested": false,
                     "memberName": "size",
                     "nodeType": "MemberAccess",
-                    "referencedDeclaration": 1154,
+                    "referencedDeclaration": 1231,
                     "src": "1125:26:2",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint16",
@@ -1517,7 +1517,7 @@
                           "typeIdentifier": "t_bytes32",
                           "typeString": "bytes32"
                         },
-                        "id": 1273,
+                        "id": 1350,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1530,25 +1530,25 @@
                               "argumentTypes": null,
                               "baseExpression": {
                                 "argumentTypes": null,
-                                "id": 1264,
+                                "id": 1341,
                                 "name": "libraries_",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 1150,
+                                "referencedDeclaration": 1227,
                                 "src": "1166:10:2",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1159_storage_$",
+                                  "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1236_storage_$",
                                   "typeString": "mapping(bytes32 => struct Library.Lib storage ref)"
                                 }
                               },
-                              "id": 1266,
+                              "id": 1343,
                               "indexExpression": {
                                 "argumentTypes": null,
-                                "id": 1265,
+                                "id": 1342,
                                 "name": "_identity",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 1248,
+                                "referencedDeclaration": 1325,
                                 "src": "1177:9:2",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_bytes32",
@@ -1562,32 +1562,32 @@
                               "nodeType": "IndexAccess",
                               "src": "1166:21:2",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_Lib_$1159_storage",
+                                "typeIdentifier": "t_struct$_Lib_$1236_storage",
                                 "typeString": "struct Library.Lib storage ref"
                               }
                             },
-                            "id": 1267,
+                            "id": 1344,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "content",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 1158,
+                            "referencedDeclaration": 1235,
                             "src": "1166:29:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_mapping$_t_uint16_$_t_bytes32_$",
                               "typeString": "mapping(uint16 => bytes32)"
                             }
                           },
-                          "id": 1269,
+                          "id": 1346,
                           "indexExpression": {
                             "argumentTypes": null,
-                            "id": 1268,
+                            "id": 1345,
                             "name": "libSize",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 1257,
+                            "referencedDeclaration": 1334,
                             "src": "1196:7:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint16",
@@ -1613,7 +1613,7 @@
                             {
                               "argumentTypes": null,
                               "hexValue": "30",
-                              "id": 1271,
+                              "id": 1348,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -1636,7 +1636,7 @@
                                 "typeString": "int_const 0"
                               }
                             ],
-                            "id": 1270,
+                            "id": 1347,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1649,7 +1649,7 @@
                             },
                             "typeName": "bytes32"
                           },
-                          "id": 1272,
+                          "id": 1349,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1677,21 +1677,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 1263,
+                      "id": 1340,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        2159,
-                        2160
+                        2236,
+                        2237
                       ],
-                      "referencedDeclaration": 2159,
+                      "referencedDeclaration": 2236,
                       "src": "1157:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 1274,
+                    "id": 1351,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1705,14 +1705,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1275,
+                  "id": 1352,
                   "nodeType": "ExpressionStatement",
                   "src": "1157:62:2"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 1283,
+                    "id": 1360,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1725,25 +1725,25 @@
                           "argumentTypes": null,
                           "baseExpression": {
                             "argumentTypes": null,
-                            "id": 1276,
+                            "id": 1353,
                             "name": "libraries_",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 1150,
+                            "referencedDeclaration": 1227,
                             "src": "1225:10:2",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1159_storage_$",
+                              "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1236_storage_$",
                               "typeString": "mapping(bytes32 => struct Library.Lib storage ref)"
                             }
                           },
-                          "id": 1278,
+                          "id": 1355,
                           "indexExpression": {
                             "argumentTypes": null,
-                            "id": 1277,
+                            "id": 1354,
                             "name": "_identity",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 1248,
+                            "referencedDeclaration": 1325,
                             "src": "1236:9:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
@@ -1757,32 +1757,32 @@
                           "nodeType": "IndexAccess",
                           "src": "1225:21:2",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Lib_$1159_storage",
+                            "typeIdentifier": "t_struct$_Lib_$1236_storage",
                             "typeString": "struct Library.Lib storage ref"
                           }
                         },
-                        "id": 1279,
+                        "id": 1356,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "content",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 1158,
+                        "referencedDeclaration": 1235,
                         "src": "1225:29:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_uint16_$_t_bytes32_$",
                           "typeString": "mapping(uint16 => bytes32)"
                         }
                       },
-                      "id": 1281,
+                      "id": 1358,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 1280,
+                        "id": 1357,
                         "name": "libSize",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1257,
+                        "referencedDeclaration": 1334,
                         "src": "1255:7:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint16",
@@ -1804,11 +1804,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 1282,
+                      "id": 1359,
                       "name": "_contentId",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1250,
+                      "referencedDeclaration": 1327,
                       "src": "1266:10:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
@@ -1821,14 +1821,14 @@
                       "typeString": "bytes32"
                     }
                   },
-                  "id": 1284,
+                  "id": 1361,
                   "nodeType": "ExpressionStatement",
                   "src": "1225:51:2"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 1289,
+                    "id": 1366,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1843,25 +1843,25 @@
                         "argumentTypes": null,
                         "baseExpression": {
                           "argumentTypes": null,
-                          "id": 1285,
+                          "id": 1362,
                           "name": "libraries_",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1150,
+                          "referencedDeclaration": 1227,
                           "src": "1282:10:2",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1159_storage_$",
+                            "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1236_storage_$",
                             "typeString": "mapping(bytes32 => struct Library.Lib storage ref)"
                           }
                         },
-                        "id": 1287,
+                        "id": 1364,
                         "indexExpression": {
                           "argumentTypes": null,
-                          "id": 1286,
+                          "id": 1363,
                           "name": "_identity",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1248,
+                          "referencedDeclaration": 1325,
                           "src": "1293:9:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bytes32",
@@ -1875,18 +1875,18 @@
                         "nodeType": "IndexAccess",
                         "src": "1282:21:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Lib_$1159_storage",
+                          "typeIdentifier": "t_struct$_Lib_$1236_storage",
                           "typeString": "struct Library.Lib storage ref"
                         }
                       },
-                      "id": 1288,
+                      "id": 1365,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": true,
                       "memberName": "size",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 1154,
+                      "referencedDeclaration": 1231,
                       "src": "1282:26:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint16",
@@ -1898,7 +1898,7 @@
                       "typeString": "uint16"
                     }
                   },
-                  "id": 1290,
+                  "id": 1367,
                   "nodeType": "ExpressionStatement",
                   "src": "1282:28:2"
                 },
@@ -1908,11 +1908,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 1292,
+                        "id": 1369,
                         "name": "_contentId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1250,
+                        "referencedDeclaration": 1327,
                         "src": "1332:10:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -1927,18 +1927,18 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 1291,
+                      "id": 1368,
                       "name": "AddedToLib",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1163,
+                      "referencedDeclaration": 1240,
                       "src": "1321:10:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_bytes32_$returns$__$",
                         "typeString": "function (bytes32)"
                       }
                     },
-                    "id": 1293,
+                    "id": 1370,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1952,14 +1952,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1294,
+                  "id": 1371,
                   "nodeType": "EmitStatement",
                   "src": "1316:27:2"
                 }
               ]
             },
             "documentation": null,
-            "id": 1296,
+            "id": 1373,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -1968,11 +1968,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 1253,
+                    "id": 1330,
                     "name": "_contentId",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1250,
+                    "referencedDeclaration": 1327,
                     "src": "1090:10:2",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
@@ -1980,14 +1980,14 @@
                     }
                   }
                 ],
-                "id": 1254,
+                "id": 1331,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 1252,
+                  "id": 1329,
                   "name": "fromProxy",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 1207,
+                  "referencedDeclaration": 1284,
                   "src": "1080:9:2",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$_t_bytes32_$",
@@ -2001,15 +2001,15 @@
             "name": "addLibraryItem",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1251,
+              "id": 1328,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1248,
+                  "id": 1325,
                   "name": "_identity",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1296,
+                  "scope": 1373,
                   "src": "1034:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2018,7 +2018,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1247,
+                    "id": 1324,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1034:7:2",
@@ -2032,10 +2032,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1250,
+                  "id": 1327,
                   "name": "_contentId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1296,
+                  "scope": 1373,
                   "src": "1053:18:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2044,7 +2044,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1249,
+                    "id": 1326,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1053:7:2",
@@ -2061,19 +2061,19 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 1255,
+              "id": 1332,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1102:0:2"
             },
-            "scope": 1297,
+            "scope": 1374,
             "src": "1010:338:2",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 1298,
+        "scope": 1375,
         "src": "52:1298:2"
       }
     ],
@@ -2083,14 +2083,14 @@
     "absolutePath": "/Users/ericjiang/Littlstar/ara-contracts/contracts/Library.sol",
     "exportedSymbols": {
       "Library": [
-        1297
+        1374
       ]
     },
-    "id": 1298,
+    "id": 1375,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1143,
+        "id": 1220,
         "literals": [
           "solidity",
           "^",
@@ -2103,10 +2103,10 @@
       {
         "absolutePath": "/Users/ericjiang/Littlstar/ara-contracts/contracts/Registry.sol",
         "file": "./Registry.sol",
-        "id": 1144,
+        "id": 1221,
         "nodeType": "ImportDirective",
-        "scope": 1298,
-        "sourceUnit": 1709,
+        "scope": 1375,
+        "sourceUnit": 1786,
         "src": "26:24:2",
         "symbolAliases": [],
         "unitAlias": ""
@@ -2117,19 +2117,19 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 1297,
+        "id": 1374,
         "linearizedBaseContracts": [
-          1297
+          1374
         ],
         "name": "Library",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 1146,
+            "id": 1223,
             "name": "owner_",
             "nodeType": "VariableDeclaration",
-            "scope": 1297,
+            "scope": 1374,
             "src": "73:21:2",
             "stateVariable": true,
             "storageLocation": "default",
@@ -2138,7 +2138,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 1145,
+              "id": 1222,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "73:7:2",
@@ -2152,21 +2152,21 @@
           },
           {
             "constant": false,
-            "id": 1150,
+            "id": 1227,
             "name": "libraries_",
             "nodeType": "VariableDeclaration",
-            "scope": 1297,
+            "scope": 1374,
             "src": "98:43:2",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1159_storage_$",
+              "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1236_storage_$",
               "typeString": "mapping(bytes32 => struct Library.Lib)"
             },
             "typeName": {
-              "id": 1149,
+              "id": 1226,
               "keyType": {
-                "id": 1147,
+                "id": 1224,
                 "name": "bytes32",
                 "nodeType": "ElementaryTypeName",
                 "src": "107:7:2",
@@ -2178,18 +2178,18 @@
               "nodeType": "Mapping",
               "src": "98:24:2",
               "typeDescriptions": {
-                "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1159_storage_$",
+                "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1236_storage_$",
                 "typeString": "mapping(bytes32 => struct Library.Lib)"
               },
               "valueType": {
                 "contractScope": null,
-                "id": 1148,
+                "id": 1225,
                 "name": "Lib",
                 "nodeType": "UserDefinedTypeName",
-                "referencedDeclaration": 1159,
+                "referencedDeclaration": 1236,
                 "src": "118:3:2",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Lib_$1159_storage_ptr",
+                  "typeIdentifier": "t_struct$_Lib_$1236_storage_ptr",
                   "typeString": "struct Library.Lib"
                 }
               }
@@ -2199,26 +2199,26 @@
           },
           {
             "constant": false,
-            "id": 1152,
+            "id": 1229,
             "name": "registry_",
             "nodeType": "VariableDeclaration",
-            "scope": 1297,
+            "scope": 1374,
             "src": "187:18:2",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_Registry_$1708",
+              "typeIdentifier": "t_contract$_Registry_$1785",
               "typeString": "contract Registry"
             },
             "typeName": {
               "contractScope": null,
-              "id": 1151,
+              "id": 1228,
               "name": "Registry",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 1708,
+              "referencedDeclaration": 1785,
               "src": "187:8:2",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Registry_$1708",
+                "typeIdentifier": "t_contract$_Registry_$1785",
                 "typeString": "contract Registry"
               }
             },
@@ -2227,14 +2227,14 @@
           },
           {
             "canonicalName": "Library.Lib",
-            "id": 1159,
+            "id": 1236,
             "members": [
               {
                 "constant": false,
-                "id": 1154,
+                "id": 1231,
                 "name": "size",
                 "nodeType": "VariableDeclaration",
-                "scope": 1159,
+                "scope": 1236,
                 "src": "227:11:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2243,7 +2243,7 @@
                   "typeString": "uint16"
                 },
                 "typeName": {
-                  "id": 1153,
+                  "id": 1230,
                   "name": "uint16",
                   "nodeType": "ElementaryTypeName",
                   "src": "227:6:2",
@@ -2257,10 +2257,10 @@
               },
               {
                 "constant": false,
-                "id": 1158,
+                "id": 1235,
                 "name": "content",
                 "nodeType": "VariableDeclaration",
-                "scope": 1159,
+                "scope": 1236,
                 "src": "244:35:2",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -2269,9 +2269,9 @@
                   "typeString": "mapping(uint16 => bytes32)"
                 },
                 "typeName": {
-                  "id": 1157,
+                  "id": 1234,
                   "keyType": {
-                    "id": 1155,
+                    "id": 1232,
                     "name": "uint16",
                     "nodeType": "ElementaryTypeName",
                     "src": "253:6:2",
@@ -2287,7 +2287,7 @@
                     "typeString": "mapping(uint16 => bytes32)"
                   },
                   "valueType": {
-                    "id": 1156,
+                    "id": 1233,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "263:7:2",
@@ -2303,27 +2303,27 @@
             ],
             "name": "Lib",
             "nodeType": "StructDefinition",
-            "scope": 1297,
+            "scope": 1374,
             "src": "210:107:2",
             "visibility": "public"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 1163,
+            "id": 1240,
             "name": "AddedToLib",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 1162,
+              "id": 1239,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1161,
+                  "id": 1238,
                   "indexed": true,
                   "name": "_contentId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1163,
+                  "scope": 1240,
                   "src": "338:26:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2332,7 +2332,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1160,
+                    "id": 1237,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "338:7:2",
@@ -2351,25 +2351,25 @@
           },
           {
             "body": {
-              "id": 1179,
+              "id": 1256,
               "nodeType": "Block",
               "src": "408:67:2",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 1171,
+                    "id": 1248,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 1168,
+                      "id": 1245,
                       "name": "owner_",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1146,
+                      "referencedDeclaration": 1223,
                       "src": "414:6:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -2382,18 +2382,18 @@
                       "argumentTypes": null,
                       "expression": {
                         "argumentTypes": null,
-                        "id": 1169,
+                        "id": 1246,
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2156,
+                        "referencedDeclaration": 2233,
                         "src": "423:3:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
                           "typeString": "msg"
                         }
                       },
-                      "id": 1170,
+                      "id": 1247,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -2413,28 +2413,28 @@
                       "typeString": "address"
                     }
                   },
-                  "id": 1172,
+                  "id": 1249,
                   "nodeType": "ExpressionStatement",
                   "src": "414:19:2"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 1177,
+                    "id": 1254,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 1173,
+                      "id": 1250,
                       "name": "registry_",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1152,
+                      "referencedDeclaration": 1229,
                       "src": "439:9:2",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_Registry_$1708",
+                        "typeIdentifier": "t_contract$_Registry_$1785",
                         "typeString": "contract Registry"
                       }
                     },
@@ -2445,11 +2445,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 1175,
+                          "id": 1252,
                           "name": "_registry",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1165,
+                          "referencedDeclaration": 1242,
                           "src": "460:9:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -2464,18 +2464,18 @@
                             "typeString": "address"
                           }
                         ],
-                        "id": 1174,
+                        "id": 1251,
                         "name": "Registry",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1708,
+                        "referencedDeclaration": 1785,
                         "src": "451:8:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_Registry_$1708_$",
+                          "typeIdentifier": "t_type$_t_contract$_Registry_$1785_$",
                           "typeString": "type(contract Registry)"
                         }
                       },
-                      "id": 1176,
+                      "id": 1253,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -2485,24 +2485,24 @@
                       "nodeType": "FunctionCall",
                       "src": "451:19:2",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_Registry_$1708",
+                        "typeIdentifier": "t_contract$_Registry_$1785",
                         "typeString": "contract Registry"
                       }
                     },
                     "src": "439:31:2",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Registry_$1708",
+                      "typeIdentifier": "t_contract$_Registry_$1785",
                       "typeString": "contract Registry"
                     }
                   },
-                  "id": 1178,
+                  "id": 1255,
                   "nodeType": "ExpressionStatement",
                   "src": "439:31:2"
                 }
               ]
             },
             "documentation": null,
-            "id": 1180,
+            "id": 1257,
             "implemented": true,
             "isConstructor": true,
             "isDeclaredConst": false,
@@ -2510,15 +2510,15 @@
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1166,
+              "id": 1243,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1165,
+                  "id": 1242,
                   "name": "_registry",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1180,
+                  "scope": 1257,
                   "src": "382:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2527,7 +2527,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1164,
+                    "id": 1241,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "382:7:2",
@@ -2544,12 +2544,12 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 1167,
+              "id": 1244,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "408:0:2"
             },
-            "scope": 1297,
+            "scope": 1374,
             "src": "370:105:2",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2557,7 +2557,7 @@
           },
           {
             "body": {
-              "id": 1190,
+              "id": 1267,
               "nodeType": "Block",
               "src": "501:49:2",
               "statements": [
@@ -2571,7 +2571,7 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 1186,
+                        "id": 1263,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2580,18 +2580,18 @@
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 1183,
+                            "id": 1260,
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2156,
+                            "referencedDeclaration": 2233,
                             "src": "516:3:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
                               "typeString": "msg"
                             }
                           },
-                          "id": 1184,
+                          "id": 1261,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -2609,11 +2609,11 @@
                         "operator": "==",
                         "rightExpression": {
                           "argumentTypes": null,
-                          "id": 1185,
+                          "id": 1262,
                           "name": "owner_",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1146,
+                          "referencedDeclaration": 1223,
                           "src": "530:6:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -2634,21 +2634,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 1182,
+                      "id": 1259,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        2159,
-                        2160
+                        2236,
+                        2237
                       ],
-                      "referencedDeclaration": 2159,
+                      "referencedDeclaration": 2236,
                       "src": "507:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 1187,
+                    "id": 1264,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2662,23 +2662,23 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1188,
+                  "id": 1265,
                   "nodeType": "ExpressionStatement",
                   "src": "507:30:2"
                 },
                 {
-                  "id": 1189,
+                  "id": 1266,
                   "nodeType": "PlaceholderStatement",
                   "src": "544:1:2"
                 }
               ]
             },
             "documentation": null,
-            "id": 1191,
+            "id": 1268,
             "name": "restricted",
             "nodeType": "ModifierDefinition",
             "parameters": {
-              "id": 1181,
+              "id": 1258,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "498:2:2"
@@ -2688,7 +2688,7 @@
           },
           {
             "body": {
-              "id": 1206,
+              "id": 1283,
               "nodeType": "Block",
               "src": "593:80:2",
               "statements": [
@@ -2702,7 +2702,7 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 1202,
+                        "id": 1279,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2711,18 +2711,18 @@
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 1196,
+                            "id": 1273,
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 2156,
+                            "referencedDeclaration": 2233,
                             "src": "608:3:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
                               "typeString": "msg"
                             }
                           },
-                          "id": 1197,
+                          "id": 1274,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -2743,11 +2743,11 @@
                           "arguments": [
                             {
                               "argumentTypes": null,
-                              "id": 1200,
+                              "id": 1277,
                               "name": "_contentId",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1193,
+                              "referencedDeclaration": 1270,
                               "src": "648:10:2",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_bytes32",
@@ -2764,32 +2764,32 @@
                             ],
                             "expression": {
                               "argumentTypes": null,
-                              "id": 1198,
+                              "id": 1275,
                               "name": "registry_",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1152,
+                              "referencedDeclaration": 1229,
                               "src": "622:9:2",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_Registry_$1708",
+                                "typeIdentifier": "t_contract$_Registry_$1785",
                                 "typeString": "contract Registry"
                               }
                             },
-                            "id": 1199,
+                            "id": 1276,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "getProxyAddress",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 1498,
+                            "referencedDeclaration": 1575,
                             "src": "622:25:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_external_view$_t_bytes32_$returns$_t_address_$",
                               "typeString": "function (bytes32) view external returns (address)"
                             }
                           },
-                          "id": 1201,
+                          "id": 1278,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -2817,21 +2817,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 1195,
+                      "id": 1272,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        2159,
-                        2160
+                        2236,
+                        2237
                       ],
-                      "referencedDeclaration": 2159,
+                      "referencedDeclaration": 2236,
                       "src": "599:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 1203,
+                    "id": 1280,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2845,31 +2845,31 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1204,
+                  "id": 1281,
                   "nodeType": "ExpressionStatement",
                   "src": "599:61:2"
                 },
                 {
-                  "id": 1205,
+                  "id": 1282,
                   "nodeType": "PlaceholderStatement",
                   "src": "667:1:2"
                 }
               ]
             },
             "documentation": null,
-            "id": 1207,
+            "id": 1284,
             "name": "fromProxy",
             "nodeType": "ModifierDefinition",
             "parameters": {
-              "id": 1194,
+              "id": 1271,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1193,
+                  "id": 1270,
                   "name": "_contentId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1207,
+                  "scope": 1284,
                   "src": "573:18:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2878,7 +2878,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1192,
+                    "id": 1269,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "573:7:2",
@@ -2898,7 +2898,7 @@
           },
           {
             "body": {
-              "id": 1219,
+              "id": 1296,
               "nodeType": "Block",
               "src": "754:44:2",
               "statements": [
@@ -2909,25 +2909,25 @@
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 1214,
+                        "id": 1291,
                         "name": "libraries_",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1150,
+                        "referencedDeclaration": 1227,
                         "src": "767:10:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1159_storage_$",
+                          "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1236_storage_$",
                           "typeString": "mapping(bytes32 => struct Library.Lib storage ref)"
                         }
                       },
-                      "id": 1216,
+                      "id": 1293,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 1215,
+                        "id": 1292,
                         "name": "_identity",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1209,
+                        "referencedDeclaration": 1286,
                         "src": "778:9:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -2941,33 +2941,33 @@
                       "nodeType": "IndexAccess",
                       "src": "767:21:2",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Lib_$1159_storage",
+                        "typeIdentifier": "t_struct$_Lib_$1236_storage",
                         "typeString": "struct Library.Lib storage ref"
                       }
                     },
-                    "id": 1217,
+                    "id": 1294,
                     "isConstant": false,
                     "isLValue": true,
                     "isPure": false,
                     "lValueRequested": false,
                     "memberName": "size",
                     "nodeType": "MemberAccess",
-                    "referencedDeclaration": 1154,
+                    "referencedDeclaration": 1231,
                     "src": "767:26:2",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint16",
                       "typeString": "uint16"
                     }
                   },
-                  "functionReturnParameters": 1213,
-                  "id": 1218,
+                  "functionReturnParameters": 1290,
+                  "id": 1295,
                   "nodeType": "Return",
                   "src": "760:33:2"
                 }
               ]
             },
             "documentation": null,
-            "id": 1220,
+            "id": 1297,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -2975,15 +2975,15 @@
             "name": "getLibrarySize",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1210,
+              "id": 1287,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1209,
+                  "id": 1286,
                   "name": "_identity",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1220,
+                  "scope": 1297,
                   "src": "701:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2992,7 +2992,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1208,
+                    "id": 1285,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "701:7:2",
@@ -3009,15 +3009,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 1213,
+              "id": 1290,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1212,
+                  "id": 1289,
                   "name": "size",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1220,
+                  "scope": 1297,
                   "src": "741:11:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3026,7 +3026,7 @@
                     "typeString": "uint16"
                   },
                   "typeName": {
-                    "id": 1211,
+                    "id": 1288,
                     "name": "uint16",
                     "nodeType": "ElementaryTypeName",
                     "src": "741:6:2",
@@ -3041,7 +3041,7 @@
               ],
               "src": "740:13:2"
             },
-            "scope": 1297,
+            "scope": 1374,
             "src": "677:121:2",
             "stateMutability": "view",
             "superFunction": null,
@@ -3049,7 +3049,7 @@
           },
           {
             "body": {
-              "id": 1245,
+              "id": 1322,
               "nodeType": "Block",
               "src": "900:106:2",
               "statements": [
@@ -3063,18 +3063,18 @@
                           "typeIdentifier": "t_uint16",
                           "typeString": "uint16"
                         },
-                        "id": 1235,
+                        "id": 1312,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "argumentTypes": null,
-                          "id": 1230,
+                          "id": 1307,
                           "name": "_index",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1224,
+                          "referencedDeclaration": 1301,
                           "src": "915:6:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint16",
@@ -3089,25 +3089,25 @@
                             "argumentTypes": null,
                             "baseExpression": {
                               "argumentTypes": null,
-                              "id": 1231,
+                              "id": 1308,
                               "name": "libraries_",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1150,
+                              "referencedDeclaration": 1227,
                               "src": "924:10:2",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1159_storage_$",
+                                "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1236_storage_$",
                                 "typeString": "mapping(bytes32 => struct Library.Lib storage ref)"
                               }
                             },
-                            "id": 1233,
+                            "id": 1310,
                             "indexExpression": {
                               "argumentTypes": null,
-                              "id": 1232,
+                              "id": 1309,
                               "name": "_identity",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1222,
+                              "referencedDeclaration": 1299,
                               "src": "935:9:2",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_bytes32",
@@ -3121,18 +3121,18 @@
                             "nodeType": "IndexAccess",
                             "src": "924:21:2",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Lib_$1159_storage",
+                              "typeIdentifier": "t_struct$_Lib_$1236_storage",
                               "typeString": "struct Library.Lib storage ref"
                             }
                           },
-                          "id": 1234,
+                          "id": 1311,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "size",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 1154,
+                          "referencedDeclaration": 1231,
                           "src": "924:26:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint16",
@@ -3153,21 +3153,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 1229,
+                      "id": 1306,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        2159,
-                        2160
+                        2236,
+                        2237
                       ],
-                      "referencedDeclaration": 2159,
+                      "referencedDeclaration": 2236,
                       "src": "906:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 1236,
+                    "id": 1313,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3181,7 +3181,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1237,
+                  "id": 1314,
                   "nodeType": "ExpressionStatement",
                   "src": "906:45:2"
                 },
@@ -3194,25 +3194,25 @@
                         "argumentTypes": null,
                         "baseExpression": {
                           "argumentTypes": null,
-                          "id": 1238,
+                          "id": 1315,
                           "name": "libraries_",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1150,
+                          "referencedDeclaration": 1227,
                           "src": "964:10:2",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1159_storage_$",
+                            "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1236_storage_$",
                             "typeString": "mapping(bytes32 => struct Library.Lib storage ref)"
                           }
                         },
-                        "id": 1240,
+                        "id": 1317,
                         "indexExpression": {
                           "argumentTypes": null,
-                          "id": 1239,
+                          "id": 1316,
                           "name": "_identity",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1222,
+                          "referencedDeclaration": 1299,
                           "src": "975:9:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bytes32",
@@ -3226,32 +3226,32 @@
                         "nodeType": "IndexAccess",
                         "src": "964:21:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Lib_$1159_storage",
+                          "typeIdentifier": "t_struct$_Lib_$1236_storage",
                           "typeString": "struct Library.Lib storage ref"
                         }
                       },
-                      "id": 1241,
+                      "id": 1318,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "content",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 1158,
+                      "referencedDeclaration": 1235,
                       "src": "964:29:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_mapping$_t_uint16_$_t_bytes32_$",
                         "typeString": "mapping(uint16 => bytes32)"
                       }
                     },
-                    "id": 1243,
+                    "id": 1320,
                     "indexExpression": {
                       "argumentTypes": null,
-                      "id": 1242,
+                      "id": 1319,
                       "name": "_index",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1224,
+                      "referencedDeclaration": 1301,
                       "src": "994:6:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint16",
@@ -3269,15 +3269,15 @@
                       "typeString": "bytes32"
                     }
                   },
-                  "functionReturnParameters": 1228,
-                  "id": 1244,
+                  "functionReturnParameters": 1305,
+                  "id": 1321,
                   "nodeType": "Return",
                   "src": "957:44:2"
                 }
               ]
             },
             "documentation": null,
-            "id": 1246,
+            "id": 1323,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -3285,15 +3285,15 @@
             "name": "getLibraryItem",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1225,
+              "id": 1302,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1222,
+                  "id": 1299,
                   "name": "_identity",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1246,
+                  "scope": 1323,
                   "src": "826:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3302,7 +3302,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1221,
+                    "id": 1298,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "826:7:2",
@@ -3316,10 +3316,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1224,
+                  "id": 1301,
                   "name": "_index",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1246,
+                  "scope": 1323,
                   "src": "845:13:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3328,7 +3328,7 @@
                     "typeString": "uint16"
                   },
                   "typeName": {
-                    "id": 1223,
+                    "id": 1300,
                     "name": "uint16",
                     "nodeType": "ElementaryTypeName",
                     "src": "845:6:2",
@@ -3345,15 +3345,15 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 1228,
+              "id": 1305,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1227,
+                  "id": 1304,
                   "name": "contentId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1246,
+                  "scope": 1323,
                   "src": "881:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3362,7 +3362,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1226,
+                    "id": 1303,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "881:7:2",
@@ -3377,7 +3377,7 @@
               ],
               "src": "880:19:2"
             },
-            "scope": 1297,
+            "scope": 1374,
             "src": "802:204:2",
             "stateMutability": "view",
             "superFunction": null,
@@ -3385,21 +3385,21 @@
           },
           {
             "body": {
-              "id": 1295,
+              "id": 1372,
               "nodeType": "Block",
               "src": "1102:246:2",
               "statements": [
                 {
                   "assignments": [
-                    1257
+                    1334
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 1257,
+                      "id": 1334,
                       "name": "libSize",
                       "nodeType": "VariableDeclaration",
-                      "scope": 1296,
+                      "scope": 1373,
                       "src": "1108:14:2",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -3408,7 +3408,7 @@
                         "typeString": "uint16"
                       },
                       "typeName": {
-                        "id": 1256,
+                        "id": 1333,
                         "name": "uint16",
                         "nodeType": "ElementaryTypeName",
                         "src": "1108:6:2",
@@ -3421,32 +3421,32 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 1262,
+                  "id": 1339,
                   "initialValue": {
                     "argumentTypes": null,
                     "expression": {
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 1258,
+                        "id": 1335,
                         "name": "libraries_",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1150,
+                        "referencedDeclaration": 1227,
                         "src": "1125:10:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1159_storage_$",
+                          "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1236_storage_$",
                           "typeString": "mapping(bytes32 => struct Library.Lib storage ref)"
                         }
                       },
-                      "id": 1260,
+                      "id": 1337,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 1259,
+                        "id": 1336,
                         "name": "_identity",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1248,
+                        "referencedDeclaration": 1325,
                         "src": "1136:9:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -3460,18 +3460,18 @@
                       "nodeType": "IndexAccess",
                       "src": "1125:21:2",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Lib_$1159_storage",
+                        "typeIdentifier": "t_struct$_Lib_$1236_storage",
                         "typeString": "struct Library.Lib storage ref"
                       }
                     },
-                    "id": 1261,
+                    "id": 1338,
                     "isConstant": false,
                     "isLValue": true,
                     "isPure": false,
                     "lValueRequested": false,
                     "memberName": "size",
                     "nodeType": "MemberAccess",
-                    "referencedDeclaration": 1154,
+                    "referencedDeclaration": 1231,
                     "src": "1125:26:2",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint16",
@@ -3491,7 +3491,7 @@
                           "typeIdentifier": "t_bytes32",
                           "typeString": "bytes32"
                         },
-                        "id": 1273,
+                        "id": 1350,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -3504,25 +3504,25 @@
                               "argumentTypes": null,
                               "baseExpression": {
                                 "argumentTypes": null,
-                                "id": 1264,
+                                "id": 1341,
                                 "name": "libraries_",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 1150,
+                                "referencedDeclaration": 1227,
                                 "src": "1166:10:2",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1159_storage_$",
+                                  "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1236_storage_$",
                                   "typeString": "mapping(bytes32 => struct Library.Lib storage ref)"
                                 }
                               },
-                              "id": 1266,
+                              "id": 1343,
                               "indexExpression": {
                                 "argumentTypes": null,
-                                "id": 1265,
+                                "id": 1342,
                                 "name": "_identity",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 1248,
+                                "referencedDeclaration": 1325,
                                 "src": "1177:9:2",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_bytes32",
@@ -3536,32 +3536,32 @@
                               "nodeType": "IndexAccess",
                               "src": "1166:21:2",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_Lib_$1159_storage",
+                                "typeIdentifier": "t_struct$_Lib_$1236_storage",
                                 "typeString": "struct Library.Lib storage ref"
                               }
                             },
-                            "id": 1267,
+                            "id": 1344,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": false,
                             "memberName": "content",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 1158,
+                            "referencedDeclaration": 1235,
                             "src": "1166:29:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_mapping$_t_uint16_$_t_bytes32_$",
                               "typeString": "mapping(uint16 => bytes32)"
                             }
                           },
-                          "id": 1269,
+                          "id": 1346,
                           "indexExpression": {
                             "argumentTypes": null,
-                            "id": 1268,
+                            "id": 1345,
                             "name": "libSize",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 1257,
+                            "referencedDeclaration": 1334,
                             "src": "1196:7:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint16",
@@ -3587,7 +3587,7 @@
                             {
                               "argumentTypes": null,
                               "hexValue": "30",
-                              "id": 1271,
+                              "id": 1348,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -3610,7 +3610,7 @@
                                 "typeString": "int_const 0"
                               }
                             ],
-                            "id": 1270,
+                            "id": 1347,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -3623,7 +3623,7 @@
                             },
                             "typeName": "bytes32"
                           },
-                          "id": 1272,
+                          "id": 1349,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -3651,21 +3651,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 1263,
+                      "id": 1340,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        2159,
-                        2160
+                        2236,
+                        2237
                       ],
-                      "referencedDeclaration": 2159,
+                      "referencedDeclaration": 2236,
                       "src": "1157:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 1274,
+                    "id": 1351,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3679,14 +3679,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1275,
+                  "id": 1352,
                   "nodeType": "ExpressionStatement",
                   "src": "1157:62:2"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 1283,
+                    "id": 1360,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3699,25 +3699,25 @@
                           "argumentTypes": null,
                           "baseExpression": {
                             "argumentTypes": null,
-                            "id": 1276,
+                            "id": 1353,
                             "name": "libraries_",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 1150,
+                            "referencedDeclaration": 1227,
                             "src": "1225:10:2",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1159_storage_$",
+                              "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1236_storage_$",
                               "typeString": "mapping(bytes32 => struct Library.Lib storage ref)"
                             }
                           },
-                          "id": 1278,
+                          "id": 1355,
                           "indexExpression": {
                             "argumentTypes": null,
-                            "id": 1277,
+                            "id": 1354,
                             "name": "_identity",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 1248,
+                            "referencedDeclaration": 1325,
                             "src": "1236:9:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
@@ -3731,32 +3731,32 @@
                           "nodeType": "IndexAccess",
                           "src": "1225:21:2",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Lib_$1159_storage",
+                            "typeIdentifier": "t_struct$_Lib_$1236_storage",
                             "typeString": "struct Library.Lib storage ref"
                           }
                         },
-                        "id": 1279,
+                        "id": 1356,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "content",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 1158,
+                        "referencedDeclaration": 1235,
                         "src": "1225:29:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_uint16_$_t_bytes32_$",
                           "typeString": "mapping(uint16 => bytes32)"
                         }
                       },
-                      "id": 1281,
+                      "id": 1358,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 1280,
+                        "id": 1357,
                         "name": "libSize",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1257,
+                        "referencedDeclaration": 1334,
                         "src": "1255:7:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint16",
@@ -3778,11 +3778,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 1282,
+                      "id": 1359,
                       "name": "_contentId",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1250,
+                      "referencedDeclaration": 1327,
                       "src": "1266:10:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
@@ -3795,14 +3795,14 @@
                       "typeString": "bytes32"
                     }
                   },
-                  "id": 1284,
+                  "id": 1361,
                   "nodeType": "ExpressionStatement",
                   "src": "1225:51:2"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 1289,
+                    "id": 1366,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3817,25 +3817,25 @@
                         "argumentTypes": null,
                         "baseExpression": {
                           "argumentTypes": null,
-                          "id": 1285,
+                          "id": 1362,
                           "name": "libraries_",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1150,
+                          "referencedDeclaration": 1227,
                           "src": "1282:10:2",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1159_storage_$",
+                            "typeIdentifier": "t_mapping$_t_bytes32_$_t_struct$_Lib_$1236_storage_$",
                             "typeString": "mapping(bytes32 => struct Library.Lib storage ref)"
                           }
                         },
-                        "id": 1287,
+                        "id": 1364,
                         "indexExpression": {
                           "argumentTypes": null,
-                          "id": 1286,
+                          "id": 1363,
                           "name": "_identity",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1248,
+                          "referencedDeclaration": 1325,
                           "src": "1293:9:2",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bytes32",
@@ -3849,18 +3849,18 @@
                         "nodeType": "IndexAccess",
                         "src": "1282:21:2",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_Lib_$1159_storage",
+                          "typeIdentifier": "t_struct$_Lib_$1236_storage",
                           "typeString": "struct Library.Lib storage ref"
                         }
                       },
-                      "id": 1288,
+                      "id": 1365,
                       "isConstant": false,
                       "isLValue": true,
                       "isPure": false,
                       "lValueRequested": true,
                       "memberName": "size",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 1154,
+                      "referencedDeclaration": 1231,
                       "src": "1282:26:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint16",
@@ -3872,7 +3872,7 @@
                       "typeString": "uint16"
                     }
                   },
-                  "id": 1290,
+                  "id": 1367,
                   "nodeType": "ExpressionStatement",
                   "src": "1282:28:2"
                 },
@@ -3882,11 +3882,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 1292,
+                        "id": 1369,
                         "name": "_contentId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1250,
+                        "referencedDeclaration": 1327,
                         "src": "1332:10:2",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
@@ -3901,18 +3901,18 @@
                           "typeString": "bytes32"
                         }
                       ],
-                      "id": 1291,
+                      "id": 1368,
                       "name": "AddedToLib",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1163,
+                      "referencedDeclaration": 1240,
                       "src": "1321:10:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_bytes32_$returns$__$",
                         "typeString": "function (bytes32)"
                       }
                     },
-                    "id": 1293,
+                    "id": 1370,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3926,14 +3926,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1294,
+                  "id": 1371,
                   "nodeType": "EmitStatement",
                   "src": "1316:27:2"
                 }
               ]
             },
             "documentation": null,
-            "id": 1296,
+            "id": 1373,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -3942,11 +3942,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 1253,
+                    "id": 1330,
                     "name": "_contentId",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1250,
+                    "referencedDeclaration": 1327,
                     "src": "1090:10:2",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
@@ -3954,14 +3954,14 @@
                     }
                   }
                 ],
-                "id": 1254,
+                "id": 1331,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 1252,
+                  "id": 1329,
                   "name": "fromProxy",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 1207,
+                  "referencedDeclaration": 1284,
                   "src": "1080:9:2",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$_t_bytes32_$",
@@ -3975,15 +3975,15 @@
             "name": "addLibraryItem",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1251,
+              "id": 1328,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1248,
+                  "id": 1325,
                   "name": "_identity",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1296,
+                  "scope": 1373,
                   "src": "1034:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3992,7 +3992,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1247,
+                    "id": 1324,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1034:7:2",
@@ -4006,10 +4006,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1250,
+                  "id": 1327,
                   "name": "_contentId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1296,
+                  "scope": 1373,
                   "src": "1053:18:2",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4018,7 +4018,7 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 1249,
+                    "id": 1326,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1053:7:2",
@@ -4035,19 +4035,19 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 1255,
+              "id": 1332,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1102:0:2"
             },
-            "scope": 1297,
+            "scope": 1374,
             "src": "1010:338:2",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 1298,
+        "scope": 1375,
         "src": "52:1298:2"
       }
     ],
@@ -4059,5 +4059,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-08-17T23:43:47.481Z"
+  "updatedAt": "2018-08-20T18:30:58.796Z"
 }

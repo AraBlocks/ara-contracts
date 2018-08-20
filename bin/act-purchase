@@ -36,7 +36,8 @@ module.exports = (async function main() {
   if (!purchaser) {
     onfatal(new Error("Please provide the DID of the purchaser. See 'act purchase --help'."))
     process.exit(0)
-  } else if (!did) {
+  }
+  if (!did) {
     onfatal(new Error("Please provide a content DID to purchase. See 'act purchase --help'."))
     process.exit(0)
   }
