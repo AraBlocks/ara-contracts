@@ -18,7 +18,7 @@ contract AFS {
   bool     public listed_;
   uint256  public price_;
 
-  mapping(bytes32 => uint256) public jobBudgets_; // jobId => budget
+  mapping(bytes32 => Job)     public jobs_; // jobId => job { budget, sender }
   mapping(bytes32 => uint256) public rewards_;    // farmer => rewards
   mapping(bytes32 => bool)    public purchasers_; // keccak256 hashes of buyer addresses
   mapping(uint8 => Buffers)   public metadata_;
@@ -26,6 +26,11 @@ contract AFS {
   struct Buffers {
     mapping (uint256 => bytes) buffers;
     bool invalid;
+  }
+
+  struct Job {
+    address sender;
+    uint256 budget;
   }
 
   event Commit(bytes32 indexed _did);
@@ -59,7 +64,7 @@ contract AFS {
   modifier budgetSubmitted(bytes32 _jobId)
   {
     require(
-      jobBudgets_[_jobId] > 0
+      jobs_[_jobId].sender == msg.sender && jobs_[_jobId].budget > 0
     );
     _;
   }
@@ -97,11 +102,13 @@ contract AFS {
 
   function submitBudget(bytes32 _jobId, uint256 _budget) public purchaseRequired {
     uint256 allowance = token_.allowance(msg.sender, address(this));
-    require(_jobId != bytes32(0) && _budget > 0 && allowance >= _budget);
+    require(_jobId != bytes32(0) && _budget > 0 && allowance >= _budget
+      && (jobs_[_jobId].sender == address(0) || jobs_[_jobId].sender == msg.sender));
 
     if (token_.transferFrom(msg.sender, address(this), _budget)) {
-      jobBudgets_[_jobId] += _budget;
-      assert(jobBudgets_[_jobId] <= token_.balanceOf(address(this)));
+      jobs_[_jobId].budget += _budget;
+      jobs_[_jobId].sender = msg.sender;
+      assert(jobs_[_jobId].budget <= token_.balanceOf(address(this)));
       emit BudgetSubmitted(did_, _jobId, _budget);
     }
   }
@@ -112,16 +119,16 @@ contract AFS {
     for (uint8 i = 0; i < _rewards.length; i++) {
       totalRewards += _rewards[i];
     }
-    require(totalRewards <= jobBudgets_[_jobId]);
+    require(totalRewards <= jobs_[_jobId].budget);
     for (uint8 j = 0; j < _farmers.length; j++) {
       rewards_[_farmers[j]] = _rewards[j];
-      jobBudgets_[_jobId] -= _rewards[j];
-      assert(jobBudgets_[_jobId] > 0);
+      jobs_[_jobId].budget -= _rewards[j];
+      assert(jobs_[_jobId].budget > 0);
     }
-    uint256 remaining = jobBudgets_[_jobId];
+    uint256 remaining = jobs_[_jobId].budget;
     if (remaining > 0) {
       rewards_[keccak256(abi.encodePacked(msg.sender))] = remaining;
-      jobBudgets_[_jobId] = 0;
+      jobs_[_jobId].budget = 0;
       redeemBalance();
     }
     emit RewardsAllocated(did_, totalRewards, remaining);
@@ -134,6 +141,14 @@ contract AFS {
       rewards_[hashedAddress] = 0;
       emit Redeemed(msg.sender);
     }
+  }
+
+  function getBalance(address _farmer) public view returns (uint256) {
+    return rewards_[keccak256(abi.encodePacked(_farmer))];
+  }
+
+  function getBudget(bytes32 _jobId) public view returns (uint256) {
+    return jobs_[_jobId].budget;
   }
 
   /**

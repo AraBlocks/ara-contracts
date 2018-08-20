@@ -89,7 +89,7 @@ async function submit(opts) {
   did = kAidPrefix + did
   const acct = await account.load({ did, password })
 
-  debug(did, 'repositing', reward, 'tokens as rewards for', contentDid)
+  debug(did, 'submitting', reward, 'tokens as rewards for', contentDid)
 
   try {
     if (!(await proxyExists(contentDid))) {
@@ -298,10 +298,12 @@ async function redeem(opts) {
       }
     })
 
+    let balance
     const tokenContract = await contract.get(tokenAbi, kARATokenAddress)
     await tokenContract.events.Transfer({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { from, to, value } } = log
+        balance = value
         info(to, 'redeemed', value, 'tokens from', from)
       })
       .on('changed', (log) => {
@@ -312,6 +314,100 @@ async function redeem(opts) {
       })
 
     await tx.sendSignedTransaction(redeemTx)
+    return balance
+  } catch (err) {
+    throw err
+  }
+}
+
+/**
+ * Get budget for job
+ * @param  {Object}         opts
+ * @param  {String}         opts.contentDid
+ * @param  {string|Buffer}  opts.jobId
+ * @throws {Error,TypeError}
+ */
+async function getBudget(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('ara-contracts.rewards: Expecting opts object.')
+  } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
+    throw TypeError('ara-contracts.rewards: Expecting non-empty content DID')
+  } else if (!isValidJobId(opts.jobId)) {
+    throw TypeError('ara-contracts.rewards: Expecting valid jobId.')
+  }
+
+  const { jobId } = opts
+  let { contentDid } = opts
+  contentDid = normalize(contentDid)
+
+  try {
+    if (!(await proxyExists(contentDid))) {
+      throw new Error('ara-contracts.rewards: This content does not have a valid proxy contract')
+    }
+
+    const proxy = await getProxyAddress(contentDid)
+    const budget = await call({
+      abi: afsAbi,
+      address: proxy,
+      functionName: 'getBudget',
+      arguments: [
+        jobId
+      ]
+    })
+    return budget
+  } catch (err) {
+    throw err
+  }
+}
+
+/**
+ * Get user balance
+ * @param  {Object} opts
+ * @param  {String} opts.requesterDid
+ * @param  {String} opts.contentDid
+ * @param  {String} opts.password
+ * @throws {Error,TypeError}
+ */
+async function getBalance(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('ara-contracts.rewards: Expecting opts object.')
+  } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
+    throw TypeError('ara-contracts.rewards: Expecting non-empty requester DID')
+  } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
+    throw TypeError('ara-contracts.rewards: Expecting non-empty content DID')
+  } else if ('string' != typeof opts.password || !opts.password) {
+    throw TypeError('ara-contracts.rewards: Expecting non-empty password')
+  }
+
+  const { requesterDid, password } = opts
+  let { contentDid } = opts
+  let did
+  try {
+    ({ did } = await validate({ did: requesterDid, password, label: 'rewards' }))
+  } catch (err) {
+    throw err
+  }
+
+  contentDid = normalize(contentDid)
+
+  did = kAidPrefix + did
+  const { address } = await account.load({ did, password })
+
+  try {
+    if (!(await proxyExists(contentDid))) {
+      throw new Error('ara-contracts.rewards: This content does not have a valid proxy contract')
+    }
+
+    const proxy = await getProxyAddress(contentDid)
+    const budget = await call({
+      abi: afsAbi,
+      address: proxy,
+      functionName: 'getBalance',
+      arguments: [
+        address
+      ]
+    })
+    return address
   } catch (err) {
     throw err
   }
@@ -320,5 +416,7 @@ async function redeem(opts) {
 module.exports = {
   submit,
   redeem,
-  allocate
+  allocate,
+  getBudget,
+  getBalance
 }

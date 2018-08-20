@@ -1,0 +1,155 @@
+#!/usr/bin/env node
+
+const debug = require('debug')('ara-contracts:cli:reward')
+const { info, warn, error, log } = require('ara-console')
+const { createProgram } = require('../lib/program')
+const rewards = require('../rewards')
+const inquirer = require('inquirer')
+
+// yargs program command line interface instance
+const program = createProgram({
+  usage: `
+usage: act reward: [-h] [--help] [options]
+`
+})
+
+const { argv } = program
+  .option('balance', {
+    alias: 'b',
+    describe: 'Flag to acquire balance.'
+  })
+  .option('content', {
+    alias: 'c',
+    describe: 'The AFS did of the content.'
+  })
+  .option('did', {
+    alias: 'd',
+    describe: 'The requester did.'
+  })
+  .option('job', {
+    alias: 'j',
+    describe: 'The job Id.'
+  })
+  .option('redeem', {
+    alias: 'r',
+    describe: 'Flag to redeem balance.'
+  })
+  .option('submit', {
+    alias: 's',
+    describe: 'Flag to submit budget for job.'
+  })
+  .conflicts('a', ['b', 'r', 's'])
+  .conflicts('b', ['a', 'r', 's'])
+  .conflicts('r', ['a', 'b', 's'])
+  .conflicts('s', ['a', 'b', 'r'])
+
+// Emit program usage help
+if (0 == argv._.length && argv.help) {
+  program.showHelp()
+  process.exit(0)
+}
+
+// Main program entry
+module.exports = (async function main() {
+  const { balance, redeem, submit, job } = argv
+  let { content, did } = argv
+
+  if (balance) {
+    if (!content) {
+      ({ did: content } = await promptForDID('Please provide the DID of the AFS.'))
+    }
+    if (!did) {
+      ({ did } = await promptForDID('Please provide the requester DID.'))
+    }
+
+    const { password } = await promptForPassword()
+    try {
+      const balance = await rewards.getBalance({ requesterDid: did, contentDid: content, password })
+      info(did, 'balance in AFS', contentDid, 'is', balance, 'tokens.')
+    } catch (err) {
+      throw err
+    }
+  } else if (redeem) {
+    if (!content) {
+      ({ did: content } = await promptForDID('Please provide the DID of the AFS.'))
+    }
+    if (!did) {
+      ({ did } = await promptForDID('Please provide the requester DID.'))
+    }
+
+    const { password } = await promptForPassword()
+    try {
+      const balance = await rewards.redeem({ requesterDid: did, contentDid: content, password })
+      info(did, 'redeemed', balance, 'tokens from AFS', contentDid)
+    } catch (err) {
+      throw err
+    }
+  } else if (submit) {
+    if (!content) {
+      ({ did: content } = await promptForDID('Please provide the DID of the AFS.'))
+    }
+    if (!did) {
+      ({ did } = await promptForDID('Please provide the requester DID.'))
+    }
+    if (!job) {
+      ({ job } = await promptForJobID())
+    }
+
+    const { budget } = await promptForBudget()
+    const { password } = await promptForPassword()
+    try {
+      await rewards.submit({ requesterDid: did, contentDid: content, password, job: { jobId: job, budget } })
+      info('submitted', budget, 'tokens as rewards for AFS', contentDid)
+    } catch (err) {
+      throw err
+    }
+  } else if (content && job) {
+    try {
+      const budget = await getBudget({ contentDid: content, jobId: job })
+      info('budget for', jobId, 'is', budget, 'tokens')
+    }
+  } else {
+    program.showHelp()
+    process.exit(0)
+  }
+}())
+
+async function promptForDID(message) {
+  return await inquirer.prompt([{
+    name: 'did',
+    message
+  }])
+}
+
+async function promptForJobID() {
+  return await inquirer.prompt([{
+    name: 'job',
+    "Please provide the ID of the job."
+  }])
+}
+
+async function promptForBudget() {
+  return await inquirer.prompt([{
+    name: 'budget',
+    "Please provide the budget to add to job."
+  }])
+}
+
+async function promptForPassword() {
+  return await inquirer.prompt([{
+    type: 'password',
+    name: 'password',
+    message:
+    "Please provide the passphrase for your identity. This is needed to " +
+    "complete this action.\n" +
+    "Passphrase:"
+  }]) 
+}
+
+function onfatal(err) {
+  if (err) {
+    debug(err)
+    error("fatal:", err.message)
+  }
+  process.exit(1)
+}
