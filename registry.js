@@ -114,6 +114,7 @@ async function upgradeProxy(opts) {
     let upgraded
     await registry.events.ProxyUpgraded({ fromBlock: 0, function(error) { console.log(error) } })
       .on('data', (log) => {
+        debug('PROXY UPGRADED')
         const { returnValues: { _contentId } } = log
         if (_contentId === ethify(contentDid)) {
           upgraded = true
@@ -166,9 +167,8 @@ async function deployProxy(opts) {
   contentDid = normalize(contentDid)
   let owner = getDocumentOwner(ddo, true)
   owner = kAidPrefix + owner
-  debug("owner", owner)
-  const acct = await account.load({ did: owner, password })
 
+  const acct = await account.load({ did: owner, password })
   try {
     const encodedData = web3Abi.encodeParameters(['address', 'address', 'address', 'bytes32'], [acct.address, kARATokenAddress, kLibraryAddress, ethify(contentDid)])
     const transaction = await tx.create({
@@ -189,20 +189,19 @@ async function deployProxy(opts) {
     // listen to ProxyDeployed event for proxy address
     const registry = await contract.get(abi, kRegistryAddress)
     let proxyAddress
-    registry.events.ProxyDeployed({ fromBlock: 'latest' }, (error) => {
-      debug("error", error)
-    })
+    registry.events.ProxyDeployed({ fromBlock: 0, function(error) { console.log(error) } })
       .on('data', (log) => {
+        debug('PROXY DEPLOYED')
         const { returnValues: { _contentId, _address } } = log
         if (_contentId === ethify(contentDid)) {
           proxyAddress = _address
         }
       })
       .on('changed', (log) => {
-        console.log(`Changed: ${log}`)
+        debug(`Changed: ${log}`)
       })
       .on('error', (log) => {
-        console.log(`error:  ${log}`)
+        debug(`error:  ${log}`)
       })
 
     const receipt = await tx.sendSignedTransaction(transaction)
@@ -313,7 +312,6 @@ async function deployNewStandard(opts) {
   if (acct.address != registryOwner) {
     throw new Error('ara-contracts.registry: Only the owner of the Registry contract may deploy a new standard.')
   }
-
   // compile AFS sources and dependencies
   const sources = {
     'openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol', 'utf8'),
@@ -322,6 +320,7 @@ async function deployNewStandard(opts) {
     'openzeppelin-solidity/contracts/math/SafeMath.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol', 'utf8'),
     'bytes/BytesLib.sol': fs.readFileSync('./installed_contracts/bytes/contracts/BytesLib.sol', 'utf8')
   }
+
   paths.forEach((path) => {
     const src = fs.readFileSync(path, 'utf8')
     path = parse(path).base
@@ -336,8 +335,9 @@ async function deployNewStandard(opts) {
     const afs = await contract.deploy({
       account: acct,
       abi: afsAbi,
-      bytecode
+      bytecode: ethify(bytecode)
     })
+
     const transaction = await tx.create({
       account: acct,
       to: kRegistryAddress,
@@ -350,9 +350,29 @@ async function deployNewStandard(opts) {
         ]
       }
     })
+
+    // listen to ProxyDeployed event for proxy address
+    let address
+    const registry = await contract.get(abi, kRegistryAddress)
+    registry.events.StandardAdded({ fromBlock: 0, function(error) { console.log(error) } })
+      .on('data', (log) => {
+        // debug('STANDARD ADDED', log)
+        const { returnValues: { _version, _address } } = log
+        if (_version === version) {
+          address = _address
+          debug('version', _version, 'deployed at', _address)
+        }
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
+
     const receipt = await tx.sendSignedTransaction(transaction)
     debug('gas used', receipt.gasUsed)
-    return afs._address
+    return address
   } catch (err) {
     throw err
   }

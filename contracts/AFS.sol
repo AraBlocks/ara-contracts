@@ -33,13 +33,13 @@ contract AFS {
     uint256 budget;
   }
 
-  event Commit(bytes32 indexed _did);
-  event Unlisted(bytes32 indexed _did);
-  event PriceSet(bytes32 indexed _did, uint256 _price);
-  event BudgetSubmitted(bytes32 _did, bytes32 indexed _jobId, uint256 _budget);
+  event Commit(bytes32 _did);
+  event Unlisted(bytes32 _did);
+  event PriceSet(bytes32 _did, uint256 _price);
+  event BudgetSubmitted(bytes32 _did, bytes32 _jobId, uint256 _budget);
   event RewardsAllocated(bytes32 _did, uint256 _allocated, uint256 _returned);
-  event Purchased(bytes32 indexed _purchaser, bytes32 _did);
-  event Redeemed(address indexed _sender);
+  event Purchased(bytes32 _purchaser, bytes32 _did);
+  event Redeemed(address _sender);
 
   uint8 constant mtBufferSize_ = 40;
   uint8 constant msBufferSize_ = 64;
