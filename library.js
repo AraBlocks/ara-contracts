@@ -18,7 +18,7 @@ const {
  */
 async function getLibrary(requesterDid = '') {
   if ('string' !== typeof requesterDid || !requesterDid) {
-    throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
+    throw TypeError('Expecting non-empty requester DID')
   }
 
   return checkLibrary({ requesterDid })
@@ -34,11 +34,11 @@ async function getLibrary(requesterDid = '') {
  */
 async function checkLibrary(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('ara-contracts.library: Expecting opts object.')
+    throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
-    throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
+    throw TypeError('Expecting non-empty requester DID')
   } else if (opts.contentDid && 'string' !== typeof opts.contentDid) {
-    throw TypeError('ara-contracts.library: Expecting valid content DID')
+    throw TypeError('Expecting valid content DID')
   }
 
   let { requesterDid, contentDid } = opts
@@ -67,7 +67,7 @@ async function checkLibrary(opts) {
  */
 async function getLibrarySize(requesterDid = '') {
   if ('string' !== typeof requesterDid || !requesterDid) {
-    throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
+    throw TypeError('Expecting non-empty requester DID')
   }
 
   const hIdentity = hashDID(requesterDid)
@@ -91,17 +91,17 @@ async function getLibrarySize(requesterDid = '') {
  */
 async function getLibraryItem(requesterDid = '', index = -1) {
   if ('string' !== typeof requesterDid || !requesterDid) {
-    throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
+    throw TypeError('Expecting non-empty requester DID')
   }
 
   if (index < 0) {
-    throw Error('ara-contracts.library: Expecting a whole number index')
+    throw Error('Expecting a whole number index')
   }
 
   const hIdentity = hashDID(requesterDid)
 
   if (await getLibrarySize(requesterDid) <= index) {
-    throw Error('ara-contracts.library: Invalid index')
+    throw Error('Invalid index')
   }
 
   return call({

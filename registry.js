@@ -40,7 +40,7 @@ async function proxyExists(contentDid = '') {
  */
 async function getProxyAddress(contentDid = '') {
   if (null == contentDid || 'string' !== typeof contentDid || !contentDid) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty content DID')
+    throw TypeError('Expecting non-empty content DID')
   }
 
   contentDid = normalize(contentDid)
@@ -69,13 +69,13 @@ async function getProxyAddress(contentDid = '') {
  */
 async function upgradeProxy(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('ara-contracts.registry: Expecting opts object.')
+    throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty content DID')
+    throw TypeError('Expecting non-empty content DID')
   } else if (null == opts.password || 'string' !== typeof opts.password || !opts.password) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty password')
+    throw TypeError('Expecting non-empty password')
   } else if ('string' !== typeof opts.version || !opts.version) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty version string')
+    throw TypeError('Expecting non-empty version string')
   }
 
   let { contentDid } = opts
@@ -143,11 +143,11 @@ async function upgradeProxy(opts) {
  */
 async function deployProxy(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('ara-contracts.registry: Expecting opts object.')
+    throw new TypeError('Expecting opts object.')
   } else if (null == opts.contentDid || 'string' !== typeof opts.contentDid || !opts.contentDid) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty content DID')
+    throw TypeError('Expecting non-empty content DID')
   } else if (null == opts.password || 'string' !== typeof opts.password || !opts.password) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty password')
+    throw TypeError('Expecting non-empty password')
   }
 
   const { password } = opts
@@ -239,7 +239,7 @@ async function getLatestStandard() {
  */
 async function getStandard(version) {
   if ('string' !== typeof version || !version) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty version string.')
+    throw TypeError('Expecting non-empty version string.')
   }
 
   try {
@@ -269,20 +269,20 @@ async function getStandard(version) {
  */
 async function deployNewStandard(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('ara-contracts.registry: Expecting opts object.')
+    throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty requester DID')
+    throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.password || !opts.password) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty password')
+    throw TypeError('Expecting non-empty password')
   } else if (!opts.paths || !opts.paths.length) {
-    throw TypeError('ara-contracts.registry: Expecting one or more paths')
+    throw TypeError('Expecting one or more paths')
   }
 
   if (null == opts.version || 'string' !== typeof opts.version || !opts.version) {
     if ('number' === typeof opts.version) {
       opts.version = opts.version.toString()
     } else {
-      throw TypeError('ara-contracts.registry: Expecting non-empty standard version')
+      throw TypeError('Expecting non-empty standard version')
     }
   }
 
@@ -310,7 +310,7 @@ async function deployNewStandard(opts) {
   })
 
   if (acct.address != registryOwner) {
-    throw new Error('ara-contracts.registry: Only the owner of the Registry contract may deploy a new standard.')
+    throw new Error('Only the owner of the Registry contract may deploy a new standard.')
   }
   // compile AFS sources and dependencies
   const sources = {

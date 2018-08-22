@@ -50,15 +50,15 @@ const {
  */
 async function purchase(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('ara-contracts.purchase: Expecting opts object.')
+    throw new TypeError(' Expecting opts object.')
   } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
-    throw TypeError('ara-contracts.purchase: Expecting non-empty requester DID')
+    throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
-    throw TypeError('ara-contracts.purchase: Expecting non-empty content DID.')
+    throw TypeError('Expecting non-empty content DID.')
   } else if ('string' !== typeof opts.password || !opts.password) {
-    throw TypeError('ara-contracts.purchase: Expecting non-empty password.')
+    throw TypeError('Expecting non-empty password.')
   } else if (opts.job && 'object' !== typeof opts.job) {
-    throw TypeError('ara-contracts.purchase: Expecting job object.')
+    throw TypeError('Expecting job object.')
   }
 
   const {
@@ -75,7 +75,7 @@ async function purchase(opts) {
     const validBudget = budget && 'number' === typeof budget && budget > 0
 
     if (!validJobId || validBudget) {
-      throw TypeError('ara-contracts.purchase: Expecting job Id and budget.')
+      throw TypeError('Expecting job Id and budget.')
     }
 
     if (jobId.length === 64) {
@@ -103,7 +103,7 @@ async function purchase(opts) {
     await checkLibrary({ requesterDid: did, contentDid })
 
     if (!(await proxyExists(contentDid))) {
-      throw new Error('ara-contracts.purchase: This content does not have a valid proxy contract')
+      throw new Error('This content does not have a valid proxy contract')
     }
 
     const proxy = await getProxyAddress(contentDid)
