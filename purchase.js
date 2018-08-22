@@ -64,18 +64,20 @@ async function purchase(opts) {
   const {
     requesterDid,
     password,
-    job: {
-      jobId,
-      budget
-    }
+    job
   } = opts
+
+  const { jobId, budget } = job
 
   if (job) {
     const validJobId = jobId && isValidJobId(jobId)
     const validBudget = budget && 'number' === typeof budget && budget > 0
 
-    if (!validJobId || validBudget) {
-      throw TypeError('Expecting job Id and budget.')
+    if (!validJobId) {
+      throw TypeError('Expecting job Id.')
+    }
+    if (!validBudget) {
+      throw TypeError('Expecting budget.')
     }
 
     if (jobId.length === 64) {
@@ -156,13 +158,25 @@ async function purchase(opts) {
         debug(`error:  ${log}`)
       })
 
+    await proxyContract.events.BudgetSubmitted({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { _did, _jobId, _budget } } = log
+        debug('job', _jobId, 'submitted in', _did, 'with budget', _budget)
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
+
     await tx.sendSignedTransaction(purchaseTx)
 
     const size = await getLibrarySize(did)
 
     const contentId = await getLibraryItem(did, size - 1)
 
-    info(contentId, `added to library (${size})`)
+    debug(contentId, `added to library (${size})`)
   } catch (err) {
     throw err
   }

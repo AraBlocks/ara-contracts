@@ -3,7 +3,9 @@
 const debug = require('debug')('ara-contracts:cli:purchase')
 const { info, warn, error, log } = require('ara-console')
 const { createProgram } = require('../lib/program')
+const { randomBytes } = require('ara-crypto')
 const { purchase } = require('../purchase')
+const { ethify } = require('../util')
 const inquirer = require('inquirer')
 
 // yargs program command line interface instance
@@ -22,6 +24,11 @@ const { argv } = program
     alias: 'd',
     describe: 'The content DID to purchase.'
   })
+  .option('job', {
+    alias: 'j',
+    type: 'boolean',
+    describe: 'Flag to indicate if a new job should be created.'
+  })
 
 // Emit program usage help
 if (0 == argv._.length && argv.help) {
@@ -31,7 +38,7 @@ if (0 == argv._.length && argv.help) {
 
 // Main program entry
 module.exports = (async function main() {
-  let { purchaser, did } = argv
+  let { purchaser, did, job } = argv
 
   if (!purchaser) {
     onfatal(new Error("Please provide the DID of the purchaser. See 'act purchase --help'."))
@@ -44,13 +51,20 @@ module.exports = (async function main() {
 
   const { password } = await promptForPassword()
 
+  let jobId
+  if (!job) {
+    ({ jobId } = await promptForJobId())
+  }
+  const { budget } = await promptForBudget()
+
   info('purchasing', did)
   try {
-    // DEBUG=* act purchase -p 4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4 -d 6ef9abd37a7298510a668f821f0050f438e36e7bf914ff0d71ba1ad74ff10e8e
+    // DEBUG=* act purchase -j -p 4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4 -d b7f0dc137958c82c1b486d8155d9718b2777c81da2f042cbac12ab60aef44241
     await purchase({
       requesterDid: purchaser,
       contentDid: did,
-      password
+      password,
+      job: job ? { jobId: ethify(randomBytes(32), true), budget } : { jobId, budget }
     })
   } catch (err) {
     onfatal(err)
@@ -65,6 +79,25 @@ async function promptForPassword() {
     "Please provide the passphrase for your identity. This is needed to " +
     "complete this action.\n" +
     "Passphrase:"
+  }]) 
+}
+
+async function promptForJobId() {
+  return await inquirer.prompt([{
+    name: 'jobId',
+    message:
+    "Please provide an existing Job ID.\n" +
+    "Job ID:"
+  }]) 
+}
+
+async function promptForBudget() {
+  return await inquirer.prompt([{
+    name: 'budget',
+    type: 'number',
+    message:
+    "Please provide a budget in Ara tokens as rewards for the job.\n" +
+    "Budget:"
   }]) 
 }
 
