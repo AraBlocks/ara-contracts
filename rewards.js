@@ -47,33 +47,30 @@ async function submit(opts) {
     throw TypeError('Expecting non-empty content DID')
   } else if ('string' != typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password')
-  } else if (opts.job && 'object' !== typeof opts.job) {
+  } else if (!opts.job || 'object' !== typeof opts.job) {
     throw TypeError('Expecting job object.')
   }
 
   const {
     requesterDid,
     password,
-    job: {
-      jobId,
-      budget
-    }
+    job
   } = opts
 
-  if (job) {
-    const validJobId = isValidJobId(jobId)
-    const validBudget = budget && 'number' === typeof budget && budget > 0
+  const { jobId, budget } = job
 
-    if (!validJobId) {
-      throw TypeError('Expecting job Id.')
-    }
-    if (!validBudget) {
-      throw TypeError('Expecting budget.')
-    }
+  const validJobId = isValidJobId(jobId)
+  const validBudget = budget && 'number' === typeof budget && budget > 0
 
-    if (jobId.length === 64) {
-      jobId = ethify(jobId, 'string' !== typeof jobId)
-    }
+  if (!validJobId) {
+    throw TypeError('Expecting job Id.')
+  }
+  if (!validBudget) {
+    throw TypeError('Expecting budget.')
+  }
+
+  if (jobId.length === 64) {
+    jobId = ethify(jobId, 'string' !== typeof jobId)
   }
 
   let { contentDid } = opts
@@ -165,45 +162,45 @@ async function allocate(opts) {
     throw TypeError('Expecting non-empty content DID')
   } else if ('string' != typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password')
-  } else if (opts.job && 'object' !== typeof opts.job) {
+  } else if (!opts.job || 'object' !== typeof opts.job) {
     throw TypeError('Expecting job object.')
   }
 
   const {
     requesterDid,
     password,
-    job: {
-      jobId,
-      farmers,
-      rewards
-    }
+    job
   } = opts
 
-  if (job) {
-    const validJobId = isValidJobId(jobId)
-    const validFarmers = isValidArray(farmers, (address, index) => {
-      if (!web3.utils.isAddress(address)) {
-        return false
-      }
-      farmers[index] = web3.utils.soliditySha3({ t: 'address', v: address })
-    })
-    const validRewards = isValidArray(rewards, (reward) => {
-      if (reward <= 0) {
-        return false
-      }
-    })
+  const {
+    jobId,
+    farmers,
+    rewards
+  } = job
 
-    if (!validJobId) {
-      throw TypeError('Expecting job Id.')
+  const validJobId = isValidJobId(jobId)
+  const validFarmers = isValidArray(farmers, (address, index) => {
+    if (!web3.utils.isAddress(address)) {
+      return false
     }
+    farmers[index] = web3.utils.soliditySha3({ t: 'address', v: address })
+  })
+  const validRewards = isValidArray(rewards, (reward) => {
+    if (reward <= 0) {
+      return false
+    }
+  })
 
-    if (!validFarmers || !validRewards || farmers.length !== rewards.length) {
-      throw TypeError('Expecting farmers and rewards.')
-    }
+  if (!validJobId) {
+    throw TypeError('Expecting job Id.')
+  }
 
-    if (jobId.length === 64) {
-      jobId = ethify(jobId, 'string' !== typeof jobId)
-    }
+  if (!validFarmers || !validRewards || farmers.length !== rewards.length) {
+    throw TypeError('Expecting farmers and rewards.')
+  }
+
+  if (jobId.length === 64) {
+    jobId = ethify(jobId, 'string' !== typeof jobId)
   }
 
   let { contentDid } = opts
