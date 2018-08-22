@@ -20,12 +20,12 @@ contract Library {
   }
 
   modifier restricted() {
-    require (msg.sender == owner_);
+    require (msg.sender == owner_, "Sender not authorized.");
      _;
   }
 
   modifier fromProxy(bytes32 _contentId) {
-    require (msg.sender == registry_.getProxyAddress(_contentId));
+    require (msg.sender == registry_.getProxyAddress(_contentId), "Proxy not authorized.");
      _;
   }
 
@@ -34,13 +34,13 @@ contract Library {
   }
 
   function getLibraryItem(bytes32 _identity, uint16 _index) public view returns (bytes32 contentId) {
-    require (_index < libraries_[_identity].size);
+    require (_index < libraries_[_identity].size, "Index does not exist.");
     return libraries_[_identity].content[_index];
   }
 
   function addLibraryItem(bytes32 _identity, bytes32 _contentId) public fromProxy(_contentId) {
     uint16 libSize = libraries_[_identity].size;
-    require (libraries_[_identity].content[libSize] == bytes32(0));
+    assert (libraries_[_identity].content[libSize] == bytes32(0));
     libraries_[_identity].content[libSize] = _contentId;
     libraries_[_identity].size++;
     emit AddedToLib(_contentId);
