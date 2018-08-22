@@ -40,15 +40,15 @@ const {
  */
 async function submit(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('ara-contracts.rewards: Expecting opts object.')
+    throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
-    throw TypeError('ara-contracts.rewards: Expecting non-empty requester DID')
+    throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
-    throw TypeError('ara-contracts.rewards: Expecting non-empty content DID')
+    throw TypeError('Expecting non-empty content DID')
   } else if ('string' != typeof opts.password || !opts.password) {
-    throw TypeError('ara-contracts.rewards: Expecting non-empty password')
+    throw TypeError('Expecting non-empty password')
   } else if (opts.job && 'object' !== typeof opts.job) {
-    throw TypeError('ara-contracts.rewards: Expecting job object.')
+    throw TypeError('Expecting job object.')
   }
 
   const {
@@ -65,10 +65,10 @@ async function submit(opts) {
     const validBudget = budget && 'number' === typeof budget && budget > 0
 
     if (!validJobId) {
-      throw TypeError('ara-contracts.rewards: Expecting job Id.')
+      throw TypeError('Expecting job Id.')
     }
     if (!validBudget) {
-      throw TypeError('ara-contracts.rewards: Expecting budget.')
+      throw TypeError('Expecting budget.')
     }
 
     if (jobId.length === 64) {
@@ -93,7 +93,7 @@ async function submit(opts) {
 
   try {
     if (!(await proxyExists(contentDid))) {
-      throw new Error('ara-contracts.rewards: This content does not have a valid proxy contract')
+      throw new Error('This content does not have a valid proxy contract')
     }
 
     const proxy = await getProxyAddress(contentDid)
@@ -158,15 +158,15 @@ async function submit(opts) {
  */
 async function allocate(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('ara-contracts.rewards: Expecting opts object.')
+    throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
-    throw TypeError('ara-contracts.rewards: Expecting non-empty requester DID')
+    throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
-    throw TypeError('ara-contracts.rewards: Expecting non-empty content DID')
+    throw TypeError('Expecting non-empty content DID')
   } else if ('string' != typeof opts.password || !opts.password) {
-    throw TypeError('ara-contracts.rewards: Expecting non-empty password')
+    throw TypeError('Expecting non-empty password')
   } else if (opts.job && 'object' !== typeof opts.job) {
-    throw TypeError('ara-contracts.rewards: Expecting job object.')
+    throw TypeError('Expecting job object.')
   }
 
   const {
@@ -194,11 +194,11 @@ async function allocate(opts) {
     })
 
     if (!validJobId) {
-      throw TypeError('ara-contracts.rewards: Expecting job Id.')
+      throw TypeError('Expecting job Id.')
     }
 
     if (!validFarmers || !validRewards || farmers.length !== rewards.length) {
-      throw TypeError('ara-contracts.rewards: Expecting farmers and rewards.')
+      throw TypeError('Expecting farmers and rewards.')
     }
 
     if (jobId.length === 64) {
@@ -223,7 +223,7 @@ async function allocate(opts) {
 
   try {
     if (!(await proxyExists(contentDid))) {
-      throw new Error('ara-contracts.rewards: This content does not have a valid proxy contract')
+      throw new Error('This content does not have a valid proxy contract')
     }
 
     const proxy = await getProxyAddress(contentDid)
@@ -257,13 +257,13 @@ async function allocate(opts) {
  */
 async function redeem(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('ara-contracts.rewards: Expecting opts object.')
+    throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
-    throw TypeError('ara-contracts.rewards: Expecting non-empty requester DID')
+    throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
-    throw TypeError('ara-contracts.rewards: Expecting non-empty content DID')
+    throw TypeError('Expecting non-empty content DID')
   } else if ('string' != typeof opts.password || !opts.password) {
-    throw TypeError('ara-contracts.rewards: Expecting non-empty password')
+    throw TypeError('Expecting non-empty password')
   }
 
   const { requesterDid, password } = opts
@@ -283,7 +283,7 @@ async function redeem(opts) {
 
   try {
     if (!(await proxyExists(contentDid))) {
-      throw new Error('ara-contracts.rewards: This content does not have a valid proxy contract')
+      throw new Error('This content does not have a valid proxy contract')
     }
 
     const proxy = await getProxyAddress(contentDid)
@@ -329,11 +329,11 @@ async function redeem(opts) {
  */
 async function getBudget(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('ara-contracts.rewards: Expecting opts object.')
+    throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
-    throw TypeError('ara-contracts.rewards: Expecting non-empty content DID')
+    throw TypeError('Expecting non-empty content DID')
   } else if (!isValidJobId(opts.jobId)) {
-    throw TypeError('ara-contracts.rewards: Expecting valid jobId.')
+    throw TypeError('Expecting valid jobId.')
   }
 
   const { jobId } = opts
@@ -342,7 +342,7 @@ async function getBudget(opts) {
 
   try {
     if (!(await proxyExists(contentDid))) {
-      throw new Error('ara-contracts.rewards: This content does not have a valid proxy contract')
+      throw new Error('This content does not have a valid proxy contract')
     }
 
     const proxy = await getProxyAddress(contentDid)
@@ -370,13 +370,13 @@ async function getBudget(opts) {
  */
 async function getBalance(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('ara-contracts.rewards: Expecting opts object.')
+    throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
-    throw TypeError('ara-contracts.rewards: Expecting non-empty requester DID')
+    throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
-    throw TypeError('ara-contracts.rewards: Expecting non-empty content DID')
+    throw TypeError('Expecting non-empty content DID')
   } else if ('string' != typeof opts.password || !opts.password) {
-    throw TypeError('ara-contracts.rewards: Expecting non-empty password')
+    throw TypeError('Expecting non-empty password')
   }
 
   const { requesterDid, password } = opts
@@ -395,7 +395,7 @@ async function getBalance(opts) {
 
   try {
     if (!(await proxyExists(contentDid))) {
-      throw new Error('ara-contracts.rewards: This content does not have a valid proxy contract')
+      throw new Error('This content does not have a valid proxy contract')
     }
 
     const proxy = await getProxyAddress(contentDid)
