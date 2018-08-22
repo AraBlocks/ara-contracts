@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "./Library.sol";
 import "./ARAToken.sol";
@@ -56,7 +56,8 @@ contract AFS {
   modifier purchaseRequired()
   {
     require(
-      purchasers_[keccak256(abi.encodePacked(msg.sender))]
+      purchasers_[keccak256(abi.encodePacked(msg.sender))],
+      "Content was never purchased."
     );
     _;
   }
@@ -64,7 +65,8 @@ contract AFS {
   modifier budgetSubmitted(bytes32 _jobId)
   {
     require(
-      jobs_[_jobId].sender == msg.sender && jobs_[_jobId].budget > 0
+      jobs_[_jobId].sender == msg.sender && jobs_[_jobId].budget > 0,
+      "Job is invalid."
     );
     _;
   }
@@ -103,7 +105,7 @@ contract AFS {
   function submitBudget(bytes32 _jobId, uint256 _budget) public purchaseRequired {
     uint256 allowance = token_.allowance(msg.sender, address(this));
     require(_jobId != bytes32(0) && _budget > 0 && allowance >= _budget
-      && (jobs_[_jobId].sender == address(0) || jobs_[_jobId].sender == msg.sender));
+      && (jobs_[_jobId].sender == address(0) || jobs_[_jobId].sender == msg.sender), "Job submission invalid.");
 
     if (token_.transferFrom(msg.sender, address(this), _budget)) {
       jobs_[_jobId].budget += _budget;
@@ -114,12 +116,12 @@ contract AFS {
   }
 
   function allocateRewards(bytes32 _jobId, bytes32[] _farmers, uint256[] _rewards) public budgetSubmitted(_jobId) {
-    require(_farmers.length == _rewards.length);
+    require(_farmers.length == _rewards.length, "Unequal number of farmers and rewards.");
     uint256 totalRewards;
     for (uint8 i = 0; i < _rewards.length; i++) {
       totalRewards += _rewards[i];
     }
-    require(totalRewards <= jobs_[_jobId].budget);
+    require(totalRewards <= jobs_[_jobId].budget, "Insufficient budget.");
     for (uint8 j = 0; j < _farmers.length; j++) {
       rewards_[_farmers[j]] = _rewards[j];
       jobs_[_jobId].budget -= _rewards[j];
@@ -136,7 +138,7 @@ contract AFS {
 
   function redeemBalance() public {
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
-    require(rewards_[hashedAddress] > 0);
+    require(rewards_[hashedAddress] > 0, "No balance to redeem.");
     if (token_.transfer(msg.sender, rewards_[hashedAddress])) {
       rewards_[hashedAddress] = 0;
       emit Redeemed(msg.sender);
@@ -162,7 +164,7 @@ contract AFS {
   function purchase(bytes32 _purchaser, bytes32 _jobId, uint256 _budget) external {
     uint256 allowance = token_.allowance(msg.sender, address(this));
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
-    require (!purchasers_[hashedAddress] && allowance >= price_ + _budget);
+    require (!purchasers_[hashedAddress] && allowance >= price_ + _budget, "Unable to purchase.");
 
     if (token_.transferFrom(msg.sender, owner_, price_)) {
       purchasers_[hashedAddress] = true;
@@ -178,7 +180,7 @@ contract AFS {
   function append(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
     bytes _msBuffer) external onlyBy(owner_) {
     
-    require(!metadata_[0].invalid);
+    require(!metadata_[0].invalid, "AFS is unlisted.");
     
     uint256 maxOffsetLength = _mtOffsets.length > _msOffsets.length 
       ? _mtOffsets.length 
@@ -202,7 +204,7 @@ contract AFS {
   function write(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
     bytes _msBuffer) public onlyBy(owner_) {
 
-    require(!metadata_[0].invalid);
+    require(!metadata_[0].invalid, "AFS is unlisted.");
 
     uint256 maxOffsetLength = _mtOffsets.length > _msOffsets.length 
       ? _mtOffsets.length 

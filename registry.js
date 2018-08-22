@@ -112,7 +112,7 @@ async function upgradeProxy(opts) {
     const registry = await contract.get(abi, kRegistryAddress)
     // listen to ProxyUpgraded event for proxy address
     let upgraded
-    await registry.events.ProxyUpgraded({ fromBlock: 0, function(error) { console.log(error) } })
+    await registry.events.ProxyUpgraded({ fromBlock: 'latest', function(error) { console.log(error) } })
       .on('data', (log) => {
         debug('PROXY UPGRADED')
         const { returnValues: { _contentId } } = log
@@ -189,9 +189,8 @@ async function deployProxy(opts) {
     // listen to ProxyDeployed event for proxy address
     const registry = await contract.get(abi, kRegistryAddress)
     let proxyAddress
-    registry.events.ProxyDeployed({ fromBlock: 0, function(error) { console.log(error) } })
+    registry.events.ProxyDeployed({ fromBlock: 'latest', function(error) { console.log(error) } })
       .on('data', (log) => {
-        debug('PROXY DEPLOYED')
         const { returnValues: { _contentId, _address } } = log
         if (_contentId === ethify(contentDid)) {
           proxyAddress = _address
@@ -341,6 +340,7 @@ async function deployNewStandard(opts) {
     const transaction = await tx.create({
       account: acct,
       to: kRegistryAddress,
+      gasLimit: 1000000,
       data: {
         abi,
         functionName: 'addStandardVersion',
@@ -350,11 +350,10 @@ async function deployNewStandard(opts) {
         ]
       }
     })
-
     // listen to ProxyDeployed event for proxy address
     let address
     const registry = await contract.get(abi, kRegistryAddress)
-    registry.events.StandardAdded({ fromBlock: 0, function(error) { console.log(error) } })
+    registry.events.StandardAdded({ fromBlock: 'latest', function(error) { console.log(error) } })
       .on('data', (log) => {
         // debug('STANDARD ADDED', log)
         const { returnValues: { _version, _address } } = log
@@ -370,11 +369,28 @@ async function deployNewStandard(opts) {
         debug(`error:  ${log}`)
       })
 
+    registry.events.TEST({ fromBlock: 'latest', function(error) { console.log(error) } })
+      .on('data', (log) => {
+        const { returnValues: { revert } } = log
+        debug('revert?', !revert)
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
+
     const receipt = await tx.sendSignedTransaction(transaction)
-    debug('gas used', receipt.gasUsed)
-    return address
+
+    if (receipt.status) {
+      debug('gas used', receipt.gasUsed)
+      return address ? address : afs._address
+    }
   } catch (err) {
-    throw err
+    if (!err.status) {
+      throw new Error('Transaction failed.')
+    }
   }
 }
 

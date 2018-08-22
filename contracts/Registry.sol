@@ -13,18 +13,25 @@ contract Registry {
   event ProxyDeployed(bytes32 _contentId, address _address);
   event ProxyUpgraded(bytes32 _contentId, string _version);
   event StandardAdded(string _version, address _address);
+  event TEST(bool revert);
 
   constructor() public {
     owner_ = msg.sender;
   }
 
   modifier restricted() {
-    require (msg.sender == owner_);
-     _;
+    require (
+      msg.sender == owner_,
+      "Sender not authorized."
+    );
+    _;
   }
 
   modifier onlyProxyOwner(bytes32 _contentId) {
-    require(proxyOwners_[_contentId] == msg.sender);
+    require(
+      proxyOwners_[_contentId] == msg.sender,
+      "Sender not authorized."
+    );
     _;
   }
 
@@ -48,7 +55,7 @@ contract Registry {
    * @return address of the newly deployed Proxy
    */
   function createAFS(bytes32 _contentId, string _version, bytes _data) public {
-    require(proxies_[_contentId] == address(0));
+    require(proxies_[_contentId] == address(0), "Proxy already exists for this content.");
     Proxy proxy = new Proxy(address(this));
     proxies_[_contentId] = proxy;
     proxyOwners_[_contentId] = msg.sender;
@@ -62,7 +69,7 @@ contract Registry {
    * @param _version The implementation version to upgrade this Proxy to
    */
   function upgradeProxy(bytes32 _contentId, string _version) public onlyProxyOwner(_contentId) {
-    require(versions_[_version] != address(0));
+    require(versions_[_version] != address(0), "Version does not exist.");
     proxyImpls_[proxies_[_contentId]] = versions_[_version];
     emit ProxyUpgraded(_contentId, _version);
   }
@@ -74,10 +81,10 @@ contract Registry {
    * @param _data AFS initialization data
    */
   function upgradeProxyAndCall(bytes32 _contentId, string _version, bytes _data) public onlyProxyOwner(_contentId) {
-    require(versions_[_version] != address(0));
+    require(versions_[_version] != address(0), "Version does not exist.");
     Proxy proxy = Proxy(proxies_[_contentId]);
     proxyImpls_[proxy] = versions_[_version];
-    if(!address(proxy).call(abi.encodeWithSignature("init(bytes)", _data))) revert();
+    require(address(proxy).call(abi.encodeWithSignature("init(bytes)", _data)), "Init failed.");
     emit ProxyUpgraded(_contentId, _version);
   }
 
@@ -87,7 +94,8 @@ contract Registry {
    * @param _address The address of the new AFS implementation
    */
   function addStandardVersion(string _version, address _address) public restricted {
-    require(versions_[_version] == address(0));
+    emit TEST(versions_[_version] == address(0));
+    require(versions_[_version] == address(0), "Version already exists.");
     versions_[_version] = _address;
     latestVersion_ = _version;
     emit StandardAdded(_version, _address);
