@@ -14,6 +14,10 @@ usage: act reward: [-h] [--help] [options]
 })
 
 const { argv } = program
+  .option('allocate', {
+    alias: 'a',
+    descirbe: 'Flag to allocate rewards.'
+  })
   .option('balance', {
     alias: 'b',
     describe: 'Flag to acquire balance.'
@@ -51,10 +55,11 @@ if (0 == argv._.length && argv.help) {
 
 // Main program entry
 module.exports = (async function main() {
-  const { balance, redeem, submit, job } = argv
+  const { balance, redeem, submit, job: jobId } = argv
   let { content, did } = argv
-
-  if (balance) {
+  if (allocate) {
+    
+  } else if (balance) {
     if (!content) {
       ({ did: content } = await promptForDID('Please provide the DID of the AFS.'))
     }
@@ -91,22 +96,24 @@ module.exports = (async function main() {
     if (!did) {
       ({ did } = await promptForDID('Please provide the requester DID.'))
     }
-    if (!job) {
-      ({ job } = await promptForJobID())
+    if (!jobId) {
+      ({ jobId } = await promptForJobID())
     }
 
     const { budget } = await promptForBudget()
     const { password } = await promptForPassword()
     try {
-      await rewards.submit({ requesterDid: did, contentDid: content, password, job: { jobId: job, budget } })
+      await rewards.submit({ requesterDid: did, contentDid: content, password, job: { jobId, budget } })
       info('submitted', budget, 'tokens as rewards for AFS', contentDid)
     } catch (err) {
       throw err
     }
   } else if (content && job) {
     try {
-      const budget = await getBudget({ contentDid: content, jobId: job })
+      const budget = await getBudget({ contentDid: content, jobId })
       info('budget for', jobId, 'is', budget, 'tokens')
+    } catch (err) {
+      throw err
     }
   } else {
     program.showHelp()
@@ -121,18 +128,23 @@ async function promptForDID(message) {
   }])
 }
 
-async function promptForJobID() {
+async function promptForJobId() {
   return await inquirer.prompt([{
-    name: 'job',
-    "Please provide the ID of the job."
-  }])
+    name: 'jobId',
+    message:
+    "Please provide an existing Job ID.\n" +
+    "Job ID:"
+  }]) 
 }
 
 async function promptForBudget() {
   return await inquirer.prompt([{
     name: 'budget',
-    "Please provide the budget to add to job."
-  }])
+    type: 'number',
+    message:
+    "Please provide a budget in Ara tokens as rewards for the job.\n" +
+    "Budget:"
+  }]) 
 }
 
 async function promptForPassword() {

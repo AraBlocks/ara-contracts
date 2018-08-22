@@ -138,6 +138,8 @@ async function submit(opts) {
       })
 
     await tx.sendSignedTransaction(submitTx)
+  } catch (err) {
+    throw err
   }
 }
 
@@ -274,7 +276,7 @@ async function redeem(opts) {
 
   contentDid = normalize(contentDid)
 
-  debug(did 'redeeming balance from', contentDid)
+  debug(did, 'redeeming balance from', contentDid)
   did = kAidPrefix + did
   const acct = await account.load({ did, password })
 
