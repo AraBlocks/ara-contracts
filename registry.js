@@ -74,31 +74,33 @@ async function upgradeProxy(opts) {
     throw TypeError('Expecting non-empty content DID')
   } else if (null == opts.password || 'string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password')
-  } else if ('string' !== typeof opts.version || !opts.version) {
-    throw TypeError('Expecting non-empty version string')
+  } else if (('string' !== typeof opts.version && 'number' !== typeof opts.version) || !opts.version) {
+    throw TypeError('Expecting non-empty version string or number')
   }
 
-  let { contentDid } = opts
-  const { password, version } = opts
-
-  contentDid = normalize(contentDid)
+  let { contentDid, version } = opts
+  const { password } = opts
+  if ('number' === typeof version) {
+    version = version.toString()
+  }
 
   let did
+  let ddo
   try {
-    ({ did } = await validate({ did: contentDid, password, label: 'registry' }))
+    ({ did, ddo } = await validate({ did: contentDid, password, label: 'registry' }))
   } catch (err) {
     throw err
   }
+  let owner = getDocumentOwner(ddo, true)
+  owner = kAidPrefix + owner
 
-  const prefixedDid = kAidPrefix + did
-
-  const acct = await account.load({ did: prefixedDid, password })
+  const acct = await account.load({ did: owner, password })
 
   try {
     const transaction = await tx.create({
       account: acct,
       to: kRegistryAddress,
-      gasLimit: 6721975,
+      gasLimit: 1000000,
       data: {
         abi,
         functionName: 'upgradeProxy',
@@ -114,10 +116,10 @@ async function upgradeProxy(opts) {
     let upgraded
     await registry.events.ProxyUpgraded({ fromBlock: 'latest', function(error) { console.log(error) } })
       .on('data', (log) => {
-        debug('PROXY UPGRADED')
-        const { returnValues: { _contentId } } = log
-        if (_contentId === ethify(contentDid)) {
+        const { returnValues: { _contentId, _version } } = log
+        if (_contentId === ethify(did)) {
           upgraded = true
+          debug('proxy upgraded to version', _version)
         }
       })
       .on('changed', (log) => {
@@ -126,7 +128,8 @@ async function upgradeProxy(opts) {
       .on('error', (log) => {
         console.log(`error:  ${log}`)
       })
-    await tx.sendSignedTransaction(transaction)
+    const receipt = await tx.sendSignedTransaction(transaction)
+    debug('gas used', receipt.gasUsed)
     return upgraded
   } catch (err) {
     throw err
@@ -163,8 +166,7 @@ async function deployProxy(opts) {
     throw err
   }
 
-  debug('creating tx to deploy proxy for', contentDid)
-  contentDid = normalize(contentDid)
+  debug('creating tx to deploy proxy for', did)
   let owner = getDocumentOwner(ddo, true)
   owner = kAidPrefix + owner
 
@@ -179,7 +181,7 @@ async function deployProxy(opts) {
         abi,
         functionName: 'createAFS',
         values: [
-          ethify(contentDid),
+          ethify(did),
           version,
           encodedData
         ]
@@ -194,6 +196,7 @@ async function deployProxy(opts) {
         const { returnValues: { _contentId, _address } } = log
         if (_contentId === ethify(contentDid)) {
           proxyAddress = _address
+          debug('proxy deployed at', proxyAddress)
         }
       })
       .on('changed', (log) => {
@@ -204,7 +207,6 @@ async function deployProxy(opts) {
       })
 
     const receipt = await tx.sendSignedTransaction(transaction)
-    debug('proxy deployed at', proxyAddress)
     debug('gas used', receipt.gasUsed)
     return proxyAddress
   } catch (err) {
@@ -361,18 +363,6 @@ async function deployNewStandard(opts) {
           address = _address
           debug('version', _version, 'deployed at', _address)
         }
-      })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
-
-    registry.events.TEST({ fromBlock: 'latest', function(error) { console.log(error) } })
-      .on('data', (log) => {
-        const { returnValues: { revert } } = log
-        debug('revert?', !revert)
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)

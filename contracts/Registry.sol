@@ -13,7 +13,6 @@ contract Registry {
   event ProxyDeployed(bytes32 _contentId, address _address);
   event ProxyUpgraded(bytes32 _contentId, string _version);
   event StandardAdded(string _version, address _address);
-  event TEST(bool revert);
 
   constructor() public {
     owner_ = msg.sender;
@@ -94,7 +93,6 @@ contract Registry {
    * @param _address The address of the new AFS implementation
    */
   function addStandardVersion(string _version, address _address) public restricted {
-    emit TEST(versions_[_version] == address(0));
     require(versions_[_version] == address(0), "Version already exists.");
     versions_[_version] = _address;
     latestVersion_ = _version;
