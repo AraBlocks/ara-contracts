@@ -55,10 +55,23 @@ if (0 == argv._.length && argv.help) {
 
 // Main program entry
 module.exports = (async function main() {
-  const { balance, redeem, submit, job: jobId } = argv
+  const { allocate, balance, redeem, submit, job: jobId } = argv
   let { content, did } = argv
   if (allocate) {
-    
+    const jobId = '0x3df61fc4147aace69841a5058cd4683f788a48ccfa14c9c92dae021ba2206421'
+    const farmers = ['0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e',
+                     '0x70693d8f4e1c9bA1AE0870C35128BaDfDcF28FBc',
+                     '0x19d6a7D8bB09e8A6d733a9c8D9fe7b964fD8F45e',
+                     '0x629483C72b5191C1b522E887238a0A522b1D4F74']
+    const distrib = [10, 20, 30, 40]
+    await rewards.allocate({ requesterDid: 'did:ara:4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4',
+                             contentDid: '9861d0eafe27e080c5804b8f3de1aa762af4b4eb69a91b38a4cf87afbb52d643',
+                             password: 'pass',
+                             job: {
+                              jobId,
+                              farmers,
+                              rewards: distrib
+                             }})
   } else if (balance) {
     if (!content) {
       ({ did: content } = await promptForDID('Please provide the DID of the AFS.'))
@@ -70,7 +83,7 @@ module.exports = (async function main() {
     const { password } = await promptForPassword()
     try {
       const balance = await rewards.getBalance({ requesterDid: did, contentDid: content, password })
-      info(did, 'balance in AFS', contentDid, 'is', balance, 'tokens.')
+      info(did, 'balance in AFS', content, 'is', balance, 'tokens.')
     } catch (err) {
       throw err
     }
@@ -108,10 +121,10 @@ module.exports = (async function main() {
     } catch (err) {
       throw err
     }
-  } else if (content && job) {
+  } else if (content && jobId) {
     try {
-      const budget = await getBudget({ contentDid: content, jobId })
-      info('budget for', jobId, 'is', budget, 'tokens')
+      const budget = await rewards.getBudget({ contentDid: content, jobId })
+      info('budget for job', jobId, 'is', budget, 'tokens')
     } catch (err) {
       throw err
     }

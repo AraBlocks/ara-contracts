@@ -15,6 +15,12 @@ const {
 } = require('./registry')
 
 const {
+  hashDID,
+  validate,
+  normalize
+} = require('ara-util')
+
+const {
   tx,
   call,
   account,
@@ -204,7 +210,6 @@ async function allocate(opts) {
   if (jobId.length === 64) {
     jobId = ethify(jobId, 'string' !== typeof jobId)
   }
-
   let { contentDid } = opts
   let did
   try {
@@ -226,8 +231,7 @@ async function allocate(opts) {
     }
 
     const proxy = await getProxyAddress(contentDid)
-
-    const submitTx = await tx.create({
+    const allocateTx = await tx.create({
       account: acct,
       to: proxy,
       gasLimit: 1000000,
@@ -241,6 +245,23 @@ async function allocate(opts) {
         ]
       }
     })
+    const proxyContract = await contract.get(afsAbi, proxy)
+    await proxyContract.events.RewardsAllocated({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { _did, _allocated, _returned } } = log
+        info('allocated', _allocated, 'tokens as rewards between farmers and returned', _returned, 'tokens')
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
+
+    const receipt = await tx.sendSignedTransaction(allocateTx)
+    if (receipt.status) {
+      debug('gas used', receipt.gasUsed)
+    }
   } catch (err) {
     throw err
   }
@@ -406,7 +427,7 @@ async function getBalance(opts) {
         address
       ]
     })
-    return address
+    return budget
   } catch (err) {
     throw err
   }
