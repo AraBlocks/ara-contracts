@@ -60,10 +60,10 @@ async function getProxyAddress(contentDid = '') {
 }
 
 /**
- * Upgrades a proxy to a new version
+ * Upgrades a proxy to a new version // 33834 gas
  * @param  {String} opts.contentDid // unhashed
  * @param  {String} opts.password
- * @param  {String} opts.version
+ * @param  {String|number} opts.version
  * @return {Bool}
  * @throws {Error,TypeError}
  */
@@ -129,10 +129,14 @@ async function upgradeProxy(opts) {
         console.log(`error:  ${log}`)
       })
     const receipt = await tx.sendSignedTransaction(transaction)
-    debug('gas used', receipt.gasUsed)
-    return upgraded
+    if (receipt.status) {
+      debug('gas used', receipt.gasUsed)
+      return upgraded
+    }
   } catch (err) {
-    throw err
+    if (!err.status) {
+      throw new Error('Transaction failed.')
+    }
   }
 }
 
@@ -140,7 +144,7 @@ async function upgradeProxy(opts) {
  * Deploys a proxy contract for opts.contentDid
  * @param  {String} opts.contentDid // unhashed
  * @param  {String} opts.password
- * @param  {String} opts.version
+ * @param  {String|number} opts.version
  * @return {string}
  * @throws {Error,TypeError}
  */
@@ -157,6 +161,9 @@ async function deployProxy(opts) {
   let { contentDid } = opts
 
   const version = opts.version || '1'
+  if ('number' === typeof version) {
+    version = version.toString()
+  }
 
   let did
   let ddo
@@ -207,10 +214,15 @@ async function deployProxy(opts) {
       })
 
     const receipt = await tx.sendSignedTransaction(transaction)
-    debug('gas used', receipt.gasUsed)
-    return proxyAddress
+
+    if (receipt.status) {
+      debug('gas used', receipt.gasUsed)
+      return proxyAddress
+    }
   } catch (err) {
-    throw err
+    if (!err.status) {
+      throw new Error('Transaction failed.')
+    }
   }
 }
 
@@ -259,7 +271,7 @@ async function getStandard(version) {
 }
 
 /**
- * Deploys a new AFS Standard
+ * Deploys a new AFS Standard // 58053 gas
  * @param  {Object} opts
  * @param  {String} opts.requesterDid
  * @param  {String} opts.password

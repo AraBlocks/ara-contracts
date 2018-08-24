@@ -34,7 +34,7 @@ const {
 } = require('./util')
 
 /**
- * Submit new job
+ * Submit new job // 84298 gas
  * @param  {Object}         opts
  * @param  {String}         opts.requesterDid
  * @param  {String}         opts.contentDid
@@ -92,7 +92,7 @@ async function submit(opts) {
   did = kAidPrefix + did
   const acct = await account.load({ did, password })
 
-  debug(did, 'submitting', reward, 'tokens as rewards for', contentDid)
+  debug(did, 'submitting', budget, 'tokens as rewards for', contentDid)
 
   try {
     if (!(await proxyExists(contentDid))) {
@@ -114,7 +114,11 @@ async function submit(opts) {
       }
     })
 
-    await tx.sendSignedTransaction(approveTx)
+    const receipt1 = await tx.sendSignedTransaction(approveTx)
+    if (receipt1.status) {
+      // 30225 gas
+      debug('gas used', receipt1.gasUsed)
+    }
 
     const submitTx = await tx.create({
       account: acct,
@@ -143,14 +147,20 @@ async function submit(opts) {
         debug(`error:  ${log}`)
       })
 
-    await tx.sendSignedTransaction(submitTx)
+    const receipt2 = await tx.sendSignedTransaction(submitTx)
+    if (receipt2.status) {
+      // 54073 gas
+      debug('gas used', receipt2.gasUsed)
+    }
   } catch (err) {
-    throw err
+    if (!err.status) {
+      throw new Error('Transaction failed.')
+    }
   }
 }
 
 /**
- * Allocate rewards
+ * Allocate rewards // 163029 gas (with return), 69637 gas (without return)
  * @param  {Object}         opts
  * @param  {String}         opts.requesterDid
  * @param  {String}         opts.contentDid
@@ -234,7 +244,7 @@ async function allocate(opts) {
     const allocateTx = await tx.create({
       account: acct,
       to: proxy,
-      gasLimit: 1000000,
+      gasLimit: 4000000,
       data: {
         abi: afsAbi,
         functionName: 'allocateRewards',
@@ -263,7 +273,9 @@ async function allocate(opts) {
       debug('gas used', receipt.gasUsed)
     }
   } catch (err) {
-    throw err
+    if (!err.status) {
+      throw new Error('Transaction failed.')
+    }
   }
 }
 
@@ -333,10 +345,16 @@ async function redeem(opts) {
         debug(`error:  ${log}`)
       })
 
-    await tx.sendSignedTransaction(redeemTx)
-    return balance
+    const receipt = await tx.sendSignedTransaction(redeemTx)
+
+    if (receipt.status) {
+      debug('gas used', receipt.gasUsed)
+      return balance
+    }
   } catch (err) {
-    throw err
+    if (!err.status) {
+      throw new Error('Transaction failed.')
+    }
   }
 }
 
