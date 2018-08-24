@@ -58,7 +58,7 @@ module.exports = (async function main() {
   const jobId = ethify(randomBytes(32), true)
   info('purchasing', did)
   try {
-    // DEBUG=* act purchase -j -p 4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4 -d 9861d0eafe27e080c5804b8f3de1aa762af4b4eb69a91b38a4cf87afbb52d643
+    // DEBUG=* act purchase -j -p 4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4 -d 088f2606571ea8e32502d1a4fbc33130c84ea42aae5e0ac14c7907e0feb855c5
     await purchase({
       requesterDid: purchaser,
       contentDid: did,

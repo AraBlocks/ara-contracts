@@ -19,6 +19,13 @@ module.exports = {
       port: 9546,
       from: '0xe6ecdb604957700f7e3c3057672dfe1b3ad60d64',
       gas: 7000000
+    },
+    privatenet: {
+      network_id: 1337,
+      host: 'localhost',
+      port: 8545,
+      from: '0xe6ecdb604957700f7e3c3057672dfe1b3ad60d64',
+      gas: 4000000
     }
   }
 }

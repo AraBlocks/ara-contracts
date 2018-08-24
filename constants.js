@@ -2,17 +2,17 @@ module.exports = {
   kDidPrefix: 'did:',
   kAidPrefix: 'did:ara:',
   kOwnerSuffix: '#owner',
-  kRegistryAddress: '0x9e1fdccae3c720c9e897b696640ab517dfd9bf6b',
-  kLibraryAddress: '0x31e36aa3e0400d572ccae095e4dff181e660e0c3',
-  kARATokenAddress: '0xad0c2681dc5d72572e36d0d312680b0da12facb1',
+  kRegistryAddress: '0xbcf229176416a2e889db0e7d78ac375fc4b28d68',
+  kLibraryAddress: '0x2e6eed75f2de36eb2a7debcd1de4b377b9c4e3b4',
+  kARATokenAddress: '0x6edfcd3f2f023f86e6624807e6a325e72a1ecf80',
 
   kTempOwnerDid: 'did:ara:4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4',
   // private key: 0xa38a74ba8d89e22841f1d705c0ae0b3c8355da9d56a0f2192b477563e4ee3d07
   kDefaultAddress: '0xe6ecdb604957700f7e3c3057672dfe1b3ad60d64',
-  kTempAFSDid: 'did:ara:9861d0eafe27e080c5804b8f3de1aa762af4b4eb69a91b38a4cf87afbb52d643'
+  kTempAFSDid: 'did:ara:088f2606571ea8e32502d1a4fbc33130c84ea42aae5e0ac14c7907e0feb855c5'
 }
 
-// AFS standard: '0xBcf229176416A2E889DB0e7d78AC375fC4B28d68'
+// AFS standard: '0x380dd06d0DbedE67ba6Ed8A56FE40bBc99B6ff1A'
 // Proxy: '0xBAc53704b34710587ABCb042b69D7C627F8cF263'
 
 /**

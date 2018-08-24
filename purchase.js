@@ -40,7 +40,7 @@ const {
 } = require('./util')
 
 /**
- * Purchase contentDid
+ * Purchase contentDid // 241649 gas
  * @param  {Object} opts
  * @param  {String} opts.requesterDid
  * @param  {String} opts.contentDid
@@ -128,7 +128,11 @@ async function purchase(opts) {
       }
     })
 
-    await tx.sendSignedTransaction(approveTx)
+    const receipt1 = await tx.sendSignedTransaction(approveTx)
+    if (receipt1.status) {
+      // 45353 gas
+      debug('gas used', receipt1.gasUsed)
+    }
 
     const purchaseTx = await tx.create({
       account: acct,
@@ -170,15 +174,20 @@ async function purchase(opts) {
         debug(`error:  ${log}`)
       })
 
-    await tx.sendSignedTransaction(purchaseTx)
+    const receipt2 = await tx.sendSignedTransaction(purchaseTx)
+    if (receipt2.status) {
+      // 196296 gas
+      debug('gas used', receipt2.gasUsed)
+      const size = await getLibrarySize(did)
 
-    const size = await getLibrarySize(did)
+      const contentId = await getLibraryItem(did, size - 1)
 
-    const contentId = await getLibraryItem(did, size - 1)
-
-    debug(contentId, `added to library (${size})`)
+      debug(contentId, `added to library (${size})`)
+    }
   } catch (err) {
-    throw err
+    if (!err.status) {
+      throw new Error('Transaction failed.')
+    }
   }
 }
 
