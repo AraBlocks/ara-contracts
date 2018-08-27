@@ -141,7 +141,7 @@ async function upgradeProxy(opts) {
 }
 
 /**
- * Deploys a proxy contract for opts.contentDid
+ * Deploys a proxy contract for opts.contentDid // 349574 gas
  * @param  {String} opts.contentDid // unhashed
  * @param  {String} opts.password
  * @param  {String|number} opts.version
@@ -160,7 +160,7 @@ async function deployProxy(opts) {
   const { password } = opts
   let { contentDid } = opts
 
-  const version = opts.version || '1'
+  let version = opts.version || '1'
   if ('number' === typeof version) {
     version = version.toString()
   }
@@ -271,7 +271,7 @@ async function getStandard(version) {
 }
 
 /**
- * Deploys a new AFS Standard // 58053 gas
+ * Deploys a new AFS Standard // 2322093 gas (contract deploy) + 58053 gas (add standard)
  * @param  {Object} opts
  * @param  {String} opts.requesterDid
  * @param  {String} opts.password

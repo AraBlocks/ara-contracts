@@ -123,9 +123,9 @@ contract AFS {
     }
     require(totalRewards <= jobs_[_jobId].budget, "Insufficient budget.");
     for (uint8 j = 0; j < _farmers.length; j++) {
+      assert(jobs_[_jobId].budget >= _rewards[j]);
       rewards_[_farmers[j]] = _rewards[j];
       jobs_[_jobId].budget -= _rewards[j];
-      assert(jobs_[_jobId].budget >= 0);
     }
     uint256 remaining = jobs_[_jobId].budget;
     if (remaining > 0) {
