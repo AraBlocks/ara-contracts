@@ -9,8 +9,8 @@ const debug = require('debug')('ara-contracts:cli:setup')
 const { info, warn, error, log } = require('ara-console')
 const { createProgram } = require('../lib/program')
 const inquirer = require('inquirer')
-const { web3 } = require('ara-context')()
-const account = require('ara-web3/account')
+// const { web3 } = require('ara-context')()
+const { account } = require('ara-util/web3')
 
 const toLower = x => String(x).toLowerCase()
 
@@ -46,42 +46,29 @@ module.exports = (async function main() {
   try {
     const did = argv._[0]
     const { address, privateKey } = await account.load({ did, password })
-    console.log(address, privateKey)
-    const defaultAccounts = await web3.eth.getAccounts()
-    const addr = await web3.eth.personal.importRawKey(privateKey, password)
-    web3.eth.defaultAccount = addr
-    const success = await web3.eth.personal.unlockAccount(addr, password, 0)
-    info("set", address, "as default account")
-
-    if (fund) {
-      const oneEthInWei = web3.utils.toWei('1', 'ether')
-      await supplyAccount(address, defaultAccounts, oneEthInWei)
-      info("funded", address, "with", 1, "ETH")
-      const balance = await web3.eth.getBalance(web3.eth.defaultAccount)
-      info("new balance:", web3.utils.fromWei(balance), "ETH")
-    }
+    console.log('address', address, '\npk:', privateKey)
   } catch (err) {
     onfatal(err)
   }
 }())
 
-async function supplyAccount(address, accounts, transferAmount) {
-  let balance = 0
-  let i = 0
-  while (balance < 1) {
-    if (!accounts[i]) {
-      break
-    }
-    // eslint-disable-next-line no-await-in-loop
-    balance = await web3.eth.getBalance(accounts[i])
-    balance = Number(web3.utils.fromWei(balance, 'ether'))
-    i++
-  }
+// async function supplyAccount(address, accounts, transferAmount) {
+//   let balance = 0
+//   let i = 0
+//   while (balance < 1) {
+//     if (!accounts[i]) {
+//       break
+//     }
+//     // eslint-disable-next-line no-await-in-loop
+//     balance = await web3.eth.getBalance(accounts[i])
+//     balance = Number(web3.utils.fromWei(balance, 'ether'))
+//     i++
+//   }
 
-  if (accounts[i]) {
-    await web3.eth.sendTransaction({ from: accounts[i], to: address, value: transferAmount })
-  }
-}
+//   if (accounts[i]) {
+//     await web3.eth.sendTransaction({ from: accounts[i], to: address, value: transferAmount })
+//   }
+// }
 
 async function promptForPassword() {
   return await inquirer.prompt([{
