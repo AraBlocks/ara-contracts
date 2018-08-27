@@ -34,15 +34,7 @@ const {
   }
 } = require('ara-util')
 
-// const {
-//   tx,
-//   call,
-//   account,
-//   contract
-// } = require('ara-web3')
-
 const {
-  // ethify,
   isValidJobId
 } = require('./util')
 
