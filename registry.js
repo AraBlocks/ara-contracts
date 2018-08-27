@@ -97,7 +97,7 @@ async function upgradeProxy(opts) {
     throw err
   }
   let owner = getDocumentOwner(ddo, true)
-  owner = kAidPrefix + owner
+  owner = `${kAidPrefix}${owner}`
 
   const acct = await account.load({ did: owner, password })
 
@@ -180,7 +180,7 @@ async function deployProxy(opts) {
 
   debug('creating tx to deploy proxy for', did)
   let owner = getDocumentOwner(ddo, true)
-  owner = kAidPrefix + owner
+  owner = `${kAidPrefix}${owner}`
 
   const acct = await account.load({ did: owner, password })
   try {
@@ -318,7 +318,7 @@ async function deployNewStandard(opts) {
     throw err
   }
 
-  const prefixedDid = kAidPrefix + did
+  const prefixedDid = `${kAidPrefix}${did}`
   const acct = await account.load({ did: prefixedDid, password })
 
   const registryOwner = await call({
