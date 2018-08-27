@@ -24,23 +24,30 @@ const {
 const {
   hashDID,
   validate,
-  normalize
+  normalize,
+  web3: {
+    tx,
+    call,
+    ethify,
+    account,
+    contract
+  }
 } = require('ara-util')
 
-const {
-  tx,
-  call,
-  account,
-  contract
-} = require('ara-web3')
+// const {
+//   tx,
+//   call,
+//   account,
+//   contract
+// } = require('ara-web3')
 
 const {
-  ethify,
+  // ethify,
   isValidJobId
 } = require('./util')
 
 /**
- * Purchase contentDid // 241649 gas
+ * Purchase contentDid // 256649 gas
  * @param  {Object} opts
  * @param  {String} opts.requesterDid
  * @param  {String} opts.contentDid
@@ -176,7 +183,7 @@ async function purchase(opts) {
 
     const receipt2 = await tx.sendSignedTransaction(purchaseTx)
     if (receipt2.status) {
-      // 196296 gas
+      // 211296 gas
       debug('gas used', receipt2.gasUsed)
       const size = await getLibrarySize(did)
 

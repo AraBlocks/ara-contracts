@@ -2,12 +2,16 @@
 
 const { abi } = require('./build/contracts/Library.json')
 const { kLibraryAddress } = require('./constants')
-const { call } = require('ara-web3/call')
-const { ethify } = require('./util')
+// const { call } = require('ara-web3/call')
+// const { ethify } = require('./util')
 
 const {
   hashDID,
-  normalize
+  normalize,
+  web3: {
+    call,
+    ethify
+  }
 } = require('ara-util')
 
 /**

@@ -1,7 +1,7 @@
 const { abi: tokenAbi } = require('./build/contracts/ARAToken.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:rewards')
-const { web3 } = require('ara-context')()
+// const { web3 } = require('ara-context')()
 const { info } = require('ara-console')
 
 const {
@@ -17,18 +17,27 @@ const {
 const {
   hashDID,
   validate,
-  normalize
+  normalize,
+  web3: {
+    tx,
+    sha3,
+    call,
+    ethify,
+    account,
+    contract,
+    isAddress
+  }
 } = require('ara-util')
 
-const {
-  tx,
-  call,
-  account,
-  contract
-} = require('ara-web3')
+// const {
+//   tx,
+//   call,
+//   account,
+//   contract
+// } = require('ara-web3')
 
 const {
-  ethify,
+  // ethify,
   isValidJobId,
   isValidArray
 } = require('./util')
@@ -198,10 +207,10 @@ async function allocate(opts) {
 
   const validJobId = isValidJobId(jobId)
   const validFarmers = isValidArray(farmers, (address, index) => {
-    if (!web3.utils.isAddress(address)) {
+    if (!isAddress(address)) {
       return false
     }
-    farmers[index] = web3.utils.soliditySha3({ t: 'address', v: address })
+    farmers[index] = sha3({ t: 'address', v: address })
   })
   const validRewards = isValidArray(rewards, (reward) => {
     if (reward <= 0) {
