@@ -75,7 +75,7 @@ module.exports = (async function main() {
   try {
     if (proxy) {
       if (!upgrade) {
-        // DEBUG=* act deploy -P -d 9861d0eafe27e080c5804b8f3de1aa762af4b4eb69a91b38a4cf87afbb52d643 -v 1
+        // DEBUG=* act deploy -P -d b8fbf15ad1df1feb2a051113893281740db94e09267a4df206b044f80f1e7c5c -v 3
         const address = await registry.deployProxy({
           contentDid: did,
           password,
@@ -83,7 +83,7 @@ module.exports = (async function main() {
         })
         info("Proxy deployed at address", address, "for content", did)
       } else {
-        // DEBUG=* act deploy -P -u -d 088f2606571ea8e32502d1a4fbc33130c84ea42aae5e0ac14c7907e0feb855c5 -v 3
+        // DEBUG=* act deploy -P -u -d b8fbf15ad1df1feb2a051113893281740db94e09267a4df206b044f80f1e7c5c -v 3
         const upgraded = await registry.upgradeProxy({
           contentDid: did,
           password,
@@ -94,7 +94,7 @@ module.exports = (async function main() {
         }
       }
     } else {
-      // DEBUG=* act deploy -S -d 4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4 -v 3 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/ARAToken.sol
+      // DEBUG=* act deploy -S -d 4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4 -v 6 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/ARAToken.sol
       const address = await registry.deployNewStandard({
         requesterDid: did,
         password,
