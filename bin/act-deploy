@@ -74,21 +74,14 @@ module.exports = (async function main() {
   info('deploying', proxy ? (upgrade ? 'proxy upgrade' : 'new proxy...') : 'new standard...')
   try {
     if (proxy) {
+      const opts = { contentDid: did, password, version }
       if (!upgrade) {
         // DEBUG=* act deploy -P -d 114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85 -v 3
-        const address = await registry.deployProxy({
-          contentDid: did,
-          password,
-          version
-        })
+        const address = await registry.deployProxy(opts)
         info("Proxy deployed at address", address, "for content", did)
       } else {
         // DEBUG=* act deploy -P -u -d 114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85 -v 3
-        const upgraded = await registry.upgradeProxy({
-          contentDid: did,
-          password,
-          version
-        })
+        const upgraded = await registry.upgradeProxy(opts)
         if (upgraded) {
           info("Proxy successfully upgraded to version", version)
         }
