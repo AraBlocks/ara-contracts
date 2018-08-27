@@ -36,7 +36,7 @@ module.exports = (async function main() {
   }
   const did = argv._[0]
   const { g } = argv
-  if (!g && g != 0) {
+  if (!g && 0 !== g) {
     const size = await library.getLibrarySize(did)
     const lib = await library.getLibrary(did)
     info(did, 'library (', size, ')\n', lib)

@@ -96,7 +96,6 @@ contract AFS {
     price_    = 0;
   }
 
-  // tested
   function setPrice(uint256 _price) external onlyBy(owner_) {
     price_ = _price;
     emit PriceSet(did_, price_);
