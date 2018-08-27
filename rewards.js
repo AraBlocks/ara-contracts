@@ -1,7 +1,6 @@
 const { abi: tokenAbi } = require('./build/contracts/ARAToken.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:rewards')
-// const { web3 } = require('ara-context')()
 const { info } = require('ara-console')
 
 const {
@@ -29,15 +28,7 @@ const {
   }
 } = require('ara-util')
 
-// const {
-//   tx,
-//   call,
-//   account,
-//   contract
-// } = require('ara-web3')
-
 const {
-  // ethify,
   isValidJobId,
   isValidArray
 } = require('./util')
