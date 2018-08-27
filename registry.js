@@ -1,14 +1,25 @@
 const { abi } = require('./build/contracts/Registry.json')
 const debug = require('debug')('ara-contracts:registry')
-const contract = require('ara-web3/contract')
-const account = require('ara-web3/account')
-const { call } = require('ara-web3/call')
-const web3Abi = require('ara-web3/abi')
-const { ethify } = require('./util')
-const tx = require('ara-web3/tx')
+// const contract = require('ara-web3/contract')
+// const account = require('ara-web3/account')
+// const { call } = require('ara-web3/call')
+// const web3Abi = require('ara-web3/abi')
+// const { ethify } = require('./util')
+// const tx = require('ara-web3/tx')
 const { parse } = require('path')
 const solc = require('solc')
 const fs = require('fs')
+
+const {
+  web3: {
+    tx,
+    call,
+    ethify,
+    account,
+    contract,
+    abi: web3Abi,
+  }
+} = require('ara-util')
 
 const {
   kAidPrefix,
@@ -345,7 +356,7 @@ async function deployNewStandard(opts) {
   const { bytecode } = compiledContract
 
   try {
-    const afs = await contract.deploy({
+    const { contract: afs, gasLimit } = await contract.deploy({
       account: acct,
       abi: afsAbi,
       bytecode: ethify(bytecode)
@@ -354,7 +365,7 @@ async function deployNewStandard(opts) {
     const transaction = await tx.create({
       account: acct,
       to: kRegistryAddress,
-      gasLimit: 1000000,
+      gasLimit: 1500000,
       data: {
         abi,
         functionName: 'addStandardVersion',
@@ -386,12 +397,12 @@ async function deployNewStandard(opts) {
     const receipt = await tx.sendSignedTransaction(transaction)
 
     if (receipt.status) {
-      debug('gas used', receipt.gasUsed)
+      debug('gas used', receipt.gasUsed + gasLimit)
       return address ? address : afs._address
     }
   } catch (err) {
     if (!err.status) {
-      throw new Error('Transaction failed.')
+      throw err
     }
   }
 }

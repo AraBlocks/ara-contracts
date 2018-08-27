@@ -57,15 +57,16 @@ if (0 == argv._.length && argv.help) {
 module.exports = (async function main() {
   const { allocate, balance, redeem, submit } = argv
   let { content, did, job: jobId } = argv
+  // *** WARNING *** this is a test command
   if (allocate) {
-    const jobId = '0x1000dfcce952d8cb4b2a7ce0ca990e2b22716d6e80a4b0250faa4a6b7431b009'
+    const jobId = '0x7dc039cfb220029c371d0f4aabf4a956ed0062d66c447df7b4595d7e11187271'
     const farmers = ['0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e',
                      '0x70693d8f4e1c9bA1AE0870C35128BaDfDcF28FBc',
                      '0x19d6a7D8bB09e8A6d733a9c8D9fe7b964fD8F45e',
                      '0x629483C72b5191C1b522E887238a0A522b1D4F74']
     const distrib = [10, 20, 30, 40]
-    await rewards.allocate({ requesterDid: 'did:ara:4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4',
-                             contentDid: '088f2606571ea8e32502d1a4fbc33130c84ea42aae5e0ac14c7907e0feb855c5',
+    await rewards.allocate({ requesterDid: 'did:ara:8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67',
+                             contentDid: '114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85',
                              password: 'pass',
                              job: {
                               jobId,

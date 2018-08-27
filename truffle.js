@@ -4,7 +4,7 @@ module.exports = {
       host: 'localhost',
       port: 9545,
       network_id: '*',
-      from: '0xe6ecdb604957700f7e3c3057672dfe1b3ad60d64'
+      from: '0x105c83b79e9170d7969ce9806fe0b527b5f879de'
     },
     testnet: {
       network_id: 1337,
@@ -17,14 +17,14 @@ module.exports = {
       network_id: 12,
       host: 'localhost',
       port: 9546,
-      from: '0xe6ecdb604957700f7e3c3057672dfe1b3ad60d64',
+      from: '0x105c83b79e9170d7969ce9806fe0b527b5f879de',
       gas: 7000000
     },
     privatenet: {
       network_id: 1337,
       host: 'localhost',
       port: 8545,
-      from: '0xe6ecdb604957700f7e3c3057672dfe1b3ad60d64',
+      from: '0x105c83b79e9170d7969ce9806fe0b527b5f879de',
       gas: 4000000
     }
   }
