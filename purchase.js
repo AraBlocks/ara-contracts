@@ -97,7 +97,7 @@ async function purchase(opts) {
   debug(did, 'purchasing', contentDid)
 
   const hIdentity = hashDID(did)
-  did = `\${kAidPrefix}${did}`
+  did = `${kAidPrefix}${did}`
   const acct = await account.load({ did, password })
 
   try {
