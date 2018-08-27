@@ -89,7 +89,7 @@ async function submit(opts) {
 
   contentDid = normalize(contentDid)
 
-  did = kAidPrefix + did
+  did = `${kAidPrefix}${did}`
   const acct = await account.load({ did, password })
 
   debug(did, 'submitting', budget, 'tokens as rewards for', contentDid)
@@ -230,7 +230,7 @@ async function allocate(opts) {
 
   contentDid = normalize(contentDid)
 
-  did = kAidPrefix + did
+  did = `${kAidPrefix}${did}`
   const acct = await account.load({ did, password })
 
   debug(did, 'allocating rewards for job:', jobId)
@@ -310,7 +310,7 @@ async function redeem(opts) {
   contentDid = normalize(contentDid)
 
   debug(did, 'redeeming balance from', contentDid)
-  did = kAidPrefix + did
+  did = `${kAidPrefix}${did}`
   const acct = await account.load({ did, password })
 
   try {
@@ -428,7 +428,7 @@ async function getBalance(opts) {
 
   contentDid = normalize(contentDid)
 
-  did = kAidPrefix + did
+  did = `${kAidPrefix}${did}`
   const { address } = await account.load({ did, password })
 
   try {
