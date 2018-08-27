@@ -1,0 +1,182 @@
+#!/usr/bin/env node
+
+const debug = require('debug')('ara-contracts:cli:reward')
+const { info, warn, error, log } = require('ara-console')
+const { createProgram } = require('../lib/program')
+const rewards = require('../rewards')
+const inquirer = require('inquirer')
+
+// yargs program command line interface instance
+const program = createProgram({
+  usage: `
+usage: act reward: [-h] [--help] [options]
+`
+})
+
+const { argv } = program
+  .option('allocate', {
+    alias: 'a',
+    descirbe: 'Flag to allocate rewards.'
+  })
+  .option('balance', {
+    alias: 'b',
+    describe: 'Flag to acquire balance.'
+  })
+  .option('content', {
+    alias: 'c',
+    describe: 'The AFS did of the content.'
+  })
+  .option('did', {
+    alias: 'd',
+    describe: 'The requester did.'
+  })
+  .option('job', {
+    alias: 'j',
+    describe: 'The job Id.'
+  })
+  .option('redeem', {
+    alias: 'r',
+    describe: 'Flag to redeem balance.'
+  })
+  .option('submit', {
+    alias: 's',
+    describe: 'Flag to submit budget for job.'
+  })
+  .conflicts('a', ['b', 'r', 's'])
+  .conflicts('b', ['a', 'r', 's'])
+  .conflicts('r', ['a', 'b', 's'])
+  .conflicts('s', ['a', 'b', 'r'])
+
+// Emit program usage help
+if (0 == argv._.length && argv.help) {
+  program.showHelp()
+  process.exit(0)
+}
+
+// Main program entry
+module.exports = (async function main() {
+  const { allocate, balance, redeem, submit } = argv
+  let { content, did, job: jobId } = argv
+  // *** WARNING *** this is a test command
+  if (allocate) {
+    const jobId = '0x7dc039cfb220029c371d0f4aabf4a956ed0062d66c447df7b4595d7e11187271'
+    const farmers = ['0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e',
+                     '0x70693d8f4e1c9bA1AE0870C35128BaDfDcF28FBc',
+                     '0x19d6a7D8bB09e8A6d733a9c8D9fe7b964fD8F45e',
+                     '0x629483C72b5191C1b522E887238a0A522b1D4F74']
+    const distrib = [10, 20, 30, 40]
+    await rewards.allocate({ requesterDid: 'did:ara:8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67',
+                             contentDid: '114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85',
+                             password: 'pass',
+                             job: {
+                              jobId,
+                              farmers,
+                              rewards: distrib
+                             }})
+  } else if (balance) {
+    const { password } = await promptForPassword()
+    if (!content) {
+      ({ did: content } = await promptForDID('Please provide the DID of the AFS.'))
+    }
+    if (!did) {
+      ({ did } = await promptForDID('Please provide the requester DID.'))
+    }
+
+    try {
+      const balance = await rewards.getBalance({ requesterDid: did, contentDid: content, password })
+      info(did, 'balance in AFS', content, 'is', balance, 'tokens.')
+    } catch (err) {
+      throw err
+    }
+  } else if (redeem) {
+    const { password } = await promptForPassword()
+    if (!content) {
+      ({ did: content } = await promptForDID('Please provide the DID of the AFS.'))
+    }
+    if (!did) {
+      ({ did } = await promptForDID('Please provide the requester DID.'))
+    }
+
+    try {
+      const balance = await rewards.redeem({ requesterDid: did, contentDid: content, password })
+      info(did, 'redeemed', balance, 'tokens from AFS', contentDid)
+    } catch (err) {
+      throw err
+    }
+  } else if (submit) {
+    const { password } = await promptForPassword()
+    if (!content) {
+      ({ did: content } = await promptForDID('Please provide the DID of the AFS.'))
+    }
+    if (!did) {
+      ({ did } = await promptForDID('Please provide the requester DID.'))
+    }
+    if (!jobId) {
+      ({ jobId } = await promptForJobId())
+    }
+
+    const { budget } = await promptForBudget()
+    try {
+      await rewards.submit({ requesterDid: did, contentDid: content, password, job: { jobId, budget } })
+      info('submitted', budget, 'tokens as rewards for AFS', content)
+    } catch (err) {
+      throw err
+    }
+  } else if (content && jobId) {
+    // DEBUG=* act reward -c 088f2606571ea8e32502d1a4fbc33130c84ea42aae5e0ac14c7907e0feb855c5 -j 0x1000dfcce952d8cb4b2a7ce0ca990e2b22716d6e80a4b0250faa4a6b7431b009
+    try {
+      const budget = await rewards.getBudget({ contentDid: content, jobId })
+      info('budget for job', jobId, 'is', budget, 'tokens')
+    } catch (err) {
+      throw err
+    }
+  } else {
+    program.showHelp()
+    process.exit(0)
+  }
+}())
+
+async function promptForDID(message) {
+  return await inquirer.prompt([{
+    name: 'did',
+    message
+  }])
+}
+
+async function promptForJobId() {
+  return await inquirer.prompt([{
+    name: 'jobId',
+    message:
+    "Please provide an existing Job ID.\n" +
+    "Job ID:"
+  }]) 
+}
+
+async function promptForBudget() {
+  return await inquirer.prompt([{
+    name: 'budget',
+    type: 'number',
+    message:
+    "Please provide a budget in Ara tokens as rewards for the job.\n" +
+    "Budget:"
+  }]) 
+}
+
+async function promptForPassword() {
+  return await inquirer.prompt([{
+    type: 'password',
+    name: 'password',
+    message:
+    "Please provide the passphrase for your identity. This is needed to " +
+    "complete this action.\n" +
+    "Passphrase:"
+  }]) 
+}
+
+function onfatal(err) {
+  if (err) {
+    debug(err)
+    error("fatal:", err.message)
+  }
+  process.exit(1)
+}

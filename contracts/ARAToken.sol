@@ -10,7 +10,7 @@ contract ARAToken is ERC20, BasicToken {
   uint256 public constant decimals = 18;
   string  public version = "1.0";
 
-   mapping (address => mapping (address => uint256)) internal allowed;
+  mapping (address => mapping (address => uint256)) internal allowed;
 
   // format decimals.
   function formatDecimals(uint256 _value) internal pure returns (uint256) {
@@ -20,6 +20,7 @@ contract ARAToken is ERC20, BasicToken {
   // constructor
   constructor() public {
     totalSupply_ = formatDecimals(1000000000); // 1,000,000,000
+    balances[msg.sender] = totalSupply_;
   }
 
   function transferFrom(

@@ -5,8 +5,6 @@ const { info, warn, error, log } = require('ara-console')
 const { createProgram } = require('../lib/program')
 const library = require('../library')
 const inquirer = require('inquirer')
-const { web3 } = require('ara-context')()
-const account = require('ara-web3/account')
 
 const toLower = x => String(x).toLowerCase()
 
@@ -33,14 +31,12 @@ if (0 == argv._.length && argv.help) {
 
 // Main program entry
 module.exports = (async function main() {
-  console.log(argv)
   if (1 !== argv._.length) {
     onfatal(new Error('Please supply a single DID whose library you would like to view.'))
   }
   const did = argv._[0]
   const { g } = argv
-  
-  if (!g) {
+  if (!g && g != 0) {
     const size = await library.getLibrarySize(did)
     const lib = await library.getLibrary(did)
     info(did, 'library (', size, ')\n', lib)

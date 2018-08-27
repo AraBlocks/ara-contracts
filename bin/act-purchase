@@ -1,0 +1,109 @@
+#!/usr/bin/env node
+
+const debug = require('debug')('ara-contracts:cli:purchase')
+const { info, warn, error, log } = require('ara-console')
+const { createProgram } = require('../lib/program')
+const { web3: { ethify } } = require('ara-util')
+const { randomBytes } = require('ara-crypto')
+const { purchase } = require('../purchase')
+const inquirer = require('inquirer')
+
+// yargs program command line interface instance
+const program = createProgram({
+  usage: `
+usage: act purchase: [-h] [--help] [options]
+`
+})
+
+const { argv } = program
+  .option('purchaser', {
+    alias: 'p',
+    describe: 'The purchaser DID.'
+  })
+  .option('did', {
+    alias: 'd',
+    describe: 'The content DID to purchase.'
+  })
+  .option('job', {
+    alias: 'j',
+    type: 'boolean',
+    describe: 'Flag to indicate if a new job should be created.'
+  })
+
+// Emit program usage help
+if (0 == argv._.length && argv.help) {
+  program.showHelp()
+  process.exit(0)
+}
+
+// Main program entry
+module.exports = (async function main() {
+  let { purchaser, did, job } = argv
+
+  if (!purchaser) {
+    onfatal(new Error("Please provide the DID of the purchaser. See 'act purchase --help'."))
+    process.exit(0)
+  }
+  if (!did) {
+    onfatal(new Error("Please provide a content DID to purchase. See 'act purchase --help'."))
+    process.exit(0)
+  }
+
+  const { password } = await promptForPassword()
+  let budget
+  if (job) {
+    ({ budget } = await promptForBudget())
+  }
+
+  const jobId = ethify(randomBytes(32), true)
+  info('purchasing', did)
+  try {
+    // DEBUG=* act purchase -j -p 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 -d 114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85
+    await purchase({
+      requesterDid: purchaser,
+      contentDid: did,
+      password,
+      job: job ? { jobId, budget } : {}
+    })
+  } catch (err) {
+    onfatal(err)
+  }
+}())
+
+async function promptForPassword() {
+  return await inquirer.prompt([{
+    type: 'password',
+    name: 'password',
+    message:
+    "Please provide the passphrase for your identity. This is needed to " +
+    "complete this action.\n" +
+    "Passphrase:"
+  }]) 
+}
+
+async function promptForJobId() {
+  return await inquirer.prompt([{
+    name: 'jobId',
+    message:
+    "Please provide an existing Job ID.\n" +
+    "Job ID:"
+  }]) 
+}
+
+async function promptForBudget() {
+  return await inquirer.prompt([{
+    name: 'budget',
+    type: 'number',
+    message:
+    "Please provide a budget in Ara tokens as rewards for the job.\n" +
+    "Budget:"
+  }]) 
+}
+
+function onfatal(err) {
+  if (err) {
+    debug(err)
+    error("fatal:", err.message)
+  }
+  process.exit(1)
+}
