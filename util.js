@@ -1,8 +1,6 @@
 const bufferFrom = require('buffer-from')
 const isBuffer = require('is-buffer')
 
-// TODO: add to ara-util
-
 function isValidJobId(jobId) {
   if (jobId && ('string' === typeof jobId || isBuffer(jobId)) && 
     (jobId.length === 64 || (jobId.length === 66 && jobId.indexOf('0x') === 0))) {
