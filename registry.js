@@ -140,7 +140,7 @@ async function upgradeProxy(opts) {
     }
   } catch (err) {
     if (!err.status) {
-      throw new Error('Transaction failed.')
+      throw new Error('Transaction failed:', err.message)
     }
   }
 }
@@ -226,7 +226,7 @@ async function deployProxy(opts) {
     }
   } catch (err) {
     if (!err.status) {
-      throw new Error('Transaction failed.')
+      throw new Error('Transaction failed:', err.message)
     }
   }
 }
@@ -396,7 +396,7 @@ async function deployNewStandard(opts) {
     }
   } catch (err) {
     if (!err.status) {
-      throw err
+      throw new Error('Transaction failed:', err.message)
     }
   }
 }
