@@ -1,5 +1,6 @@
 /* eslint no-undef: "off" */
 
+const { web3 } = require('ara-context')()
 const { kDefaultAddress } = require('../constants')
 
 const Library = artifacts.require('./Library.sol')

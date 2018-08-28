@@ -2,24 +2,28 @@
 
 const { abi } = require('./build/contracts/Library.json')
 const { kLibraryAddress } = require('./constants')
-const call = require('ara-web3/call')
 
 const {
   hashDID,
-  normalize
+  normalize,
+  web3: {
+    call,
+    ethify
+  }
 } = require('ara-util')
 
 /**
  * Returns requesterDid's library
+ * @param  {string} unhashed did
  * @return {Array}
  * @throws {TypeError}
  */
 async function getLibrary(requesterDid = '') {
-  if (null == requesterDid || 'string' !== typeof requesterDid || !requesterDid) {
-    throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
+  if ('string' !== typeof requesterDid || !requesterDid) {
+    throw TypeError('Expecting non-empty requester DID')
   }
 
-  return checkLibrary(requesterDid)
+  return checkLibrary({ requesterDid })
 }
 
 /**
@@ -32,23 +36,24 @@ async function getLibrary(requesterDid = '') {
  */
 async function checkLibrary(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('ara-contracts.library: Expecting opts object.')
-  } else if (null == opts.requesterDid || 'string' !== typeof opts.requesterDid || !opts.requesterDid) {
-    throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
-  } else if (null == opts.contentDid || 'string' !== typeof opts.contentDid || !opts.contentDid) {
-    throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
+    throw new TypeError('Expecting opts object.')
+  } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
+    throw TypeError('Expecting non-empty requester DID')
+  } else if (opts.contentDid && 'string' !== typeof opts.contentDid) {
+    throw TypeError('Expecting valid content DID')
   }
 
   let { requesterDid, contentDid } = opts
 
   requesterDid = normalize(requesterDid)
-  contentDid = normalize(contentDid)
+  if (contentDid)
+    contentDid = normalize(contentDid)
 
   const libSize = await getLibrarySize(requesterDid)
   const lib = []
   for (let i = 0; i < libSize; i++) {
     const item = await getLibraryItem(requesterDid, i)
-    if (contentDid && item == contentDid) {
+    if (contentDid && item == ethify(contentDid)) {
       throw new Error('Item is already in user library and cannot be purchased again')
     }
     lib.push(item)
@@ -58,13 +63,13 @@ async function checkLibrary(opts) {
 
 /**
  * Gets the size of requesterDid's library
- * @param  {String} requesterDid
+ * @param  {String} unhashd requesterDid
  * @return {int}
  * @throws {TypeError}
  */
 async function getLibrarySize(requesterDid = '') {
-  if (null == requesterDid || 'string' !== typeof requesterDid || !requesterDid) {
-    throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
+  if ('string' !== typeof requesterDid || !requesterDid) {
+    throw TypeError('Expecting non-empty requester DID')
   }
 
   const hIdentity = hashDID(requesterDid)
@@ -74,31 +79,31 @@ async function getLibrarySize(requesterDid = '') {
     address: kLibraryAddress,
     functionName: 'getLibrarySize',
     arguments: [
-      hIdentity
+      ethify(hIdentity)
     ]
   })
 }
 
 /**
  * Gets the address of the item at index in requesterDid's library
- * @param  {String} requesterDid
+ * @param  {String} unhashed requesterDid
  * @param  {int} index
  * @return {string}
  * @throws {Error, TypeError}
  */
 async function getLibraryItem(requesterDid = '', index = -1) {
-  if (null == requesterDid || 'string' !== typeof requesterDid || !requesterDid) {
-    throw TypeError('ara-contracts.library: Expecting non-empty requester DID')
+  if ('string' !== typeof requesterDid || !requesterDid) {
+    throw TypeError('Expecting non-empty requester DID')
   }
 
   if (index < 0) {
-    throw Error('ara-contracts.library: Expecting a whole number index')
+    throw Error('Expecting a whole number index')
   }
 
   const hIdentity = hashDID(requesterDid)
 
   if (await getLibrarySize(requesterDid) <= index) {
-    throw Error('ara-contracts.library: Invalid index')
+    throw Error('Invalid index')
   }
 
   return call({
@@ -106,7 +111,7 @@ async function getLibraryItem(requesterDid = '', index = -1) {
     address: kLibraryAddress,
     functionName: 'getLibraryItem',
     arguments: [
-      hIdentity,
+      ethify(hIdentity),
       index
     ]
   })

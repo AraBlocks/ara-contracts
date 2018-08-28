@@ -4,14 +4,14 @@ import "./Proxy.sol";
 
 contract Registry {
   address public owner_;
-  mapping (string => address) private proxies_; // hash(contentId) => proxy
-  mapping (string => address) private proxyOwners_; // hash(contentId) => owner
+  mapping (bytes32 => address) private proxies_; // contentId (unhashed) => proxy
+  mapping (bytes32 => address) private proxyOwners_; // contentId (unhashed) => owner
   mapping (string => address) private versions_; // version => implementation
   mapping (address => address) public proxyImpls_; // proxy => implementation
   string public latestVersion_;
 
-  event ProxyDeployed(string _contentId, address _address);
-  event ProxyUpgraded(string _contentId, string _version);
+  event ProxyDeployed(bytes32 _contentId, address _address);
+  event ProxyUpgraded(bytes32 _contentId, string _version);
   event StandardAdded(string _version, address _address);
 
   constructor() public {
@@ -19,20 +19,26 @@ contract Registry {
   }
 
   modifier restricted() {
-    require (msg.sender == owner_);
-     _;
-  }
-
-  modifier onlyProxyOwner(string _contentId) {
-    require(proxyOwners_[_contentId] == msg.sender);
+    require (
+      msg.sender == owner_,
+      "Sender not authorized."
+    );
     _;
   }
 
-  function getProxyAddress(string _contentId) external view returns (address) {
+  modifier onlyProxyOwner(bytes32 _contentId) {
+    require(
+      proxyOwners_[_contentId] == msg.sender,
+      "Sender not authorized."
+    );
+    _;
+  }
+
+  function getProxyAddress(bytes32 _contentId) external view returns (address) {
     return proxies_[_contentId];
   }
 
-  function getProxyOwner(string _contentId) external view returns (address) {
+  function getProxyOwner(bytes32 _contentId) external view returns (address) {
     return proxyOwners_[_contentId];
   }
 
@@ -42,13 +48,13 @@ contract Registry {
 
   /**
    * @dev AFS Proxy Factory
-   * @param _contentId The methodless content DID
+   * @param _contentId The unhashed methodless content DID
    * @param _version The implementation version to use with this Proxy
    * @param _data AFS initialization data
    * @return address of the newly deployed Proxy
    */
-  function createAFS(string _contentId, string _version, bytes _data) public returns (address) {
-    require(proxies_[_contentId] == address(0));
+  function createAFS(bytes32 _contentId, string _version, bytes _data) public {
+    require(proxies_[_contentId] == address(0), "Proxy already exists for this content.");
     Proxy proxy = new Proxy(address(this));
     proxies_[_contentId] = proxy;
     proxyOwners_[_contentId] = msg.sender;
@@ -58,26 +64,26 @@ contract Registry {
 
   /**
    * @dev Upgrades proxy implementation version
-   * @param _contentId The methodless content DID
+   * @param _contentId The unhashed methodless content DID
    * @param _version The implementation version to upgrade this Proxy to
    */
-  function upgradeProxy(string _contentId, string _version) public onlyProxyOwner(_contentId) {
-    require(versions_[_version] != address(0));
+  function upgradeProxy(bytes32 _contentId, string _version) public onlyProxyOwner(_contentId) {
+    require(versions_[_version] != address(0), "Version does not exist.");
     proxyImpls_[proxies_[_contentId]] = versions_[_version];
     emit ProxyUpgraded(_contentId, _version);
   }
 
   /**
    * @dev Upgrades proxy implementation version with initialization
-   * @param _contentId The methodless content DID
+   * @param _contentId The unhashed methodless content DID
    * @param _version The implementation version to upgrade this Proxy to
    * @param _data AFS initialization data
    */
-  function upgradeProxyAndCall(string _contentId, string _version, bytes _data) public onlyProxyOwner(_contentId) {
-    require(versions_[_version] != address(0));
+  function upgradeProxyAndCall(bytes32 _contentId, string _version, bytes _data) public onlyProxyOwner(_contentId) {
+    require(versions_[_version] != address(0), "Version does not exist.");
     Proxy proxy = Proxy(proxies_[_contentId]);
     proxyImpls_[proxy] = versions_[_version];
-    if(!address(proxy).call(abi.encodeWithSignature("init(bytes)", _data))) revert();
+    require(address(proxy).call(abi.encodeWithSignature("init(bytes)", _data)), "Init failed.");
     emit ProxyUpgraded(_contentId, _version);
   }
 
@@ -87,7 +93,7 @@ contract Registry {
    * @param _address The address of the new AFS implementation
    */
   function addStandardVersion(string _version, address _address) public restricted {
-    require(versions_[_version] == address(0));
+    require(versions_[_version] == address(0), "Version already exists.");
     versions_[_version] = _address;
     latestVersion_ = _version;
     emit StandardAdded(_version, _address);

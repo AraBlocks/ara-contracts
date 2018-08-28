@@ -1,13 +1,19 @@
 const { abi } = require('./build/contracts/Registry.json')
 const debug = require('debug')('ara-contracts:registry')
-const contract = require('ara-web3/contract')
-const account = require('ara-web3/account')
-const { call } = require('ara-web3/call')
-const web3Abi = require('ara-web3/abi')
-const tx = require('ara-web3/tx')
 const { parse } = require('path')
 const solc = require('solc')
 const fs = require('fs')
+
+const {
+  web3: {
+    tx,
+    call,
+    ethify,
+    account,
+    contract,
+    abi: web3Abi,
+  }
+} = require('ara-util')
 
 const {
   kAidPrefix,
@@ -17,8 +23,8 @@ const {
 } = require('./constants')
 
 const {
-  hashDID,
   validate,
+  normalize,
   getDocumentOwner
 } = require('ara-util')
 
@@ -39,19 +45,18 @@ async function proxyExists(contentDid = '') {
  */
 async function getProxyAddress(contentDid = '') {
   if (null == contentDid || 'string' !== typeof contentDid || !contentDid) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty content DID')
+    throw TypeError('Expecting non-empty content DID')
   }
 
-  contentDid = hashDID(contentDid)
+  contentDid = normalize(contentDid)
 
   try {
-    debug('get proxy address of', contentDid)
     return call({
       abi,
       address: kRegistryAddress,
       functionName: 'getProxyAddress',
       arguments: [
-        contentDid
+        ethify(contentDid)
       ]
     })
   } catch (err) {
@@ -60,99 +65,29 @@ async function getProxyAddress(contentDid = '') {
 }
 
 /**
- * Upgrades a proxy to a new version
+ * Upgrades a proxy to a new version // 33834 gas
  * @param  {String} opts.contentDid // unhashed
  * @param  {String} opts.password
- * @param  {String} opts.version
+ * @param  {String|number} opts.version
  * @return {Bool}
  * @throws {Error,TypeError}
  */
 async function upgradeProxy(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('ara-contracts.registry: Expecting opts object.')
+    throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty content DID')
+    throw TypeError('Expecting non-empty content DID')
   } else if (null == opts.password || 'string' !== typeof opts.password || !opts.password) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty password')
-  } else if ('string' !== typeof opts.version || !opts.version) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty version string')
+    throw TypeError('Expecting non-empty password')
+  } else if (('string' !== typeof opts.version && 'number' !== typeof opts.version) || !opts.version) {
+    throw TypeError('Expecting non-empty version string or number')
   }
 
-  let { contentDid } = opts
-  const { password, version } = opts
-
-  contentDid = hashDID(contentDid)
-
-  let did
-  try {
-    ({ did } = await validate({ did: contentDid, password, label: 'registry' }))
-  } catch (err) {
-    throw err
-  }
-
-  const prefixedDid = kAidPrefix + did
-
-  const acct = await account.load({ did: prefixedDid, password })
-
-  try {
-    const transaction = await tx.create({
-      account: acct,
-      to: kRegistryAddress,
-      gasLimit: 6721975,
-      data: {
-        abi,
-        functionName: 'upgradeProxy',
-        values: [
-          contentDid,
-          version
-        ]
-      }
-    })
-
-    const registry = await contract.get(abi, kRegistryAddress)
-    // listen to ProxyUpgraded event for proxy address
-    let upgraded
-    await registry.events.ProxyUpgraded({ fromBlock: 0, function(error) { console.log(error) } })
-      .on('data', (log) => {
-        const { returnValues: { _contentId } } = log
-        if (_contentId === contentDid) {
-          upgraded = true
-        }
-      })
-      .on('changed', (log) => {
-        console.log(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        console.log(`error:  ${log}`)
-      })
-    await tx.sendSignedTransaction(transaction)
-    return upgraded
-  } catch (err) {
-    throw err
-  }
-}
-
-/**
- * Deploys a proxy contract for opts.contentDid
- * @param  {String} opts.contentDid // unhashed
- * @param  {String} opts.password
- * @param  {String} opts.version
- * @return {string}
- * @throws {Error,TypeError}
- */
-async function deployProxy(opts) {
-  if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('ara-contracts.registry: Expecting opts object.')
-  } else if (null == opts.contentDid || 'string' !== typeof opts.contentDid || !opts.contentDid) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty content DID')
-  } else if (null == opts.password || 'string' !== typeof opts.password || !opts.password) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty password')
-  }
-
+  let { contentDid, version } = opts
   const { password } = opts
-  let { contentDid } = opts
-
-  const version = opts.version || '1'
+  if ('number' === typeof version) {
+    version = version.toString()
+  }
 
   let did
   let ddo
@@ -161,39 +96,35 @@ async function deployProxy(opts) {
   } catch (err) {
     throw err
   }
-
-  debug('creating tx to deploy proxy for', contentDid)
-  contentDid = hashDID(contentDid)
   let owner = getDocumentOwner(ddo, true)
-  owner = kAidPrefix + owner
-  debug("owner", owner)
+  owner = `${kAidPrefix}${owner}`
+
   const acct = await account.load({ did: owner, password })
 
   try {
-    const encodedData = web3Abi.encodeParameters(['address', 'address', 'address'], [acct.address, kARATokenAddress, kLibraryAddress])
     const transaction = await tx.create({
       account: acct,
       to: kRegistryAddress,
       gasLimit: 1000000,
       data: {
         abi,
-        functionName: 'createAFS',
+        functionName: 'upgradeProxy',
         values: [
-          contentDid,
-          version,
-          encodedData
+          ethify(contentDid),
+          version
         ]
       }
     })
 
-    // listen to ProxyDeployed event for proxy address
     const registry = await contract.get(abi, kRegistryAddress)
-    let proxyAddress
-    await registry.events.ProxyDeployed({ fromBlock: 0, function(error) { console.log(error) } })
+    // listen to ProxyUpgraded event for proxy address
+    let upgraded
+    await registry.events.ProxyUpgraded({ fromBlock: 'latest', function(error) { console.log(error) } })
       .on('data', (log) => {
-        const { returnValues: { _contentId, _address } } = log
-        if (_contentId === contentDid) {
-          proxyAddress = _address
+        const { returnValues: { _contentId, _version } } = log
+        if (_contentId === ethify(did)) {
+          upgraded = true
+          debug('proxy upgraded to version', _version)
         }
       })
       .on('changed', (log) => {
@@ -203,10 +134,100 @@ async function deployProxy(opts) {
         console.log(`error:  ${log}`)
       })
     const receipt = await tx.sendSignedTransaction(transaction)
-    debug('gas used', receipt.gasUsed)
-    return proxyAddress
+    if (receipt.status) {
+      debug('gas used', receipt.gasUsed)
+      return upgraded
+    }
+  } catch (err) {
+    if (!err.status) {
+      throw new Error('Transaction failed:', err.message)
+    }
+  }
+}
+
+/**
+ * Deploys a proxy contract for opts.contentDid // 349574 gas
+ * @param  {String} opts.contentDid // unhashed
+ * @param  {String} opts.password
+ * @param  {String|number} opts.version
+ * @return {string}
+ * @throws {Error,TypeError}
+ */
+async function deployProxy(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object.')
+  } else if (null == opts.contentDid || 'string' !== typeof opts.contentDid || !opts.contentDid) {
+    throw TypeError('Expecting non-empty content DID')
+  } else if (null == opts.password || 'string' !== typeof opts.password || !opts.password) {
+    throw TypeError('Expecting non-empty password')
+  }
+
+  const { password } = opts
+  let { contentDid } = opts
+
+  let version = opts.version || '1'
+  if ('number' === typeof version) {
+    version = version.toString()
+  }
+
+  let did
+  let ddo
+  try {
+    ({ did, ddo } = await validate({ did: contentDid, password, label: 'registry' }))
   } catch (err) {
     throw err
+  }
+
+  debug('creating tx to deploy proxy for', did)
+  let owner = getDocumentOwner(ddo, true)
+  owner = `${kAidPrefix}${owner}`
+
+  const acct = await account.load({ did: owner, password })
+  try {
+    const encodedData = web3Abi.encodeParameters(['address', 'address', 'address', 'bytes32'], [acct.address, kARATokenAddress, kLibraryAddress, ethify(contentDid)])
+    const transaction = await tx.create({
+      account: acct,
+      to: kRegistryAddress,
+      gasLimit: 3000000,
+      data: {
+        abi,
+        functionName: 'createAFS',
+        values: [
+          ethify(did),
+          version,
+          encodedData
+        ]
+      }
+    })
+
+    // listen to ProxyDeployed event for proxy address
+    const registry = await contract.get(abi, kRegistryAddress)
+    let proxyAddress
+    registry.events.ProxyDeployed({ fromBlock: 'latest', function(error) { console.log(error) } })
+      .on('data', (log) => {
+        const { returnValues: { _contentId, _address } } = log
+        if (_contentId === ethify(contentDid)) {
+          proxyAddress = _address
+          debug('proxy deployed at', proxyAddress)
+        }
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
+
+    const receipt = await tx.sendSignedTransaction(transaction)
+
+    if (receipt.status) {
+      debug('gas used', receipt.gasUsed)
+      return proxyAddress
+    }
+  } catch (err) {
+    if (!err.status) {
+      throw new Error('Transaction failed:', err.message)
+    }
   }
 }
 
@@ -236,7 +257,7 @@ async function getLatestStandard() {
  */
 async function getStandard(version) {
   if ('string' !== typeof version || !version) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty version string.')
+    throw TypeError('Expecting non-empty version string.')
   }
 
   try {
@@ -255,7 +276,7 @@ async function getStandard(version) {
 }
 
 /**
- * Deploys a new AFS Standard
+ * Deploys a new AFS Standard // 2322093 gas (contract deploy) + 58053 gas (add standard)
  * @param  {Object} opts
  * @param  {String} opts.requesterDid
  * @param  {String} opts.password
@@ -266,20 +287,20 @@ async function getStandard(version) {
  */
 async function deployNewStandard(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('ara-contracts.registry: Expecting opts object.')
+    throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty requester DID')
+    throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.password || !opts.password) {
-    throw TypeError('ara-contracts.registry: Expecting non-empty password')
+    throw TypeError('Expecting non-empty password')
   } else if (!opts.paths || !opts.paths.length) {
-    throw TypeError('ara-contracts.registry: Expecting one or more paths')
+    throw TypeError('Expecting one or more paths')
   }
 
   if (null == opts.version || 'string' !== typeof opts.version || !opts.version) {
     if ('number' === typeof opts.version) {
       opts.version = opts.version.toString()
     } else {
-      throw TypeError('ara-contracts.registry: Expecting non-empty standard version')
+      throw TypeError('Expecting non-empty standard version')
     }
   }
 
@@ -297,7 +318,7 @@ async function deployNewStandard(opts) {
     throw err
   }
 
-  const prefixedDid = kAidPrefix + did
+  const prefixedDid = `${kAidPrefix}${did}`
   const acct = await account.load({ did: prefixedDid, password })
 
   const registryOwner = await call({
@@ -307,9 +328,8 @@ async function deployNewStandard(opts) {
   })
 
   if (acct.address != registryOwner) {
-    throw new Error('ara-contracts.registry: Only the owner of the Registry contract may deploy a new standard.')
+    throw new Error('Only the owner of the Registry contract may deploy a new standard.')
   }
-
   // compile AFS sources and dependencies
   const sources = {
     'openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol', 'utf8'),
@@ -318,6 +338,7 @@ async function deployNewStandard(opts) {
     'openzeppelin-solidity/contracts/math/SafeMath.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol', 'utf8'),
     'bytes/BytesLib.sol': fs.readFileSync('./installed_contracts/bytes/contracts/BytesLib.sol', 'utf8')
   }
+
   paths.forEach((path) => {
     const src = fs.readFileSync(path, 'utf8')
     path = parse(path).base
@@ -329,14 +350,16 @@ async function deployNewStandard(opts) {
   const { bytecode } = compiledContract
 
   try {
-    const afs = await contract.deploy({
+    const { contract: afs, gasLimit } = await contract.deploy({
       account: acct,
       abi: afsAbi,
-      bytecode
+      bytecode: ethify(bytecode)
     })
+
     const transaction = await tx.create({
       account: acct,
       to: kRegistryAddress,
+      gasLimit: 1500000,
       data: {
         abi,
         functionName: 'addStandardVersion',
@@ -346,11 +369,35 @@ async function deployNewStandard(opts) {
         ]
       }
     })
+    // listen to ProxyDeployed event for proxy address
+    let address
+    const registry = await contract.get(abi, kRegistryAddress)
+    registry.events.StandardAdded({ fromBlock: 'latest', function(error) { console.log(error) } })
+      .on('data', (log) => {
+        // debug('STANDARD ADDED', log)
+        const { returnValues: { _version, _address } } = log
+        if (_version === version) {
+          address = _address
+          debug('version', _version, 'deployed at', _address)
+        }
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
+
     const receipt = await tx.sendSignedTransaction(transaction)
-    debug('gas used', receipt.gasUsed)
-    return afs._address
+
+    if (receipt.status) {
+      debug('gas used', receipt.gasUsed + gasLimit)
+      return address ? address : afs._address
+    }
   } catch (err) {
-    throw err
+    if (!err.status) {
+      throw new Error('Transaction failed:', err.message)
+    }
   }
 }
 
