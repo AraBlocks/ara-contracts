@@ -19,7 +19,8 @@ const {
   kAidPrefix,
   kLibraryAddress,
   kRegistryAddress,
-  kARATokenAddress
+  kARATokenAddress,
+  kJobsAddress
 } = require('./constants')
 
 const {
@@ -184,7 +185,10 @@ async function deployProxy(opts) {
 
   const acct = await account.load({ did: owner, password })
   try {
-    const encodedData = web3Abi.encodeParameters(['address', 'address', 'address', 'bytes32'], [acct.address, kARATokenAddress, kLibraryAddress, ethify(contentDid)])
+    const encodedData = web3Abi.encodeParameters(
+      ['address', 'address', 'address', 'address', 'bytes32'], 
+      [acct.address, kARATokenAddress, kLibraryAddress, kJobsAddress, ethify(contentDid)]
+    )
     const transaction = await tx.create({
       account: acct,
       to: kRegistryAddress,

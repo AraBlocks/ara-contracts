@@ -2,6 +2,7 @@ pragma solidity 0.4.24;
 
 import "./Library.sol";
 import "./ARAToken.sol";
+import "./Jobs.sol";
 import "bytes/BytesLib.sol";
 
 contract AFS {
@@ -13,13 +14,12 @@ contract AFS {
 
   ARAToken public token_;
   Library  public lib_;
+  Jobs     public jobs_;
 
   bytes32  public did_;
   bool     public listed_;
   uint256  public price_;
 
-  mapping(bytes32 => Job)     public jobs_; // jobId => job { budget, sender }
-  mapping(bytes32 => uint256) public rewards_;    // farmer => rewards
   mapping(bytes32 => bool)    public purchasers_; // keccak256 hashes of buyer addresses
   mapping(uint8 => Buffers)   public metadata_;
 
@@ -28,18 +28,10 @@ contract AFS {
     bool invalid;
   }
 
-  struct Job {
-    address sender;
-    uint256 budget;
-  }
-
   event Commit(bytes32 _did);
   event Unlisted(bytes32 _did);
   event PriceSet(bytes32 _did, uint256 _price);
-  event BudgetSubmitted(bytes32 _did, bytes32 _jobId, uint256 _budget);
-  event RewardsAllocated(bytes32 _did, uint256 _allocated, uint256 _returned);
   event Purchased(bytes32 _purchaser, bytes32 _did);
-  event Redeemed(address _sender);
 
   uint8 constant mtBufferSize_ = 40;
   uint8 constant msBufferSize_ = 64;
@@ -62,20 +54,12 @@ contract AFS {
     _;
   }
 
-  modifier budgetSubmitted(bytes32 _jobId)
-  {
-    require(
-      jobs_[_jobId].sender == msg.sender && jobs_[_jobId].budget > 0,
-      "Job is invalid."
-    );
-    _;
-  }
-
   function init(bytes _data) public {
     uint256 btsptr;
     address ownerAddr;
     address tokenAddr;
     address libAddr;
+    address jobsAddr;
     bytes32 did;
     /* solium-disable-next-line security/no-inline-assembly */
     assembly {
@@ -86,11 +70,14 @@ contract AFS {
         btsptr := add(_data, 96)
         libAddr := mload(btsptr)
         btsptr := add(_data, 128)
+        jobsAddr := mload(btsptr)
+        btsptr := add(_data, 160)
         did := mload(btsptr)
     }
     owner_    = ownerAddr;
     token_    = ARAToken(tokenAddr);
     lib_      = Library(libAddr);
+    jobs_     = Jobs(jobsAddr);
     did_      = did;
     listed_   = true;
     price_    = 0;
@@ -99,57 +86,6 @@ contract AFS {
   function setPrice(uint256 _price) external onlyBy(owner_) {
     price_ = _price;
     emit PriceSet(did_, price_);
-  }
-
-  function submitBudget(bytes32 _jobId, uint256 _budget) public purchaseRequired {
-    uint256 allowance = token_.allowance(msg.sender, address(this));
-    require(_jobId != bytes32(0) && _budget > 0 && allowance >= _budget
-      && (jobs_[_jobId].sender == address(0) || jobs_[_jobId].sender == msg.sender), "Job submission invalid.");
-
-    if (token_.transferFrom(msg.sender, address(this), _budget)) {
-      jobs_[_jobId].budget += _budget;
-      jobs_[_jobId].sender = msg.sender;
-      assert(jobs_[_jobId].budget <= token_.balanceOf(address(this)));
-      emit BudgetSubmitted(did_, _jobId, _budget);
-    }
-  }
-
-  function allocateRewards(bytes32 _jobId, bytes32[] _farmers, uint256[] _rewards) public budgetSubmitted(_jobId) {
-    require(_farmers.length == _rewards.length, "Unequal number of farmers and rewards.");
-    uint256 totalRewards;
-    for (uint8 i = 0; i < _rewards.length; i++) {
-      totalRewards += _rewards[i];
-    }
-    require(totalRewards <= jobs_[_jobId].budget, "Insufficient budget.");
-    for (uint8 j = 0; j < _farmers.length; j++) {
-      assert(jobs_[_jobId].budget >= _rewards[j]);
-      rewards_[_farmers[j]] = _rewards[j];
-      jobs_[_jobId].budget -= _rewards[j];
-    }
-    uint256 remaining = jobs_[_jobId].budget;
-    if (remaining > 0) {
-      rewards_[keccak256(abi.encodePacked(msg.sender))] = remaining;
-      jobs_[_jobId].budget = 0;
-      redeemBalance();
-    }
-    emit RewardsAllocated(did_, totalRewards, remaining);
-  }
-
-  function redeemBalance() public {
-    bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
-    require(rewards_[hashedAddress] > 0, "No balance to redeem.");
-    if (token_.transfer(msg.sender, rewards_[hashedAddress])) {
-      rewards_[hashedAddress] = 0;
-      emit Redeemed(msg.sender);
-    }
-  }
-
-  function getBalance(address _farmer) public view returns (uint256) {
-    return rewards_[keccak256(abi.encodePacked(_farmer))];
-  }
-
-  function getBudget(bytes32 _jobId) public view returns (uint256) {
-    return jobs_[_jobId].budget;
   }
 
   /**
@@ -170,9 +106,8 @@ contract AFS {
       lib_.addLibraryItem(_purchaser, did_);
       emit Purchased(_purchaser, did_);
 
-      if (_jobId != bytes32(0) && _budget > 0) {
-        submitBudget(_jobId, _budget);
-      }
+      require(_jobId != bytes32(0), "Must provide jobId.");
+      jobs_.unlockJob(_jobId, _budget);
     }
   }
 

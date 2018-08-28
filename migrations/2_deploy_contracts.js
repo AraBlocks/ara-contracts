@@ -6,6 +6,7 @@ const { kDefaultAddress } = require('../constants')
 const Library = artifacts.require('./Library.sol')
 const Token = artifacts.require('./ARAToken.sol')
 const Registry = artifacts.require('./Registry.sol')
+const Jobs = artifacts.require('./Jobs.sol')
 
 module.exports = (deployer) => {
   deployer.deploy(Registry, { from: kDefaultAddress })
@@ -13,4 +14,6 @@ module.exports = (deployer) => {
       deployer.deploy(Library, Registry.address, { from: kDefaultAddress })
         .then(() =>
           deployer.deploy(Token, { from: kDefaultAddress })))
+            .then(() => 
+              deployer.deploy(Jobs, { from: kDefaultAddress }))
 }
