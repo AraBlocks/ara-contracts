@@ -1,10 +1,12 @@
 pragma solidity 0.4.24;
 
 import "./ARAToken.sol";
+import "./Registry.sol";
 
 contract Jobs {
 
   ARAToken public token_;
+  Registry public registry_;
 
   mapping(bytes32 => bool)                        public unlocked_; // jobId => unlocked
   mapping(bytes32 => mapping(bytes32 => uint256)) public balances_; // keccak256(address) => jobId => balance
@@ -20,8 +22,9 @@ contract Jobs {
   event RewardsAllocated(uint256 _allocated, uint256 _returned);
   event Redeemed(address _sender);
 
-  constructor(address _token) public {
+  constructor(address _token, address _registry) public {
     token_ = ARAToken(_token);
+    registry_ = Registry(_registry);
   }
 
   modifier jobUnlocked(bytes32 _jobId) {
@@ -35,7 +38,12 @@ contract Jobs {
     _;
   }
 
-  function unlockJob(bytes32 _jobId, uint256 _budget) external {
+  modifier fromProxy(bytes32 _contentId) {
+    require (msg.sender == registry_.getProxyAddress(_contentId), "Proxy not authorized.");
+     _;
+  }
+
+  function unlockJob(bytes32 _jobId, uint256 _budget, bytes32 _contentId) external fromProxy(_contentId) {
     unlocked_[_jobId] = true;
     emit Unlocked(_jobId);
 

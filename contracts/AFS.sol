@@ -107,7 +107,7 @@ contract AFS {
       emit Purchased(_purchaser, did_);
 
       require(_jobId != bytes32(0), "Must provide jobId.");
-      jobs_.unlockJob(_jobId, _budget);
+      jobs_.unlockJob(_jobId, _budget, did_);
     }
   }
 

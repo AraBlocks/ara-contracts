@@ -15,5 +15,5 @@ module.exports = (deployer) => {
         .then(() =>
           deployer.deploy(Token, { from: kDefaultAddress })))
             .then(() => 
-              deployer.deploy(Jobs, Token.address, { from: kDefaultAddress }))
+              deployer.deploy(Jobs, Token.address, Registry.address, { from: kDefaultAddress }))
 }

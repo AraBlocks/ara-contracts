@@ -1,11 +1,12 @@
 const { abi: tokenAbi } = require('./build/contracts/ARAToken.json')
-const { abi: afsAbi } = require('./build/contracts/AFS.json')
+const { abi: jobsAbi } = require('./build/contracts/Jobs.json')
 const debug = require('debug')('ara-contracts:rewards')
 const { info } = require('ara-console')
 
 const {
   kAidPrefix,
-  kARATokenAddress
+  kARATokenAddress,
+  kJobsAddress
 } = require('./constants')
 
 const {
@@ -122,10 +123,10 @@ async function submit(opts) {
 
     const submitTx = await tx.create({
       account: acct,
-      to: proxy,
+      to: kJobsAddress,
       gasLimit: 1000000,
       data: {
-        abi: afsAbi,
+        abi: jobsAbi,
         functionName: 'submitBudget',
         values: [
           jobId,
@@ -134,8 +135,8 @@ async function submit(opts) {
       }
     })
 
-    const proxyContract = await contract.get(afsAbi, proxy)
-    await proxyContract.events.BudgetSubmitted({ fromBlock: 'latest', function(error) { debug(error) } })
+    const jobsContract = await contract.get(jobsAbi, kJobsAddress)
+    await jobsContract.events.BudgetSubmitted({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { _did, _jobId, _budget } } = log
         info(requesterDid, 'budgeted', _budget, 'tokens for job', _jobId)
@@ -236,17 +237,12 @@ async function allocate(opts) {
   debug(did, 'allocating rewards for job:', jobId)
 
   try {
-    if (!(await proxyExists(contentDid))) {
-      throw new Error('This content does not have a valid proxy contract')
-    }
-
-    const proxy = await getProxyAddress(contentDid)
     const allocateTx = await tx.create({
       account: acct,
-      to: proxy,
+      to: kJobsAddress,
       gasLimit: 4000000,
       data: {
-        abi: afsAbi,
+        abi: jobsAbi,
         functionName: 'allocateRewards',
         values: [
           jobId,
@@ -255,8 +251,9 @@ async function allocate(opts) {
         ]
       }
     })
-    const proxyContract = await contract.get(afsAbi, proxy)
-    await proxyContract.events.RewardsAllocated({ fromBlock: 'latest', function(error) { debug(error) } })
+
+    const jobsContract = await contract.get(jobsAbi, kJobsAddress)
+    await jobsContract.events.RewardsAllocated({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { _did, _allocated, _returned } } = log
         info('allocated', _allocated, 'tokens as rewards between farmers and returned', _returned, 'tokens')
@@ -314,18 +311,12 @@ async function redeem(opts) {
   const acct = await account.load({ did, password })
 
   try {
-    if (!(await proxyExists(contentDid))) {
-      throw new Error('This content does not have a valid proxy contract')
-    }
-
-    const proxy = await getProxyAddress(contentDid)
-
     const redeemTx = await tx.create({
       account: acct,
-      to: proxy,
+      to: kJobsAddress,
       gasLimit: 1000000,
       data: {
-        abi: afsAbi,
+        abi: jobsAbi,
         functionName: 'redeemBalance'
       }
     })
@@ -379,14 +370,9 @@ async function getBudget(opts) {
   contentDid = normalize(contentDid)
 
   try {
-    if (!(await proxyExists(contentDid))) {
-      throw new Error('This content does not have a valid proxy contract')
-    }
-
-    const proxy = await getProxyAddress(contentDid)
     const budget = await call({
-      abi: afsAbi,
-      address: proxy,
+      abi: jobsAbi,
+      address: kJobsAddress,
       functionName: 'getBudget',
       arguments: [
         jobId
@@ -415,9 +401,11 @@ async function getBalance(opts) {
     throw TypeError('Expecting non-empty content DID')
   } else if ('string' != typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password')
+  } else if (!isValidJobId(opts.jobId)) {
+    throw TypeError('Expecting valid jobId.')
   }
 
-  const { requesterDid, password } = opts
+  const { requesterDid, password, jobId } = opts
   let { contentDid } = opts
   let did
   try {
@@ -432,17 +420,13 @@ async function getBalance(opts) {
   const { address } = await account.load({ did, password })
 
   try {
-    if (!(await proxyExists(contentDid))) {
-      throw new Error('This content does not have a valid proxy contract')
-    }
-
-    const proxy = await getProxyAddress(contentDid)
     const budget = await call({
-      abi: afsAbi,
-      address: proxy,
+      abi: jobsAbi,
+      address: kJobsAddress,
       functionName: 'getBalance',
       arguments: [
-        address
+        address,
+        jobId
       ]
     })
     return budget
