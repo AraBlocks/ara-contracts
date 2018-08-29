@@ -2,6 +2,7 @@ pragma solidity 0.4.24;
 
 import "./ARAToken.sol";
 import "./Registry.sol";
+import "./AFS.sol";
 
 contract Jobs {
 
@@ -34,16 +35,18 @@ contract Jobs {
 
   modifier budgetSubmitted(bytes32 _jobId) {
     require(budgets_[_jobId].sender == msg.sender 
-      && budgets_[_jobId].budget > 0, "Job is invalid.");
+      && budgets_[_jobId].budget > 0, "Budget is invalid.");
     _;
   }
 
-  modifier fromProxy(bytes32 _contentId) {
-    require (msg.sender == registry_.getProxyAddress(_contentId), "Proxy not authorized.");
+  modifier isValidPurchase(bytes32 _contentId) {
+    bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
+    AFS afs = AFS(registry_.getProxyAddress(_contentId));
+    require(afs.isPurchaser(hashedAddress), "Job is invalid.");
      _;
   }
 
-  function unlockJob(bytes32 _jobId, uint256 _budget, bytes32 _contentId) external fromProxy(_contentId) {
+  function unlockJob(bytes32 _jobId, uint256 _budget, bytes32 _contentId) external isValidPurchase(_contentId) {
     unlocked_[_jobId] = true;
     emit Unlocked(_jobId);
 

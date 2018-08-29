@@ -92,6 +92,7 @@ async function submit(opts) {
 
   did = `${kAidPrefix}${did}`
   const acct = await account.load({ did, password })
+  console.log('ACCT', acct)
 
   debug(did, 'submitting', budget, 'tokens as rewards for', contentDid)
 
@@ -155,7 +156,7 @@ async function submit(opts) {
     }
   } catch (err) {
     if (!err.status) {
-      throw new Error('Transaction failed:', err.message)
+      throw new Error(`Transaction failed: ${err.message}`)
     }
   }
 }
@@ -271,7 +272,7 @@ async function allocate(opts) {
     }
   } catch (err) {
     if (!err.status) {
-      throw new Error('Transaction failed:', err.message)
+      throw new Error(`Transaction failed: ${err.message}`)
     }
   }
 }
@@ -344,7 +345,7 @@ async function redeem(opts) {
     }
   } catch (err) {
     if (!err.status) {
-      throw new Error('Transaction failed:', err.message)
+      throw new Error(`Transaction failed: ${err.message}`)
     }
   }
 }

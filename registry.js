@@ -141,7 +141,7 @@ async function upgradeProxy(opts) {
     }
   } catch (err) {
     if (!err.status) {
-      throw new Error('Transaction failed:', err.message)
+      throw new Error(`Transaction failed: ${err.message}`)
     }
   }
 }
@@ -184,6 +184,7 @@ async function deployProxy(opts) {
   owner = `${kAidPrefix}${owner}`
 
   const acct = await account.load({ did: owner, password })
+
   try {
     const encodedData = web3Abi.encodeParameters(
       ['address', 'address', 'address', 'address', 'bytes32'], 
@@ -230,7 +231,7 @@ async function deployProxy(opts) {
     }
   } catch (err) {
     if (!err.status) {
-      throw new Error('Transaction failed:', err.message)
+      throw new Error(`Transaction failed: ${err.message}`)
     }
   }
 }
@@ -400,7 +401,7 @@ async function deployNewStandard(opts) {
     }
   } catch (err) {
     if (!err.status) {
-      throw new Error('Transaction failed:', err.message)
+      throw new Error(`Transaction failed: ${err.message}`)
     }
   }
 }

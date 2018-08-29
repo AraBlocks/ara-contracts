@@ -88,6 +88,10 @@ contract AFS {
     emit PriceSet(did_, price_);
   }
 
+  function isPurchaser(bytes32 _purchaser) external view returns(bool) {
+    return purchasers_[_purchaser];
+  }
+
   /**
    * @dev Purchases this AFS and adds it to _purchaser's library. 
    *      If _download is true, deposits any remaining allowance 

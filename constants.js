@@ -2,10 +2,10 @@ module.exports = {
   kDidPrefix: 'did:',
   kAidPrefix: 'did:ara:',
   kOwnerSuffix: '#owner',
-  kRegistryAddress: '0x53d82a040cb2f96d91621964ae40079ef55e3233',
-  kLibraryAddress: '0x5d9d687c400adb90e10a74537bac95536b735d42',
-  kARATokenAddress: '0xe30fa991e52e727ae5bb0b0036dec22943ca3708',
-  kJobsAddress: '0x29262f0e9b790fca563bff81563dd16b7b014723',
+  kRegistryAddress: '0x4820bf8381994702357b4dc3fdf6f307999a82a1',
+  kLibraryAddress: '0x71ab470fc8f1fe34a417af4223fc75e91e69f29b',
+  kARATokenAddress: '0x9d725cbb6dab2da94dde0039890b3953e9d33a27',
+  kJobsAddress: '0x61e11fe40530ad50a78d8d4246bf863e4d2d8053',
 
   kTempOwnerDid: 'did:ara:8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67',
   // private key: 0x8662c06fab466f44e0b7937812671d07b4e298a609c7d9654e27c1d0d2653f20
@@ -35,3 +35,10 @@ module.exports = {
  *          KEY: 0x32b1acdfc044649631bb22821f661ea5e9dba65e98637f1fa2ec3c3056582acc
  *     MNEMONIC: < snap poet general square silk ranch whip lizard faculty upon cup degree >
  */
+
+// Charlie Debugging
+// requester DID: 388e8b20a09780b1079e67caf7e53b323e02d7096ab4fea99faa3b2053e7ca6f
+// content DID: 6a92478e41d3576c8eb6cb375f9fed4ba09c05f365b78e21ab415b7244478f3e
+// fake jobId: 0x1000dfcce952d8cb4b2a7ce0ca990e2b22716d6e80a4b0250faa4a6b7431b009
+// requester DID eth address: 0x785dd0C3eAE9E2d6032541C6317a21565B99B4f5
+// requester DID eth privateKey: 0xf04f79210cec255628e259edc9c35f91e9f4181223dedf7f2cbf7ad93297d915
