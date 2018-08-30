@@ -41,7 +41,13 @@ contract ARAToken is ERC20, BasicToken {
     emit Transfer(_from, _to, _value);
     return true;
   }
-  
+
+  function approve(address _spender, uint256 _value) public returns (bool) {
+    allowed[msg.sender][_spender] = _value;
+    emit Approval(msg.sender, _spender, _value);
+    return true;
+  }
+
   function allowance(
     address _owner,
     address _spender
