@@ -166,7 +166,9 @@ async function deployProxy(opts) {
   const { password } = opts
   let { contentDid } = opts
 
-  let version = opts.version || '1'
+  // TODO(cckelly): should not be hardcoded
+  // TODO(cckelly): make AFS pass in version
+  let version = opts.version || '3'
   if ('number' === typeof version) {
     version = version.toString()
   }

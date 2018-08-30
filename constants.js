@@ -42,3 +42,4 @@ module.exports = {
 // fake jobId: 0x1000dfcce952d8cb4b2a7ce0ca990e2b22716d6e80a4b0250faa4a6b7431b009
 // requester DID eth address: 0x785dd0C3eAE9E2d6032541C6317a21565B99B4f5
 // requester DID eth privateKey: 0xf04f79210cec255628e259edc9c35f91e9f4181223dedf7f2cbf7ad93297d915
+// act purchase -d 6a92478e41d3576c8eb6cb375f9fed4ba09c05f365b78e21ab415b7244478f3e -p 388e8b20a09780b1079e67caf7e53b323e02d7096ab4fea99faa3b2053e7ca6f -j

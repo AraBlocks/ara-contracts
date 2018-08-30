@@ -1,5 +1,6 @@
 const { abi: tokenAbi } = require('./build/contracts/ARAToken.json')
 const { abi: libAbi } = require('./build/contracts/library.json')
+const { abi: jobsAbi } = require('./build/contracts/Jobs.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
 const { info } = require('ara-console')
@@ -7,7 +8,8 @@ const { info } = require('ara-console')
 const {
   kAidPrefix,
   kLibraryAddress,
-  kARATokenAddress
+  kARATokenAddress,
+  kJobsAddress
 } = require('./constants')
 
 const {
@@ -70,7 +72,7 @@ async function purchase(opts) {
 
   if (job) {
     const validJobId = jobId && isValidJobId(jobId)
-    const validBudget = budget && 'number' === typeof budget && budget > 0
+    const validBudget = 'number' === typeof budget && 0 <= budget
 
     if (!validJobId) {
       throw TypeError('Expecting job Id.')
@@ -133,20 +135,32 @@ async function purchase(opts) {
       debug('gas used', receipt1.gasUsed)
     }
 
-    const purchaseTx = await tx.create({
-      account: acct,
-      to: proxy,
-      gasLimit: 1000000,
-      data: {
-        abi: afsAbi,
-        functionName: 'purchase',
-        values: [
-          ethify(hIdentity),
-          job ? jobId : ethify(Buffer.alloc(32), true),
-          job ? budget : 0
-        ]
-      }
-    })
+    const jobsContract = await contract.get(jobsAbi, kJobsAddress)
+    // event listeners
+    // TODO(cckelly) most of these callbacks are the same, should be passing in callback function
+    await jobsContract.events.BudgetSubmitted({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { _jobId, _budget } } = log
+        debug('job', _jobId, 'submitted with budget', _budget)
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
+
+    await jobsContract.events.Unlocked({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { _jobId } } = log
+        debug('unlocked job', _jobId)
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
 
     const proxyContract = await contract.get(afsAbi, proxy)
     await proxyContract.events.Purchased({ fromBlock: 'latest', function(error) { debug(error) } })
@@ -161,17 +175,20 @@ async function purchase(opts) {
         debug(`error:  ${log}`)
       })
 
-    await proxyContract.events.BudgetSubmitted({ fromBlock: 'latest', function(error) { debug(error) } })
-      .on('data', (log) => {
-        const { returnValues: { _did, _jobId, _budget } } = log
-        debug('job', _jobId, 'submitted in', _did, 'with budget', _budget)
-      })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
+    const purchaseTx = await tx.create({
+      account: acct,
+      to: proxy,
+      gasLimit: 1000000,
+      data: {
+        abi: afsAbi,
+        functionName: 'purchase',
+        values: [
+          ethify(hIdentity),
+          jobId,
+          budget
+        ]
+      }
+    })
 
     const receipt2 = await tx.sendSignedTransaction(purchaseTx)
     if (receipt2.status) {
