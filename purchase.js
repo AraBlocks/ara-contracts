@@ -119,7 +119,7 @@ async function purchase(opts) {
       to: kARATokenAddress,
       data: {
         abi: tokenAbi,
-        functionName: 'approve',
+        functionName: 'increaseApproval',
         values: [
           proxy,
           job ? price + budget : price
