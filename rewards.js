@@ -106,7 +106,7 @@ async function submit(opts) {
       to: kARATokenAddress,
       data: {
         abi: tokenAbi,
-        functionName: 'approve',
+        functionName: 'increaseApproval',
         values: [
           proxy,
           budget
