@@ -66,9 +66,9 @@ async function purchase(opts) {
     job
   } = opts
 
-  const { jobId, budget } = job
-
+  let jobId, budget
   if (job) {
+    ({ jobId, budget } = job)
     const validJobId = jobId && isValidJobId(jobId)
     const validBudget = budget && 'number' === typeof budget && budget > 0
 
