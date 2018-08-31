@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 import "./StandardToken.sol";
 
-contract ARAToken is StandardToken {
+contract AraToken is StandardToken {
 
   // metadata
   string  public constant name = "ARA Token";

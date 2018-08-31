@@ -1,4 +1,4 @@
-const { abi: tokenAbi } = require('./build/contracts/ARAToken.json')
+const { abi: tokenAbi } = require('./build/contracts/AraToken.json')
 const { abi: libAbi } = require('./build/contracts/library.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
@@ -7,7 +7,7 @@ const { info } = require('ara-console')
 const {
   kAidPrefix,
   kLibraryAddress,
-  kARATokenAddress
+  kAraTokenAddress
 } = require('./constants')
 
 const {
@@ -116,7 +116,7 @@ async function purchase(opts) {
 
     const approveTx = await tx.create({
       account: acct,
-      to: kARATokenAddress,
+      to: kAraTokenAddress,
       data: {
         abi: tokenAbi,
         functionName: 'increaseApproval',

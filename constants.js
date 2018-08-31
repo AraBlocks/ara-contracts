@@ -2,14 +2,12 @@ module.exports = {
   kDidPrefix: 'did:',
   kAidPrefix: 'did:ara:',
   kOwnerSuffix: '#owner',
-  kRegistryAddress: '0x53d82a040cb2f96d91621964ae40079ef55e3233',
-  kLibraryAddress: '0x5d9d687c400adb90e10a74537bac95536b735d42',
-  kARATokenAddress: '0xe30fa991e52e727ae5bb0b0036dec22943ca3708',
+  kRegistryAddress: '0x0fecf0c50dfe314e518b6a0ca6d7db9e2e9f2e2f',
+  kLibraryAddress: '0xd8dd6a0049606e07fc3f7a1e39bc315f1a1f9587',
+  kAraTokenAddress: '0x56ce497f7957cb99ba005b6982465ea620c304c8',
 
-  kTempOwnerDid: 'did:ara:8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67',
   // private key: 0x8662c06fab466f44e0b7937812671d07b4e298a609c7d9654e27c1d0d2653f20
-  kDefaultAddress: '0x105C83b79E9170d7969Ce9806fE0B527b5f879dE',
-  kTempAFSDid: 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
+  kDefaultAddress: '0x105C83b79E9170d7969Ce9806fE0B527b5f879dE'
 }
 
 // AFS standard v2: '0x5bd7C0Fcca203A3b5016cd6da530d1A72d0e5413'
