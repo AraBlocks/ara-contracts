@@ -1,7 +1,7 @@
 pragma solidity 0.4.24;
 
 import "./Library.sol";
-import "./ARAToken.sol";
+import "./AraToken.sol";
 import "bytes/BytesLib.sol";
 
 contract AFS {
@@ -11,7 +11,7 @@ contract AFS {
   address  public owner_;
   string   public version_ = "1";
 
-  ARAToken public token_;
+  AraToken public token_;
   Library  public lib_;
 
   bytes32  public did_;
@@ -89,7 +89,7 @@ contract AFS {
         did := mload(btsptr)
     }
     owner_    = ownerAddr;
-    token_    = ARAToken(tokenAddr);
+    token_    = AraToken(tokenAddr);
     lib_      = Library(libAddr);
     did_      = did;
     listed_   = true;

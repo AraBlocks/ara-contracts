@@ -1,11 +1,11 @@
-const { abi: tokenAbi } = require('./build/contracts/ARAToken.json')
+const { abi: tokenAbi } = require('./build/contracts/AraToken.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:rewards')
 const { info } = require('ara-console')
 
 const {
   kAidPrefix,
-  kARATokenAddress
+  kAraTokenAddress
 } = require('./constants')
 
 const {
@@ -103,7 +103,7 @@ async function submit(opts) {
 
     const approveTx = await tx.create({
       account: acct,
-      to: kARATokenAddress,
+      to: kAraTokenAddress,
       data: {
         abi: tokenAbi,
         functionName: 'increaseApproval',
@@ -331,7 +331,7 @@ async function redeem(opts) {
     })
 
     let balance
-    const tokenContract = await contract.get(tokenAbi, kARATokenAddress)
+    const tokenContract = await contract.get(tokenAbi, kAraTokenAddress)
     await tokenContract.events.Transfer({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { from, to, value } } = log
