@@ -90,7 +90,8 @@ await purchase({
     })
 ```
 
-### `registry.proxyExists(contentDid)` <a name="proxyexists"></a>
+<a name="proxyexists"></a>
+### `registry.proxyExists(contentDid)`
 
 Checks if the proxy for a content `DID` exists.
 
@@ -100,7 +101,8 @@ Checks if the proxy for a content `DID` exists.
 const exists = await registry.proxyExists(contentDid)
 ```
 
-### `registry.getProxyAddress(contentDid)` <a name="getproxy"></a>
+<a name="getproxy"></a>
+### `registry.getProxyAddress(contentDid)`
 
 Gets the address of a proxy given a content `DID`
 
@@ -110,7 +112,8 @@ Gets the address of a proxy given a content `DID`
 const address = await registry.getProxyAddress(contentDid)
 ```
 
-### `registry.upgradeProxy(opts)` <a name="upgrade"></a>
+<a name="upgrade"></a>
+### `registry.upgradeProxy(opts)`
 
 Upgrades a proxy to another `AFS` standard.
 
@@ -123,7 +126,8 @@ Upgrades a proxy to another `AFS` standard.
 const upgraded = await registry.upgradeProxy({ contentDid, password, version: '1' })
 ```
 
-### `registry.deployProxy(opts)` <a name="deploy"></a>
+<a name="deploy"></a>
+### `registry.deployProxy(opts)`
 
 Deploys a proxy to an `AFS` standard.
 
@@ -136,7 +140,8 @@ Deploys a proxy to an `AFS` standard.
 const address = await registry.deployProxy({ contentDid, password, version: '1' })
 ```
 
-### `registry.getLatestStandard()` <a name="lateststandard"></a>
+<a name="lateststandard"></a>
+### `registry.getLatestStandard()`
 
 Gets the latest `AFS` contract standard.
 
@@ -144,7 +149,8 @@ Gets the latest `AFS` contract standard.
 const address = await registry.getLatestStandard()
 ```
 
-### `registry.getStandard(version)` <a name="getstandard"></a>
+<a name="getstandard"></a>
+### `registry.getStandard(version)`
 
 Gets an `AFS` contract standard.
 
@@ -154,7 +160,8 @@ Gets an `AFS` contract standard.
 const address = await registry.getStandard('1')
 ```
 
-### `registry.deployNewStandard(opts)` <a name="newstandard"></a>
+<a name="newstandard"></a>
+### `registry.deployNewStandard(opts)`
 
 Compiles and deploys a new `AFS` standard.
 
@@ -180,7 +187,8 @@ const address = await registry.deployNewStandard({
 })
 ```
 
-### `library.getLibrary(requesterDid)` <a name="getlibrary"></a>
+<a name="getlibrary"></a>
+### `library.getLibrary(requesterDid)`
 
 Gets the content `DID`s purchased by the `requesterDID`.
 
@@ -190,7 +198,8 @@ Gets the content `DID`s purchased by the `requesterDID`.
 const lib = await library.getLibrary(did)
 ```
 
-### `library.checkLibrary(opts)` <a name="checklibrary"></a>
+<a name="checklibrary"></a>
+### `library.checkLibrary(opts)`
 
 Checks to see if `contentDid` is in the `requesterDid`'s library.
 
@@ -206,8 +215,8 @@ try {
 }
 ```
 
-
-### `library.getLibrarySize(requesterDid)` <a name="librarysize"></a>
+<a name="librarysize"></a>
+### `library.getLibrarySize(requesterDid)`
 
 Gets the size of `requesterDid`'s library.
 
@@ -217,7 +226,8 @@ Gets the size of `requesterDid`'s library.
 const size = await library.getLibrarySize(did)
 ```
 
-### `library.getLibraryItem(opts)` <a name="libraryitem"></a>
+<a name="libraryitem"></a>
+### `library.getLibraryItem(opts)`
 
 Gets the `DID` of the item at the provided `index` in `requesterDid`'s library.
 
@@ -229,7 +239,8 @@ Gets the `DID` of the item at the provided `index` in `requesterDid`'s library.
 const contentDid = await library.getLibraryItem({ requesterDid, index: 1 })
 ```
 
-### `rewards.submit(opts)` <a name="submit"></a>
+<a name="submit"></a>
+### `rewards.submit(opts)`
 
 Submits new DCDN job.
 
@@ -255,7 +266,8 @@ await rewards.submit({
 })
 ```
 
-### `rewards.allocate(opts)` <a name="allocate"></a>
+<a name="allocate"></a>
+### `rewards.allocate(opts)`
 
 Allocates `rewards` amongst `farmers` for `jobId`.
 
@@ -287,7 +299,8 @@ await rewards.allocate({
 })
 ```
 
-### `rewards.redeem(opts)` <a name="redeem"></a>
+<a name="redeem"></a>
+### `rewards.redeem(opts)`
 
 Redeem Ara tokens (resulting from allocation return or from rewards) from AFS contract.
 
@@ -304,7 +317,8 @@ const balance = await rewards.redeem({
 })
 ```
 
-### `rewards.getBudget(opts)` <a name="budget"><a/>
+<a name="budget"><a/>
+### `rewards.getBudget(opts)`
 
 Gets the budget for `jobId`.
 
@@ -319,7 +333,8 @@ const budget = await rewards.getBudget({
 })
 ```
 
-### `rewards.getBalance(opts)` <a name="balance"></a>
+<a name="balance"></a>
+### `rewards.getBalance(opts)`
 
 Gets the balance (resulting from allocation return or from rewards) of `requesterDid` stored in `contentDid`.
 
