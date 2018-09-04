@@ -1,5 +1,6 @@
 const { abi: tokenAbi } = require('./build/contracts/AraToken.json')
 const { kAraTokenAddress } = require('./constants')
+const BigNumber = require('bignumber.js')
 
 const {
   isAddress,
@@ -7,6 +8,9 @@ const {
   call,
   tx
 } = require('ara-util/web3')
+
+const kTotalSupply = 1000000000
+const kTokenDecimals = 18
 
 /**
  * Get the Ara balance of a specific address.
@@ -30,25 +34,26 @@ async function balanceOf(address) {
   } catch (err) {
     throw err
   }
-  return balance
+  return _constrainTokenValue(balance)
 }
 
 /**
  * Gets the total circulating supply of Ara.
- * @return {Number}
+ * @return {String}
  * @throws {Error}
  */
 async function totalSupply() {
   let supply
   try {
     supply = await call({
-      tokenAbi,
+      abi: tokenAbi,
       address: kAraTokenAddress,
       functionName: 'totalSupply'
     })
   } catch (err) {
     throw err
   }
+  return _constrainTokenValue(supply)
 }
 
 /**
@@ -79,7 +84,7 @@ async function allowance(opts = {}) {
   } catch (err) {
     throw err
   }
-  return allowed
+  return _constrainTokenValue(allowed)
 }
 
 /**
@@ -95,8 +100,8 @@ async function allowance(opts = {}) {
 async function transfer(opts = {}) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Opts must be of type object')
-  } if (!_isValidAddress(opts.to)) {
-    throw new TypeError('Address is not a valid Etehreum address')
+  } else if (!_isValidAddress(opts.to)) {
+    throw new TypeError('Address is not a valid Ethereum address')
   } else if (!opts.val || 'number' !== typeof opts.val) {
     throw new TypeError('Value must be a number greater than 0')
   } else if (!opts.did || 'string' !== typeof opts.did) {
@@ -105,9 +110,13 @@ async function transfer(opts = {}) {
     throw new TypeError('Password must be non-empty string')
   }
 
-  const { did, password, to, val } = opts
+  const { did, password, to } = opts
+  let { val } = opts
   const acct = await account.load({ did, password })
 
+  console.log('VAL BEFORE', val)
+  val = _expandTokenValue(val)
+  console.log('VAL AFTER', val)
   let receipt
   try {
     const transferTx = await tx.create({
@@ -283,6 +292,40 @@ async function decreaseApproval(opts = {}) {
   return receipt
 }
 
+/**
+ * Expands token amount in Ara to be able to be read by the EVM
+ * @param  {Number} val   
+ * @return {String}
+ * @throws {TypeError}
+ */
+function expandTokenValue(val) {
+  if ('string' !== typeof val) {
+    throw new TypeError('Val must be of type string')
+  }
+  if (!val) {
+    return '0'
+  }
+  return BigNumber(val * Math.pow(10, 18)).toNumber().toString(10)
+}
+
+/**
+ * Constrains token amount from EVM to "real" Ara amount
+ * @param  {Number} val   
+ * @return {String}
+ * @throws {TypeError}
+ */
+function constrainTokenValue(val) {
+  if ('string' !== typeof val) {
+    throw new TypeError('Val must be of type string')
+  }
+  if (!val) {
+    return '0'
+  }
+  val *= Math.pow(10, -18)
+  val = BigNumber.minimum(val, kTotalSupply)
+  return BigNumber(val).toNumber().toString(10)
+}
+
 function _validateApprovalOpts(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Opts must be of type object')
@@ -302,6 +345,12 @@ function _isValidAddress(address) {
 }
 
 module.exports = {
+  increaseApproval,
+  decreaseApproval,
+  transferFrom,
   totalSupply,
-  balanceOf
+  balanceOf,
+  allowance,
+  transfer,
+  approve
 }
