@@ -67,7 +67,8 @@ The contracts in this repository are deployed on [Ara Privatenet](https://github
 * [rewards.getBudget(opts)](#budget)
 * [rewards.getBalance(opts)](#balance)
 
-### `purchase(opts)` <a name="purchase"></a>
+<a name="purchase"></a>
+### `purchase(opts)`
 
 Purchases an AFS and adds it to the requester's library.
 
