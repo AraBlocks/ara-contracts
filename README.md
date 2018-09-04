@@ -56,7 +56,7 @@ Purchases an AFS and adds it to the requester's library.
   - `requesterDid` - The `DID` of the person making the purchase
   - `contentDid` - The `DID` of the content being purchased
   - `password` - The requester's password
-  - `job` - optional Job ID to use for the initial download
+  - `job` - optional job ID to use for the initial download
 
 ```js
 const requesterDid = did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785
@@ -77,7 +77,7 @@ Checks if the proxy for a content `DID` exists.
 - `contentDid` - The `DID` of the content to check
 
 ```js
-const exists = await proxyExists(contentDid)
+const exists = await registry.proxyExists(contentDid)
 ```
 
 ### `async registry.getProxyAddress(contentDid)` <a name="getproxy"></a>
@@ -87,7 +87,7 @@ Gets the address of a proxy given a content `DID`
 - `contentDid` - The `DID` of the content
 
 ```js
-const address = await getProxyAddress(contentDid)
+const address = await registry.getProxyAddress(contentDid)
 ```
 
 ### `async registry.upgradeProxy(opts)` <a name="upgrade"></a>
@@ -121,7 +121,7 @@ const address = await registry.deployProxy({ contentDid, password, version: '1' 
 Gets the latest `AFS` contract standard.
 
 ```js
-const address = await getLatestStandard()
+const address = await registry.getLatestStandard()
 ```
 
 ### `async registry.getStandard(version)` <a name="getstandard"><a/>
@@ -131,7 +131,7 @@ Gets an `AFS` contract standard.
 - `version` - The version of the `AFS` contract standard
 
 ```js
-const address = await getStandard('1')
+const address = await registry.getStandard('1')
 ```
 
 ### `async registry.deployNewStandard(opts)` <a name="newstandard"></>
