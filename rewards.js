@@ -34,7 +34,7 @@ const {
 } = require('./util')
 
 /**
- * Submit new job // 84298 gas
+ * Submits a new DCDN job // 84298 gas
  * @param  {Object}         opts
  * @param  {String}         opts.requesterDid
  * @param  {String}         opts.contentDid
