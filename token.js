@@ -34,7 +34,7 @@ async function balanceOf(address) {
   } catch (err) {
     throw err
   }
-  return _constrainTokenValue(balance)
+  return constrainTokenValue(balance)
 }
 
 /**
@@ -53,7 +53,7 @@ async function totalSupply() {
   } catch (err) {
     throw err
   }
-  return _constrainTokenValue(supply)
+  return constrainTokenValue(supply)
 }
 
 /**
@@ -84,7 +84,7 @@ async function allowance(opts = {}) {
   } catch (err) {
     throw err
   }
-  return _constrainTokenValue(allowed)
+  return constrainTokenValue(allowed)
 }
 
 /**
@@ -111,12 +111,11 @@ async function transfer(opts = {}) {
   }
 
   const { did, password, to } = opts
-  let { val } = opts
   const acct = await account.load({ did, password })
 
-  console.log('VAL BEFORE', val)
-  val = _expandTokenValue(val)
-  console.log('VAL AFTER', val)
+  let { val } = opts
+  val = expandTokenValue(val)
+
   let receipt
   try {
     const transferTx = await tx.create({
@@ -158,8 +157,11 @@ async function approve(opts = {}) {
     throw new TypeError('Password must be non-empty string')
   }
 
-  const { did, password, spender, val } = opts
+  const { did, password, spender } = opts
   const acct = await account.load({ did, password })
+
+  let { val } = opts
+  val = expandTokenValue(val)
 
   let receipt
   try {
@@ -202,9 +204,12 @@ async function transferFrom(opts = {}) {
     throw new TypeError('Value must be a number greater than 0')
   }
 
-  const { did, password, to, val } = opts
+  const { did, password, to } = opts
   const acct = await account.load({ did, password })
   const { address } = acct
+
+  let { val } = opts
+  val = expandTokenValue(val)
 
   let receipt
   try {
@@ -237,8 +242,11 @@ async function transferFrom(opts = {}) {
 async function increaseApproval(opts = {}) {
   _validateApprovalOpts(opts)
 
-  const { did, password, spender, val } = opts
+  const { did, password, spender } = opts
   const acct = await account.load({ did, password })
+
+  let { val } = opts
+  val = expandTokenValue(val)
 
   let receipt
   try {
@@ -271,7 +279,9 @@ async function increaseApproval(opts = {}) {
 async function decreaseApproval(opts = {}) {
   _validateApprovalOpts(opts)
 
-  const { did, password, spender, val } = opts
+  const { did, password, spender } = opts
+  let { val } = opts
+  val = expandTokenValue(val)
   const acct = await account.load({ did, password })
 
   let receipt
