@@ -86,7 +86,7 @@ async function getLibrarySize(requesterDid = '') {
 }
 
 /**
- * Gets the address of the item at index in requesterDid's library
+ * Gets the DID of the item at index in requesterDid's library
  * @param  {Object} opts
  * @param  {String} opts.requesterDid
  * @param  {int}    opts.index
