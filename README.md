@@ -124,7 +124,7 @@ Gets the latest `AFS` contract standard.
 const address = await registry.getLatestStandard()
 ```
 
-### `async registry.getStandard(version)` <a name="getstandard"><a/>
+### `async registry.getStandard(version)` <a name="getstandard"></a>
 
 Gets an `AFS` contract standard.
 
@@ -134,7 +134,7 @@ Gets an `AFS` contract standard.
 const address = await registry.getStandard('1')
 ```
 
-### `async registry.deployNewStandard(opts)` <a name="newstandard"></>
+### `async registry.deployNewStandard(opts)` <a name="newstandard"></a>
 
 Compiles and deploys a new `AFS` standard.
 
@@ -146,7 +146,12 @@ Compiles and deploys a new `AFS` standard.
 
 ```js
 const version = '1'
-const paths = ['./contracts/AFS.sol', './contracts/Library.sol', './contracts/Registry.sol', './contracts/Proxy.sol', './contracts/ARAToken.sol', './contracts/Jobs.sol']
+const paths = ['./contracts/AFS.sol',
+               './contracts/Library.sol',
+               './contracts/Registry.sol',
+               './contracts/Proxy.sol',
+               './contracts/ARAToken.sol',
+               './contracts/Jobs.sol']
 const address = await registry.deployNewStandard({
   requesterDid,
   password,
@@ -194,7 +199,7 @@ const size = await library.getLibrarySize(did)
 
 ### `async library.getLibraryItem(opts)` <a name="libraryitem"></a>
 
-Gets the `DID` of the item at index in `requesterDid`'s library.
+Gets the `DID` of the item at the provided `index` in `requesterDid`'s library.
 
 - `opts`
   - `requesterDid` - The `DID` of the owner of the library
@@ -241,7 +246,7 @@ Allocates `rewards` amongst `farmers` for `jobId`.
   - `job`
     - `jobId` - The `jobId` of the job to allocate for
     - `farmers` - The Ethereum addresses of the farmers to reward
-    - `rewards` - The reward amounts in Ara tokens to respectively split amongst `farmers`
+    - `rewards` - The reward amounts in Ara tokens to split amongst `farmers`, respectively
 
 ```js
 const jobId = '0x7dc039cfb220029c371d0f4aabf4a956ed0062d66c447df7b4595d7e11187271'
@@ -264,7 +269,7 @@ await rewards.allocate({
 
 ### `async rewards.redeem(opts)` <a name="redeem"></a>
 
-Redeem Ara tokens (either from allocation return or from rewards) from AFS contract.
+Redeem Ara tokens (resulting from allocation return or from rewards) from AFS contract.
 
 - `opts`
   - `requesterDid` - The `DID` of the person redeeming tokens
@@ -296,7 +301,7 @@ const budget = await rewards.getBudget({
 
 ### `async rewards.getBalance(opts)` <a name="balance"></a>
 
-Gets the balance (either from allocation return or from rewards) of `requesterDid` stored in `contentDid`.
+Gets the balance (resulting from allocation return or from rewards) of `requesterDid` stored in `contentDid`.
 
 - `opts`
   - `requesterDid` - The `DID` of the person to check the balance of
