@@ -9,7 +9,7 @@ Blockchain interactions in Ara modules.
 This repository contains all contracts deployed by Ara. There are four contracts used throughout the entire network: 
 
 1. `AraToken.sol` - The Ara ERC20 token contract
-2. `AFS.sol` - The `AFS` standard contract which defines the logic for `AFS` configurations and behavior on the blockchain
+2. `AFS.sol` - The `AFS` standard contract which defines the logic for `AFS` configurations and behavior on the blockchain (see the accompanying [RFC](https://github.com/AraBlocks/RFCs/blob/master/text/0004-afs-contract-standard.md))
 3. `Library.sol` - The contract where content ownership across the network is consolidated and tracked
 4. `Registry.sol` - The contract where `AFS` proxies and `AFS` standards are created, linked, and tracked
 
