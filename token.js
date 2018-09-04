@@ -1,6 +1,11 @@
 const { abi: tokenAbi } = require('./build/contracts/AraToken.json')
-const { kAraTokenAddress } = require('./constants')
 const BigNumber = require('bignumber.js')
+
+const {
+  kAraTokenAddress,
+  kTotalSupply,
+  kTokenDecimals
+} = require('./constants')
 
 const {
   isAddress,
@@ -8,9 +13,6 @@ const {
   call,
   tx
 } = require('ara-util/web3')
-
-const kTotalSupply = 1000000000
-const kTokenDecimals = 18
 
 /**
  * Get the Ara balance of a specific address.

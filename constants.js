@@ -10,7 +10,10 @@ module.exports = {
   kOwnerPassword: 'lol',
   kOwnerMnemonic: 'undo cargo steel brick stairs trash hover rent scare ribbon tired output',
   // private key: 0x628a3ff0e47af58d306dfe413114acfded25a8374f562db36d8496f246dbeaf7
-  kDefaultAddress: '0x1019468D3060F0b8c5d9C432f0c4Db33e28b3582'
+  kDefaultAddress: '0x1019468D3060F0b8c5d9C432f0c4Db33e28b3582',
+
+  kTokenDecimals: 18,
+  kTokenSupply: 1000000000
 }
 
 // AFS standard v2: '0x5bd7C0Fcca203A3b5016cd6da530d1A72d0e5413'
