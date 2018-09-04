@@ -179,7 +179,7 @@ async function purchase(opts) {
       debug('gas used', receipt2.gasUsed)
       const size = await getLibrarySize(did)
 
-      const contentId = await getLibraryItem(did, size - 1)
+      const contentId = await getLibraryItem({ requesterDid: did, index: size - 1 })
 
       debug(contentId, `added to library (${size})`)
     }
