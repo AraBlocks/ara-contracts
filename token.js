@@ -34,6 +34,7 @@ async function balanceOf(address) {
   } catch (err) {
     throw err
   }
+  
   return constrainTokenValue(balance)
 }
 
@@ -145,17 +146,7 @@ async function transfer(opts = {}) {
  * @throws {TypeError|Error} 
  */
 async function approve(opts = {}) {
-  if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('Opts must be of type object')
-  } else if (!_isValidAddress(opts.spender)) {
-    throw new TypeError('Spender address is not a valid Ethereum address')
-  } else if (!opts.val || 'number' !== typeof opts.val) {
-    throw new TypeError('Value must be a number greater than 0')
-  } else if (!opts.did || 'string' !== typeof opts.did) {
-    throw new TypeError('DID URI must be non-empty string')
-  } else if (!opts.password || 'string' !== typeof opts.password) {
-    throw new TypeError('Password must be non-empty string')
-  }
+  _validateApprovalOpts(opts)
 
   const { did, password, spender } = opts
   const acct = await account.load({ did, password })
@@ -309,10 +300,10 @@ async function decreaseApproval(opts = {}) {
  * @throws {TypeError}
  */
 function expandTokenValue(val) {
-  if ('string' !== typeof val) {
-    throw new TypeError('Val must be of type string')
+  if ('number' !== typeof val) {
+    throw new TypeError('Val must be of type number')
   }
-  if (!val) {
+  if (0 === val) {
     return '0'
   }
   return BigNumber(val * Math.pow(10, 18)).toNumber().toString(10)
@@ -320,7 +311,7 @@ function expandTokenValue(val) {
 
 /**
  * Constrains token amount from EVM to "real" Ara amount
- * @param  {Number} val   
+ * @param  {String} val   
  * @return {String}
  * @throws {TypeError}
  */
