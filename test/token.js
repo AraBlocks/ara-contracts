@@ -12,6 +12,14 @@ const {
   kTempOwnerDid,
 } = require('../constants')
 
+const funcMap = [
+  token.transfer,
+  token.increaseApproval,
+  token.decreaseApproval,
+  token.approve,
+  token.transferFrom
+]
+
 test.before(async (t) => {
   const defaultIdentity = await create({ context, mnemonic: kOwnerMnemonic, password })
   await writeIdentity(defaultIdentity)
@@ -41,25 +49,6 @@ test('balanceOf(address)', async (t) => {
 test('totalSupply()', async (t) => {
   const supply = await token.totalSupply()
   t.true(0 < Number(supply))
-})
-
-test('transfer(opts) invalid opts', async (t) => {
-  const { did } = t.context
-
-  t.plan(13)
-  await t.throws(token.transfer(), TypeError)
-  await t.throws(token.transfer({ }), TypeError)
-  await t.throws(token.transfer({ to: ''}), TypeError)
-  await t.throws(token.transfer({ to: 1234}), TypeError)
-  await t.throws(token.transfer({ to: kDefaultAddress, val: '1000' }), TypeError)
-  await t.throws(token.transfer({ to: kDefaultAddress, val: 1000 }), TypeError)
-  await t.throws(token.transfer({ to: kDefaultAddress, val: 1000, did: null }), TypeError)
-  await t.throws(token.transfer({ to: kDefaultAddress, val: 1000, did: '' }), TypeError)
-  await t.throws(token.transfer({ to: kDefaultAddress, val: 1000, did: 1234 }), TypeError)
-  await t.throws(token.transfer({ to: kDefaultAddress, val: 1000, did: 1234 }), TypeError)
-  await t.throws(token.transfer({ to: kDefaultAddress, val: 1000, did, password: null }), TypeError)
-  await t.throws(token.transfer({ to: kDefaultAddress, val: 1000, did, password: 123 }), TypeError)
-  await t.throws(token.transfer({ to: kDefaultAddress, val: 1000, did, password }), Error)
 })
 
 test('transfer(opts) valid transfer', async (t) => {
@@ -106,25 +95,6 @@ test('allowance(opts) allowance query', async (t) => {
   t.is(allowed, 1)
 })
 
-test('increaseApproval(opts) invalid opts', async (t) => {
-  const { did } = t.context
-
-  t.plan(13)
-  await t.throws(token.increaseApproval(), TypeError)
-  await t.throws(token.increaseApproval({ }), TypeError)
-  await t.throws(token.increaseApproval({ spender: ''}), TypeError)
-  await t.throws(token.increaseApproval({ spender: 1234}), TypeError)
-  await t.throws(token.increaseApproval({ spender: kDefaultAddress, val: '1000' }), TypeError)
-  await t.throws(token.increaseApproval({ spender: kDefaultAddress, val: 1000 }), TypeError)
-  await t.throws(token.increaseApproval({ spender: kDefaultAddress, val: 1000, did: null }), TypeError)
-  await t.throws(token.increaseApproval({ spender: kDefaultAddress, val: 1000, did: '' }), TypeError)
-  await t.throws(token.increaseApproval({ spender: kDefaultAddress, val: 1000, did: 1234 }), TypeError)
-  await t.throws(token.increaseApproval({ spender: kDefaultAddress, val: 1000, did: 1234 }), TypeError)
-  await t.throws(token.increaseApproval({ spender: kDefaultAddress, val: 1000, did, password: null }), TypeError)
-  await t.throws(token.increaseApproval({ spender: kDefaultAddress, val: 1000, did, password: 123 }), TypeError)
-  await t.throws(token.increaseApproval({ spender: kDefaultAddress, val: 1000, did, password }), Error)
-})
-
 test('increaseApproval(opts) valid increase', async (t) => {
   const { address } = t.context.account
   const beforeAllowed = Number(await token.allowance({ owner: kDefaultAddress, spender: address }))
@@ -135,25 +105,6 @@ test('increaseApproval(opts) valid increase', async (t) => {
 
   const afterAllowed = Number(await token.allowance({ owner: kDefaultAddress, spender: address }))
   t.is(afterAllowed, beforeAllowed + val)
-})
-
-test('decreaseApproval(opts) invalid opts', async (t) => {
-  const { did } = t.context
-
-  t.plan(13)
-  await t.throws(token.decreaseApproval(), TypeError)
-  await t.throws(token.decreaseApproval({ }), TypeError)
-  await t.throws(token.decreaseApproval({ spender: ''}), TypeError)
-  await t.throws(token.decreaseApproval({ spender: 1234}), TypeError)
-  await t.throws(token.decreaseApproval({ spender: kDefaultAddress, val: '1000' }), TypeError)
-  await t.throws(token.decreaseApproval({ spender: kDefaultAddress, val: 1000 }), TypeError)
-  await t.throws(token.decreaseApproval({ spender: kDefaultAddress, val: 1000, did: null }), TypeError)
-  await t.throws(token.decreaseApproval({ spender: kDefaultAddress, val: 1000, did: '' }), TypeError)
-  await t.throws(token.decreaseApproval({ spender: kDefaultAddress, val: 1000, did: 1234 }), TypeError)
-  await t.throws(token.decreaseApproval({ spender: kDefaultAddress, val: 1000, did: 1234 }), TypeError)
-  await t.throws(token.decreaseApproval({ spender: kDefaultAddress, val: 1000, did, password: null }), TypeError)
-  await t.throws(token.decreaseApproval({ spender: kDefaultAddress, val: 1000, did, password: 123 }), TypeError)
-  await t.throws(token.decreaseApproval({ spender: kDefaultAddress, val: 1000, did, password }), Error)
 })
 
 test('decreaseApproval(opts) valid decrease', async (t) => {
@@ -168,26 +119,7 @@ test('decreaseApproval(opts) valid decrease', async (t) => {
   t.is(afterAllowed, beforeAllowed - val)
 })
 
-test('approve(opts) invalid opts', async (t) => {
-  const { did } = t.context
-
-  t.plan(13)
-  await t.throws(token.approve(), TypeError)
-  await t.throws(token.approve({ }), TypeError)
-  await t.throws(token.approve({ spender: ''}), TypeError)
-  await t.throws(token.approve({ spender: 1234}), TypeError)
-  await t.throws(token.approve({ spender: kDefaultAddress, val: '1000' }), TypeError)
-  await t.throws(token.approve({ spender: kDefaultAddress, val: 1000 }), TypeError)
-  await t.throws(token.approve({ spender: kDefaultAddress, val: 1000, did: null }), TypeError)
-  await t.throws(token.approve({ spender: kDefaultAddress, val: 1000, did: '' }), TypeError)
-  await t.throws(token.approve({ spender: kDefaultAddress, val: 1000, did: 1234 }), TypeError)
-  await t.throws(token.approve({ spender: kDefaultAddress, val: 1000, did: 1234 }), TypeError)
-  await t.throws(token.approve({ spender: kDefaultAddress, val: 1000, did, password: null }), TypeError)
-  await t.throws(token.approve({ spender: kDefaultAddress, val: 1000, did, password: 123 }), TypeError)
-  await t.throws(token.approve({ spender: kDefaultAddress, val: 1000, did, password }), Error)
-})
-
-test('approve(opts) valid approvate', async (t) => {
+test('approve(opts) valid approve', async (t) => {
   const { address } = t.context.account
   const beforeAllowed = Number(await token.allowance({ owner: kDefaultAddress, spender: address }))
 
@@ -197,25 +129,6 @@ test('approve(opts) valid approvate', async (t) => {
 
   const afterAllowed = Number(await token.allowance({ owner: kDefaultAddress, spender: address }))
   t.is(afterAllowed, val)
-})
-
-test('transferFrom(opts) invalid opts', async (t) => {
-  const { did } = t.context
-
-  t.plan(13)
-  await t.throws(token.transfer(), TypeError)
-  await t.throws(token.transfer({ }), TypeError)
-  await t.throws(token.transfer({ to: ''}), TypeError)
-  await t.throws(token.transfer({ to: 1234}), TypeError)
-  await t.throws(token.transfer({ to: kDefaultAddress, val: '1000' }), TypeError)
-  await t.throws(token.transfer({ to: kDefaultAddress, val: 1000 }), TypeError)
-  await t.throws(token.transfer({ to: kDefaultAddress, val: 1000, did: null }), TypeError)
-  await t.throws(token.transfer({ to: kDefaultAddress, val: 1000, did: '' }), TypeError)
-  await t.throws(token.transfer({ to: kDefaultAddress, val: 1000, did: 1234 }), TypeError)
-  await t.throws(token.transfer({ to: kDefaultAddress, val: 1000, did: 1234 }), TypeError)
-  await t.throws(token.transfer({ to: kDefaultAddress, val: 1000, did, password: null }), TypeError)
-  await t.throws(token.transfer({ to: kDefaultAddress, val: 1000, did, password: 123 }), TypeError)
-  await t.throws(token.transfer({ to: kDefaultAddress, val: 1000, did, password }), Error)
 })
 
 test('transferFrom(opts) valid transfer', async (t) => {
@@ -232,4 +145,24 @@ test('transferFrom(opts) valid transfer', async (t) => {
   
   t.true(afterNewBalance === beforeNewBalance + val)
   t.true(afterDefaultBalance === beforeDefaultBalance - val)
+})
+
+test('invalid generic opts', async (t) => {
+  const { did } = t.context
+
+  for (let func of funcMap) {
+    await t.throws(func(), TypeError)
+    await t.throws(func({ }), TypeError)
+    await t.throws(func({ to: ''}), TypeError)
+    await t.throws(func({ to: 1234}), TypeError)
+    await t.throws(func({ to: kDefaultAddress, val: '1000' }), TypeError)
+    await t.throws(func({ to: kDefaultAddress, val: 1000 }), TypeError)
+    await t.throws(func({ to: kDefaultAddress, val: 1000, did: null }), TypeError)
+    await t.throws(func({ to: kDefaultAddress, val: 1000, did: '' }), TypeError)
+    await t.throws(func({ to: kDefaultAddress, val: 1000, did: 1234 }), TypeError)
+    await t.throws(func({ to: kDefaultAddress, val: 1000, did: 1234 }), TypeError)
+    await t.throws(func({ to: kDefaultAddress, val: 1000, did, password: null }), TypeError)
+    await t.throws(func({ to: kDefaultAddress, val: 1000, did, password: 123 }), TypeError)
+    await t.throws(func({ to: kDefaultAddress, val: 1000, did, password }), Error)
+  }
 })
