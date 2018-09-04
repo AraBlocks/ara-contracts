@@ -61,15 +61,15 @@ test('transfer(opts) invalid opts', async (t) => {
   await t.throws(token.transfer({ to: kDefaultAddress, val: 1000, did, password }), Error)
 })
 
-// test('transfer(opts) valid transfer', async (t) => {
-//   const { address } = t.context.account
-//   const did = kTempOwnerDid
-//   const beforeBalance = await token.balanceOf(kDefaultAddress)
-//   console.log('beforeBalance', beforeBalance)
-//   const receipt = await token.transfer({ did, password, val: 1000, to: address })
-//   const afterBalance = await token.balanceOf(kDefaultAddress)
-//   console.log('afterBalance', afterBalance)
-//   const newBalance = await token.balanceOf(address)
-//   console.log('newBalance', newBalance)
-//   t.pass()
-// })
+test('transfer(opts) valid transfer', async (t) => {
+  const { address } = t.context.account
+  const did = kTempOwnerDid
+  const beforeBalance = await token.balanceOf(kDefaultAddress)
+  console.log('beforeBalance', beforeBalance)
+  // const receipt = await token.transfer({ did, password, val: 1000, to: address })
+  // const afterBalance = await token.balanceOf(kDefaultAddress)
+  // console.log('afterBalance', afterBalance)
+  // const newBalance = await token.balanceOf(address)
+  // console.log('newBalance', newBalance)
+  t.pass()
+})
