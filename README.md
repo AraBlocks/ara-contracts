@@ -19,17 +19,7 @@ TODO
 
 ## Usage
 
-### Setup
-
-If you do not already have one, first create an ARAid.
-
-Then run a local Truffle instance. `compile` the contracts (do not `migrate` yet).
-
-With Truffle running, in a separate terminal window import your ARAid:
-
-`act setup -f did:ara:4e56ed331bb52ae28f18969982275bb156f81f4b23c22115e9ddd2b51b4c89c4`
-
-Finally, `migrate` the contracts.
+TODO
 
 ## API
 
