@@ -70,7 +70,7 @@ The contracts in this repository are deployed on [Ara Privatenet](https://github
 <a name="purchase"></a>
 ### `purchase(opts)`
 
-Purchases an AFS and adds it to the requester's library.
+Purchases an `AFS` and adds it to the requester's library.
 
 - `opts`
   - `requesterDid` - The `DID` of the person making the purchase
@@ -302,7 +302,7 @@ await rewards.allocate({
 <a name="redeem"></a>
 ### `rewards.redeem(opts)`
 
-Redeem Ara tokens (resulting from allocation return or from rewards) from AFS contract.
+Redeem Ara tokens (resulting from allocation return or from rewards) from `AFS` contract.
 
 - `opts`
   - `requesterDid` - The `DID` of the person redeeming tokens
