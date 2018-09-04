@@ -4,6 +4,19 @@
 
 Blockchain interactions in Ara modules.
 
+## Overview
+
+This repository contains all contracts deployed by Ara. There are four contracts used throughout the entire network: 
+
+1. `AraToken.sol` - The Ara ERC20 token contract
+2. `AFS.sol` - The `AFS` standard contract which defines the logic for `AFS` configurations and behavior on the blockchain
+3. `Library.sol` - The contract where content ownership across the network is consolidated and tracked
+4. `Registry.sol` - The contract where `AFS` proxies and `AFS` standards are created, linked, and tracked
+
+In addition to these globally-used contracts, Ara deploys a proxy contract for each individual `AFS` that gets committed to the blockchain ([see `ara-filesystem`](https://github.com/AraBlocks/ara-filesystem/)). This contract serves as the storage layer for `AFS` on the blockchain, while the `AFS` standard serves as the logic layer.
+
+This repository also provides programmatic (see the API section) and command-line interfaces (see the Usage section) for interacting with the contracts.
+
 ## Status
 
 This project is in active development.
@@ -19,7 +32,11 @@ TODO
 
 ## Usage
 
-TODO
+TODO CLI commands
+
+### Ara Privatenet
+
+The contracts in this repository are deployed on [Ara Privatenet](https://github.com/AraBlocks/ara-privatenet). You **must** be connected in order to be on the same network as the rest of the Ara team during development and to use the addresses in `constants.js`.
 
 ## API
 
