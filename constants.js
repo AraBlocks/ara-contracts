@@ -2,15 +2,15 @@ module.exports = {
   kDidPrefix: 'did:',
   kAidPrefix: 'did:ara:',
   kOwnerSuffix: '#owner',
-  kRegistryAddress: '0x0fecf0c50dfe314e518b6a0ca6d7db9e2e9f2e2f',
-  kLibraryAddress: '0xd8dd6a0049606e07fc3f7a1e39bc315f1a1f9587',
-  kAraTokenAddress: '0x56ce497f7957cb99ba005b6982465ea620c304c8',
+  kRegistryAddress: '0xa332aa2af2f422dade0b37d23072e8afb836b0f2',
+  kLibraryAddress: '0x3e8bc2a748e73c07608533d8785dadd09f56551a',
+  kAraTokenAddress: '0x4c0272d03eda928861603054e2a7375afc645f7c',
 
-  kTempOwnerDid: 'did:ara:8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67',
-  kOwnerPassword: 'pass',
-  kOwnerMnemonic: 'leg notable ostrich found gym honey leg arrive spend cabbage genuine light',
-  // private key: 0x8662c06fab466f44e0b7937812671d07b4e298a609c7d9654e27c1d0d2653f20
-  kDefaultAddress: '0x105C83b79E9170d7969Ce9806fE0B527b5f879dE'
+  kTempOwnerDid: 'did:ara:cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3',
+  kOwnerPassword: 'lol',
+  kOwnerMnemonic: 'undo cargo steel brick stairs trash hover rent scare ribbon tired output',
+  // private key: 0x628a3ff0e47af58d306dfe413114acfded25a8374f562db36d8496f246dbeaf7
+  kDefaultAddress: '0x1019468D3060F0b8c5d9C432f0c4Db33e28b3582'
 }
 
 // AFS standard v2: '0x5bd7C0Fcca203A3b5016cd6da530d1A72d0e5413'
