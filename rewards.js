@@ -160,7 +160,7 @@ async function submit(opts) {
 }
 
 /**
- * Allocate rewards // 163029 gas (with return), 69637 gas (without return)
+ * Allocates rewards for job // 163029 gas (with return), 69637 gas (without return)
  * @param  {Object}         opts
  * @param  {String}         opts.requesterDid
  * @param  {String}         opts.contentDid

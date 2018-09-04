@@ -23,32 +23,34 @@ TODO
 
 ## API
 
-* [async purchase(opts)](#purchase)
+**NOTE**: All functions are asynchronous
+
+* [purchase(opts)](#purchase)
 
 ### Registry
 
-* [async registry.proxyExists(contentDid)](#proxyexists)
-* [async registry.getProxyAddress(contentDid)](#getproxy)
-* [async registry.upgradeProxy(opts)](#upgrade)
-* [async registry.deployProxy(opts)](#deploy)
-* [async registry.getLatestStandard()](#lateststandard)
-* [async registry.getStandard(version)](#getstandard)
-* [async registry.deployNewStandard(opts)](#newstandard)
+* [registry.proxyExists(contentDid)](#proxyexists)
+* [registry.getProxyAddress(contentDid)](#getproxy)
+* [registry.upgradeProxy(opts)](#upgrade)
+* [registry.deployProxy(opts)](#deploy)
+* [registry.getLatestStandard()](#lateststandard)
+* [registry.getStandard(version)](#getstandard)
+* [registry.deployNewStandard(opts)](#newstandard)
 
 ### Library
-* [async library.getLibrary(requesterDid)](#getlibrary)
-* [async library.checkLibrary(opts)](#checklibrary)
-* [async library.getLibrarySize(requesterDid)](#librarysize)
-* [async library.getLibraryItem(opts)](#libraryitem)
+* [library.getLibrary(requesterDid)](#getlibrary)
+* [library.checkLibrary(opts)](#checklibrary)
+* [library.getLibrarySize(requesterDid)](#librarysize)
+* [library.getLibraryItem(opts)](#libraryitem)
 
 ### Rewards
-* [async rewards.submit(opts)](#submit)
-* [async rewards.allocate(opts)](#allocate)
-* [async rewards.redeem(opts)](#redeem)
-* [async rewards.getBudget(opts)](#budget)
-* [async rewards.getBalance(opts)](#balance)
+* [rewards.submit(opts)](#submit)
+* [rewards.allocate(opts)](#allocate)
+* [rewards.redeem(opts)](#redeem)
+* [rewards.getBudget(opts)](#budget)
+* [rewards.getBalance(opts)](#balance)
 
-### `async purchase(opts)` <a name="purchase"></a>
+### `purchase(opts)` <a name="purchase"></a>
 
 Purchases an AFS and adds it to the requester's library.
 
@@ -59,9 +61,9 @@ Purchases an AFS and adds it to the requester's library.
   - `job` - optional job ID to use for the initial download
 
 ```js
-const requesterDid = did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785
-const contentDid = did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85
-const job = 0x7dc039cfb220029c371d0f4aabf4a956ed0062d66c447df7b4595d7e11187271
+const requesterDid = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
+const contentDid = 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
+const job = '0x7dc039cfb220029c371d0f4aabf4a956ed0062d66c447df7b4595d7e11187271'
 await purchase({
       requesterDid,
       contentDid,
@@ -70,7 +72,7 @@ await purchase({
     })
 ```
 
-### `async registry.proxyExists(contentDid)` <a name="proxyexists"></a>
+### `registry.proxyExists(contentDid)` <a name="proxyexists"></a>
 
 Checks if the proxy for a content `DID` exists.
 
@@ -80,7 +82,7 @@ Checks if the proxy for a content `DID` exists.
 const exists = await registry.proxyExists(contentDid)
 ```
 
-### `async registry.getProxyAddress(contentDid)` <a name="getproxy"></a>
+### `registry.getProxyAddress(contentDid)` <a name="getproxy"></a>
 
 Gets the address of a proxy given a content `DID`
 
@@ -90,7 +92,7 @@ Gets the address of a proxy given a content `DID`
 const address = await registry.getProxyAddress(contentDid)
 ```
 
-### `async registry.upgradeProxy(opts)` <a name="upgrade"></a>
+### `registry.upgradeProxy(opts)` <a name="upgrade"></a>
 
 Upgrades a proxy to another `AFS` standard.
 
@@ -103,7 +105,7 @@ Upgrades a proxy to another `AFS` standard.
 const upgraded = await registry.upgradeProxy({ contentDid, password, version: '1' })
 ```
 
-### `async registry.deployProxy(opts)` <a name="deploy"></a>
+### `registry.deployProxy(opts)` <a name="deploy"></a>
 
 Deploys a proxy to an `AFS` standard.
 
@@ -116,7 +118,7 @@ Deploys a proxy to an `AFS` standard.
 const address = await registry.deployProxy({ contentDid, password, version: '1' })
 ```
 
-### `async registry.getLatestStandard()` <a name="lateststandard"></a>
+### `registry.getLatestStandard()` <a name="lateststandard"></a>
 
 Gets the latest `AFS` contract standard.
 
@@ -124,7 +126,7 @@ Gets the latest `AFS` contract standard.
 const address = await registry.getLatestStandard()
 ```
 
-### `async registry.getStandard(version)` <a name="getstandard"></a>
+### `registry.getStandard(version)` <a name="getstandard"></a>
 
 Gets an `AFS` contract standard.
 
@@ -134,7 +136,7 @@ Gets an `AFS` contract standard.
 const address = await registry.getStandard('1')
 ```
 
-### `async registry.deployNewStandard(opts)` <a name="newstandard"></a>
+### `registry.deployNewStandard(opts)` <a name="newstandard"></a>
 
 Compiles and deploys a new `AFS` standard.
 
@@ -160,7 +162,7 @@ const address = await registry.deployNewStandard({
 })
 ```
 
-### `async library.getLibrary(requesterDid)` <a name="getlibrary"></a>
+### `library.getLibrary(requesterDid)` <a name="getlibrary"></a>
 
 Gets the content `DID`s purchased by the `requesterDID`.
 
@@ -170,7 +172,7 @@ Gets the content `DID`s purchased by the `requesterDID`.
 const lib = await library.getLibrary(did)
 ```
 
-### `async library.checkLibrary(opts)` <a name="checklibrary"></a>
+### `library.checkLibrary(opts)` <a name="checklibrary"></a>
 
 Checks to see if `contentDid` is in the `requesterDid`'s library.
 
@@ -187,7 +189,7 @@ try {
 ```
 
 
-### `async library.getLibrarySize(requesterDid)` <a name="librarysize"></a>
+### `library.getLibrarySize(requesterDid)` <a name="librarysize"></a>
 
 Gets the size of `requesterDid`'s library.
 
@@ -197,7 +199,7 @@ Gets the size of `requesterDid`'s library.
 const size = await library.getLibrarySize(did)
 ```
 
-### `async library.getLibraryItem(opts)` <a name="libraryitem"></a>
+### `library.getLibraryItem(opts)` <a name="libraryitem"></a>
 
 Gets the `DID` of the item at the provided `index` in `requesterDid`'s library.
 
@@ -209,7 +211,7 @@ Gets the `DID` of the item at the provided `index` in `requesterDid`'s library.
 const contentDid = await library.getLibraryItem({ requesterDid, index: 1 })
 ```
 
-### `async rewards.submit(opts)` <a name="submit"></a>
+### `rewards.submit(opts)` <a name="submit"></a>
 
 Submits new DCDN job.
 
@@ -235,7 +237,7 @@ await rewards.submit({
 })
 ```
 
-### `async rewards.allocate(opts)` <a name="allocate"></a>
+### `rewards.allocate(opts)` <a name="allocate"></a>
 
 Allocates `rewards` amongst `farmers` for `jobId`.
 
@@ -267,7 +269,7 @@ await rewards.allocate({
 })
 ```
 
-### `async rewards.redeem(opts)` <a name="redeem"></a>
+### `rewards.redeem(opts)` <a name="redeem"></a>
 
 Redeem Ara tokens (resulting from allocation return or from rewards) from AFS contract.
 
@@ -284,7 +286,7 @@ const balance = await rewards.redeem({
 })
 ```
 
-### `async rewards.getBudget(opts)` <a name="budget"><a/>
+### `rewards.getBudget(opts)` <a name="budget"><a/>
 
 Gets the budget for `jobId`.
 
@@ -299,7 +301,7 @@ const budget = await rewards.getBudget({
 })
 ```
 
-### `async rewards.getBalance(opts)` <a name="balance"></a>
+### `rewards.getBalance(opts)` <a name="balance"></a>
 
 Gets the balance (resulting from allocation return or from rewards) of `requesterDid` stored in `contentDid`.
 
