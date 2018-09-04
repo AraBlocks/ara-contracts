@@ -281,7 +281,7 @@ async function getStandard(version) {
  * @param  {String} opts.requesterDid
  * @param  {String} opts.password
  * @param  {String} opts.version
- * @param  {String} opts.path
+ * @param  {String} opts.paths
  * @return {String}
  * @throws {Error,TypeError}
  */

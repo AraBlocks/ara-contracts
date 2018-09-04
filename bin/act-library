@@ -41,7 +41,7 @@ module.exports = (async function main() {
     const lib = await library.getLibrary(did)
     info(did, 'library (', size, ')\n', lib)
   } else {
-    const contentDid = await library.getLibraryItem(did, g)
+    const contentDid = await library.getLibraryItem({ requesterDid: did, index: g })
     info('item', g, 'has did:', contentDid)
   }
 }())
