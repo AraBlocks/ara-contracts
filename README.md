@@ -83,11 +83,11 @@ const requesterDid = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb0
 const contentDid = 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
 const job = '0x7dc039cfb220029c371d0f4aabf4a956ed0062d66c447df7b4595d7e11187271'
 await purchase({
-      requesterDid,
-      contentDid,
-      password,
-      job
-    })
+  requesterDid,
+  contentDid,
+  password,
+  job
+})
 ```
 
 <a name="proxyexists"></a>
@@ -177,7 +177,7 @@ const paths = ['./contracts/AFS.sol',
                './contracts/Library.sol',
                './contracts/Registry.sol',
                './contracts/Proxy.sol',
-               './contracts/ARAToken.sol',
+               './contracts/AraToken.sol',
                './contracts/Jobs.sol']
 const address = await registry.deployNewStandard({
   requesterDid,
@@ -361,8 +361,8 @@ Releases follow [Semantic Versioning](https://semver.org/)
 ## See Also
 
 - [Truffle](https://github.com/trufflesuite/truffle)
-- [ARA Filesystem](https://github.com/AraBlocks/ara-filesystem)
-- [ARA Identity](https://github.com/AraBlocks/ara-identity)
+- [Ara Filesystem](https://github.com/AraBlocks/ara-filesystem)
+- [Ara Identity](https://github.com/AraBlocks/ara-identity)
 
 ## License
 LGPL-3.0
