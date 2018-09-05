@@ -139,9 +139,7 @@ async function upgradeProxy(opts) {
       return upgraded
     }
   } catch (err) {
-    if (!err.status) {
-      throw err
-    }
+    throw err
   }
 }
 
@@ -225,9 +223,7 @@ async function deployProxy(opts) {
       return proxyAddress
     }
   } catch (err) {
-    if (!err.status) {
-      throw err
-    }
+    throw err
   }
 }
 
@@ -395,9 +391,7 @@ async function deployNewStandard(opts) {
       return address ? address : afs._address
     }
   } catch (err) {
-    if (!err.status) {
-      throw err
-    }
+    throw err
   }
 }
 

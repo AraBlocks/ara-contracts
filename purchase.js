@@ -184,9 +184,7 @@ async function purchase(opts) {
       debug(contentId, `added to library (${size})`)
     }
   } catch (err) {
-    if (!err.status) {
-      throw err
-    }
+    throw err
   }
 }
 
