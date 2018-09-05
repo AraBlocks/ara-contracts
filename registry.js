@@ -330,7 +330,6 @@ async function deployNewStandard(opts) {
   const sources = {
     'ERC20.sol': fs.readFileSync('./contracts/ERC20.sol', 'utf8'),
     'StandardToken.sol': fs.readFileSync('./contracts/StandardToken.sol', 'utf8'),
-    'AraToken.sol': fs.readFileSync('./contracts/AraToken.sol', 'utf8'),
     'openzeppelin-solidity/contracts/math/SafeMath.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol', 'utf8'),
     'bytes/BytesLib.sol': fs.readFileSync('./installed_contracts/bytes/contracts/BytesLib.sol', 'utf8')
   }
