@@ -185,7 +185,7 @@ async function purchase(opts) {
     }
   } catch (err) {
     if (!err.status) {
-      throw new Error('Transaction failed:', err.message)
+      throw err
     }
   }
 }
