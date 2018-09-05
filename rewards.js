@@ -153,9 +153,7 @@ async function submit(opts) {
       debug('gas used', receipt2.gasUsed)
     }
   } catch (err) {
-    if (!err.status) {
-      throw err
-    }
+    throw err
   }
 }
 
@@ -273,9 +271,7 @@ async function allocate(opts) {
       debug('gas used', receipt.gasUsed)
     }
   } catch (err) {
-    if (!err.status) {
-      throw err
-    }
+    throw err
   }
 }
 
@@ -352,9 +348,7 @@ async function redeem(opts) {
       return balance
     }
   } catch (err) {
-    if (!err.status) {
-      throw err
-    }
+    throw err
   }
 }
 
