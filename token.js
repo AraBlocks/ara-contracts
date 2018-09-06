@@ -1,5 +1,6 @@
 const { abi: tokenAbi } = require('./build/contracts/AraToken.json')
 const BigNumber = require('bignumber.js')
+const { web3 } = require('ara-context')()
 
 const {
   kAraTokenAddress,
@@ -297,18 +298,19 @@ async function decreaseApproval(opts = {}) {
 
 /**
  * Expands token amount in Ara to be able to be read by the EVM
- * @param  {Number} val   
- * @return {String}
+ * @param  {String} val   
+ * @return {BN}
  * @throws {TypeError}
  */
 function expandTokenValue(val) {
-  if ('number' !== typeof val) {
-    throw new TypeError('Val must be of type number')
+  if ('string' !== typeof val) {
+    throw new TypeError('Val must be of type string')
   }
-  if (0 === val) {
+  if (!val) {
     return '0'
   }
-  return BigNumber(val * Math.pow(10, 18)).toNumber().toString(10)
+  const input = `${val}e${kTokenDecimals}`
+  return web3.utils.toBN(BigNumber(input))
 }
 
 /**
@@ -324,9 +326,9 @@ function constrainTokenValue(val) {
   if (!val) {
     return '0'
   }
-  val *= Math.pow(10, -18)
-  val = BigNumber.minimum(val, kTotalSupply)
-  return BigNumber(val).toNumber().toString(10)
+  
+  const input = `${val}e-${kTokenDecimals}`
+  return BigNumber(input).toString()
 }
 
 function _validateApprovalOpts(opts) {
