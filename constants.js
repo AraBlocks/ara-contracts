@@ -13,7 +13,9 @@ module.exports = {
   kDefaultAddress: '0x1019468D3060F0b8c5d9C432f0c4Db33e28b3582',
 
   kTokenDecimals: 18,
-  kTokenSupply: 1000000000
+  kTokenSupply: 1000000000,
+
+  kStandardVersion: '4'
 }
 
 // AFS standard v2: '0x5bd7C0Fcca203A3b5016cd6da530d1A72d0e5413'
