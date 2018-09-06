@@ -106,8 +106,8 @@ async function transfer(opts = {}) {
     throw new TypeError('Opts must be of type object')
   } else if (!_isValidAddress(opts.to)) {
     throw new TypeError('Address is not a valid Ethereum address')
-  } else if (!opts.val || 'number' !== typeof opts.val) {
-    throw new TypeError('Value must be a number greater than 0')
+  } else if (!opts.val || 0 >= Number(opts.val)) {
+    throw new TypeError('Value must be greater than 0')
   } else if (!opts.did || 'string' !== typeof opts.did) {
     throw new TypeError('DID URI must be non-empty string')
   } else if (!opts.password || 'string' !== typeof opts.password) {
@@ -194,8 +194,8 @@ async function transferFrom(opts = {}) {
     throw new TypeError('DID URI must be non-empty string')
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError('Password must be non-empty string')
-  } else if (!opts.val || 'number' !== typeof opts.val) {
-    throw new TypeError('Value must be a number greater than 0')
+  } else if (!opts.val || 0 >= Number(opts.val)) {
+    throw new TypeError('Value must be greater than 0')
   }
 
   const { did, password, to } = opts
@@ -336,8 +336,8 @@ function _validateApprovalOpts(opts) {
     throw new TypeError('Opts must be of type object')
   } else if (!_isValidAddress(opts.spender)) {
     throw new TypeError('Spender address must be a valid Ethereum address')
-  } else if (!opts.val || 'number' !== typeof opts.val) {
-    throw new TypeError('Value must be a number greater than 0')
+  } else if (!opts.val || 0 >= Number(opts.val)) {
+    throw new TypeError('Value must be greater than 0')
   } else if (!opts.did || 'string' !== typeof opts.did) {
     throw new TypeError('DID URI must be non-empty string')
   } else if (!opts.password || 'string' !== typeof opts.password) {
