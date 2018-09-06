@@ -1,12 +1,8 @@
 pragma solidity 0.4.24;
 
 import "./Library.sol";
-<<<<<<< HEAD
-import "./ARAToken.sol";
 import "./Jobs.sol";
-=======
 import "./AraToken.sol";
->>>>>>> master
 import "bytes/BytesLib.sol";
 
 contract AFS {

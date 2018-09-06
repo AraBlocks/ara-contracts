@@ -4,7 +4,7 @@ module.exports = {
   kOwnerSuffix: '#owner',
 
   // addresses
-  kJobsAddress: '0x61e11fe40530ad50a78d8d4246bf863e4d2d8053',
+  kJobsAddress: '0x4e9f1809c5b8659e6bd0c8739d89fd64aaef106d',
   kRegistryAddress: '0xa332aa2af2f422dade0b37d23072e8afb836b0f2',
   kLibraryAddress: '0x3e8bc2a748e73c07608533d8785dadd09f56551a',
   kAraTokenAddress: '0x4c0272d03eda928861603054e2a7375afc645f7c',
