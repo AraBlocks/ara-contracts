@@ -1,12 +1,13 @@
-const { abi: tokenAbi } = require('./build/contracts/ARAToken.json')
 const { abi: jobsAbi } = require('./build/contracts/Jobs.json')
+const { abi: tokenAbi } = require('./build/contracts/AraToken.json')
+const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:rewards')
 const { info } = require('ara-console')
 
 const {
   kAidPrefix,
-  kARATokenAddress,
-  kJobsAddress
+  kJobsAddress,
+  kAraTokenAddress
 } = require('./constants')
 
 const {
@@ -35,7 +36,7 @@ const {
 } = require('./util')
 
 /**
- * Submit new job // 84298 gas
+ * Submits a new DCDN job // 84298 gas
  * @param  {Object}         opts
  * @param  {String}         opts.requesterDid
  * @param  {String}         opts.contentDid
@@ -105,10 +106,10 @@ async function submit(opts) {
 
     const approveTx = await tx.create({
       account: acct,
-      to: kARATokenAddress,
+      to: kAraTokenAddress,
       data: {
         abi: tokenAbi,
-        functionName: 'approve',
+        functionName: 'increaseApproval',
         values: [
           proxy,
           budget
@@ -155,14 +156,12 @@ async function submit(opts) {
       debug('gas used', receipt2.gasUsed)
     }
   } catch (err) {
-    if (!err.status) {
-      throw new Error(`Transaction failed: ${err.message}`)
-    }
+    throw err
   }
 }
 
 /**
- * Allocate rewards // 163029 gas (with return), 69637 gas (without return)
+ * Allocates rewards for job // 163029 gas (with return), 69637 gas (without return)
  * @param  {Object}         opts
  * @param  {String}         opts.requesterDid
  * @param  {String}         opts.contentDid
@@ -271,9 +270,7 @@ async function allocate(opts) {
       debug('gas used', receipt.gasUsed)
     }
   } catch (err) {
-    if (!err.status) {
-      throw new Error(`Transaction failed: ${err.message}`)
-    }
+    throw err
   }
 }
 
@@ -323,7 +320,7 @@ async function redeem(opts) {
     })
 
     let balance
-    const tokenContract = await contract.get(tokenAbi, kARATokenAddress)
+    const tokenContract = await contract.get(tokenAbi, kAraTokenAddress)
     await tokenContract.events.Transfer({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { from, to, value } } = log
@@ -344,9 +341,7 @@ async function redeem(opts) {
       return balance
     }
   } catch (err) {
-    if (!err.status) {
-      throw new Error(`Transaction failed: ${err.message}`)
-    }
+    throw err
   }
 }
 

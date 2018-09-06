@@ -19,8 +19,9 @@ const {
   kAidPrefix,
   kLibraryAddress,
   kRegistryAddress,
-  kARATokenAddress,
-  kJobsAddress
+  kJobsAddress,
+  kAraTokenAddress,
+  kStandardVersion
 } = require('./constants')
 
 const {
@@ -140,9 +141,7 @@ async function upgradeProxy(opts) {
       return upgraded
     }
   } catch (err) {
-    if (!err.status) {
-      throw new Error(`Transaction failed: ${err.message}`)
-    }
+    throw err
   }
 }
 
@@ -166,9 +165,7 @@ async function deployProxy(opts) {
   const { password } = opts
   let { contentDid } = opts
 
-  // TODO(cckelly): should not be hardcoded
-  // TODO(cckelly): make AFS pass in version
-  let version = opts.version || '3'
+  let version = opts.version || kStandardVersion
   if ('number' === typeof version) {
     version = version.toString()
   }
@@ -232,9 +229,7 @@ async function deployProxy(opts) {
       return proxyAddress
     }
   } catch (err) {
-    if (!err.status) {
-      throw new Error(`Transaction failed: ${err.message}`)
-    }
+    throw err
   }
 }
 
@@ -288,7 +283,7 @@ async function getStandard(version) {
  * @param  {String} opts.requesterDid
  * @param  {String} opts.password
  * @param  {String} opts.version
- * @param  {String} opts.path
+ * @param  {String} opts.paths
  * @return {String}
  * @throws {Error,TypeError}
  */
@@ -339,9 +334,8 @@ async function deployNewStandard(opts) {
   }
   // compile AFS sources and dependencies
   const sources = {
-    'openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol', 'utf8'),
-    'openzeppelin-solidity/contracts/token/ERC20/ERC20.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol', 'utf8'),
-    'openzeppelin-solidity/contracts/token/ERC20/BasicToken.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/token/ERC20/BasicToken.sol', 'utf8'),
+    'ERC20.sol': fs.readFileSync('./contracts/ERC20.sol', 'utf8'),
+    'StandardToken.sol': fs.readFileSync('./contracts/StandardToken.sol', 'utf8'),
     'openzeppelin-solidity/contracts/math/SafeMath.sol': fs.readFileSync('./node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol', 'utf8'),
     'bytes/BytesLib.sol': fs.readFileSync('./installed_contracts/bytes/contracts/BytesLib.sol', 'utf8')
   }
@@ -402,9 +396,7 @@ async function deployNewStandard(opts) {
       return address ? address : afs._address
     }
   } catch (err) {
-    if (!err.status) {
-      throw new Error(`Transaction failed: ${err.message}`)
-    }
+    throw err
   }
 }
 

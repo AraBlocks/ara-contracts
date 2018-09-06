@@ -2,15 +2,23 @@ module.exports = {
   kDidPrefix: 'did:',
   kAidPrefix: 'did:ara:',
   kOwnerSuffix: '#owner',
-  kRegistryAddress: '0x4820bf8381994702357b4dc3fdf6f307999a82a1',
-  kLibraryAddress: '0x71ab470fc8f1fe34a417af4223fc75e91e69f29b',
-  kARATokenAddress: '0x9d725cbb6dab2da94dde0039890b3953e9d33a27',
-  kJobsAddress: '0x61e11fe40530ad50a78d8d4246bf863e4d2d8053',
 
-  kTempOwnerDid: 'did:ara:8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67',
-  // private key: 0x8662c06fab466f44e0b7937812671d07b4e298a609c7d9654e27c1d0d2653f20
-  kDefaultAddress: '0x105C83b79E9170d7969Ce9806fE0B527b5f879dE',
-  kTempAFSDid: 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
+  // addresses
+  kJobsAddress: '0x61e11fe40530ad50a78d8d4246bf863e4d2d8053',
+  kRegistryAddress: '0xa332aa2af2f422dade0b37d23072e8afb836b0f2',
+  kLibraryAddress: '0x3e8bc2a748e73c07608533d8785dadd09f56551a',
+  kAraTokenAddress: '0x4c0272d03eda928861603054e2a7375afc645f7c',
+
+  kTempOwnerDid: 'did:ara:cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3',
+  kOwnerPassword: 'lol',
+  kOwnerMnemonic: 'undo cargo steel brick stairs trash hover rent scare ribbon tired output',
+  // private key: 0x628a3ff0e47af58d306dfe413114acfded25a8374f562db36d8496f246dbeaf7
+  kDefaultAddress: '0x1019468D3060F0b8c5d9C432f0c4Db33e28b3582',
+
+  kTokenDecimals: 18,
+  kTokenSupply: 1000000000,
+
+  kStandardVersion: '4'
 }
 
 // AFS standard v2: '0x5bd7C0Fcca203A3b5016cd6da530d1A72d0e5413'

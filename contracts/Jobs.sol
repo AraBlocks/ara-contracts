@@ -1,12 +1,12 @@
 pragma solidity 0.4.24;
 
-import "./ARAToken.sol";
+import "./AraToken.sol";
 import "./Registry.sol";
 import "./AFS.sol";
 
 contract Jobs {
 
-  ARAToken public token_;
+  AraToken public token_;
   Registry public registry_;
 
   mapping(bytes32 => bool)                        public unlocked_; // jobId => unlocked
@@ -24,7 +24,7 @@ contract Jobs {
   event Redeemed(address _sender);
 
   constructor(address _token, address _registry) public {
-    token_ = ARAToken(_token);
+    token_ = AraToken(_token);
     registry_ = Registry(_registry);
   }
 

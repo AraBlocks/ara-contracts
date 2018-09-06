@@ -52,7 +52,8 @@ async function checkLibrary(opts) {
   const libSize = await getLibrarySize(requesterDid)
   const lib = []
   for (let i = 0; i < libSize; i++) {
-    const item = await getLibraryItem(requesterDid, i)
+    const opts = { requesterDid, index: i }
+    const item = await getLibraryItem(opts)
     if (contentDid && item == ethify(contentDid)) {
       throw new Error('Item is already in user library and cannot be purchased again')
     }
@@ -85,21 +86,23 @@ async function getLibrarySize(requesterDid = '') {
 }
 
 /**
- * Gets the address of the item at index in requesterDid's library
- * @param  {String} unhashed requesterDid
- * @param  {int} index
+ * Gets the DID of the item at index in requesterDid's library
+ * @param  {Object} opts
+ * @param  {String} opts.requesterDid
+ * @param  {int}    opts.index
  * @return {string}
  * @throws {Error, TypeError}
  */
-async function getLibraryItem(requesterDid = '', index = -1) {
-  if ('string' !== typeof requesterDid || !requesterDid) {
+async function getLibraryItem(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object.')
+  } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
     throw TypeError('Expecting non-empty requester DID')
+  } else if ('number' !== typeof opts.index || opts.index < 0) {
+    throw TypeError('Expecting a whole number index')
   }
 
-  if (index < 0) {
-    throw Error('Expecting a whole number index')
-  }
-
+  const { requesterDid, index } = opts
   const hIdentity = hashDID(requesterDid)
 
   if (await getLibrarySize(requesterDid) <= index) {

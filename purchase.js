@@ -1,4 +1,4 @@
-const { abi: tokenAbi } = require('./build/contracts/ARAToken.json')
+const { abi: tokenAbi } = require('./build/contracts/AraToken.json')
 const { abi: libAbi } = require('./build/contracts/library.json')
 const { abi: jobsAbi } = require('./build/contracts/Jobs.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
@@ -8,8 +8,8 @@ const { info } = require('ara-console')
 const {
   kAidPrefix,
   kLibraryAddress,
-  kARATokenAddress,
-  kJobsAddress
+  kJobsAddress,
+  kAraTokenAddress
 } = require('./constants')
 
 const {
@@ -68,9 +68,9 @@ async function purchase(opts) {
     job
   } = opts
 
-  const { jobId, budget } = job
-
+  let jobId, budget
   if (job) {
+    ({ jobId, budget } = job)
     const validJobId = jobId && isValidJobId(jobId)
     const validBudget = 'number' === typeof budget && 0 <= budget
 
@@ -118,10 +118,10 @@ async function purchase(opts) {
 
     const approveTx = await tx.create({
       account: acct,
-      to: kARATokenAddress,
+      to: kAraTokenAddress,
       data: {
         abi: tokenAbi,
-        functionName: 'approve',
+        functionName: 'increaseApproval',
         values: [
           proxy,
           job ? price + budget : price
@@ -196,14 +196,12 @@ async function purchase(opts) {
       debug('gas used', receipt2.gasUsed)
       const size = await getLibrarySize(did)
 
-      const contentId = await getLibraryItem(did, size - 1)
+      const contentId = await getLibraryItem({ requesterDid: did, index: size - 1 })
 
       debug(contentId, `added to library (${size})`)
     }
   } catch (err) {
-    if (!err.status) {
-      throw new Error(`Transaction failed: ${err.message}`)
-    }
+    throw err
   }
 }
 
