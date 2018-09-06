@@ -19,7 +19,8 @@ const {
   kAidPrefix,
   kLibraryAddress,
   kRegistryAddress,
-  kAraTokenAddress
+  kAraTokenAddress,
+  kStandardVersion
 } = require('./constants')
 
 const {
@@ -163,7 +164,7 @@ async function deployProxy(opts) {
   const { password } = opts
   let { contentDid } = opts
 
-  let version = opts.version || '1'
+  let version = opts.version || kStandardVersion
   if ('number' === typeof version) {
     version = version.toString()
   }
