@@ -350,6 +350,7 @@ function _isValidAddress(address) {
 }
 
 module.exports = {
+  constrainTokenValue,
   expandTokenValue,
   increaseApproval,
   decreaseApproval,
