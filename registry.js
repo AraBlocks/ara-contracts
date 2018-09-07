@@ -183,11 +183,12 @@ async function deployProxy(opts) {
   owner = `${kAidPrefix}${owner}`
 
   const acct = await account.load({ did: owner, password })
+  console.log('acct', acct)
 
   try {
     const encodedData = web3Abi.encodeParameters(
       ['address', 'address', 'address', 'address', 'bytes32'], 
-      [acct.address, kARATokenAddress, kLibraryAddress, kJobsAddress, ethify(contentDid)]
+      [acct.address, kAraTokenAddress, kLibraryAddress, kJobsAddress, ethify(contentDid)]
     )
     const transaction = await tx.create({
       account: acct,
@@ -340,12 +341,15 @@ async function deployNewStandard(opts) {
     'bytes/BytesLib.sol': fs.readFileSync('./installed_contracts/bytes/contracts/BytesLib.sol', 'utf8')
   }
 
+  console.log('sources', sources)
+
   paths.forEach((path) => {
     const src = fs.readFileSync(path, 'utf8')
     path = parse(path).base
     sources[path] = src
   })
   const compiledFile = solc.compile({ sources }, 1)
+  console.log('compiledFile', compiledFile)
   const compiledContract = compiledFile.contracts['AFS.sol:AFS']
   const afsAbi = JSON.parse(compiledContract.interface)
   const { bytecode } = compiledContract

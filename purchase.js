@@ -3,7 +3,9 @@ const { abi: libAbi } = require('./build/contracts/library.json')
 const { abi: jobsAbi } = require('./build/contracts/Jobs.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
+const { randomBytes } = require('ara-crypto')
 const { info } = require('ara-console')
+const token = require('./token')
 
 const {
   kAidPrefix,
@@ -84,6 +86,9 @@ async function purchase(opts) {
     if (jobId.length === 64) {
       jobId = ethify(jobId, 'string' !== typeof jobId)
     }
+  } else {
+    jobId = ethify(randomBytes(32), true)
+    budget = 0
   }
 
   let { contentDid } = opts
@@ -116,23 +121,18 @@ async function purchase(opts) {
       functionName: 'price_'
     })
 
-    const approveTx = await tx.create({
-      account: acct,
-      to: kAraTokenAddress,
-      data: {
-        abi: tokenAbi,
-        functionName: 'increaseApproval',
-        values: [
-          proxy,
-          job ? price + budget : price
-        ]
-      }
-    })
+    const val = job ? price + budget : price
 
-    const receipt1 = await tx.sendSignedTransaction(approveTx)
-    if (receipt1.status) {
+    const approveTx = await token.increaseApproval({
+      did,
+      password,
+      spender: proxy,
+      val: val.toString()
+    })    
+
+    if (approveTx.status) {
       // 45353 gas
-      debug('gas used', receipt1.gasUsed)
+      debug('gas used', approveTx.gasUsed)
     }
 
     const jobsContract = await contract.get(jobsAbi, kJobsAddress)
@@ -167,6 +167,24 @@ async function purchase(opts) {
       .on('data', (log) => {
         const { returnValues: { _purchaser, _did } } = log
         debug(_purchaser, "purchased", _did)
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
+
+    debug('before purchase tx, jobId', jobId, ', budget:', budget)
+
+    debug('balance of master account', await token.balanceOf(acct.address))
+    debug('balance of AFS owner', await token.balanceOf('0x490E4Cd31DeB1f988740d5f19034deDf1202FEeC'))
+    debug('proxy allowance', await token.allowance({ spender: proxy, owner: acct.address }))
+
+    const tokenContract = await contract.get(tokenAbi, kAraTokenAddress)
+    await tokenContract.events.Transfer({ fromBlock: 'latest', function(error) { debug(error)} })
+      .on('data', (log) => {
+        debug('transfer!!')
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)

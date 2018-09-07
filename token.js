@@ -88,6 +88,7 @@ async function allowance(opts = {}) {
   } catch (err) {
     throw err
   }
+  console.log('allowed', allowed)
   return constrainTokenValue(allowed)
 }
 

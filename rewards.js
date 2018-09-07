@@ -3,6 +3,7 @@ const { abi: tokenAbi } = require('./build/contracts/AraToken.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:rewards')
 const { info } = require('ara-console')
+const token = require('./token')
 
 const {
   kAidPrefix,
@@ -93,7 +94,6 @@ async function submit(opts) {
 
   did = `${kAidPrefix}${did}`
   const acct = await account.load({ did, password })
-  console.log('ACCT', acct)
 
   debug(did, 'submitting', budget, 'tokens as rewards for', contentDid)
 
@@ -104,23 +104,16 @@ async function submit(opts) {
 
     const proxy = await getProxyAddress(contentDid)
 
-    const approveTx = await tx.create({
-      account: acct,
-      to: kAraTokenAddress,
-      data: {
-        abi: tokenAbi,
-        functionName: 'increaseApproval',
-        values: [
-          proxy,
-          budget
-        ]
-      }
-    })
+    const approveTx = await token.increaseApproval({
+      did,
+      password,
+      spender: proxy,
+      val: budget.toString()
+    })    
 
-    const receipt1 = await tx.sendSignedTransaction(approveTx)
-    if (receipt1.status) {
-      // 30225 gas
-      debug('gas used', receipt1.gasUsed)
+    if (approveTx.status) {
+      // 45353 gas
+      debug('gas used', approveTx.gasUsed)
     }
 
     const submitTx = await tx.create({

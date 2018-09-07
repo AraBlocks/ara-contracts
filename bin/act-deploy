@@ -87,7 +87,7 @@ module.exports = (async function main() {
         }
       }
     } else {
-      // DEBUG=* act deploy -S -d cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3 -v 4 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/AraToken.sol
+      // DEBUG=* act deploy -S -d cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3 -v 5 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/AraToken.sol ./contracts/Jobs.sol
       const address = await registry.deployNewStandard({
         requesterDid: did,
         password,
