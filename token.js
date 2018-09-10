@@ -88,7 +88,6 @@ async function allowance(opts = {}) {
   } catch (err) {
     throw err
   }
-  console.log('allowed', allowed)
   return constrainTokenValue(allowed)
 }
 
@@ -241,6 +240,7 @@ async function increaseApproval(opts = {}) {
   const acct = await account.load({ did, password })
 
   let { val } = opts
+
   val = expandTokenValue(val)
 
   let receipt

@@ -34,7 +34,7 @@ contract Registry {
     _;
   }
 
-  function getProxyAddress(bytes32 _contentId) external view returns (address) {
+  function getProxyAddress(bytes32 _contentId) public view returns (address) {
     return proxies_[_contentId];
   }
 
@@ -44,6 +44,10 @@ contract Registry {
 
   function getImplementation(string _version) external view returns (address) {
     return versions_[_version];
+  }
+
+  function getProxyImplementation(bytes32 _contentId) external view returns (address) {
+    return proxyImpls_[getProxyAddress(_contentId)];
   }
 
   /**

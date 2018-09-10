@@ -170,6 +170,8 @@ async function deployProxy(opts) {
     version = version.toString()
   }
 
+  debug('deploying for version', version)
+
   let did
   let ddo
   try {
@@ -341,15 +343,12 @@ async function deployNewStandard(opts) {
     'bytes/BytesLib.sol': fs.readFileSync('./installed_contracts/bytes/contracts/BytesLib.sol', 'utf8')
   }
 
-  console.log('sources', sources)
-
   paths.forEach((path) => {
     const src = fs.readFileSync(path, 'utf8')
     path = parse(path).base
     sources[path] = src
   })
   const compiledFile = solc.compile({ sources }, 1)
-  console.log('compiledFile', compiledFile)
   const compiledContract = compiledFile.contracts['AFS.sol:AFS']
   const afsAbi = JSON.parse(compiledContract.interface)
   const { bytecode } = compiledContract

@@ -31,7 +31,7 @@ contract AFS {
   event Commit(bytes32 _did);
   event Unlisted(bytes32 _did);
   event PriceSet(bytes32 _did, uint256 _price);
-  event Purchased(bytes32 _purchaser, bytes32 _did);
+  event Purchased(bytes32 _purchaser, bytes32 _did, bytes32 _hashedAddress);
 
   uint8 constant mtBufferSize_ = 40;
   uint8 constant msBufferSize_ = 64;
@@ -108,10 +108,10 @@ contract AFS {
     if (token_.transferFrom(msg.sender, owner_, price_)) {
       purchasers_[hashedAddress] = true;
       lib_.addLibraryItem(_purchaser, did_);
-      emit Purchased(_purchaser, did_);
+      emit Purchased(_purchaser, did_, hashedAddress);
 
       require(_jobId != bytes32(0), "Must provide jobId.");
-      jobs_.unlockJob(_jobId, _budget, did_);
+      jobs_.unlockJob(_jobId, _budget, did_, hashedAddress);
     }
   }
 

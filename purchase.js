@@ -115,14 +115,15 @@ async function purchase(opts) {
     }
 
     const proxy = await getProxyAddress(contentDid)
-    const price = await call({
+    let price = await call({
       abi: afsAbi,
       address: proxy,
       functionName: 'price_'
     })
 
+    price = Number(token.constrainTokenValue(price))
     const val = job ? price + budget : price
-
+    
     const approveTx = await token.increaseApproval({
       did,
       password,
@@ -162,10 +163,24 @@ async function purchase(opts) {
         debug(`error:  ${log}`)
       })
 
+    await jobsContract.events.IsValidPurchase({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { _result, _hashedAddress } } = log
+        debug('afs.isPurchaser(_hashedAddress)', _result)
+        debug('IsValidPurchase _hashedAddress', _hashedAddress)
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
+
     const proxyContract = await contract.get(afsAbi, proxy)
     await proxyContract.events.Purchased({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
-        const { returnValues: { _purchaser, _did } } = log
+        const { returnValues: { _purchaser, _did, _hashedAddress } } = log
+        debug('_hashedAddress from purchased', _hashedAddress)
         debug(_purchaser, "purchased", _did)
       })
       .on('changed', (log) => {
@@ -176,10 +191,6 @@ async function purchase(opts) {
       })
 
     debug('before purchase tx, jobId', jobId, ', budget:', budget)
-
-    debug('balance of master account', await token.balanceOf(acct.address))
-    debug('balance of AFS owner', await token.balanceOf('0x490E4Cd31DeB1f988740d5f19034deDf1202FEeC'))
-    debug('proxy allowance', await token.allowance({ spender: proxy, owner: acct.address }))
 
     const tokenContract = await contract.get(tokenAbi, kAraTokenAddress)
     await tokenContract.events.Transfer({ fromBlock: 'latest', function(error) { debug(error)} })
@@ -192,6 +203,8 @@ async function purchase(opts) {
       .on('error', (log) => {
         debug(`error:  ${log}`)
       })
+
+    // TODO(cckelly) expand budget value
 
     const purchaseTx = await tx.create({
       account: acct,
@@ -213,11 +226,12 @@ async function purchase(opts) {
       // 211296 gas
       debug('gas used', receipt2.gasUsed)
       const size = await getLibrarySize(did)
-
+      debug('lib size', size)
       const contentId = await getLibraryItem({ requesterDid: did, index: size - 1 })
 
       debug(contentId, `added to library (${size})`)
     }
+
   } catch (err) {
     throw err
   }
