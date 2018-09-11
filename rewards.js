@@ -2,6 +2,7 @@ const { abi: tokenAbi } = require('./build/contracts/AraToken.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:rewards')
 const { info } = require('ara-console')
+const token = require('token')
 
 const {
   kAidPrefix,
@@ -100,18 +101,16 @@ async function submit(opts) {
     }
 
     const proxy = await getProxyAddress(contentDid)
+    let val = budget
+    if (0 < budget) {
+      val = token.expandTokenValue(budget.toString())
+    }
 
-    const approveTx = await tx.create({
-      account: acct,
-      to: kAraTokenAddress,
-      data: {
-        abi: tokenAbi,
-        functionName: 'increaseApproval',
-        values: [
-          proxy,
-          budget
-        ]
-      }
+    const approveTx = await token.increaseApproval({
+      did,
+      password,
+      spender: proxy,
+      val
     })
 
     const receipt1 = await tx.sendSignedTransaction(approveTx)
@@ -129,7 +128,7 @@ async function submit(opts) {
         functionName: 'submitBudget',
         values: [
           jobId,
-          budget
+          val
         ]
       }
     })
@@ -191,8 +190,9 @@ async function allocate(opts) {
   const {
     jobId,
     farmers,
-    rewards
   } = job
+
+  let { rewards } = job
 
   const validJobId = isValidJobId(jobId)
   const validFarmers = isValidArray(farmers, (address, index) => {
@@ -232,6 +232,8 @@ async function allocate(opts) {
   const acct = await account.load({ did, password })
 
   debug(did, 'allocating rewards for job:', jobId)
+
+  rewards = rewards.map(i => token.expandTokenValue(i))
 
   try {
     if (!(await proxyExists(contentDid))) {

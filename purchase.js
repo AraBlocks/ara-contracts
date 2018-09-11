@@ -3,6 +3,7 @@ const { abi: libAbi } = require('./build/contracts/library.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
 const { info } = require('ara-console')
+const token = require('./token')
 
 const {
   kAidPrefix,
@@ -82,6 +83,9 @@ async function purchase(opts) {
     if (jobId.length === 64) {
       jobId = ethify(jobId, 'string' !== typeof jobId)
     }
+  } else {
+    jobId = ethify(randomBytes(32), true)
+    budget = 0
   }
 
   let { contentDid } = opts
@@ -108,29 +112,33 @@ async function purchase(opts) {
     }
 
     const proxy = await getProxyAddress(contentDid)
-    const price = await call({
+    let price = await call({
       abi: afsAbi,
       address: proxy,
       functionName: 'price_'
     })
 
-    const approveTx = await tx.create({
-      account: acct,
-      to: kAraTokenAddress,
-      data: {
-        abi: tokenAbi,
-        functionName: 'increaseApproval',
-        values: [
-          proxy,
-          job ? price + budget : price
-        ]
-      }
+    price = Number(token.constrainTokenValue(price))
+    let val = job 
+      ? price + budget
+      : price
+    val = val.toString()
+
+    const approveTx = await token.increaseApproval({
+      did,
+      password,
+      spender: proxy,
+      val
     })
 
     const receipt1 = await tx.sendSignedTransaction(approveTx)
     if (receipt1.status) {
       // 45353 gas
       debug('gas used', receipt1.gasUsed)
+    }
+
+    if (0 < budget) {
+      budget = token.expandTokenValue(budget.toString())
     }
 
     const purchaseTx = await tx.create({
@@ -142,8 +150,8 @@ async function purchase(opts) {
         functionName: 'purchase',
         values: [
           ethify(hIdentity),
-          job ? jobId : ethify(Buffer.alloc(32), true),
-          job ? budget : 0
+          jobId,
+          budget
         ]
       }
     })
