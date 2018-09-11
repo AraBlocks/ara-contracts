@@ -2,7 +2,7 @@ const { abi: tokenAbi } = require('./build/contracts/AraToken.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:rewards')
 const { info } = require('ara-console')
-const token = require('token')
+const token = require('./token')
 
 const {
   kAidPrefix,
