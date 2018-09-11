@@ -11,7 +11,8 @@ const {
   kAidPrefix,
   kLibraryAddress,
   kJobsAddress,
-  kAraTokenAddress
+  kAraTokenAddress,
+  kDefaultAddress
 } = require('./constants')
 
 const {
@@ -122,12 +123,13 @@ async function purchase(opts) {
     })
 
     price = Number(token.constrainTokenValue(price))
+
     const val = job ? price + budget : price
-    
+
     const approveTx = await token.increaseApproval({
       did,
       password,
-      spender: proxy,
+      spender: kJobsAddress,
       val: val.toString()
     })    
 
@@ -177,8 +179,6 @@ async function purchase(opts) {
         debug(`error:  ${log}`)
       })
 
-    debug('before purchase tx, jobId', jobId, ', budget:', budget)
-
     const tokenContract = await contract.get(tokenAbi, kAraTokenAddress)
     await tokenContract.events.Transfer({ fromBlock: 'latest', function(error) { debug(error)} })
       .on('data', (log) => {
@@ -191,7 +191,37 @@ async function purchase(opts) {
         debug(`error:  ${log}`)
       })
 
-    // TODO(cckelly) expand budget value
+    // expand budget
+    budget = token.expandTokenValue(budget.toString())
+
+    // TODO(cckelly): remove me, test events
+    await jobsContract.events.Allowance({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { _allowance } } = log
+        debug('Allowance.')
+        debug('allowance', _allowance)
+      })
+
+    await jobsContract.events.IsValidPurchase({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { _isPurchaser, _sender, _msgSender, _proxyAddress } } = log
+        debug('IsValidPurchase.')
+        debug('_isPurchaser', _isPurchaser)
+        debug('_sender', _sender)
+        debug('msg.sender', _msgSender)
+        debug('proxyAddress', _proxyAddress)
+      })
+
+    await jobsContract.events.AfterRequire({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        debug('AfterRequire.')
+        const { returnValues: { _jobId, _purchaser, _budget } } = log
+        debug('jobId', _jobId)
+        debug('purchaser', _purchaser)
+        debug('budget', _budget)
+      })
+
+    debug('before purchase tx, jobId', jobId, ', budget:', budget)
 
     const purchaseTx = await tx.create({
       account: acct,
@@ -213,7 +243,7 @@ async function purchase(opts) {
       // 211296 gas
       debug('gas used', receipt2.gasUsed)
       const size = await getLibrarySize(did)
-      debug('lib size', size)
+
       const contentId = await getLibraryItem({ requesterDid: did, index: size - 1 })
 
       debug(contentId, `added to library (${size})`)

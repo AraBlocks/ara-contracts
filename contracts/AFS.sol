@@ -111,7 +111,7 @@ contract AFS {
       emit Purchased(_purchaser, did_, hashedAddress);
 
       require(_jobId != bytes32(0), "Must provide jobId.");
-      jobs_.unlockJob(_jobId, _budget, did_, hashedAddress);
+      jobs_.unlockJob(_jobId, _budget, did_, msg.sender);
     }
   }
 

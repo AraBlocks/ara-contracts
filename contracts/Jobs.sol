@@ -18,6 +18,7 @@ contract Jobs {
     uint256 budget;
   }
 
+  event IsValidPurchase(bool _isPurchaser, address _sender, address _msgSender, address _proxyAddress);
   event Unlocked(bytes32 _jobId);
   event BudgetSubmitted(bytes32 _jobId, uint256 _budget);
   event RewardsAllocated(uint256 _allocated, uint256 _returned);
@@ -39,37 +40,55 @@ contract Jobs {
     _;
   }
 
-  modifier isValidPurchase(bytes32 _contentId, bytes32 _hashedAddress) {
+  modifier isValidPurchase(bytes32 _contentId, address _sender) {
+    bytes32 hashedAddress = keccak256(abi.encodePacked(_sender));
     AFS afs = AFS(registry_.getProxyAddress(_contentId));
-    require(afs.isPurchaser(_hashedAddress), "Job is invalid.");
-    require(registry_.getProxyAddress(_contentId) == msg.sender, "Unlock not originating from proxy.");
+    emit IsValidPurchase(afs.isPurchaser(hashedAddress), _sender, msg.sender, registry_.getProxyAddress(_contentId));
+    //require(afs.isPurchaser(hashedAddress), "Job is invalid.");
+    //require(registry_.getProxyAddress(_contentId) == msg.sender, "Unlock not originating from proxy.");
      _;
   }
 
-  function unlockJob(bytes32 _jobId, uint256 _budget, bytes32 _contentId, bytes32 _hashedAddress) 
-    external isValidPurchase(_contentId, _hashedAddress) {
+  function unlockJob(bytes32 _jobId, uint256 _budget, bytes32 _contentId, address _sender) 
+    external isValidPurchase(_contentId, _sender) {
 
     unlocked_[_jobId] = true;
     emit Unlocked(_jobId);
 
     if(_budget > 0) {
-      submitBudget(_jobId, _budget);
+      submitBudget(_contentId, _jobId, _budget, _sender);
     }
   }
 
+  event Allowance(uint256 _allowance);
+  event AfterRequire(
+    bytes32 _jobId, 
+    address _purchaser,
+    uint256 _budget
+  );
+
   // test this WITHOUT unlocking job first, make sure it reverts
   // test this after unlocking job (purchase) with budget of 0
-  function submitBudget(bytes32 _jobId, uint256 _budget) public jobUnlocked(_jobId) {
-    uint256 allowance = token_.allowance(msg.sender, address(this));
-    require(_jobId != bytes32(0) && _budget > 0 && allowance >= _budget
-      && (budgets_[_jobId].sender == address(0) || budgets_[_jobId].sender == msg.sender), "Job submission invalid.");
+  function submitBudget(bytes32 _contentId, bytes32 _jobId, uint256 _budget, address _sender) public jobUnlocked(_jobId) {
+    address purchaser = registry_.getProxyAddress(_contentId) == msg.sender 
+      ? _sender
+      : msg.sender;
 
-    if (token_.transferFrom(msg.sender, address(this), _budget)) {
-      budgets_[_jobId].budget += _budget;
-      budgets_[_jobId].sender = msg.sender;
-      assert(budgets_[_jobId].budget <= token_.balanceOf(address(this)));
-      emit BudgetSubmitted(_jobId, _budget);
-    }
+    // owner should be where transaction came from
+    uint256 allowance = token_.allowance(purchaser, address(this));
+    emit Allowance(allowance);
+
+    // require(_jobId != bytes32(0) && _budget > 0 && allowance >= _budget
+    //   && (budgets_[_jobId].sender == address(0) || budgets_[_jobId].sender == purchaser), "Job submission invalid.");
+
+    emit AfterRequire(_jobId, purchaser, _budget);
+
+    // if (token_.transferFrom(purchaser, address(this), _budget)) {
+    //   budgets_[_jobId].budget += _budget;
+    //   budgets_[_jobId].sender = purchaser;
+    //   assert(budgets_[_jobId].budget <= token_.balanceOf(address(this)));
+    //   emit BudgetSubmitted(_jobId, _budget);
+    // }
   }
 
   function allocateRewards(bytes32 _jobId, bytes32[] _addresses, uint256[] _rewards) public budgetSubmitted(_jobId) {
