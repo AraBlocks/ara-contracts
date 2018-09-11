@@ -137,9 +137,7 @@ async function purchase(opts) {
       debug('gas used', receipt1.gasUsed)
     }
 
-    if (0 < budget) {
-      budget = token.expandTokenValue(budget.toString())
-    }
+    budget = token.expandTokenValue(budget.toString())
 
     const purchaseTx = await tx.create({
       account: acct,
