@@ -15,7 +15,7 @@ module.exports = {
   kTokenDecimals: 18,
   kTokenSupply: 1000000000,
 
-  kStandardVersion: '4'
+  kStandardVersion: '1'
 }
 
 // AFS standard v2: '0x5bd7C0Fcca203A3b5016cd6da530d1A72d0e5413'
