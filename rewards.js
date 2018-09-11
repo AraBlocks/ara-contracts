@@ -115,6 +115,8 @@ async function submit(opts) {
       debug('gas used', receipt1.gasUsed)
     }
 
+    const val = token.expandTokenValue(budget.toString())
+
     const submitTx = await tx.create({
       account: acct,
       to: proxy,
