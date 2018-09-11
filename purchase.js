@@ -124,17 +124,16 @@ async function purchase(opts) {
       : price
     val = val.toString()
 
-    const approveTx = await token.increaseApproval({
+    let receipt = await token.increaseApproval({
       did,
       password,
       spender: proxy,
       val
     })
 
-    const receipt1 = await tx.sendSignedTransaction(approveTx)
-    if (receipt1.status) {
+    if (receipt.status) {
       // 45353 gas
-      debug('gas used', receipt1.gasUsed)
+      debug('gas used', receipt.gasUsed)
     }
 
     budget = token.expandTokenValue(budget.toString())
@@ -179,10 +178,10 @@ async function purchase(opts) {
         debug(`error:  ${log}`)
       })
 
-    const receipt2 = await tx.sendSignedTransaction(purchaseTx)
-    if (receipt2.status) {
+    receipt = await tx.sendSignedTransaction(purchaseTx)
+    if (receipt.status) {
       // 211296 gas
-      debug('gas used', receipt2.gasUsed)
+      debug('gas used', receipt.gasUsed)
       const size = await getLibrarySize(did)
 
       const contentId = await getLibraryItem({ requesterDid: did, index: size - 1 })
