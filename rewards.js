@@ -64,7 +64,8 @@ async function submit(opts) {
     job
   } = opts
 
-  const { jobId, budget } = job
+  const { jobId } = job
+  let { budget } = job
 
   const validJobId = isValidJobId(jobId)
   const validBudget = budget && 'number' === typeof budget && budget > 0
@@ -102,11 +103,13 @@ async function submit(opts) {
 
     const proxy = await getProxyAddress(contentDid)
 
+    budget = budget.toString()
+
     const approveTx = await token.increaseApproval({
       did,
       password,
       spender: proxy,
-      val: budget.toString()
+      val: budget
     })
 
     const receipt1 = await tx.sendSignedTransaction(approveTx)
@@ -115,7 +118,7 @@ async function submit(opts) {
       debug('gas used', receipt1.gasUsed)
     }
 
-    const val = token.expandTokenValue(budget.toString())
+    const val = token.expandTokenValue(budget)
 
     const submitTx = await tx.create({
       account: acct,
