@@ -163,19 +163,6 @@ async function purchase(opts) {
         debug(`error:  ${log}`)
       })
 
-    await jobsContract.events.IsValidPurchase({ fromBlock: 'latest', function(error) { debug(error) } })
-      .on('data', (log) => {
-        const { returnValues: { _result, _hashedAddress } } = log
-        debug('afs.isPurchaser(_hashedAddress)', _result)
-        debug('IsValidPurchase _hashedAddress', _hashedAddress)
-      })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
-
     const proxyContract = await contract.get(afsAbi, proxy)
     await proxyContract.events.Purchased({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {

@@ -18,7 +18,6 @@ contract Jobs {
     uint256 budget;
   }
 
-  event IsValidPurchase(bool _result, bytes32 _hashedAddress);
   event Unlocked(bytes32 _jobId);
   event BudgetSubmitted(bytes32 _jobId, uint256 _budget);
   event RewardsAllocated(uint256 _allocated, uint256 _returned);
@@ -43,7 +42,7 @@ contract Jobs {
   modifier isValidPurchase(bytes32 _contentId, bytes32 _hashedAddress) {
     AFS afs = AFS(registry_.getProxyAddress(_contentId));
     require(afs.isPurchaser(_hashedAddress), "Job is invalid.");
-    //require(registry_.getProxyImplementation(_contentId) == msg.sender, "Unlock not originating from proxy.");
+    require(registry_.getProxyAddress(_contentId) == msg.sender, "Unlock not originating from proxy.");
      _;
   }
 

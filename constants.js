@@ -4,10 +4,10 @@ module.exports = {
   kOwnerSuffix: '#owner',
 
   // addresses
-  kJobsAddress: '0x501110fdd3c8d24811b70665a43d5e40d224c4ab',
-  kRegistryAddress: '0xe12969aeafdfa7c80dd4b20181c16140328eb357',
-  kLibraryAddress: '0xb96012e557d949909dfe8b52bc03710c5c44816a',
-  kAraTokenAddress: '0x26298fb1be976d7df98efe9c38b91d20d992a51a',
+  kJobsAddress: '0x74375b7361a1dc815eb915d54de56332a6498e6c',
+  kRegistryAddress: '0x52d1527bf676fad9731a8226d8524077a778493c',
+  kLibraryAddress: '0x81ac6d52aad4b49b26be5bdcc00e20f3a9f1d430',
+  kAraTokenAddress: '0xf5776eb05945fce07a3ac0ecfc97643e53de9633',
 
   kTempOwnerDid: 'did:ara:cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3',
   kOwnerPassword: 'lol',
@@ -18,7 +18,7 @@ module.exports = {
   kTokenDecimals: 18,
   kTokenSupply: 1000000000,
 
-  kStandardVersion: '23'
+  kStandardVersion: '25'
 }
 
 // AFS standard v2: '0x5bd7C0Fcca203A3b5016cd6da530d1A72d0e5413'
