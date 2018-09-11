@@ -2,9 +2,9 @@ module.exports = {
   kDidPrefix: 'did:',
   kAidPrefix: 'did:ara:',
   kOwnerSuffix: '#owner',
-  kRegistryAddress: '0xa332aa2af2f422dade0b37d23072e8afb836b0f2',
-  kLibraryAddress: '0x3e8bc2a748e73c07608533d8785dadd09f56551a',
-  kAraTokenAddress: '0x4c0272d03eda928861603054e2a7375afc645f7c',
+  kRegistryAddress: '0xbf6b29af51d81b8c3481e1dffe637b7b62caa2fd',
+  kLibraryAddress: '0x854ce0fd5bbdf7909f118e47bea34ab63b660b49',
+  kAraTokenAddress: '0x33a9499155cdabd6fb18d3b293148f93739d3322',
 
   kTempOwnerDid: 'did:ara:cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3',
   kOwnerPassword: 'lol',

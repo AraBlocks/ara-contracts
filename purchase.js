@@ -71,7 +71,7 @@ async function purchase(opts) {
   if (job) {
     ({ jobId, budget } = job)
     const validJobId = jobId && isValidJobId(jobId)
-    const validBudget = budget && 'number' === typeof budget && budget > 0
+    const validBudget = 'number' === typeof budget && 0 <= budget
 
     if (!validJobId) {
       throw TypeError('Expecting job Id.')
