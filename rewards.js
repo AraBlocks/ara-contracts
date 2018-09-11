@@ -101,16 +101,12 @@ async function submit(opts) {
     }
 
     const proxy = await getProxyAddress(contentDid)
-    let val = budget
-    if (0 < budget) {
-      val = token.expandTokenValue(budget.toString())
-    }
 
     const approveTx = await token.increaseApproval({
       did,
       password,
       spender: proxy,
-      val
+      val: budget.toString()
     })
 
     const receipt1 = await tx.sendSignedTransaction(approveTx)
