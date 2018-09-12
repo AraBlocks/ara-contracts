@@ -22,6 +22,11 @@ This repository also provides programmatic (see the API section) and command-lin
 
 This project is in active development.
 
+## Stability
+
+> [Stability][stability-index]: 2 - Stable. 
+> Compatibility with the npm ecosystem is a high priority.
+
 ## Dependencies
 
 - [Node](https://nodejs.org/en/download/)
@@ -29,7 +34,9 @@ This project is in active development.
 
 ## Installation
 
-TODO
+```bash
+$ npm install arablocks/ara-contracts --save
+```
 
 ## Usage
 
@@ -407,6 +414,9 @@ Releases follow [Semantic Versioning](https://semver.org/)
 - [Truffle](https://github.com/trufflesuite/truffle)
 - [Ara Filesystem](https://github.com/AraBlocks/ara-filesystem)
 - [Ara Identity](https://github.com/AraBlocks/ara-identity)
+- [Stability index][stability-index]
 
 ## License
 LGPL-3.0
+
+[stability-index]: https://nodejs.org/api/documentation.html#documentation_stability_index
