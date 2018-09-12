@@ -299,7 +299,7 @@ async function decreaseApproval(opts = {}) {
 /**
  * Expands token amount in Ara to be able to be read by the EVM
  * @param  {String} val   
- * @return {BN}
+ * @return {String}
  * @throws {TypeError}
  */
 function expandTokenValue(val) {
@@ -310,7 +310,7 @@ function expandTokenValue(val) {
     return '0'
   }
   const input = `${val}e${kTokenDecimals}`
-  return web3.utils.toBN(BigNumber(input))
+  return web3.utils.toBN(BigNumber(input)).toString()
 }
 
 /**
