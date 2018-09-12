@@ -48,7 +48,7 @@ The contracts in this repository are deployed on [Ara Privatenet](https://github
 
 ## API
 
-**NOTE**: All functions are asynchronous other than [token.expandTokenValue(val)](#expandtokenvalue) and [token.constrainTokenValue(val)](#constraintokenvalue).
+**NOTE**: All functions are asynchronous.
 
 * [purchase(opts)](#purchase)
 
