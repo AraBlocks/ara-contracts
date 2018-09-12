@@ -77,7 +77,7 @@ The contracts in this repository are deployed on [Ara Privatenet](https://github
 
 ### Token
 
-* [token.balanceOf(address)](#address)
+* [token.balanceOf(address)](#balanceof)
 * [token.totalSupply()](#totalsupply)
 * [token.allowance(opts)](#allowance)
 * [token.transfer(opts)](#transfer)
@@ -85,8 +85,6 @@ The contracts in this repository are deployed on [Ara Privatenet](https://github
 * [token.transferFrom(opts)](#transferfrom)
 * [token.increaseApproval(opts)](#increaseapproval)
 * [token.decreaseApproval(opts)](#decreaseapproval)
-* [token.expandTokenValue(val)](#expandtokenvalue)
-* [token.constrainTokenValue(val)](#constraintokenvalue)
 
 <a name="purchase"></a>
 ### `purchase(opts)`
@@ -375,35 +373,32 @@ const balance = await rewards.getBalance({
 <a name="balanceof"></a>
 ### `token.balanceOf(address)`
 
-Queries for the balance in `Ara` of an Ethereum address.
+Queries for the balance in Ara of an Ethereum address.
 
 - `address` - Ethereum address to get the balance of
 
 ```js
-const { token } = require('ara-contracts')
 const balance = await token.balanceOf('0x629483C72b5191C1b522E887238a0A522b1D4F74') // 100.5
 ```
 
 <a name="totalsupply"></a>
 ### `token.totalSupply()`
 
-Gets the total circulating supply of `Ara` tokens.
+Gets the total circulating supply of Ara tokens.
 
 ```js
-const { token } = require('ara-contracts')
 const supply = await token.totalSupply() // 1000000000
 ```
 
 <a name="allowance"></a>
 ### `token.allowance(opts)`
 
-Gets the amount in `Ara` that a `spender` is allowed to spend of an `owner`.
+Gets the amount in Ara that a `spender` is allowed to spend of an `owner`.
 
 - `owner` - Address of the tokens you wish to give allowance for
 - `spender` - Address of account that will be spending `owner`'s tokens
 
 ```js
-const { token } = require('ara-contracts')
 const allowance = await token.allowance({
   owner: '0x629483C72b5191C1b522E887238a0A522b1D4F74', 
   spender: '0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e'
@@ -413,16 +408,15 @@ const allowance = await token.allowance({
 <a name="transfer"></a>
 ### `token.transfer(opts)`
 
-Transfers `Ara` from one account to another.
+Transfers Ara from one account to another.
 
 - `opts`
-  - `did` - URI of the account that is sending the `Ara`
-  - `password` - Password of the account sending `Ara`
+  - `did` - URI of the account that is sending the Ara
+  - `password` - Password of the account sending Ara
   - `to` - Address to receive the tokens
   - `val` - Amount to transfer
 
 ```js
-const { token } = require('ara-contracts')
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
 const recipient = '0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e'
@@ -442,13 +436,12 @@ const receipt = await token.transfer({
 Sets the approved token amount to be spent on an owner's behalf. This will overwrite any previous approvals.
 
 - `opts`
-  - `did` - URI of the account that owns the `Ara`
+  - `did` - URI of the account that owns the Ara
   - `password` - Password of the owning account
   - `spender` - Address that will be spending the tokens
   - `val` - Amount to approve
   
 ```js
-const { token } = require('ara-contracts')
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
 const spender = '0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e'
@@ -463,16 +456,15 @@ const receipt = await token.approve({
 <a name="transferfrom"></a>
 ### `token.transferFrom(opts)`
 
-Transfers `Ara` from one address to another. This differs from `transfer` by requiring the tokens to be first allowed to be sent.
+Transfers Ara from one address to another. This differs from `transfer` by requiring the tokens to be first allowed to be sent.
 
 - `opts`
-  - `did` - URI of the account that owns the `Ara`
+  - `did` - URI of the account that owns the Ara
   - `password` - Password of the owning account
   - `to` - Address that will be receiving the tokens
   - `val` - Amount to transfer
 
 ```js
-const { token } = require('ara-contracts')
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
 const recipient = '0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e'
@@ -490,13 +482,12 @@ const receipt = await token.transferFrom({
 Increases the approved amount that a `spender` can spend on behalf of an `owner`. This will not overwrite any existing approved amount, just increase it.
 
 - `opts`
-  - `did` - URI of the account that owns the `Ara`
+  - `did` - URI of the account that owns the Ara
   - `password` - Password of the owning account
   - `to` - Address that will be spending the tokens
   - `val` - Amount to increase the approval by
 
 ```js
-const { token } = require('ara-contracts')
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
 const spender = '0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e'
@@ -514,13 +505,12 @@ const receipt = await token.increaseApproval({
 Decreases the approved amount that a `spender` can spend on behalf of an `owner`. This will not overwrite any existing approved amount, just decrease it.
 
 - `opts`
-  - `did` - URI of the account that owns the `Ara`
+  - `did` - URI of the account that owns the Ara
   - `password` - Password of the owning account
   - `to` - Address that will be spending the tokens
   - `val` - Amount to decrease the approval by
 
 ```js
-const { token } = require('ara-contracts')
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
 const spender = '0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e'
