@@ -41,7 +41,7 @@ The contracts in this repository are deployed on [Ara Privatenet](https://github
 
 ## API
 
-**NOTE**: All functions are asynchronous
+**NOTE**: All functions are asynchronous other than [token.expandTokenValue(val)](#expandtokenvalue) and [token.constrainTokenValue(val)](#constraintokenvalue).
 
 * [purchase(opts)](#purchase)
 
@@ -67,6 +67,19 @@ The contracts in this repository are deployed on [Ara Privatenet](https://github
 * [rewards.redeem(opts)](#redeem)
 * [rewards.getBudget(opts)](#budget)
 * [rewards.getBalance(opts)](#balance)
+
+### Token
+
+* [token.balanceOf(address)](#address)
+* [token.totalSupply()](#totalsupply)
+* [token.allowance(opts)](#allowance)
+* [token.transfer(opts)](#transfer)
+* [token.approve(opts)](#approve)
+* [token.transferFrom(opts)](#transferfrom)
+* [token.increaseApproval(opts)](#increaseapproval)
+* [token.decreaseApproval(opts)](#decreaseapproval)
+* [token.expandTokenValue(val)](#expandtokenvalue)
+* [token.constrainTokenValue(val)](#constraintokenvalue)
 
 <a name="purchase"></a>
 ### `purchase(opts)`
@@ -351,6 +364,36 @@ const balance = await rewards.getBalance({
   password
 })
 ```
+
+<a name="balanceof"></a>
+### `token.balanceOf(address)`
+
+<a name="totalsupply"></a>
+### `token.totalSupply()`
+
+<a name="allowance"></a>
+### `token.allowance(opts)`
+
+<a name="transfer"></a>
+### `token.transfer(opts)`
+
+<a name="approve"></a>
+### `token.approve(opts)`
+
+<a name="transferfrom"></a>
+### `token.transferFrom(opts)`
+
+<a name="increaseapproval"></a>
+### `token.increaseApproval(opts)`
+
+<a name="decreaseapproval"></a>
+### `token.decreaseApproval(opts)`
+
+<a name="expandtokenvalue"></a>
+### `token.expandTokenValue(val)`
+
+<a name="constraintokenvalue"></a>
+### `token.constrainTokenValue(val)`
 
 ## Contributing
 - [Commit message format](/.github/COMMIT_FORMAT.md)
