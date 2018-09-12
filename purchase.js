@@ -1,5 +1,5 @@
 const { abi: tokenAbi } = require('./build/contracts/AraToken.json')
-const { abi: libAbi } = require('./build/contracts/library.json')
+const { abi: libAbi } = require('./build/contracts/Library.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
 const { info } = require('ara-console')
