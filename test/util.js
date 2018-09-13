@@ -1,3 +1,46 @@
+const { randomBytes } = require('ara-crypto')
+const util = require('../util')
 const test = require('ava')
 
-test('t', t => t.pass())
+test('isValidJobId(jobId)', (t) => {
+  let result = util.isValidJobId()
+  t.false(result)
+  
+  result = util.isValidJobId(123)
+  t.false(result)
+
+  result = util.isValidJobId({ })
+  t.false(result)
+
+  let jobId = randomBytes(32)
+  result = util.isValidJobId(jobId)
+  t.true(result)
+
+  jobId = jobId.toString('hex')
+  result = util.isValidJobId(jobId)
+  t.true(result)
+
+  jobId = `0x${jobId}`
+  result = util.isValidJobId(jobId)
+  t.true(result)
+})
+
+test('isValidArray(arr, fn)', (t) => {
+  let result = util.isValidArray()
+  t.false(result)
+
+  result = util.isValidArray(1)
+  t.false(result)
+
+  result = util.isValidArray('123')
+  t.false(result)
+
+  result = util.isValidArray([])
+  t.false(result)
+
+  result = util.isValidArray([1, 2, 3])
+  t.true(result)
+
+  result = util.isValidArray(['apple', 3, 'banana', {}])
+  t.true(result)
+})
