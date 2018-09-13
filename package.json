@@ -14,7 +14,8 @@
     "test": ": && ava",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
-    "start": "node ."
+    "start": "node .",
+    "changelog": "conventional-changelog --same-file --preset angular --release-count 0 --infile CHANGELOG.md"
   },
   "repository": {
     "type": "git",
@@ -63,6 +64,7 @@
   },
   "devDependencies": {
     "ava": "^1.0.0-beta.6",
+    "conventional-changelog-cli": "^2.0.5",
     "eslint": "^4.19.1",
     "eslint-config-ara": "github:arablocks/eslint-config-ara",
     "eslint-plugin-import": "^2.12.0"
