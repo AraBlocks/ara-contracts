@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+
 const { writeIdentity } = require('ara-identity/util')
 const { create } = require('ara-identity')
 const context = require('ara-context')()
@@ -138,6 +140,7 @@ test('approve(opts) valid approve', async (t) => {
 
   const afterAllowed = Number(await token.allowance({ owner: DEFAULT_ADDRESS, spender: address }))
   t.is(afterAllowed, val)
+  t.true(beforeAllowed != afterAllowed)
 })
 
 test('transferFrom(opts) valid transfer', async (t) => {
