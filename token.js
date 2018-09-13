@@ -1,11 +1,13 @@
 const { abi: tokenAbi } = require('./build/contracts/AraToken.json')
 const BigNumber = require('bignumber.js')
 const { web3 } = require('ara-context')()
+const { validate } = require('ara-util')
 
 const {
-  kAraTokenAddress,
+  kAidPrefix,
   kTotalSupply,
-  kTokenDecimals
+  kTokenDecimals,
+  kAraTokenAddress
 } = require('./constants')
 
 const {
@@ -115,6 +117,15 @@ async function transfer(opts = {}) {
   }
 
   const { did, password, to } = opts
+
+  try {
+    ({ did } = await validate({ owner: did, password, label: 'transfer' }))
+  } catch (err) {
+    throw err
+  }
+
+  did = `${kAidPrefix}${did}`
+
   const acct = await account.load({ did, password })
 
   let { val } = opts
@@ -152,6 +163,15 @@ async function approve(opts = {}) {
   _validateApprovalOpts(opts)
 
   const { did, password, spender } = opts
+
+  try {
+    ({ did } = await validate({ owner: did, password, label: 'transfer' }))
+  } catch (err) {
+    throw err
+  }
+
+  did = `${kAidPrefix}${did}`
+
   const acct = await account.load({ did, password })
 
   let { val } = opts
@@ -199,6 +219,15 @@ async function transferFrom(opts = {}) {
   }
 
   const { did, password, to } = opts
+
+  try {
+    ({ did } = await validate({ owner: did, password, label: 'transferFrom' }))
+  } catch (err) {
+    throw err
+  }
+
+  did = `${kAidPrefix}${did}`
+
   const acct = await account.load({ did, password })
   const { address } = acct
 
@@ -237,6 +266,14 @@ async function increaseApproval(opts = {}) {
   _validateApprovalOpts(opts)
 
   const { did, password, spender } = opts
+
+  try {
+    ({ did } = await validate({ owner: did, password, label: 'increaseApproval' }))
+  } catch (err) {
+    throw err
+  }
+
+  did = `${kAidPrefix}${did}`
   const acct = await account.load({ did, password })
 
   let { val } = opts
@@ -274,9 +311,18 @@ async function decreaseApproval(opts = {}) {
   _validateApprovalOpts(opts)
 
   const { did, password, spender } = opts
+
+  try {
+    ({ did } = await validate({ owner: did, password, label: 'decreaseApproval' }))
+  } catch (err) {
+    throw err
+  }
+
+  did = `${kAidPrefix}${did}`
+  const acct = await account.load({ did, password })
+
   let { val } = opts
   val = expandTokenValue(val)
-  const acct = await account.load({ did, password })
 
   let receipt
   try {
@@ -329,6 +375,96 @@ function constrainTokenValue(val) {
   
   const input = `${val}e-${kTokenDecimals}`
   return BigNumber(input).toString()
+}
+
+/**
+ * Deposits Ara to participate in earning rewards
+ * @param  {Object}  opts   
+ * @param  {String}  opts.did
+ * @param  {String}  opts.password
+ * @param  {Number}  opts.val
+ * @param  {?Boolean} opts.withdraw
+ * @return {Object} 
+ * @throws {TypeError}
+ */
+function deposit(opts = {}) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Opts must be of type object')
+  } else if (!opts.did || 'string' !== typeof opts.did) {
+    throw new TypeError('DID URI must be non-empty string')
+  } else if (!opts.password || 'string' !== typeof opts.password) {
+    throw new TypeError('Password must be non-empty string')  
+  } else if (!opts.val || 0 >= Number(opts.val)) {
+    throw new TypeError('Value must be greater than 0')
+  } else if (opts.withdraw && 'boolean' !== typeof opts.withdraw) {
+    throw new TypeError('Expecting boolean.')
+  }
+
+  let { did, val, withdraw } = opts
+  const { password } = opts
+
+  try {
+    ({ did } = await validate({ owner: did, password, label: 'deposit' }))
+  } catch (err) {
+    throw err
+  }
+
+  did = `${kAidPrefix}${did}`
+  const acct = await account.load({ did, password })
+
+  val = expandTokenValue(val)
+  withdraw = withdraw || false
+
+  let receipt
+  try {
+    const depositTx = await tx.create({
+      account: acct,
+      to: kAraTokenAddress,
+      data: {
+        abi: tokenAbi,
+        functionName: withdraw ? 'withdraw' : 'deposit',
+        values: [ val ]
+      }
+    })
+    receipt = await tx.sendSignedTransaction(depositTx)
+  } catch (err) {
+    throw err
+  }
+  return receipt
+}
+
+/**
+ * Withdraws Ara from deposit balance
+ * @param  {Object} opts   
+ * @param  {String} opts.did
+ * @param  {String} opts.password
+ * @param  {Number} opts.val
+ * @return {Object} 
+ * @throws {TypeError}
+ */
+function withdraw(opts = {}) {
+  opts = Object.assign(opts, { withdraw: true })
+  return deposit(opts)
+}
+
+function getAmountDeposited(address) {
+  if (!_isValidAddress(address)) {
+    throw new TypeError('Address is not a valid Ethereum address')
+  }
+
+  let deposited
+  try {
+    deposited = await call({
+      abi: tokenAbi,
+      address: kAraTokenAddress,
+      functionName: 'amountDeposited',
+      arguments: [ address ]
+    })
+  } catch (err) {
+    throw err
+  }
+  
+  return constrainTokenValue(deposited)
 }
 
 function _validateApprovalOpts(opts) {
