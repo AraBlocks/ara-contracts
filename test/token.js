@@ -6,7 +6,6 @@ const test = require('ava')
 
 const {
   OWNER_PASSWORD: password,
-  ARA_TOKEN_ADDRESS,
   DEFAULT_ADDRESS,
   OWNER_MNEMONIC,
   TEMP_OWNER_DID,
@@ -59,10 +58,12 @@ test('transfer(opts) valid transfer', async (t) => {
   const beforeNewBalance = Number(await token.balanceOf(address))
   const beforeDefaultBalance = Number(await token.balanceOf(DEFAULT_ADDRESS))
 
-  await token.transfer({ did, password, val, to: address })
+  await token.transfer({
+    did, password, val, to: address
+  })
   const afterNewBalance = Number(await token.balanceOf(address))
   const afterDefaultBalance = Number(await token.balanceOf(DEFAULT_ADDRESS))
-  
+
   t.true(afterNewBalance === beforeNewBalance + val)
   t.true(afterDefaultBalance === beforeDefaultBalance - val)
 })
@@ -89,9 +90,11 @@ test('allowance(opts) allowance query', async (t) => {
   t.is(allowed, 0)
 
   const did = TEMP_OWNER_DID
-  await token.approve({ did, password, val: 1, spender: address })
+  await token.approve({
+    did, password, val: 1, spender: address
+  })
 
-  allowed = Number(await token.allowance({ owner: DEFAULT_ADDRESS, spender: address }))  
+  allowed = Number(await token.allowance({ owner: DEFAULT_ADDRESS, spender: address }))
   t.is(allowed, 1)
 })
 
@@ -101,7 +104,9 @@ test('increaseApproval(opts) valid increase', async (t) => {
 
   const did = TEMP_OWNER_DID
   const val = 10
-  await token.increaseApproval({ did, password, DEFAULT_ADDRESS, val, spender: address })
+  await token.increaseApproval({
+    did, password, DEFAULT_ADDRESS, val, spender: address
+  })
 
   const afterAllowed = Number(await token.allowance({ owner: DEFAULT_ADDRESS, spender: address }))
   t.is(afterAllowed, beforeAllowed + val)
@@ -113,7 +118,9 @@ test('decreaseApproval(opts) valid decrease', async (t) => {
 
   const did = TEMP_OWNER_DID
   const val = 10
-  await token.decreaseApproval({ did, password, DEFAULT_ADDRESS, val, spender: address })
+  await token.decreaseApproval({
+    did, password, DEFAULT_ADDRESS, val, spender: address
+  })
 
   const afterAllowed = Number(await token.allowance({ owner: DEFAULT_ADDRESS, spender: address }))
   t.is(afterAllowed, beforeAllowed - val)
@@ -125,7 +132,9 @@ test('approve(opts) valid approve', async (t) => {
 
   const did = TEMP_OWNER_DID
   const val = 100
-  await token.approve({ did, password, DEFAULT_ADDRESS, val, spender: address })
+  await token.approve({
+    did, password, DEFAULT_ADDRESS, val, spender: address
+  })
 
   const afterAllowed = Number(await token.allowance({ owner: DEFAULT_ADDRESS, spender: address }))
   t.is(afterAllowed, val)
@@ -139,10 +148,12 @@ test('transferFrom(opts) valid transfer', async (t) => {
   const beforeNewBalance = Number(await token.balanceOf(address))
   const beforeDefaultBalance = Number(await token.balanceOf(DEFAULT_ADDRESS))
 
-  await token.transferFrom({ did, password, val, to: address })
+  await token.transferFrom({
+    did, password, val, to: address
+  })
   const afterNewBalance = Number(await token.balanceOf(address))
   const afterDefaultBalance = Number(await token.balanceOf(DEFAULT_ADDRESS))
-  
+
   t.true(afterNewBalance === beforeNewBalance + val)
   t.true(afterDefaultBalance === beforeDefaultBalance - val)
 })
@@ -150,19 +161,25 @@ test('transferFrom(opts) valid transfer', async (t) => {
 test('invalid generic opts', async (t) => {
   const { did } = t.context
 
-  for (let func of funcMap) {
+  for (const func of funcMap) {
     await t.throws(func(), TypeError)
     await t.throws(func({ }), TypeError)
-    await t.throws(func({ to: ''}), TypeError)
-    await t.throws(func({ to: 1234}), TypeError)
+    await t.throws(func({ to: '' }), TypeError)
+    await t.throws(func({ to: 1234 }), TypeError)
     await t.throws(func({ to: DEFAULT_ADDRESS, val: '1000' }), TypeError)
     await t.throws(func({ to: DEFAULT_ADDRESS, val: 1000 }), TypeError)
     await t.throws(func({ to: DEFAULT_ADDRESS, val: 1000, did: null }), TypeError)
     await t.throws(func({ to: DEFAULT_ADDRESS, val: 1000, did: '' }), TypeError)
     await t.throws(func({ to: DEFAULT_ADDRESS, val: 1000, did: 1234 }), TypeError)
     await t.throws(func({ to: DEFAULT_ADDRESS, val: 1000, did: 1234 }), TypeError)
-    await t.throws(func({ to: DEFAULT_ADDRESS, val: 1000, did, password: null }), TypeError)
-    await t.throws(func({ to: DEFAULT_ADDRESS, val: 1000, did, password: 123 }), TypeError)
-    await t.throws(func({ to: DEFAULT_ADDRESS, val: 1000, did, password }), Error)
+    await t.throws(func({
+      to: DEFAULT_ADDRESS, val: 1000, did, password: null
+    }), TypeError)
+    await t.throws(func({
+      to: DEFAULT_ADDRESS, val: 1000, did, password: 123
+    }), TypeError)
+    await t.throws(func({
+      to: DEFAULT_ADDRESS, val: 1000, did, password
+    }), Error)
   }
 })

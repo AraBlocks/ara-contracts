@@ -102,6 +102,7 @@ async function upgradeProxy(opts) {
 
   const acct = await account.load({ did: owner, password })
 
+  let upgraded = false
   try {
     const transaction = await tx.create({
       account: acct,
@@ -119,7 +120,6 @@ async function upgradeProxy(opts) {
 
     const registry = await contract.get(abi, REGISTRY_ADDRESS)
     // listen to ProxyUpgraded event for proxy address
-    let upgraded
     await registry.events.ProxyUpgraded({ fromBlock: 'latest', function(error) { console.log(error) } })
       .on('data', (log) => {
         const { returnValues: { _contentId, _version } } = log
@@ -137,11 +137,12 @@ async function upgradeProxy(opts) {
     const receipt = await tx.sendSignedTransaction(transaction)
     if (receipt.status) {
       debug('gas used', receipt.gasUsed)
-      return upgraded
     }
   } catch (err) {
     throw err
   }
+
+  return upgraded
 }
 
 /**
@@ -181,8 +182,9 @@ async function deployProxy(opts) {
   owner = `${AID_PREFIX}${owner}`
 
   const acct = await account.load({ did: owner, password })
+  let proxyAddress = null
   try {
-    const encodedData = web3Abi.encodeParameters(['address', 'address', 'address', 'bytes32'], [acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, ethify(contentDid)])
+    const encodedData = web3Abi.encodeParameters([ 'address', 'address', 'address', 'bytes32' ], [ acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, ethify(contentDid) ])
     const transaction = await tx.create({
       account: acct,
       to: REGISTRY_ADDRESS,
@@ -200,7 +202,6 @@ async function deployProxy(opts) {
 
     // listen to ProxyDeployed event for proxy address
     const registry = await contract.get(abi, REGISTRY_ADDRESS)
-    let proxyAddress
     registry.events.ProxyDeployed({ fromBlock: 'latest', function(error) { console.log(error) } })
       .on('data', (log) => {
         const { returnValues: { _contentId, _address } } = log
@@ -220,11 +221,12 @@ async function deployProxy(opts) {
 
     if (receipt.status) {
       debug('gas used', receipt.gasUsed)
-      return proxyAddress
     }
   } catch (err) {
     throw err
   }
+
+  return proxyAddress
 }
 
 /**
@@ -344,6 +346,7 @@ async function deployNewStandard(opts) {
   const afsAbi = JSON.parse(compiledContract.interface)
   const { bytecode } = compiledContract
 
+  let address = null
   try {
     const { contract: afs, gasLimit } = await contract.deploy({
       account: acct,
@@ -365,7 +368,6 @@ async function deployNewStandard(opts) {
       }
     })
     // listen to ProxyDeployed event for proxy address
-    let address
     const registry = await contract.get(abi, REGISTRY_ADDRESS)
     registry.events.StandardAdded({ fromBlock: 'latest', function(error) { console.log(error) } })
       .on('data', (log) => {
@@ -387,11 +389,12 @@ async function deployNewStandard(opts) {
 
     if (receipt.status) {
       debug('gas used', receipt.gasUsed + gasLimit)
-      return address ? address : afs._address
+      address = address || afs._address
     }
   } catch (err) {
     throw err
   }
+  return address
 }
 
 module.exports = {
