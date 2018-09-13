@@ -5,8 +5,8 @@ const { info } = require('ara-console')
 const token = require('./token')
 
 const {
-  kAidPrefix,
-  kAraTokenAddress
+  AID_PREFIX,
+  ARA_TOKEN_ADDRESS
 } = require('./constants')
 
 const {
@@ -91,7 +91,7 @@ async function submit(opts) {
 
   contentDid = normalize(contentDid)
 
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
   debug(did, 'submitting', budget, 'tokens as rewards for', contentDid)
@@ -229,7 +229,7 @@ async function allocate(opts) {
 
   contentDid = normalize(contentDid)
 
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
   debug(did, 'allocating rewards for job:', jobId)
@@ -309,7 +309,7 @@ async function redeem(opts) {
   contentDid = normalize(contentDid)
 
   debug(did, 'redeeming balance from', contentDid)
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
   try {
@@ -330,7 +330,7 @@ async function redeem(opts) {
     })
 
     let balance
-    const tokenContract = await contract.get(tokenAbi, kAraTokenAddress)
+    const tokenContract = await contract.get(tokenAbi, ARA_TOKEN_ADDRESS)
     await tokenContract.events.Transfer({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { from, to, value } } = log
@@ -425,7 +425,7 @@ async function getBalance(opts) {
 
   contentDid = normalize(contentDid)
 
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const { address } = await account.load({ did, password })
 
   try {

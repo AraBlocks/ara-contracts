@@ -1,4 +1,4 @@
 const test = require('ava')
-const { kLibraryAddress } = require('./_constants')
+const { LIBRARY_ADDRESS } = require('./_constants')
 
 // TODO

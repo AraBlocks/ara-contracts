@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 
 const { abi } = require('./build/contracts/Library.json')
-const { kLibraryAddress } = require('./constants')
+const { LIBRARY_ADDRESS } = require('./constants')
 
 const {
   hashDID,
@@ -46,15 +46,15 @@ async function checkLibrary(opts) {
   let { requesterDid, contentDid } = opts
 
   requesterDid = normalize(requesterDid)
-  if (contentDid)
+  if (contentDid) {
     contentDid = normalize(contentDid)
+  }
 
   const libSize = await getLibrarySize(requesterDid)
   const lib = []
   for (let i = 0; i < libSize; i++) {
-    const opts = { requesterDid, index: i }
-    const item = await getLibraryItem(opts)
-    if (contentDid && item == ethify(contentDid)) {
+    const item = await getLibraryItem({ requesterDid, index: i })
+    if (contentDid && item === ethify(contentDid)) {
       throw new Error('Item is already in user library and cannot be purchased again')
     }
     lib.push(item)
@@ -77,7 +77,7 @@ async function getLibrarySize(requesterDid = '') {
 
   return call({
     abi,
-    address: kLibraryAddress,
+    address: LIBRARY_ADDRESS,
     functionName: 'getLibrarySize',
     arguments: [
       ethify(hIdentity)
@@ -111,7 +111,7 @@ async function getLibraryItem(opts) {
 
   return call({
     abi,
-    address: kLibraryAddress,
+    address: LIBRARY_ADDRESS,
     functionName: 'getLibraryItem',
     arguments: [
       ethify(hIdentity),

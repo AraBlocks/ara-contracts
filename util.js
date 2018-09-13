@@ -1,17 +1,16 @@
-const bufferFrom = require('buffer-from')
+const { JOB_ID_LENGTH } = require('./constants')
 const isBuffer = require('is-buffer')
 
 function isValidJobId(jobId) {
-  if (jobId && ('string' === typeof jobId || isBuffer(jobId)) && 
-    (jobId.length === 64 || (jobId.length === 66 && jobId.indexOf('0x') === 0))) {
+  if (jobId && ('string' === typeof jobId || isBuffer(jobId)) &&
+    (JOB_ID_LENGTH === jobId.length || (JOB_ID_LENGTH + '0x'.length === jobId.length && 0 === jobId.indexOf('0x')))) {
     return true
-  } else {
-    return false
   }
+  return false
 }
 
 function isValidArray(arr, fn) {
-  if (arr && Array.isArray(arr) && arr.length > 0) {
+  if (arr && Array.isArray(arr) && 0 < arr.length) {
     arr.forEach(fn)
     return true
   }
