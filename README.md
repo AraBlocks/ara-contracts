@@ -22,6 +22,11 @@ This repository also provides programmatic (see the API section) and command-lin
 
 This project is in active development.
 
+## Stability
+
+> [Stability][stability-index]: 2 - Stable. 
+> Compatibility with the npm ecosystem is a high priority.
+
 ## Dependencies
 
 - [Node](https://nodejs.org/en/download/)
@@ -29,7 +34,9 @@ This project is in active development.
 
 ## Installation
 
-TODO
+```bash
+$ npm install arablocks/ara-contracts --save
+```
 
 ## Usage
 
@@ -41,7 +48,7 @@ The contracts in this repository are deployed on [Ara Privatenet](https://github
 
 ## API
 
-**NOTE**: All functions are asynchronous
+**NOTE**: All functions are asynchronous.
 
 * [purchase(opts)](#purchase)
 
@@ -67,6 +74,17 @@ The contracts in this repository are deployed on [Ara Privatenet](https://github
 * [rewards.redeem(opts)](#redeem)
 * [rewards.getBudget(opts)](#budget)
 * [rewards.getBalance(opts)](#balance)
+
+### Token
+
+* [token.balanceOf(address)](#balanceof)
+* [token.totalSupply()](#totalsupply)
+* [token.allowance(opts)](#allowance)
+* [token.transfer(opts)](#transfer)
+* [token.approve(opts)](#approve)
+* [token.transferFrom(opts)](#transferfrom)
+* [token.increaseApproval(opts)](#increaseapproval)
+* [token.decreaseApproval(opts)](#decreaseapproval)
 
 <a name="purchase"></a>
 ### `purchase(opts)`
@@ -352,6 +370,158 @@ const balance = await rewards.getBalance({
 })
 ```
 
+<a name="balanceof"></a>
+### `token.balanceOf(address)`
+
+Queries for the balance in Ara of an Ethereum address.
+
+- `address` - Ethereum address to get the balance of
+
+```js
+const balance = await token.balanceOf('0x629483C72b5191C1b522E887238a0A522b1D4F74') // 100.5
+```
+
+<a name="totalsupply"></a>
+### `token.totalSupply()`
+
+Gets the total circulating supply of Ara tokens.
+
+```js
+const supply = await token.totalSupply() // 1000000000
+```
+
+<a name="allowance"></a>
+### `token.allowance(opts)`
+
+Gets the amount in Ara that a `spender` is allowed to spend of an `owner`.
+
+- `owner` - Address of the tokens you wish to give allowance for
+- `spender` - Address of account that will be spending `owner`'s tokens
+
+```js
+const allowance = await token.allowance({
+  owner: '0x629483C72b5191C1b522E887238a0A522b1D4F74', 
+  spender: '0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e'
+})
+```
+
+<a name="transfer"></a>
+### `token.transfer(opts)`
+
+Transfers Ara from one account to another.
+
+- `opts`
+  - `did` - URI of the account that is sending the Ara
+  - `password` - Password of the account sending Ara
+  - `to` - Address to receive the tokens
+  - `val` - Amount to transfer
+
+```js
+const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
+const password = 'password'
+const recipient = '0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e'
+const receipt = await token.transfer({
+  did,
+  password,
+  to: recipient,
+  val: '500'
+})
+```
+
+> **Note**: `val` currently must be a string to avoid precision errors
+
+<a name="approve"></a>
+### `token.approve(opts)`
+
+Sets the approved token amount to be spent on an owner's behalf. This will overwrite any previous approvals.
+
+- `opts`
+  - `did` - URI of the account that owns the Ara
+  - `password` - Password of the owning account
+  - `spender` - Address that will be spending the tokens
+  - `val` - Amount to approve
+  
+```js
+const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
+const password = 'password'
+const spender = '0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e'
+const receipt = await token.approve({
+  did,
+  password,
+  spender,
+  val: '500'
+})
+```
+
+<a name="transferfrom"></a>
+### `token.transferFrom(opts)`
+
+Transfers Ara from one address to another. This differs from `transfer` by requiring the tokens to be first allowed to be sent.
+
+- `opts`
+  - `did` - URI of the account that owns the Ara
+  - `password` - Password of the owning account
+  - `to` - Address that will be receiving the tokens
+  - `val` - Amount to transfer
+
+```js
+const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
+const password = 'password'
+const recipient = '0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e'
+const receipt = await token.transferFrom({
+  did,
+  password,
+  to: recipient,
+  val: '500'
+})
+```
+
+<a name="increaseapproval"></a>
+### `token.increaseApproval(opts)`
+
+Increases the approved amount that a `spender` can spend on behalf of an `owner`. This will not overwrite any existing approved amount, just increase it.
+
+- `opts`
+  - `did` - URI of the account that owns the Ara
+  - `password` - Password of the owning account
+  - `to` - Address that will be spending the tokens
+  - `val` - Amount to increase the approval by
+
+```js
+const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
+const password = 'password'
+const spender = '0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e'
+const receipt = await token.increaseApproval({
+  did,
+  password,
+  spender,
+  val: '10'
+})
+```
+
+<a name="decreaseapproval"></a>
+### `token.decreaseApproval(opts)`
+
+Decreases the approved amount that a `spender` can spend on behalf of an `owner`. This will not overwrite any existing approved amount, just decrease it.
+
+- `opts`
+  - `did` - URI of the account that owns the Ara
+  - `password` - Password of the owning account
+  - `to` - Address that will be spending the tokens
+  - `val` - Amount to decrease the approval by
+
+```js
+const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
+const password = 'password'
+const spender = '0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e'
+const receipt = await token.decreaseApproval({
+  did,
+  password,
+  spender,
+  val: '10'
+})
+```
+
 ## Contributing
 - [Commit message format](/.github/COMMIT_FORMAT.md)
 - [Commit message examples](/.github/COMMIT_FORMAT_EXAMPLES.md)
@@ -364,6 +534,9 @@ Releases follow [Semantic Versioning](https://semver.org/)
 - [Truffle](https://github.com/trufflesuite/truffle)
 - [Ara Filesystem](https://github.com/AraBlocks/ara-filesystem)
 - [Ara Identity](https://github.com/AraBlocks/ara-identity)
+- [Stability index][stability-index]
 
 ## License
 LGPL-3.0
+
+[stability-index]: https://nodejs.org/api/documentation.html#documentation_stability_index
