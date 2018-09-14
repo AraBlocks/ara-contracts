@@ -169,17 +169,18 @@ async function transfer(opts = {}) {
 async function approve(opts = {}) {
   _validateApprovalOpts(opts)
 
-  let { did } = opts
-  const { password, spender } = opts
+  let { did, spender } = opts
+  const { password } = opts
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transfer' }))
+    spender = normalize(spender)
+    spender = await getAddressFromDID(spender)
   } catch (err) {
     throw err
   }
 
   did = `${kAidPrefix}${did}`
-
   const acct = await account.load({ did, password })
 
   let { val } = opts
@@ -276,11 +277,13 @@ async function transferFrom(opts = {}) {
 async function increaseApproval(opts = {}) {
   _validateApprovalOpts(opts)
 
-  let { did } = opts
-  const { password, spender } = opts
+  let { did, spender } = opts
+  const { password } = opts
 
   try {
-    ({ did } = await validate({ owner: did, password, label: 'increaseApproval' }))
+    ({ did } = await validate({ owner: did, password, label: 'transfer' }))
+    spender = normalize(spender)
+    spender = await getAddressFromDID(spender)
   } catch (err) {
     throw err
   }
@@ -322,11 +325,13 @@ async function increaseApproval(opts = {}) {
 async function decreaseApproval(opts = {}) {
   _validateApprovalOpts(opts)
 
-  let { did } = opts
-  const { password, spender } = opts
+  let { did, spender } = opts
+  const { password } = opts
 
   try {
-    ({ did } = await validate({ owner: did, password, label: 'decreaseApproval' }))
+    ({ did } = await validate({ owner: did, password, label: 'transfer' }))
+    spender = normalize(spender)
+    spender = await getAddressFromDID(spender)
   } catch (err) {
     throw err
   }
@@ -471,7 +476,7 @@ async function withdraw(opts = {}) {
  */
 async function getAmountDeposited(did) {
   try {
-    normalize(did)
+    did = normalize(did)
   } catch (err) {
     throw err
   }
@@ -499,12 +504,12 @@ async function getAmountDeposited(did) {
 function _validateApprovalOpts(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Opts must be of type object')
-  } else if (!_isValidAddress(opts.spender)) {
-    throw new TypeError('Spender address must be a valid Ethereum address')
+  } else if (!opts.spender || 'string' !== typeof opts.spender) {
+    throw new TypeError('Spender DID URI must be a non-empty string')
   } else if (!opts.val || 0 >= Number(opts.val)) {
     throw new TypeError('Value must be greater than 0')
   } else if (!opts.did || 'string' !== typeof opts.did) {
-    throw new TypeError('DID URI must be non-empty string')
+    throw new TypeError('Approver DID URI must be non-empty string')
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError('Password must be non-empty string')  
   }

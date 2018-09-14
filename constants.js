@@ -18,6 +18,12 @@ module.exports = {
   kStandardVersion: '1'
 }
 
+// kTempOwnerDid: 'did:ara:cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3',
+// kOwnerPassword: 'lol',
+// kOwnerMnemonic: 'undo cargo steel brick stairs trash hover rent scare ribbon tired output',
+// // private key: 0x628a3ff0e47af58d306dfe413114acfded25a8374f562db36d8496f246dbeaf7
+// kDefaultAddress: '0x1019468D3060F0b8c5d9C432f0c4Db33e28b3582'
+
 // AFS standard v2: '0x5bd7C0Fcca203A3b5016cd6da530d1A72d0e5413'
 // Proxy: '0x7150c203A5A7e833BaED9c98c699eB3b96668aDd'
 

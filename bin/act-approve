@@ -69,15 +69,24 @@ module.exports = (async function main() {
   console.log(approver, spender, increase, decrease, amount)
   const { password } = await promptForPassword()
 
-  const opts = { spender, did: approver, password, val: amount }
+  const opts = { spender, did: approver, password, val: amount.toString() }
   try {
     let receipt
     if (increase) {
       receipt = await increaseApproval(opts)
+      if (receipt.status) {
+        info(approver, 'increased allowance for', spender, 'by', amount, 'Ara tokens.')
+      }
     } else if (decrease) {
       receipt = await decreaseApproval(opts)
+      if (receipt.status) {
+        info(approver, 'decreased allowance for', spender, 'by', amount, 'Ara tokens.')
+      }
     } else {
       receipt = await approve(opts)
+      if (receipt.status) {
+        info(approver, 'set allowance for', spender, 'to', amount, 'Ara tokens.')
+      }
     }
   } catch (err) {
     onfatal(err)
@@ -97,6 +106,7 @@ async function promptForPassword() {
 
 async function promptForAmount() {
   return await inquirer.prompt([{
+    type: 'number',
     name: 'amount',
     message:
     "Please provide the number of Ara tokens you approve the spender to spend.\n" +
