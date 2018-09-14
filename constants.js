@@ -2,15 +2,15 @@ module.exports = {
   kDidPrefix: 'did:',
   kAidPrefix: 'did:ara:',
   kOwnerSuffix: '#owner',
-  kRegistryAddress: '0xbf6b29af51d81b8c3481e1dffe637b7b62caa2fd',
-  kLibraryAddress: '0x854ce0fd5bbdf7909f118e47bea34ab63b660b49',
-  kAraTokenAddress: '0x33a9499155cdabd6fb18d3b293148f93739d3322',
+  kRegistryAddress: '0x29939f447b211513563cba226e163532ab91648a',
+  kLibraryAddress: '0x330947d9f2ff03313ed66d453046aabbf4f5c04e',
+  kAraTokenAddress: '0x409afc0e6804df6fafe4e6b33a788f91065ef725',
 
-  kTempOwnerDid: 'did:ara:cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3',
-  kOwnerPassword: 'lol',
+  kTempOwnerDid: 'did:ara:8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67',
+  kOwnerPassword: 'pass',
   kOwnerMnemonic: 'undo cargo steel brick stairs trash hover rent scare ribbon tired output',
   // private key: 0x628a3ff0e47af58d306dfe413114acfded25a8374f562db36d8496f246dbeaf7
-  kDefaultAddress: '0x1019468D3060F0b8c5d9C432f0c4Db33e28b3582',
+  kDefaultAddress: '0x105C83b79E9170d7969Ce9806fE0B527b5f879dE',
 
   kTokenDecimals: 18,
   kTokenSupply: 1000000000,

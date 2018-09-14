@@ -1,7 +1,13 @@
 const { abi: tokenAbi } = require('./build/contracts/AraToken.json')
+const debug = require('debug')('ara-contracts:token')
 const BigNumber = require('bignumber.js')
 const { web3 } = require('ara-context')()
-const { validate } = require('ara-util')
+
+const {
+  validate,
+  normalize,
+  getAddressFromDID
+} = require('ara-util')
 
 const {
   kAidPrefix,
@@ -116,7 +122,8 @@ async function transfer(opts = {}) {
     throw new TypeError('Password must be non-empty string')
   }
 
-  const { did, password, to } = opts
+  let { did } = opts
+  const { password, to } = opts
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transfer' }))
@@ -162,7 +169,8 @@ async function transfer(opts = {}) {
 async function approve(opts = {}) {
   _validateApprovalOpts(opts)
 
-  const { did, password, spender } = opts
+  let { did } = opts
+  const { password, spender } = opts
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transfer' }))
@@ -218,7 +226,8 @@ async function transferFrom(opts = {}) {
     throw new TypeError('Value must be greater than 0')
   }
 
-  const { did, password, to } = opts
+  let { did } = opts
+  const { password, to } = opts
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transferFrom' }))
@@ -265,7 +274,8 @@ async function transferFrom(opts = {}) {
 async function increaseApproval(opts = {}) {
   _validateApprovalOpts(opts)
 
-  const { did, password, spender } = opts
+  let { did } = opts
+  const { password, spender } = opts
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'increaseApproval' }))
@@ -310,7 +320,8 @@ async function increaseApproval(opts = {}) {
 async function decreaseApproval(opts = {}) {
   _validateApprovalOpts(opts)
 
-  const { did, password, spender } = opts
+  let { did } = opts
+  const { password, spender } = opts
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'decreaseApproval' }))
@@ -387,7 +398,7 @@ function constrainTokenValue(val) {
  * @return {Object} 
  * @throws {TypeError}
  */
-function deposit(opts = {}) {
+async function deposit(opts = {}) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Opts must be of type object')
   } else if (!opts.did || 'string' !== typeof opts.did) {
@@ -427,10 +438,13 @@ function deposit(opts = {}) {
       }
     })
     receipt = await tx.sendSignedTransaction(depositTx)
+    if (receipt.status) {
+      debug(withdraw ? 'withdrew' : 'deposited', constrainTokenValue(val), 'tokens')
+    }
+    return receipt
   } catch (err) {
     throw err
   }
-  return receipt
 }
 
 /**
@@ -442,12 +456,20 @@ function deposit(opts = {}) {
  * @return {Object} 
  * @throws {TypeError}
  */
-function withdraw(opts = {}) {
+async function withdraw(opts = {}) {
   opts = Object.assign(opts, { withdraw: true })
   return deposit(opts)
 }
 
-function getAmountDeposited(address) {
+async function getAmountDeposited(did) {
+  try {
+    normalize(did)
+  } catch (err) {
+    throw err
+  }
+
+  const address = await getAddressFromDID(did)
+
   if (!_isValidAddress(address)) {
     throw new TypeError('Address is not a valid Ethereum address')
   }
@@ -487,6 +509,7 @@ function _isValidAddress(address) {
 
 module.exports = {
   constrainTokenValue,
+  getAmountDeposited,
   expandTokenValue,
   increaseApproval,
   decreaseApproval,
@@ -495,5 +518,7 @@ module.exports = {
   balanceOf,
   allowance,
   transfer,
+  withdraw,
+  deposit,
   approve
 }
