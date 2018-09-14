@@ -3,5 +3,10 @@
 # lint
 npm run lint
 
+# setup
+truffle develop > /dev/null &
+truffle migrate --network local
+
 # ava
+ava test/registry.js --verbose
 ava test/util.js --verbose
