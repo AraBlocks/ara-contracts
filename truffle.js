@@ -1,5 +1,11 @@
 module.exports = {
   networks: {
+    local: {
+      network_id: '*',
+      host: 'localhost',
+      port: 8545,
+      gas: 2000000
+    },
     privatenet: {
       network_id: 1337,
       host: 'localhost',

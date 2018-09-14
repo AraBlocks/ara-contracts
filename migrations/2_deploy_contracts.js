@@ -6,10 +6,15 @@ const Library = artifacts.require('./Library.sol')
 const AraToken = artifacts.require('./AraToken.sol')
 const Registry = artifacts.require('./Registry.sol')
 
-module.exports = (deployer) => {
-  deployer.deploy(Registry, { from: DEFAULT_ADDRESS })
+module.exports = (deployer, network, accounts) => {
+  const from = 'privatenet' === network
+    ? DEFAULT_ADDRESS
+    : accounts[0]
+
+  // deploy
+  deployer.deploy(Registry, { from })
     .then(() =>
-      deployer.deploy(Library, Registry.address, { from: DEFAULT_ADDRESS })
+      deployer.deploy(Library, Registry.address, { from })
         .then(() =>
-          deployer.deploy(AraToken, { from: DEFAULT_ADDRESS })))
+          deployer.deploy(AraToken, { from })))
 }

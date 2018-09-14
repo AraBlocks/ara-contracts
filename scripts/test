@@ -7,12 +7,14 @@ npm run lint
 npm install -g ganache-cli truffle
 
 # setup
-ganache-cli --gasLimit 2000000 2> /dev/null 1> /dev/null &
+truffle develop /dev/null 1> /dev/null &
 sleep 5
 rm -rf build
-truffle compile
-truffle migrate --reset
+truffle migrate --network local
 
 # ava
 ava test/registry.js --verbose
 ava test/util.js --verbose
+
+# cleanup
+kill -9 $(lsof -t -i:8545)
