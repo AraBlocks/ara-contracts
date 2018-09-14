@@ -5,7 +5,7 @@ const test = require('ava')
 test('isValidJobId(jobId)', (t) => {
   let result = util.isValidJobId()
   t.false(result)
-  
+
   result = util.isValidJobId(123)
   t.false(result)
 

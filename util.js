@@ -22,7 +22,7 @@ function isValidJobId(jobId) {
 
 function isValidArray(arr, fn) {
   if (arr && Array.isArray(arr) && 0 < arr.length) {
-    if (fn) { 
+    if (fn) {
       arr.forEach(fn)
     }
     return true
