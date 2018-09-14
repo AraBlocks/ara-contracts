@@ -4,7 +4,6 @@ const library = require('./library')
 const rewards = require('./rewards')
 const token = require('./token')
 const constants = require('./constants')
-const { getAddressFromDID } = require('ara-util')
 
 void async function main() {
   // try {

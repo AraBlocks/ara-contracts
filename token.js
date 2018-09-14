@@ -206,28 +206,31 @@ async function approve(opts = {}) {
 /**
  * Transfer Ara from one address to another.
  * @param  {Object} opts 
+ * @param  {String} opts.from
  * @param  {String} opts.to
+ * @param  {Number} opts.val
  * @param  {String} opts.did
  * @param  {String} opts.password
- * @param  {Number} opts.val
  * @return {Object} 
  * @throws {TypeError|Error} 
  */
 async function transferFrom(opts = {}) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Opts must be of type object')
+  } else if (!_isValidAddress(opts.from)) {
+    throw new TypeError('Address to transfer from must be a valid Ethereum address')
   } else if (!_isValidAddress(opts.to)) {
     throw new TypeError('Address to transfer to must be a valid Ethereum address')
+  } else if (!opts.val || 0 >= Number(opts.val)) {
+    throw new TypeError('Value must be greater than 0')
   } else if (!opts.did || 'string' !== typeof opts.did) {
     throw new TypeError('DID URI must be non-empty string')
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError('Password must be non-empty string')
-  } else if (!opts.val || 0 >= Number(opts.val)) {
-    throw new TypeError('Value must be greater than 0')
   }
 
   let { did } = opts
-  const { password, to } = opts
+  const { password, from, to } = opts
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transferFrom' }))
@@ -238,7 +241,6 @@ async function transferFrom(opts = {}) {
   did = `${kAidPrefix}${did}`
 
   const acct = await account.load({ did, password })
-  const { address } = acct
 
   let { val } = opts
   val = expandTokenValue(val)
@@ -251,7 +253,7 @@ async function transferFrom(opts = {}) {
       data: {
         abi: tokenAbi,
         functionName: 'transferFrom',
-        values: [ address, to, val ]
+        values: [ from, to, val ]
       }
     })
     receipt = await tx.sendSignedTransaction(transferFromTx)
@@ -461,6 +463,12 @@ async function withdraw(opts = {}) {
   return deposit(opts)
 }
 
+/**
+ * Returns current deposit amount
+ * @param  {String} did
+ * @return {Number} 
+ * @throws {TypeError}
+ */
 async function getAmountDeposited(did) {
   try {
     normalize(did)
@@ -469,7 +477,6 @@ async function getAmountDeposited(did) {
   }
 
   const address = await getAddressFromDID(did)
-
   if (!_isValidAddress(address)) {
     throw new TypeError('Address is not a valid Ethereum address')
   }
