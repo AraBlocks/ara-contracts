@@ -64,8 +64,7 @@ async function submit(opts) {
     job
   } = opts
 
-  const { jobId } = job
-  let { budget } = job
+  let { budget, jobId } = job
 
   const validJobId = isValidJobId(jobId)
   const validBudget = budget && 'number' === typeof budget && budget > 0
