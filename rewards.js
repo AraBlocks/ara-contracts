@@ -186,12 +186,9 @@ async function allocate(opts) {
     job
   } = opts
 
-  const {
-    jobId,
-    farmers,
-  } = job
+  const { farmers } = job
 
-  let { rewards } = job
+  let { rewards, jobId } = job
 
   const validJobId = isValidJobId(jobId)
   const validFarmers = isValidArray(farmers, (address, index) => {
