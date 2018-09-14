@@ -3,10 +3,15 @@
 # lint
 npm run lint
 
+# installation
+npm install -g ganache-cli truffle
+
 # setup
-npm install -g truffle
-truffle develop > /dev/null &
-truffle migrate --network local
+ganache-cli --gasLimit 2000000 2> /dev/null 1> /dev/null &
+sleep 5
+rm -rf build
+truffle compile
+truffle migrate --reset
 
 # ava
 ava test/registry.js --verbose
