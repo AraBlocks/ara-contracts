@@ -1,13 +1,3 @@
-<a name="0.1.1"></a>
-## [0.1.1](https://github.com/AraBlocks/ara-contracts/compare/0.2.0...0.1.1) (2018-09-14)
-
-
-### Features
-
-* changelog support ([8e56d78](https://github.com/AraBlocks/ara-contracts/commit/8e56d78))
-
-
-
 <a name="0.2.0"></a>
 # [0.2.0](https://github.com/AraBlocks/ara-contracts/compare/213ae89...0.2.0) (2018-09-13)
 
@@ -56,6 +46,7 @@
 
 ### Features
 
+* changelog support ([8e56d78](https://github.com/AraBlocks/ara-contracts/commit/8e56d78))
 * **contracts/*:** ensure caller of addProxy is owner of proxy ([b3f4b39](https://github.com/AraBlocks/ara-contracts/commit/b3f4b39))
 * **contracts/AFS.sol:** remove need to pass in sizes arr for initial writes ([adfee98](https://github.com/AraBlocks/ara-contracts/commit/adfee98))
 * start lib cli ([c9c4255](https://github.com/AraBlocks/ara-contracts/commit/c9c4255))
