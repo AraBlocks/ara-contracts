@@ -1,15 +1,17 @@
 #!/bin/bash
 
 # lint
-npm run lint
+# npm run lint
 
 # installation
 npm install -g ganache-cli truffle
 
 # setup
-truffle develop /dev/null 1> /dev/null &
-sleep 5
 rm -rf build
+
+# run local truffle node
+ganache-cli &
+sleep 5
 truffle migrate --network local
 
 # ava
@@ -17,4 +19,4 @@ ava test/registry.js --verbose
 ava test/util.js --verbose
 
 # cleanup
-kill -9 $(lsof -t -i:8545)
+pkill -f ganache 
