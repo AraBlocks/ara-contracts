@@ -92,10 +92,14 @@ async function allowance(opts = {}) {
 
   let { owner, spender } = opts
   try {
-    owner = normalize(owner)
-    owner = await getAddressFromDID(owner)
-    spender = normalize(spender)
-    spender = await getAddressFromDID(spender)
+    if (!_isValidAddress(owner)) {
+      owner = normalize(owner)
+      owner = await getAddressFromDID(owner)
+    }
+    if (!_isValidAddress(spender)) {
+      spender = normalize(spender)
+      spender = await getAddressFromDID(spender)
+    }
   } catch (err) {
     throw err
   }
@@ -149,8 +153,10 @@ async function transfer(opts = {}) {
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transfer' }))
-    to = normalize(to)
-    to = await getAddressFromDID(to)
+    if (!_isValidAddress(to)) {
+      to = normalize(to)
+      to = await getAddressFromDID(to)
+    }
   } catch (err) {
     throw err
   }
@@ -200,8 +206,10 @@ async function approve(opts = {}) {
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transfer' }))
-    spender = normalize(spender)
-    spender = await getAddressFromDID(spender)
+    if (!_isValidAddress(spender)) {
+      spender = normalize(spender)
+      spender = await getAddressFromDID(spender)
+    }
   } catch (err) {
     throw err
   }
@@ -264,10 +272,14 @@ async function transferFrom(opts = {}) {
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transferFrom' }))
-    to = normalize(to)
-    to = await getAddressFromDID(to)
-    from = normalize(from)
-    from = await getAddressFromDID(from)
+    if (!_isValidAddress(to)) {
+      to = normalize(to)
+      to = await getAddressFromDID(to)
+    }
+    if (!_isValidAddress(from)) {
+      from = normalize(from)
+      from = await getAddressFromDID(from)
+    }
   } catch (err) {
     throw err
   }
@@ -320,8 +332,10 @@ async function increaseApproval(opts = {}) {
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transfer' }))
-    spender = normalize(spender)
-    spender = await getAddressFromDID(spender)
+    if (!_isValidAddress(spender)) {
+      spender = normalize(spender)
+      spender = await getAddressFromDID(spender)
+    }
   } catch (err) {
     throw err
   }
@@ -371,8 +385,10 @@ async function decreaseApproval(opts = {}) {
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transfer' }))
-    spender = normalize(spender)
-    spender = await getAddressFromDID(spender)
+    if (!_isValidAddress(spender)) {
+      spender = normalize(spender)
+      spender = await getAddressFromDID(spender)
+    }
   } catch (err) {
     throw err
   }

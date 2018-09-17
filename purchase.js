@@ -163,7 +163,7 @@ async function purchase(opts) {
     await proxyContract.events.BudgetSubmitted({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { _did, _jobId, _budget } } = log
-        debug('job', _jobId, 'submitted in', _did, 'with budget', _budget)
+        debug('job', _jobId, 'submitted in', _did, 'with budget', token.constrainTokenValue(_budget))
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)
