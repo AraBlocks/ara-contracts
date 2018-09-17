@@ -346,23 +346,6 @@ async function increaseApproval(opts = {}) {
         values: [ spender, val ]
       }
     })
-    const tokenContract = await contract.get(tokenAbi, kAraTokenAddress)
-    await tokenContract.events.TEST({ fromBlock: 'latest', function(error) { debug(error) } })
-      .on('data', (log) => {
-        const { returnValues: { balance, allowance, addedValue, deposit, remaining } } = log
-        console.log('balance', balance)
-        console.log('allowance', allowance)
-        console.log('addedValue', addedValue)
-        console.log('deposit', deposit)
-        console.log('remaining', remaining)
-      })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
-
     receipt = await tx.sendSignedTransaction(increaseApprovalTx)
   } catch (err) {
     throw err
@@ -406,16 +389,16 @@ async function decreaseApproval(opts = {}) {
 
   let receipt
   try {
-    const increaseApprovalTx = await tx.create({
+    const decreaseApprovalTx = await tx.create({
       account: acct,
       to: kAraTokenAddress,
       data: {
         abi: tokenAbi,
-        functionName: 'increaseApproval',
+        functionName: 'decreaseApproval',
         values: [ spender, val ]
       }
     })
-    receipt = await tx.sendSignedTransaction(increaseApprovalTx)
+    receipt = await tx.sendSignedTransaction(decreaseApprovalTx)
   } catch (err) {
     throw err
   }
