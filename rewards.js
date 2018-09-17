@@ -15,7 +15,6 @@ const {
 } = require('./registry')
 
 const {
-  hashDID,
   validate,
   normalize,
   web3: {
@@ -64,8 +63,7 @@ async function submit(opts) {
     job
   } = opts
 
-  const { jobId } = job
-  let { budget } = job
+  let { budget, jobId } = job
 
   const validJobId = isValidJobId(jobId)
   const validBudget = budget && 'number' === typeof budget && budget > 0
@@ -77,7 +75,7 @@ async function submit(opts) {
     throw TypeError('Expecting budget.')
   }
 
-  if (jobId.length === 64) {
+  if (64 === jobId.length) {
     jobId = ethify(jobId, 'string' !== typeof jobId)
   }
 
@@ -138,7 +136,7 @@ async function submit(opts) {
     await proxyContract.events.BudgetSubmitted({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { _did, _jobId, _budget } } = log
-        info(requesterDid, 'budgeted', _budget, 'tokens for job', _jobId)
+        info(_did, 'budgeted', _budget, 'tokens for job', _jobId)
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)
@@ -188,12 +186,9 @@ async function allocate(opts) {
     job
   } = opts
 
-  const {
-    jobId,
-    farmers,
-  } = job
+  const { farmers } = job
 
-  let { rewards } = job
+  let { jobId, rewards } = job
 
   const validJobId = isValidJobId(jobId)
   const validFarmers = isValidArray(farmers, (address, index) => {
@@ -201,11 +196,13 @@ async function allocate(opts) {
       return false
     }
     farmers[index] = sha3({ t: 'address', v: address })
+    return true
   })
   const validRewards = isValidArray(rewards, (reward) => {
     if (reward <= 0) {
       return false
     }
+    return true
   })
 
   if (!validJobId) {
@@ -216,7 +213,7 @@ async function allocate(opts) {
     throw TypeError('Expecting farmers and rewards.')
   }
 
-  if (jobId.length === 64) {
+  if (64 === jobId.length) {
     jobId = ethify(jobId, 'string' !== typeof jobId)
   }
   let { contentDid } = opts
@@ -260,7 +257,7 @@ async function allocate(opts) {
     await proxyContract.events.RewardsAllocated({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { _did, _allocated, _returned } } = log
-        info('allocated', _allocated, 'tokens as rewards between farmers and returned', _returned, 'tokens')
+        info(_did, 'allocated', _allocated, 'tokens as rewards between farmers and returned', _returned, 'tokens')
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)
@@ -312,6 +309,7 @@ async function redeem(opts) {
   did = `${kAidPrefix}${did}`
   const acct = await account.load({ did, password })
 
+  let balance = 0
   try {
     if (!(await proxyExists(contentDid))) {
       throw new Error('This content does not have a valid proxy contract')
@@ -329,7 +327,6 @@ async function redeem(opts) {
       }
     })
 
-    let balance
     const tokenContract = await contract.get(tokenAbi, kAraTokenAddress)
     await tokenContract.events.Transfer({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
@@ -348,11 +345,11 @@ async function redeem(opts) {
 
     if (receipt.status) {
       debug('gas used', receipt.gasUsed)
-      return balance
     }
   } catch (err) {
     throw err
   }
+  return balance
 }
 
 /**

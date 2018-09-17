@@ -84,8 +84,8 @@ async function upgradeProxy(opts) {
     throw TypeError('Expecting non-empty version string or number')
   }
 
-  let { contentDid, version } = opts
-  const { password } = opts
+  let { version } = opts
+  const { contentDid, password } = opts
   if ('number' === typeof version) {
     version = version.toString()
   }
@@ -102,6 +102,7 @@ async function upgradeProxy(opts) {
 
   const acct = await account.load({ did: owner, password })
 
+  let upgraded = false
   try {
     const transaction = await tx.create({
       account: acct,
@@ -119,7 +120,6 @@ async function upgradeProxy(opts) {
 
     const registry = await contract.get(abi, kRegistryAddress)
     // listen to ProxyUpgraded event for proxy address
-    let upgraded
     await registry.events.ProxyUpgraded({ fromBlock: 'latest', function(error) { console.log(error) } })
       .on('data', (log) => {
         const { returnValues: { _contentId, _version } } = log
@@ -137,11 +137,11 @@ async function upgradeProxy(opts) {
     const receipt = await tx.sendSignedTransaction(transaction)
     if (receipt.status) {
       debug('gas used', receipt.gasUsed)
-      return upgraded
     }
   } catch (err) {
     throw err
   }
+  return upgraded
 }
 
 /**
@@ -161,8 +161,7 @@ async function deployProxy(opts) {
     throw TypeError('Expecting non-empty password')
   }
 
-  const { password } = opts
-  let { contentDid } = opts
+  const { password, contentDid } = opts
 
   let version = opts.version || kStandardVersion
   if ('number' === typeof version) {
@@ -180,8 +179,9 @@ async function deployProxy(opts) {
   debug('creating tx to deploy proxy for', did)
   let owner = getDocumentOwner(ddo, true)
   owner = `${kAidPrefix}${owner}`
-
   const acct = await account.load({ did: owner, password })
+
+  let proxyAddress = null
   try {
     const encodedData = web3Abi.encodeParameters(['address', 'address', 'address', 'bytes32'], [acct.address, kAraTokenAddress, kLibraryAddress, ethify(contentDid)])
     const transaction = await tx.create({
@@ -201,7 +201,6 @@ async function deployProxy(opts) {
 
     // listen to ProxyDeployed event for proxy address
     const registry = await contract.get(abi, kRegistryAddress)
-    let proxyAddress
     registry.events.ProxyDeployed({ fromBlock: 'latest', function(error) { console.log(error) } })
       .on('data', (log) => {
         const { returnValues: { _contentId, _address } } = log
@@ -221,11 +220,11 @@ async function deployProxy(opts) {
 
     if (receipt.status) {
       debug('gas used', receipt.gasUsed)
-      return proxyAddress
     }
   } catch (err) {
     throw err
   }
+  return proxyAddress
 }
 
 /**
@@ -388,11 +387,12 @@ async function deployNewStandard(opts) {
 
     if (receipt.status) {
       debug('gas used', receipt.gasUsed + gasLimit)
-      return address ? address : afs._address
+      address = address || afs._address
     }
   } catch (err) {
     throw err
   }
+  return address
 }
 
 module.exports = {

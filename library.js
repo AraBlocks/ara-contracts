@@ -46,13 +46,14 @@ async function checkLibrary(opts) {
   let { requesterDid, contentDid } = opts
 
   requesterDid = normalize(requesterDid)
-  if (contentDid)
+  if (contentDid) {
     contentDid = normalize(contentDid)
+  }
 
   const libSize = await getLibrarySize(requesterDid)
   const lib = []
   for (let i = 0; i < libSize; i++) {
-    const opts = { requesterDid, index: i }
+    opts = { requesterDid, index: i }
     const item = await getLibraryItem(opts)
     if (contentDid && item == ethify(contentDid)) {
       throw new Error('Item is already in user library and cannot be purchased again')
