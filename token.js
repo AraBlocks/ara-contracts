@@ -28,7 +28,7 @@ const {
  * Get the Ara balance of a specific Ara DID.
  * @param  {String} did 
  * @return {Number}
- * @throws {TypeError}
+ * @throws {Error|TypeError}
  */
 async function balanceOf(did) {
   let address
@@ -40,7 +40,7 @@ async function balanceOf(did) {
   }
 
   if (!_isValidAddress(address)) {
-    throw new TypeError('Address is not a valid Ethereum address')
+    throw new Error(`${did} did not resolve to a valid Ethereum address. Got ${address}. Ensure ${did} is a valid Ara identity.`)
   }
 
   let balance
@@ -87,22 +87,24 @@ async function totalSupply() {
  */
 async function allowance(opts = {}) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('Opts must be of type object')
+    throw new TypeError(`Expected 'opts' to be an object. Got ${opts}. Try passing in 'opts.owner' and 'opts.spender'.`)
   } 
 
   let { owner, spender } = opts
   try {
     owner = normalize(owner)
-    spender = normalize(spender)
-
     owner = await getAddressFromDID(owner)
+    spender = normalize(spender)
     spender = await getAddressFromDID(spender)
   } catch (err) {
     throw err
   }
 
-  if (!_isValidAddress(owner) || !_isValidAddress(spender)) {
-    throw new TypeError('Owner and spender must be valid Ethereum addresses')
+  if (!_isValidAddress(owner)) {
+    throw new Error(`'opts.owner' did not resolve to a valid Ethereum address. Got ${owner}. Ensure ${opts.owner} is a valid Ara identity.`)
+  }
+  if (!_isValidAddress(spender)) {
+    throw new Error(`'opts.spender' did not resolve to a valid Ethereum address. Got ${spender}. Ensure ${opts.spender} is a valid Ara identity.`)
   }
 
   let allowed
@@ -131,31 +133,35 @@ async function allowance(opts = {}) {
  */
 async function transfer(opts = {}) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('Opts must be of type object')
-  } else if (!_isValidAddress(opts.to)) {
-    throw new TypeError('Address is not a valid Ethereum address')
+    throw new TypeError(`Expected 'opts' to be an object. Got ${opts}. Try passing in 'opts.to', 'opts.val', 'opts.did', and 'opts.password'.`)
+  } else if (!opts.to || 'string' !== typeof opts.to) {
+    throw new TypeError(`Expected 'opts.to' to be non-empty Ara DID string. Got ${opts.to}. Ensure ${opts.to} is a valid Ara identity.`)
   } else if (!opts.val || 0 >= Number(opts.val)) {
-    throw new TypeError('Value must be greater than 0')
+    throw new TypeError(`Expected 'opts.val' to be greater than 0. Got ${opts.val}. Ensure ${opts.val} is a positive number.`)
   } else if (!opts.did || 'string' !== typeof opts.did) {
-    throw new TypeError('DID URI must be non-empty string')
+    throw new TypeError(`Expected 'opts.did' to be non-empty Ara DID string. Got ${opts.did}. Ensure ${opts.did} is a valid Ara identity.`)
   } else if (!opts.password || 'string' !== typeof opts.password) {
-    throw new TypeError('Password must be non-empty string')
+    throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${password}.`)
   }
 
-  let { did } = opts
+  let { did, val } = opts
   const { password, to } = opts
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transfer' }))
+    to = normalize(to)
+    to = await getAddressFromDID(to)
   } catch (err) {
     throw err
   }
 
-  did = `${kAidPrefix}${did}`
+  if (!_isValidAddress(to)) {
+    throw new Error(`'opts.to' did not resolve to a valid Ethereum address. Got ${to}. Ensure ${opts.to} is a valid Ara identity.`)
+  }
 
+  did = `${kAidPrefix}${did}`
   const acct = await account.load({ did, password })
 
-  let { val } = opts
   val = expandTokenValue(val)
 
   let receipt
@@ -189,7 +195,7 @@ async function transfer(opts = {}) {
 async function approve(opts = {}) {
   _validateApprovalOpts(opts)
 
-  let { did, spender } = opts
+  let { did, spender, val } = opts
   const { password } = opts
 
   try {
@@ -200,10 +206,13 @@ async function approve(opts = {}) {
     throw err
   }
 
+  if (!_isValidAddress(spender)) {
+    throw new Error(`'opts.spender' did not resolve to a valid Ethereum address. Got ${spender}. Ensure ${opts.spender} is a valid Ara identity.`)
+  }
+
   did = `${kAidPrefix}${did}`
   const acct = await account.load({ did, password })
 
-  let { val } = opts
   val = expandTokenValue(val)
 
   let receipt
@@ -237,33 +246,42 @@ async function approve(opts = {}) {
  */
 async function transferFrom(opts = {}) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('Opts must be of type object')
-  } else if (!_isValidAddress(opts.from)) {
-    throw new TypeError('Address to transfer from must be a valid Ethereum address')
-  } else if (!_isValidAddress(opts.to)) {
-    throw new TypeError('Address to transfer to must be a valid Ethereum address')
+    throw new TypeError(`Expected 'opts' to be an object. Got ${opts}. Try passing in 'opts.from', 'opts.to', 'opts.val', 'opts.did', and 'opts.password'.`)
+  } else if (!opts.to || 'string' !== typeof opts.to) {
+    throw new TypeError(`Expected 'opts.to' to be non-empty Ara DID string. Got ${opts.to}. Ensure ${opts.to} is a valid Ara identity.`)
+  } else if (!opts.from || 'string' !== typeof opts.from) {
+    throw new TypeError(`Expected 'opts.from' to be non-empty Ara DID string. Got ${opts.from}. Ensure ${opts.from} is a valid Ara identity.`)
   } else if (!opts.val || 0 >= Number(opts.val)) {
-    throw new TypeError('Value must be greater than 0')
+    throw new TypeError(`Expected 'opts.val' to be greater than 0. Got ${opts.val}. Ensure ${opts.val} is a positive number.`)
   } else if (!opts.did || 'string' !== typeof opts.did) {
-    throw new TypeError('DID URI must be non-empty string')
+    throw new TypeError(`Expected 'opts.did' to be non-empty Ara DID string. Got ${opts.did}. Ensure ${opts.did} is a valid Ara identity.`)
   } else if (!opts.password || 'string' !== typeof opts.password) {
-    throw new TypeError('Password must be non-empty string')
+    throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${password}.`)
   }
 
-  let { did } = opts
+  let { did, val } = opts
   const { password, from, to } = opts
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transferFrom' }))
+    to = normalize(to)
+    to = await getAddressFromDID(to)
+    from = normalize(from)
+    from = await getAddressFromDID(from)
   } catch (err) {
     throw err
   }
 
-  did = `${kAidPrefix}${did}`
+  if (!_isValidAddress(from)) {
+    throw new Error(`'opts.from' did not resolve to a valid Ethereum address. Got ${from}. Ensure ${opts.from} is a valid Ara identity.`)
+  }
+  if (!_isValidAddress(to)) {
+    throw new Error(`'opts.to' did not resolve to a valid Ethereum address. Got ${to}. Ensure ${opts.to} is a valid Ara identity.`)
+  }
 
+  did = `${kAidPrefix}${did}`
   const acct = await account.load({ did, password })
 
-  let { val } = opts
   val = expandTokenValue(val)
 
   let receipt
@@ -297,7 +315,7 @@ async function transferFrom(opts = {}) {
 async function increaseApproval(opts = {}) {
   _validateApprovalOpts(opts)
 
-  let { did, spender } = opts
+  let { did, spender, val } = opts
   const { password } = opts
 
   try {
@@ -308,10 +326,13 @@ async function increaseApproval(opts = {}) {
     throw err
   }
 
+  if (!_isValidAddress(spender)) {
+    throw new Error(`'opts.spender' did not resolve to a valid Ethereum address. Got ${spender}. Ensure ${opts.spender} is a valid Ara identity.`)
+  }
+
   did = `${kAidPrefix}${did}`
   const acct = await account.load({ did, password })
 
-  let { val } = opts
   val = expandTokenValue(val)
 
   let receipt
@@ -373,6 +394,10 @@ async function decreaseApproval(opts = {}) {
     throw err
   }
 
+  if (!_isValidAddress(spender)) {
+    throw new Error(`'opts.spender' did not resolve to a valid Ethereum address. Got ${spender}. Ensure ${opts.spender} is a valid Ara identity.`)
+  }
+
   did = `${kAidPrefix}${did}`
   const acct = await account.load({ did, password })
 
@@ -405,7 +430,7 @@ async function decreaseApproval(opts = {}) {
  */
 function expandTokenValue(val) {
   if ('string' !== typeof val) {
-    throw new TypeError('Val must be of type string')
+    throw new TypeError(`Expected 'val' to be of type string. Got ${val}. Ensure ${val} is the string representation of a positive number.`)
   }
   if (!val) {
     return '0'
@@ -422,7 +447,7 @@ function expandTokenValue(val) {
  */
 function constrainTokenValue(val) {
   if ('string' !== typeof val) {
-    throw new TypeError('Val must be of type string')
+    throw new TypeError(`Expected 'val' to be of type string. Got ${val}. Ensure ${val} is the string representation of a positive number.`)
   }
   if (!val) {
     return '0'
@@ -444,15 +469,15 @@ function constrainTokenValue(val) {
  */
 async function deposit(opts = {}) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('Opts must be of type object')
+    throw new TypeError(`Expected 'opts' to be an object. Got ${opts}. Try passing in 'opts.did', 'opts.password', and 'opts.val'.`)
   } else if (!opts.did || 'string' !== typeof opts.did) {
-    throw new TypeError('DID URI must be non-empty string')
+    throw new TypeError(`Expected 'opts.did' to be non-empty Ara DID string. Got ${opts.did}. Ensure ${opts.did} is a valid Ara identity.`)
   } else if (!opts.password || 'string' !== typeof opts.password) {
-    throw new TypeError('Password must be non-empty string')  
+    throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${password}.`)
   } else if (!opts.val || 0 >= Number(opts.val)) {
-    throw new TypeError('Value must be greater than 0')
+    throw new TypeError(`Expected 'opts.val' to be greater than 0. Got ${opts.val}. Ensure ${opts.val} is a positive number.`)
   } else if (opts.withdraw && 'boolean' !== typeof opts.withdraw) {
-    throw new TypeError('Expecting boolean.')
+    throw new TypeError(`Expected 'opts.withdraw' to be a boolean. Got ${opts.withdraw}.`)
   }
 
   let { did, val, withdraw } = opts
@@ -509,7 +534,7 @@ async function withdraw(opts = {}) {
  * Returns current deposit amount
  * @param  {String} did
  * @return {Number} 
- * @throws {TypeError}
+ * @throws {TypeError|Error}
  */
 async function getAmountDeposited(did) {
   let address
@@ -521,7 +546,7 @@ async function getAmountDeposited(did) {
   }
 
   if (!_isValidAddress(address)) {
-    throw new TypeError('Address is not a valid Ethereum address')
+    throw new Error(`'did' did not resolve to a valid Ethereum address. Got ${address}. Ensure ${did} is a valid Ara identity.`)
   }
 
   let deposited
@@ -541,15 +566,15 @@ async function getAmountDeposited(did) {
 
 function _validateApprovalOpts(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('Opts must be of type object')
+    throw new TypeError(`Expected 'opts' to be an object. Got ${opts}. Try passing in 'opts.spender', 'opts.val', 'opts.did', and 'opts.password'.`)
   } else if (!opts.spender || 'string' !== typeof opts.spender) {
-    throw new TypeError('Spender DID URI must be a non-empty string')
+    throw new TypeError(`Expected 'opts.spender' to be non-empty Ara DID string. Got ${opts.spender}. Ensure ${opts.spender} is a valid Ara identity.`)
   } else if (!opts.val || 0 >= Number(opts.val)) {
-    throw new TypeError('Value must be greater than 0')
+    throw new TypeError(`Expected 'opts.val' to be greater than 0. Got ${opts.val}. Ensure ${opts.val} is a positive number.`)
   } else if (!opts.did || 'string' !== typeof opts.did) {
-    throw new TypeError('Approver DID URI must be non-empty string')
+    throw new TypeError(`Expected 'opts.did' to be non-empty Ara DID string. Got ${opts.did}. Ensure ${opts.did} is a valid Ara identity.`)
   } else if (!opts.password || 'string' !== typeof opts.password) {
-    throw new TypeError('Password must be non-empty string')  
+    throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${password}.`)
   }
 }
 
