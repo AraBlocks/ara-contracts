@@ -15,7 +15,7 @@ usage: act transfer: [-h] [--help] [options] [--] <did> <amount>
 
 // Parse program arguments based on yargs spec
 const { argv } = program
-  .command('$0 <from> <to> <amount> [sender]', 'Query number of Ara currently deposited by <did>', () => { 
+  .command('$0 <from> <to> <amount> [sender]', 'Send Ara between accounts', () => { 
     program
       .positional('from', {
         type: 'string',
