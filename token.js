@@ -144,8 +144,8 @@ async function transfer(opts = {}) {
     throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${password}.`)
   }
 
-  let { did, val } = opts
-  const { password, to } = opts
+  let { did, val, to } = opts
+  const { password } = opts
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transfer' }))
@@ -259,8 +259,8 @@ async function transferFrom(opts = {}) {
     throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${password}.`)
   }
 
-  let { did, val } = opts
-  const { password, from, to } = opts
+  let { did, val, from, to } = opts
+  const { password } = opts
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transferFrom' }))

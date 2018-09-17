@@ -59,25 +59,28 @@ module.exports = (async function main() {
   if (argv.debug) {
     require('debug').enable('ara-contracts*')
   }
-  const { approver, spender, amount increase, decrease } = argv
-  console.log(approver, spender, increase, decrease, amount)
+  const { approver, spender, amount, increase, decrease } = argv
 
   const { password } = await promptForPassword()
 
   const opts = { spender, did: approver, password, val: amount.toString() }
   try {
+    // act approve 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3 100 -D
     let receipt
     if (increase) {
+      info('increasing approval')
       receipt = await increaseApproval(opts)
       if (receipt.status) {
         info(approver, 'increased allowance for', spender, 'by', amount, 'Ara tokens.')
       }
     } else if (decrease) {
+      info('decreasing approval')
       receipt = await decreaseApproval(opts)
       if (receipt.status) {
         info(approver, 'decreased allowance for', spender, 'by', amount, 'Ara tokens.')
       }
     } else {
+      info('approving')
       receipt = await approve(opts)
       if (receipt.status) {
         info(approver, 'set allowance for', spender, 'to', amount, 'Ara tokens.')

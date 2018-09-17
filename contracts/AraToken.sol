@@ -74,7 +74,7 @@ contract AraToken is StandardToken {
     public
     returns (bool)
   {
-    require(balanceOf(msg.sender) - _addedValue >= deposits_[msg.sender]);
-    return increaseApproval(_spender, _addedValue);
+    require(balanceOf(msg.sender) - (_addedValue + allowance(msg.sender, _spender)) >= deposits_[msg.sender]);
+    return super.increaseApproval(_spender, _addedValue);
   }
 }
