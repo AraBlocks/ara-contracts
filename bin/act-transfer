@@ -15,7 +15,7 @@ usage: act transfer: [-h] [--help] [options] [--] <did> <amount>
 
 // Parse program arguments based on yargs spec
 const { argv } = program
-  .command('$0 <from> <to> <amount> [sender]', 'Send Ara between accounts', () => { 
+  .command('$0 [--sender] <from> <to> <amount>', 'Send Ara between accounts', () => { 
     program
       .positional('from', {
         type: 'string',
@@ -57,7 +57,7 @@ async function ontransfer(argv) {
     let receipt
     let opts
     if (sender) {
-      // act transfer 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3 100 cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3
+      // act transfer --sender cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3 100
       opts = { from, to, val: amount, did: sender, password }
       receipt = await token.transferFrom(opts)
     } else {

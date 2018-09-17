@@ -344,6 +344,7 @@ async function deployNewStandard(opts) {
   const afsAbi = JSON.parse(compiledContract.interface)
   const { bytecode } = compiledContract
 
+  let address
   try {
     const { contract: afs, gasLimit } = await contract.deploy({
       account: acct,
@@ -365,7 +366,6 @@ async function deployNewStandard(opts) {
       }
     })
     // listen to ProxyDeployed event for proxy address
-    let address
     const registry = await contract.get(abi, kRegistryAddress)
     registry.events.StandardAdded({ fromBlock: 'latest', function(error) { console.log(error) } })
       .on('data', (log) => {
