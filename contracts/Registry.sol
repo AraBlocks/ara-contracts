@@ -49,7 +49,7 @@ contract Registry {
   uint256 number_;
 
   function getNumber() public view returns (uint256) {
-    return number_;
+    return 666;
   }
 
   function setNumber(uint256 _number) public {

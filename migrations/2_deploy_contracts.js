@@ -1,4 +1,5 @@
 /* eslint no-undef: "off" */
+/* eslint indent: "off" */
 
 const replace = require('replace-in-file')
 const constants = require('../constants')
@@ -30,5 +31,8 @@ async function ondeploycomplete() {
     from: [ constants.REGISTRY_ADDRESS, constants.LIBRARY_ADDRESS, constants.ARA_TOKEN_ADDRESS ],
     to: [ Registry.address, Library.address, AraToken.address ]
   }
+  console.log('Registry', Registry.address)
+  console.log('Library', Library.address)
+  console.log('AraToken', AraToken.address)
   await replace(options)
 }
