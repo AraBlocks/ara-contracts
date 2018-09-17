@@ -1,1 +1,90 @@
-- from
+#!/usr/bin/env node
+
+const debug = require('debug')('ara-contracts:cli:token')
+const { info, warn, error, log } = require('ara-console')
+const { createProgram } = require('../lib/program')
+const inquirer = require('inquirer')
+const token = require('../token')
+
+// yargs program command line interface instance
+const program = createProgram({
+  usage: `
+usage: act transfer: [-h] [--help] [options] [--] <did> <amount>
+`
+})
+
+// Parse program arguments based on yargs spec
+const { argv } = program
+  .command('$0 <from> <to> <amount> [sender]', 'Query number of Ara currently deposited by <did>', () => { 
+    program
+      .positional('from', {
+        type: 'string',
+        describe: 'DID of the account to transfer Ara from'
+      })
+      .positional('to', {
+        type: 'string',
+        describe: 'DID of the account to transfer Ara to'
+      })
+      .positional('amount', {
+        type: 'string',
+        describe: 'Number of Ara to transfer'
+      })
+      .option('sender', {
+        alias: 's',
+        type: 'string',
+        describe: 'DID of the sender of the transaction if it is not <from>'
+      })
+    }, ontransfer)
+
+// Emit program usage help
+if (0 == argv._.length && argv.help) {
+  program.showHelp()
+  process.exit(0)
+}
+
+// Main program entry
+module.exports = (async function main() {
+  if (argv.debug) {
+    require('debug').enable('ara-contracts*')
+  }
+}())
+
+async function ontransfer(argv) {
+  const { from, to, amount, sender } = argv
+  const { password } = await promptForPassword()
+
+  try {
+    let receipt
+    let opts
+    if (sender) {
+      opts = { from, to, val: amount, did: sender, password }
+      receipt = await token.transferFrom(opts)
+    } else {
+      opts = { to, val, did: from, password }
+      receipt = await token.transfer(opts)
+    }
+    if (receipt.status){
+      info(`${amount} Ara transferred from ${from} to ${to}`)
+    }
+  }
+}
+
+async function promptForPassword() {
+  return await inquirer.prompt([{
+    type: 'password',
+    name: 'password',
+    message:
+    'Please provide the passphrase for your identity. This is needed to ' +
+    'complete this action.\n' +
+    'Passphrase:'
+  }]) 
+}
+
+function onfatal(err) {
+  if (err) {
+    debug(err)
+    error('fatal:', err.message)
+  }
+  process.exit(1)
+}
+
