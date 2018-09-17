@@ -18,18 +18,27 @@ const {
 
 const {
   isAddress,
+  contract,
   account,
   call,
   tx
 } = require('ara-util/web3')
 
 /**
- * Get the Ara balance of a specific address.
- * @param  {String} address 
+ * Get the Ara balance of a specific Ara DID.
+ * @param  {String} did 
  * @return {Number}
  * @throws {TypeError}
  */
-async function balanceOf(address) {
+async function balanceOf(did) {
+  let address
+  try {
+    did = normalize(did)
+    address = await getAddressFromDID(did)
+  } catch (err) {
+    throw err
+  }
+
   if (!_isValidAddress(address)) {
     throw new TypeError('Address is not a valid Ethereum address')
   }
@@ -79,11 +88,22 @@ async function totalSupply() {
 async function allowance(opts = {}) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Opts must be of type object')
-  } else if (!_isValidAddress(opts.owner) || !_isValidAddress(opts.spender)) {
-    throw new TypeError('Owner and spender must be valid Ethereum addresses')
+  } 
+
+  let { owner, spender } = opts
+  try {
+    owner = normalize(owner)
+    spender = normalize(spender)
+
+    owner = await getAddressFromDID(owner)
+    spender = await getAddressFromDID(spender)
+  } catch (err) {
+    throw err
   }
 
-  const { owner, spender } = opts
+  if (!_isValidAddress(owner) || !_isValidAddress(spender)) {
+    throw new TypeError('Owner and spender must be valid Ethereum addresses')
+  }
 
   let allowed
   try {
@@ -305,6 +325,23 @@ async function increaseApproval(opts = {}) {
         values: [ spender, val ]
       }
     })
+    const tokenContract = await contract.get(tokenAbi, kAraTokenAddress)
+    await tokenContract.events.TEST({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { balance, allowance, addedValue, deposit, remaining } } = log
+        console.log('balance', balance)
+        console.log('allowance', allowance)
+        console.log('addedValue', addedValue)
+        console.log('deposit', deposit)
+        console.log('remaining', remaining)
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
+
     receipt = await tx.sendSignedTransaction(increaseApprovalTx)
   } catch (err) {
     throw err
@@ -475,13 +512,14 @@ async function withdraw(opts = {}) {
  * @throws {TypeError}
  */
 async function getAmountDeposited(did) {
+  let address
   try {
     did = normalize(did)
+    address = await getAddressFromDID(did)
   } catch (err) {
     throw err
   }
 
-  const address = await getAddressFromDID(did)
   if (!_isValidAddress(address)) {
     throw new TypeError('Address is not a valid Ethereum address')
   }

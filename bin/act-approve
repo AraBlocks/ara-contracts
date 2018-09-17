@@ -20,26 +20,33 @@ usage: act approve: [-h] [--help] [options] [--] <approver> <spender> <amount>
 
 // Parse program arguments based on yargs spec
 const { argv } = program
-  .option('approver', {
-    alias: 'a',
-    describe: 'DID of the approver (the account that owns the tokens to be spent)'
+  .command('$0 [options] <approver> <spender> <amount>', 'Sets <spender> allowance to <amount> on behalf of <spender> (overwrites any previous allowance)', () => {
+    program
+      .positional('approver', {
+        type: 'string',
+        describe: 'DID of the approver (the account that owns the tokens to be spent)'
+      })
+      .positional('spender', {
+        type: 'string',
+        describe: 'DID of the spender that is being approved'
+      })
+      .positional('amount', {
+        type: 'string',
+        describe: 'Amount to modify the allowance for <spender>'
+      })
+      .option('increase', {
+        alias: 'i',
+        type: 'boolean',
+        describe: 'Flag to increase approval by <amount>'
+      })
+      .option('decrease', {
+        alias: 'd',
+        type: 'boolean',
+        describe: 'Flag to decrease approval by <amount>'
+      })
+      .conflicts('i', 'd')
+      .conflicts('d', 'i')
   })
-  .option('spender', {
-    alias: 's',
-    describe: 'DID of the spender that is being approved'
-  })
-  .option('increase', {
-    alias: 'i',
-    type: 'boolean',
-    describe: 'Flag to increase approval rather than overwrite'
-  })
-  .option('decrease', {
-    alias: 'd',
-    type: 'boolean',
-    describe: 'Flag to decrease approval rather than overwrite'
-  })
-  .conflicts('i', 'd')
-  .conflicts('d', 'i')
 
 // Emit program usage help
 if (0 == argv._.length && argv.help) {
@@ -49,24 +56,12 @@ if (0 == argv._.length && argv.help) {
 
 // Main program entry
 module.exports = (async function main() {
-  const { increase, decrease } = argv
-  let { approver, spender } = argv
-  let amount = argv._[0]
-
-  if (!approver || 'string' !== typeof approver) {
-    ({ did: approver } = await promptForDID('Please provide the DID of the approver.\nApprover DID:'))
+  if (argv.debug) {
+    require('debug').enable('ara-contracts*')
   }
-  if (!spender || 'string' !== typeof spender) {
-    ({ did: spender } = await promptForDID('Please provide the DID of the spender to be approved.\nSpender DID:'))
-  }
-  if ('number' !== typeof amount || amount <= 0) {
-    ({ amount } = await promptForAmount())
-    if ('number' !== typeof amount || amount <= 0) { 
-      onfatal(new TypeError(`Expected amount to be a positive number. Got ${amount}. Ensure that the approval amount is a positive number.`))
-    }
-  }
-
+  const { approver, spender, amount increase, decrease } = argv
   console.log(approver, spender, increase, decrease, amount)
+
   const { password } = await promptForPassword()
 
   const opts = { spender, did: approver, password, val: amount.toString() }
@@ -98,33 +93,16 @@ async function promptForPassword() {
     type: 'password',
     name: 'password',
     message:
-    "Please provide the passphrase for your identity. This is needed to " +
-    "complete this action.\n" +
-    "Passphrase:"
+    'Please provide the passphrase for your identity. This is needed to ' +
+    'complete this action.\n' +
+    'Passphrase:'
   }]) 
-}
-
-async function promptForAmount() {
-  return await inquirer.prompt([{
-    type: 'number',
-    name: 'amount',
-    message:
-    "Please provide the number of Ara tokens you approve the spender to spend.\n" +
-    "Number of Ara tokens:"
-  }]) 
-}
-
-async function promptForDID(message) {
-  return await inquirer.prompt([{
-    name: 'did',
-    message
-  }])
 }
 
 function onfatal(err) {
   if (err) {
     debug(err)
-    error("fatal:", err.message)
+    error('fatal:', err.message)
   }
   process.exit(1)
 }
