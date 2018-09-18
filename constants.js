@@ -2,9 +2,9 @@ module.exports = {
   kDidPrefix: 'did:',
   kAidPrefix: 'did:ara:',
   kOwnerSuffix: '#owner',
-  kRegistryAddress: '0xd17339371858af07822c72ce41ea61c95246c065',
-  kLibraryAddress: '0x4e7432b8c1dee58695dbfe33db2f09c1a739b8ad',
-  kAraTokenAddress: '0x8a31bddae7eecac86aa037aa1c6c4fceb3526c57',
+  kRegistryAddress: '0xa45e60e4cf78275c1f0c579262e4535480f27331',
+  kLibraryAddress: '0xcba0aed5c8f1ea66bc59f55457d9cb2ffc5ada11',
+  kAraTokenAddress: '0x7706c362742d3e35a97df48a251ff194a38d78cf',
 
   kTempOwnerDid: 'did:ara:8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67',
   kOwnerPassword: 'pass',
@@ -15,7 +15,7 @@ module.exports = {
   kTokenDecimals: 18,
   kTokenSupply: 1000000000,
 
-  kStandardVersion: '6'
+  kStandardVersion: '1'
 }
 
 // AFS standard v2: '0x5bd7C0Fcca203A3b5016cd6da530d1A72d0e5413'

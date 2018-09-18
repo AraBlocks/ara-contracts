@@ -36,8 +36,6 @@ contract AFS {
   event Purchased(bytes32 _purchaser, bytes32 _did, uint256 _price);
   event Redeemed(address _sender);
 
-  event TEST(uint8 _file, bytes _buffer, uint8 _size);
-
   uint8 constant mtBufferSize_ = 40;
   uint8 constant msBufferSize_ = 64;
 
@@ -188,7 +186,6 @@ contract AFS {
     }
     uint8 size = _file == 0 ? mtBufferSize_ : msBufferSize_;
     bytes memory buf = metadata_[_file].slice(_offset, size);
-    // emit TEST(_file, buf, size)
     return buf;
   }
 
