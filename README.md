@@ -1,7 +1,7 @@
 <img src="https://github.com/AraBlocks/docs/blob/master/ara.png" width="30" height="30" /> ara-contracts
 ========
 
-[![Build Status](https://travis-ci.com/AraBlocks/ara-contracts.svg?token=93ySMW14xn3tP6eZMEza&branch=cck-resolve-travis)](https://travis-ci.com/AraBlocks/ara-contracts)
+[![Build Status](https://travis-ci.com/AraBlocks/ara-contracts.svg?token=93ySMW14xn3tP6eZMEza&branch=master)](https://travis-ci.com/AraBlocks/ara-contracts)
 
 Blockchain interactions in Ara modules.
 

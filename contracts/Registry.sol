@@ -45,17 +45,7 @@ contract Registry {
   function getImplementation(string _version) external view returns (address) {
     return versions_[_version];
   }
-
-  uint256 number_;
-
-  function getNumber() public view returns (uint256) {
-    return 666;
-  }
-
-  function setNumber(uint256 _number) public {
-    number_ = _number;
-  }
-
+  
   /**
    * @dev AFS Proxy Factory
    * @param _contentId The unhashed methodless content DID
