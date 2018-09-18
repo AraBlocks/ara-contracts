@@ -1,2 +1,3 @@
 const test = require('ava')
-const { kLibraryAddress } = require('./_constants')
+
+test('t', t => t.pass())

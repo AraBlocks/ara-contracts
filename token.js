@@ -3,9 +3,8 @@ const BigNumber = require('bignumber.js')
 const { web3 } = require('ara-context')()
 
 const {
-  kAraTokenAddress,
-  kTotalSupply,
-  kTokenDecimals
+  ARA_TOKEN_ADDRESS,
+  TOKEN_DECIMALS
 } = require('./constants')
 
 const {
@@ -17,7 +16,7 @@ const {
 
 /**
  * Get the Ara balance of a specific address.
- * @param  {String} address 
+ * @param  {String} address
  * @return {Number}
  * @throws {TypeError}
  */
@@ -30,14 +29,14 @@ async function balanceOf(address) {
   try {
     balance = await call({
       abi: tokenAbi,
-      address: kAraTokenAddress,
+      address: ARA_TOKEN_ADDRESS,
       functionName: 'balanceOf',
       arguments: [ address ]
     })
   } catch (err) {
     throw err
   }
-  
+
   return constrainTokenValue(balance)
 }
 
@@ -51,7 +50,7 @@ async function totalSupply() {
   try {
     supply = await call({
       abi: tokenAbi,
-      address: kAraTokenAddress,
+      address: ARA_TOKEN_ADDRESS,
       functionName: 'totalSupply'
     })
   } catch (err) {
@@ -62,10 +61,10 @@ async function totalSupply() {
 
 /**
  * Get the amount of Ara that an owner has allowed for a spender to spend.
- * @param  {Object} opts 
+ * @param  {Object} opts
  * @param  {String} opts.owner
  * @param  {String} opts.spender
- * @return {Number} 
+ * @return {Number}
  * @throws {TypeError|Error}
  */
 async function allowance(opts = {}) {
@@ -81,7 +80,7 @@ async function allowance(opts = {}) {
   try {
     allowed = await call({
       abi: tokenAbi,
-      address: kAraTokenAddress,
+      address: ARA_TOKEN_ADDRESS,
       functionName: 'allowance',
       arguments: [ owner, spender ]
     })
@@ -93,7 +92,7 @@ async function allowance(opts = {}) {
 
 /**
  * Transfers Ara from the sender account to a specified address.
- * @param  {Object} opts 
+ * @param  {Object} opts
  * @param  {String} opts.to
  * @param  {Number} opts.val
  * @param  {String} opts.did
@@ -124,7 +123,7 @@ async function transfer(opts = {}) {
   try {
     const transferTx = await tx.create({
       account: acct,
-      to: kAraTokenAddress,
+      to: ARA_TOKEN_ADDRESS,
       data: {
         abi: tokenAbi,
         functionName: 'transfer',
@@ -140,13 +139,13 @@ async function transfer(opts = {}) {
 
 /**
  * Approve an address to spend a specified amount on the sender's behalf.
- * @param  {Object} opts 
+ * @param  {Object} opts
  * @param  {String} opts.spender
  * @param  {String} opts.did
  * @param  {String} opts.password
  * @param  {Number} opts.val
- * @return {Object} 
- * @throws {TypeError|Error} 
+ * @return {Object}
+ * @throws {TypeError|Error}
  */
 async function approve(opts = {}) {
   _validateApprovalOpts(opts)
@@ -161,7 +160,7 @@ async function approve(opts = {}) {
   try {
     const approveTx = await tx.create({
       account: acct,
-      to: kAraTokenAddress,
+      to: ARA_TOKEN_ADDRESS,
       data: {
         abi: tokenAbi,
         functionName: 'approve',
@@ -177,13 +176,13 @@ async function approve(opts = {}) {
 
 /**
  * Transfer Ara from one address to another.
- * @param  {Object} opts 
+ * @param  {Object} opts
  * @param  {String} opts.to
  * @param  {String} opts.did
  * @param  {String} opts.password
  * @param  {Number} opts.val
- * @return {Object} 
- * @throws {TypeError|Error} 
+ * @return {Object}
+ * @throws {TypeError|Error}
  */
 async function transferFrom(opts = {}) {
   if (!opts || 'object' !== typeof opts) {
@@ -209,7 +208,7 @@ async function transferFrom(opts = {}) {
   try {
     const transferFromTx = await tx.create({
       account: acct,
-      to: kAraTokenAddress,
+      to: ARA_TOKEN_ADDRESS,
       data: {
         abi: tokenAbi,
         functionName: 'transferFrom',
@@ -225,13 +224,13 @@ async function transferFrom(opts = {}) {
 
 /**
  * Increases the amount of Ara that an owner allowed to a spender.
- * @param  {Object} opts 
+ * @param  {Object} opts
  * @param  {String} opts.spender
  * @param  {String} opts.did
  * @param  {String} opts.password
  * @param  {Number} opts.val
- * @return {Object} 
- * @throws {TypeError|Error} 
+ * @return {Object}
+ * @throws {TypeError|Error}
  */
 async function increaseApproval(opts = {}) {
   _validateApprovalOpts(opts)
@@ -246,7 +245,7 @@ async function increaseApproval(opts = {}) {
   try {
     const increaseApprovalTx = await tx.create({
       account: acct,
-      to: kAraTokenAddress,
+      to: ARA_TOKEN_ADDRESS,
       data: {
         abi: tokenAbi,
         functionName: 'increaseApproval',
@@ -262,13 +261,13 @@ async function increaseApproval(opts = {}) {
 
 /**
  * Decreased the amount of Ara that an owner allowed to a spender.
- * @param  {Object} opts 
+ * @param  {Object} opts
  * @param  {String} opts.spender
  * @param  {String} opts.did
  * @param  {String} opts.password
  * @param  {Number} opts.val
- * @return {Object} 
- * @throws {TypeError|Error} 
+ * @return {Object}
+ * @throws {TypeError|Error}
  */
 async function decreaseApproval(opts = {}) {
   _validateApprovalOpts(opts)
@@ -282,7 +281,7 @@ async function decreaseApproval(opts = {}) {
   try {
     const increaseApprovalTx = await tx.create({
       account: acct,
-      to: kAraTokenAddress,
+      to: ARA_TOKEN_ADDRESS,
       data: {
         abi: tokenAbi,
         functionName: 'increaseApproval',
@@ -298,7 +297,7 @@ async function decreaseApproval(opts = {}) {
 
 /**
  * Expands token amount in Ara to be able to be read by the EVM
- * @param  {String} val   
+ * @param  {String} val
  * @return {String}
  * @throws {TypeError}
  */
@@ -309,13 +308,13 @@ function expandTokenValue(val) {
   if (!val) {
     return '0'
   }
-  const input = `${val}e${kTokenDecimals}`
+  const input = `${val}e${TOKEN_DECIMALS}`
   return web3.utils.toBN(BigNumber(input)).toString()
 }
 
 /**
  * Constrains token amount from EVM to "real" Ara amount
- * @param  {String} val   
+ * @param  {String} val
  * @return {String}
  * @throws {TypeError}
  */
@@ -326,8 +325,8 @@ function constrainTokenValue(val) {
   if (!val) {
     return '0'
   }
-  
-  const input = `${val}e-${kTokenDecimals}`
+
+  const input = `${val}e-${TOKEN_DECIMALS}`
   return BigNumber(input).toString()
 }
 
@@ -341,7 +340,7 @@ function _validateApprovalOpts(opts) {
   } else if (!opts.did || 'string' !== typeof opts.did) {
     throw new TypeError('DID URI must be non-empty string')
   } else if (!opts.password || 'string' !== typeof opts.password) {
-    throw new TypeError('Password must be non-empty string')  
+    throw new TypeError('Password must be non-empty string')
   }
 }
 

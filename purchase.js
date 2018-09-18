@@ -1,14 +1,12 @@
-const { abi: tokenAbi } = require('./build/contracts/AraToken.json')
-const { abi: libAbi } = require('./build/contracts/Library.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
-const { info } = require('ara-console')
+const { randomBytes } = require('ara-crypto')
+const { isValidJobId } = require('./util')
 const token = require('./token')
 
 const {
-  kAidPrefix,
-  kLibraryAddress,
-  kAraTokenAddress
+  AID_PREFIX,
+  JOB_ID_LENGTH
 } = require('./constants')
 
 const {
@@ -34,10 +32,6 @@ const {
     contract
   }
 } = require('ara-util')
-
-const {
-  isValidJobId
-} = require('./util')
 
 /**
  * Purchase contentDid // 256649 gas
@@ -67,7 +61,8 @@ async function purchase(opts) {
     job
   } = opts
 
-  let jobId, budget
+  let jobId
+  let budget
   if (job) {
     ({ jobId, budget } = job)
     const validJobId = jobId && isValidJobId(jobId)
@@ -80,7 +75,7 @@ async function purchase(opts) {
       throw TypeError('Expecting budget.')
     }
 
-    if (jobId.length === 64) {
+    if (JOB_ID_LENGTH === jobId.length) {
       jobId = ethify(jobId, 'string' !== typeof jobId)
     }
   } else {
@@ -101,7 +96,7 @@ async function purchase(opts) {
   debug(did, 'purchasing', contentDid)
 
   const hIdentity = hashDID(did)
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
   try {
@@ -119,7 +114,7 @@ async function purchase(opts) {
     })
 
     price = Number(token.constrainTokenValue(price))
-    let val = job 
+    let val = job
       ? price + budget
       : price
     val = val.toString()
@@ -157,7 +152,7 @@ async function purchase(opts) {
     await proxyContract.events.Purchased({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { _purchaser, _did } } = log
-        debug(_purchaser, "purchased", _did)
+        debug(_purchaser, 'purchased', _did)
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)

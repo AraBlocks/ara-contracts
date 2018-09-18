@@ -5,8 +5,9 @@ const { info } = require('ara-console')
 const token = require('./token')
 
 const {
-  kAidPrefix,
-  kAraTokenAddress
+  ARA_TOKEN_ADDRESS,
+  JOB_ID_LENGTH,
+  AID_PREFIX
 } = require('./constants')
 
 const {
@@ -15,7 +16,6 @@ const {
 } = require('./registry')
 
 const {
-  hashDID,
   validate,
   normalize,
   web3: {
@@ -52,7 +52,7 @@ async function submit(opts) {
     throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
-  } else if ('string' != typeof opts.password || !opts.password) {
+  } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password')
   } else if (!opts.job || 'object' !== typeof opts.job) {
     throw TypeError('Expecting job object.')
@@ -64,7 +64,7 @@ async function submit(opts) {
     job
   } = opts
 
-  let { budget, jobId } = job
+  let { jobId, budget } = job
 
   const validJobId = isValidJobId(jobId)
   const validBudget = budget && 'number' === typeof budget && budget > 0
@@ -76,7 +76,7 @@ async function submit(opts) {
     throw TypeError('Expecting budget.')
   }
 
-  if (jobId.length === 64) {
+  if (JOB_ID_LENGTH === jobId.length) {
     jobId = ethify(jobId, 'string' !== typeof jobId)
   }
 
@@ -90,7 +90,7 @@ async function submit(opts) {
 
   contentDid = normalize(contentDid)
 
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
   debug(did, 'submitting', budget, 'tokens as rewards for', contentDid)
@@ -136,7 +136,7 @@ async function submit(opts) {
     await proxyContract.events.BudgetSubmitted({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { _did, _jobId, _budget } } = log
-        info(requesterDid, 'budgeted', _budget, 'tokens for job', _jobId)
+        info(_did, 'budgeted', _budget, 'tokens for job', _jobId)
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)
@@ -174,7 +174,7 @@ async function allocate(opts) {
     throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
-  } else if ('string' != typeof opts.password || !opts.password) {
+  } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password')
   } else if (!opts.job || 'object' !== typeof opts.job) {
     throw TypeError('Expecting job object.')
@@ -187,7 +187,6 @@ async function allocate(opts) {
   } = opts
 
   const { farmers } = job
-
   let { rewards, jobId } = job
 
   const validJobId = isValidJobId(jobId)
@@ -196,11 +195,13 @@ async function allocate(opts) {
       return false
     }
     farmers[index] = sha3({ t: 'address', v: address })
+    return true
   })
   const validRewards = isValidArray(rewards, (reward) => {
     if (reward <= 0) {
       return false
     }
+    return true
   })
 
   if (!validJobId) {
@@ -211,7 +212,7 @@ async function allocate(opts) {
     throw TypeError('Expecting farmers and rewards.')
   }
 
-  if (jobId.length === 64) {
+  if (JOB_ID_LENGTH === jobId.length) {
     jobId = ethify(jobId, 'string' !== typeof jobId)
   }
   let { contentDid } = opts
@@ -224,7 +225,7 @@ async function allocate(opts) {
 
   contentDid = normalize(contentDid)
 
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
   debug(did, 'allocating rewards for job:', jobId)
@@ -255,7 +256,7 @@ async function allocate(opts) {
     await proxyContract.events.RewardsAllocated({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { _did, _allocated, _returned } } = log
-        info('allocated', _allocated, 'tokens as rewards between farmers and returned', _returned, 'tokens')
+        info(_did, 'allocated', _allocated, 'tokens as rewards between farmers and returned', _returned, 'tokens')
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)
@@ -288,7 +289,7 @@ async function redeem(opts) {
     throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
-  } else if ('string' != typeof opts.password || !opts.password) {
+  } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password')
   }
 
@@ -304,9 +305,10 @@ async function redeem(opts) {
   contentDid = normalize(contentDid)
 
   debug(did, 'redeeming balance from', contentDid)
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
+  let balance = 0
   try {
     if (!(await proxyExists(contentDid))) {
       throw new Error('This content does not have a valid proxy contract')
@@ -324,8 +326,7 @@ async function redeem(opts) {
       }
     })
 
-    let balance
-    const tokenContract = await contract.get(tokenAbi, kAraTokenAddress)
+    const tokenContract = await contract.get(tokenAbi, ARA_TOKEN_ADDRESS)
     await tokenContract.events.Transfer({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { from, to, value } } = log
@@ -343,11 +344,12 @@ async function redeem(opts) {
 
     if (receipt.status) {
       debug('gas used', receipt.gasUsed)
-      return balance
     }
   } catch (err) {
     throw err
   }
+
+  return balance
 }
 
 /**
@@ -405,7 +407,7 @@ async function getBalance(opts) {
     throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
-  } else if ('string' != typeof opts.password || !opts.password) {
+  } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password')
   }
 
@@ -420,7 +422,7 @@ async function getBalance(opts) {
 
   contentDid = normalize(contentDid)
 
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const { address } = await account.load({ did, password })
 
   try {
