@@ -40,6 +40,14 @@ const { argv } = program
     alias: 'u',
     describe: 'Flag to indicate upgrade to version'
   })
+  .option('force', {
+    alias: 'f',
+    describe: 'Bypass password input, must also pass in password.'
+  })
+  .option('password', {
+    alias: 'p',
+    describe: 'Password for DID'
+  })
   .conflicts('P', ['S', 'p'])
   .conflicts('S', 'u')
 
@@ -59,8 +67,14 @@ module.exports = (async function main() {
     process.exit(0)
   }
 
-  const { password } = await promptForPassword()
-  let { did, version, upgrade } = argv
+  let { did, version, upgrade, force, password } = argv
+  if (force && !password) {
+    onfatal(new Error("Must provide password if forcing a command."))
+  }
+
+  if (!force) {
+    ({ password } = await promptForPassword())
+  }
 
   if (!did) {
     ({ did } = proxy ? await promptForDID("Please provide the content DID that this Proxy will be deployed for.")

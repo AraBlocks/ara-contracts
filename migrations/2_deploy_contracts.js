@@ -3,6 +3,7 @@
 
 const replace = require('replace-in-file')
 const constants = require('../constants')
+const { web3 } = require('ara-context')()
 const path = require('path')
 
 const Library = artifacts.require('./Library.sol')
@@ -10,18 +11,26 @@ const AraToken = artifacts.require('./AraToken.sol')
 const Registry = artifacts.require('./Registry.sol')
 
 module.exports = (deployer, network, accounts) => {
-  const { DEFAULT_ADDRESS } = constants
-  const from = 'privatenet' === network
-    ? DEFAULT_ADDRESS
-    : accounts[0]
+  deployer.then(async () => {
+    const { DEFAULT_ADDRESS, TEST_OWNER_ADDRESS } = constants
+    const from = 'privatenet' === network
+      ? DEFAULT_ADDRESS
+      : TEST_OWNER_ADDRESS
 
-  // deploy
-  deployer.deploy(Registry, { from })
-    .then(() =>
-      deployer.deploy(Library, Registry.address, { from })
-        .then(() =>
-          deployer.deploy(AraToken, { from })))
-            .then(ondeploycomplete)
+    // this account needs to match DID to be used with testing
+    // so needs to be unlocked on local ganache node
+    if ('local' === network) {
+      await web3.eth.personal.importRawKey(constants.TEST_OWNER_PK, constants.PASSWORD)
+      await web3.eth.personal.unlockAccount(constants.TEST_OWNER_ADDRESS, constants.PASSWORD, 0)
+      await web3.eth.sendTransaction({ from: accounts[0], to: constants.TEST_OWNER_ADDRESS, value: 1000000000000000000 })
+    }
+
+    // deploy
+    await deployer.deploy(Registry, { from })
+    await deployer.deploy(Library, Registry.address, { from })
+    await deployer.deploy(AraToken, { from })
+    await ondeploycomplete()
+  })
 }
 
 async function ondeploycomplete() {
@@ -31,8 +40,5 @@ async function ondeploycomplete() {
     from: [ constants.REGISTRY_ADDRESS, constants.LIBRARY_ADDRESS, constants.ARA_TOKEN_ADDRESS ],
     to: [ Registry.address, Library.address, AraToken.address ]
   }
-  console.log('Registry', Registry.address)
-  console.log('Library', Library.address)
-  console.log('AraToken', AraToken.address)
   await replace(options)
 }
