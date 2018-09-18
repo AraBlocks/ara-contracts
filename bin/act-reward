@@ -158,8 +158,7 @@ async function onallocate(argv) {
   if (farmers.length !== distrib.length) {
     onfatal(new Error(`Expected same number of farmers as distributions. Got ${farmers.length} farmers and ${distrib.length} distributions.`))
   }
-  console.log(farmers)
-  console.log(distrib)
+
   try {
     await rewards.allocate({ requesterDid: did,
                              contentDid: content,
