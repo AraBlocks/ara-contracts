@@ -104,17 +104,16 @@ async function submit(opts) {
 
     budget = budget.toString()
 
-    const approveTx = await token.increaseApproval({
+    let receipt = await token.increaseApproval({
       did,
       password,
       spender: proxy,
       val: budget
     })
 
-    const receipt1 = await tx.sendSignedTransaction(approveTx)
-    if (receipt1.status) {
+    if (receipt.status) {
       // 30225 gas
-      debug('gas used', receipt1.gasUsed)
+      debug('gas used', receipt.gasUsed)
     }
 
     const val = token.expandTokenValue(budget)
@@ -146,10 +145,10 @@ async function submit(opts) {
         debug(`error:  ${log}`)
       })
 
-    const receipt2 = await tx.sendSignedTransaction(submitTx)
-    if (receipt2.status) {
+    receipt = await tx.sendSignedTransaction(submitTx)
+    if (receipt.status) {
       // 54073 gas
-      debug('gas used', receipt2.gasUsed)
+      debug('gas used', receipt.gasUsed)
     }
   } catch (err) {
     throw err
