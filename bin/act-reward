@@ -14,6 +14,30 @@ usage: act reward: [-h] [--help] [options]
 })
 
 const { argv } = program
+  command('balance <content> <did>', 'Query <did>\'s reward balance for <content>', () => {
+    program
+      .positional('content', {
+        type: 'string',
+        describe: 'The content DID where the balance is located'
+      })
+      .position('did', {
+        type: 'string',
+        describe: 'The DID that owns the balance'
+      })
+  })
+  .command('redeem <content> <did>', 'Transfer balance from <content> to <did> account', () => {
+    program
+      .positional('content', {
+        type: 'string',
+        describe: 'The content DID where the balance is located'
+      })
+      .position('did', {
+        type: 'string',
+        describe: 'The DID that owns the balance'
+      })
+  })
+
+
   .option('allocate', {
     alias: 'a',
     descirbe: 'Flag to allocate rewards.'
