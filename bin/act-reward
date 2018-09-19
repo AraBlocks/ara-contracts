@@ -4,14 +4,9 @@ const debug = require('debug')('ara-contracts:cli:reward')
 const { info, warn, error, log } = require('ara-console')
 const { createProgram } = require('../lib/program')
 const { randomBytes } = require('ara-crypto')
+const { ethify } = require('ara-util/web3')
 const rewards = require('../rewards')
 const inquirer = require('inquirer')
-
-const {
-  web3: {
-    ethify
-  }
-} = require('ara-util')
 
 // yargs program command line interface instance
 const program = createProgram({

@@ -56,7 +56,6 @@ module.exports = (async function main() {
 }())
 
 async function ondeposited(argv) {
-  debug('ondeposited')
   const { did } = argv
   try {
     const amount = await token.getAmountDeposited(did)
@@ -67,7 +66,6 @@ async function ondeposited(argv) {
 }
 
 async function onsupply(argv) {
-  debug('onsupply')
   try {
     const amount = await token.totalSupply()
     info(`The total supply of Ara is ${amount}`)
@@ -77,7 +75,6 @@ async function onsupply(argv) {
 }
 
 async function onbalance(argv) {
-  debug('onbalance')
   const { did } = argv
   try {
     const amount = await token.balanceOf(did)
@@ -88,7 +85,6 @@ async function onbalance(argv) {
 }
 
 async function onallowance(argv) {
-  debug('onallowance')
   const { did, spender } = argv
   try {
     const amount = await token.allowance({ owner: did, spender })
