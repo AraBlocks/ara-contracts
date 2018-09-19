@@ -18,6 +18,7 @@ const {
 const {
   validate,
   normalize,
+  getAddressFromDID,
   web3: {
     tx,
     sha3,
@@ -37,7 +38,7 @@ const {
 /**
  * Submits a new DCDN job // 84298 gas
  * @param  {Object}         opts
- * @param  {String}         opts.requesterDid
+ * @param  {String}         opts.farmerDid
  * @param  {String}         opts.contentDid
  * @param  {String}         opts.password
  * @param  {Object}         opts.job
@@ -48,8 +49,8 @@ const {
 async function submit(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
-  } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
-    throw TypeError('Expecting non-empty requester DID')
+  } else if ('string' !== typeof opts.farmerDid || !opts.farmerDid) {
+    throw TypeError('Expecting non-empty farmer DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
   } else if ('string' !== typeof opts.password || !opts.password) {
@@ -59,7 +60,7 @@ async function submit(opts) {
   }
 
   const {
-    requesterDid,
+    farmerDid,
     password,
     job
   } = opts
@@ -86,7 +87,7 @@ async function submit(opts) {
   let { contentDid } = opts
   let did
   try {
-    ({ did } = await validate({ did: requesterDid, password, label: 'rewards' }))
+    ({ did } = await validate({ did: farmerDid, password, label: 'rewards' }))
   } catch (err) {
     throw err
   }
@@ -163,20 +164,20 @@ async function submit(opts) {
 /**
  * Allocates rewards for job // 163029 gas (with return), 69637 gas (without return)
  * @param  {Object}         opts
- * @param  {String}         opts.requesterDid
+ * @param  {String}         opts.farmerDid
  * @param  {String}         opts.contentDid
  * @param  {String}         opts.password
  * @param  {Object}         opts.job
  * @param  {string|Buffer}  opts.job.jobId
- * @param  {Array}          opts.job.farmers   // addresses
+ * @param  {Array}          opts.job.farmers
  * @param  {Array}          opts.job.rewards
  * @throws {Error,TypeError}
  */
 async function allocate(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
-  } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
-    throw TypeError('Expecting non-empty requester DID')
+  } else if ('string' !== typeof opts.farmerDid || !opts.farmerDid) {
+    throw TypeError('Expecting non-empty farmer DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
   } else if ('string' !== typeof opts.password || !opts.password) {
@@ -186,57 +187,60 @@ async function allocate(opts) {
   }
 
   const {
-    requesterDid,
+    farmerDid,
     password,
     job
   } = opts
 
-  const { farmers } = job
-  let { jobId, rewards } = job
+  let { farmers, rewards, jobId } = job
 
   const validJobId = isValidJobId(jobId)
-  const validFarmers = isValidArray(farmers, (address, index) => {
-    if (!isAddress(address)) {
-      return false
-    }
-    farmers[index] = sha3({ t: 'address', v: address })
-    return true
-  })
-  const validRewards = isValidArray(rewards, (reward) => {
-    if (reward <= 0) {
-      return false
-    }
-    return true
-  })
-
   if (!validJobId) {
-    throw TypeError('Expecting job Id.')
+    throw TypeError('Invalid job Id.')
   }
-
-  if (!validFarmers || !validRewards || farmers.length !== rewards.length) {
-    throw TypeError('Expecting farmers and rewards.')
-  }
-
   if (JOB_ID_LENGTH === jobId.length) {
     jobId = ethify(jobId, 'string' !== typeof jobId)
   }
 
+  // Convert farmer DIDs to Addresses
+  const validFarmers = await isValidArray(farmers, async (farmer, index) => {
+    farmers[index] = await getAddressFromDID(farmer)
+    return isAddress(farmers[index])
+  })
+  if (!validFarmers) {
+    throw TypeError('Invalid farmer array.')
+  }
+
+  // Expand token values
+  const validRewards = await isValidArray(rewards, async (reward, index) => {
+    if (reward > 0) {
+      rewards[index] = token.expandTokenValue(reward.toString())
+      return true
+    }
+    return false
+  })
+  if (!validRewards) {
+    throw TypeError('Invalid reward array')
+  }
+
+  if (farmers.length !== rewards.length) {
+    throw TypeError('Farmers and rewards array length mismatch.')
+  }
+
   let { contentDid } = opts
+  contentDid = normalize(contentDid)
+
   let did
   try {
-    ({ did } = await validate({ did: requesterDid, password, label: 'rewards' }))
+    ({ did } = await validate({ did: farmerDid, password, label: 'rewards' }))
   } catch (err) {
     throw err
   }
-
-  contentDid = normalize(contentDid)
-
   did = `${AID_PREFIX}${did}`
+  
   const acct = await account.load({ did, password })
 
   debug(did, 'allocating rewards for job:', jobId)
-
-  rewards = rewards.map(i => token.expandTokenValue(i))
 
   try {
     if (!(await proxyExists(contentDid))) {
@@ -283,7 +287,7 @@ async function allocate(opts) {
 /**
  * Redeem balance from AFS contract
  * @param  {Object}         opts
- * @param  {String}         opts.requesterDid
+ * @param  {String}         opts.farmerDid
  * @param  {String}         opts.contentDid
  * @param  {String}         opts.password
  * @throws {Error,TypeError}
@@ -291,19 +295,19 @@ async function allocate(opts) {
 async function redeem(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
-  } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
-    throw TypeError('Expecting non-empty requester DID')
+  } else if ('string' !== typeof opts.farmerDid || !opts.farmerDid) {
+    throw TypeError('Expecting non-empty farmer DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
   } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password')
   }
 
-  const { requesterDid, password } = opts
+  const { farmerDid, password } = opts
   let { contentDid } = opts
   let did
   try {
-    ({ did } = await validate({ did: requesterDid, password, label: 'rewards' }))
+    ({ did } = await validate({ did: farmerDid, password, label: 'rewards' }))
   } catch (err) {
     throw err
   }
@@ -400,7 +404,7 @@ async function getBudget(opts) {
 /**
  * Get user balance
  * @param  {Object} opts
- * @param  {String} opts.requesterDid
+ * @param  {String} opts.farmerDid
  * @param  {String} opts.contentDid
  * @param  {String} opts.password
  * @throws {Error,TypeError}
@@ -408,19 +412,19 @@ async function getBudget(opts) {
 async function getBalance(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
-  } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
-    throw TypeError('Expecting non-empty requester DID')
+  } else if ('string' !== typeof opts.farmerDid || !opts.farmerDid) {
+    throw TypeError('Expecting non-empty farmer DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
   } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password')
   }
 
-  const { requesterDid, password } = opts
+  const { farmerDid, password } = opts
   let { contentDid } = opts
   let did
   try {
-    ({ did } = await validate({ did: requesterDid, password, label: 'rewards' }))
+    ({ did } = await validate({ did: farmerDid, password, label: 'rewards' }))
   } catch (err) {
     throw err
   }

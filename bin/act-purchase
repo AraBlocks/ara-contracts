@@ -42,12 +42,16 @@ if (0 == argv._.length && argv.help) {
 // Main program entry
 module.exports = (async function main() {
   let { purchaser, did, budget } = argv
+  let job = null
   if (0 >= budget) {
     throw new TypeError(`Expecting 'budget' to be a positive number. Got ${budget}. Try passing in a positive budget.`)
+  } else {
+    const jobId = ethify(randomBytes(32), true)
+    job = { jobId, budget }
   }
 
   const { password } = await promptForPassword()
-  const jobId = ethify(randomBytes(32), true)
+
   info(`Purchasing ${did}...`)
   try {
     // DEBUG=* act purchase 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 2932d07bb73160c9808b02aa061dc6ee4b759dfc0bd19656214eb651469b6ceb --budget 10
@@ -55,7 +59,7 @@ module.exports = (async function main() {
       requesterDid: purchaser,
       contentDid: did,
       password,
-      job: budget ? { jobId, budget } : null
+      job
     })
   } catch (err) {
     onfatal(err)

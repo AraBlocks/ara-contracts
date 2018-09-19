@@ -25,22 +25,22 @@ test('isValidJobId(jobId)', (t) => {
   t.true(result)
 })
 
-test('isValidArray(arr, fn)', (t) => {
-  let result = util.isValidArray()
+test('isValidArray(arr, fn)', async (t) => {
+  let result = await util.isValidArray()
   t.false(result)
 
-  result = util.isValidArray(1)
+  result = await util.isValidArray(1)
   t.false(result)
 
-  result = util.isValidArray('123')
+  result = await util.isValidArray('123')
   t.false(result)
 
-  result = util.isValidArray([])
+  result = await util.isValidArray([])
   t.false(result)
 
-  result = util.isValidArray([1, 2, 3])
+  result = await util.isValidArray([1, 2, 3])
   t.true(result)
 
-  result = util.isValidArray(['apple', 3, 'banana', {}])
+  result = await util.isValidArray(['apple', 3, 'banana', {}])
   t.true(result)
 })

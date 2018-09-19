@@ -37,7 +37,7 @@ async function balanceOf(did) {
     throw err
   }
 
-  if (!_isValidAddress(address)) {
+  if (!isAddress(address)) {
     throw new Error(`${did} did not resolve to a valid Ethereum address. Got ${address}. Ensure ${did} is a valid Ara identity.`)
   }
 
@@ -90,11 +90,11 @@ async function allowance(opts = {}) {
 
   let { owner, spender } = opts
   try {
-    if (!_isValidAddress(owner)) {
+    if (!isAddress(owner)) {
       owner = normalize(owner)
       owner = await getAddressFromDID(owner)
     }
-    if (!_isValidAddress(spender)) {
+    if (!isAddress(spender)) {
       spender = normalize(spender)
       spender = await getAddressFromDID(spender)
     }
@@ -102,10 +102,10 @@ async function allowance(opts = {}) {
     throw err
   }
 
-  if (!_isValidAddress(owner)) {
+  if (!isAddress(owner)) {
     throw new Error(`'opts.owner' did not resolve to a valid Ethereum address. Got ${owner}. Ensure ${opts.owner} is a valid Ara identity.`)
   }
-  if (!_isValidAddress(spender)) {
+  if (!isAddress(spender)) {
     throw new Error(`'opts.spender' did not resolve to a valid Ethereum address. Got ${spender}. Ensure ${opts.spender} is a valid Ara identity.`)
   }
 
@@ -151,7 +151,7 @@ async function transfer(opts = {}) {
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transfer' }))
-    if (!_isValidAddress(to)) {
+    if (!isAddress(to)) {
       to = normalize(to)
       to = await getAddressFromDID(to)
     }
@@ -159,7 +159,7 @@ async function transfer(opts = {}) {
     throw err
   }
 
-  if (!_isValidAddress(to)) {
+  if (!isAddress(to)) {
     throw new Error(`'opts.to' did not resolve to a valid Ethereum address. Got ${to}. Ensure ${opts.to} is a valid Ara identity.`)
   }
 
@@ -167,7 +167,6 @@ async function transfer(opts = {}) {
   const acct = await account.load({ did, password })
 
   val = expandTokenValue(val)
-
   let receipt
   try {
     const transferTx = await tx.create({
@@ -204,7 +203,7 @@ async function approve(opts = {}) {
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transfer' }))
-    if (!_isValidAddress(spender)) {
+    if (!isAddress(spender)) {
       spender = normalize(spender)
       spender = await getAddressFromDID(spender)
     }
@@ -212,7 +211,7 @@ async function approve(opts = {}) {
     throw err
   }
 
-  if (!_isValidAddress(spender)) {
+  if (!isAddress(spender)) {
     throw new Error(`'opts.spender' did not resolve to a valid Ethereum address. Got ${spender}. Ensure ${opts.spender} is a valid Ara identity.`)
   }
 
@@ -275,11 +274,11 @@ async function transferFrom(opts = {}) {
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transferFrom' }))
-    if (!_isValidAddress(to)) {
+    if (!isAddress(to)) {
       to = normalize(to)
       to = await getAddressFromDID(to)
     }
-    if (!_isValidAddress(from)) {
+    if (!isAddress(from)) {
       from = normalize(from)
       from = await getAddressFromDID(from)
     }
@@ -287,10 +286,10 @@ async function transferFrom(opts = {}) {
     throw err
   }
 
-  if (!_isValidAddress(from)) {
+  if (!isAddress(from)) {
     throw new Error(`'opts.from' did not resolve to a valid Ethereum address. Got ${from}. Ensure ${opts.from} is a valid Ara identity.`)
   }
-  if (!_isValidAddress(to)) {
+  if (!isAddress(to)) {
     throw new Error(`'opts.to' did not resolve to a valid Ethereum address. Got ${to}. Ensure ${opts.to} is a valid Ara identity.`)
   }
 
@@ -335,7 +334,7 @@ async function increaseApproval(opts = {}) {
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transfer' }))
-    if (!_isValidAddress(spender)) {
+    if (!isAddress(spender)) {
       spender = normalize(spender)
       spender = await getAddressFromDID(spender)
     }
@@ -343,7 +342,7 @@ async function increaseApproval(opts = {}) {
     throw err
   }
 
-  if (!_isValidAddress(spender)) {
+  if (!isAddress(spender)) {
     throw new Error(`'opts.spender' did not resolve to a valid Ethereum address. Got ${spender}. Ensure ${opts.spender} is a valid Ara identity.`)
   }
 
@@ -388,7 +387,7 @@ async function decreaseApproval(opts = {}) {
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transfer' }))
-    if (!_isValidAddress(spender)) {
+    if (!isAddress(spender)) {
       spender = normalize(spender)
       spender = await getAddressFromDID(spender)
     }
@@ -396,7 +395,7 @@ async function decreaseApproval(opts = {}) {
     throw err
   }
 
-  if (!_isValidAddress(spender)) {
+  if (!isAddress(spender)) {
     throw new Error(`'opts.spender' did not resolve to a valid Ethereum address. Got ${spender}. Ensure ${opts.spender} is a valid Ara identity.`)
   }
 
@@ -547,7 +546,7 @@ async function getAmountDeposited(did) {
     throw err
   }
 
-  if (!_isValidAddress(address)) {
+  if (!isAddress(address)) {
     throw new Error(`'did' did not resolve to a valid Ethereum address. Got ${address}. Ensure ${did} is a valid Ara identity.`)
   }
 
@@ -578,10 +577,6 @@ function _validateApprovalOpts(opts) {
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${opts.password}.`)
   }
-}
-
-function _isValidAddress(address) {
-  return address && 'string' === typeof address && isAddress(address)
 }
 
 module.exports = {

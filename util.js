@@ -20,12 +20,16 @@ function isValidJobId(jobId) {
   return true
 }
 
-function isValidArray(arr, fn) {
-  if (arr && Array.isArray(arr) && 0 < arr.length) {
-    if (fn) {
-      arr.forEach(fn)
+async function isValidArray(arr, fn) {
+  if (arr && Array.isArray(arr) && arr.length > 0) {
+    let valid = true
+    if (fn){
+      for (let i = 0; i < arr.length; i++){
+        const result = await fn(arr[i], i)
+        valid = valid && result
+      }
     }
-    return true
+    return valid
   }
   return false
 }
