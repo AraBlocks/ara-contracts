@@ -18,7 +18,7 @@ usage: act deploy: [-h] [--help]
 
 // Parse program arguments based on yargs spec
 const { argv } = program
-  .command('proxy [--upgrade] <did> <version>', 'Deploy a proxy contract for <did>', () => {
+  .command('proxy [options] <did> <version>', 'Deploy a proxy contract for <did>', () => {
     program
       .positional('did', {
         type: 'string',
@@ -33,8 +33,16 @@ const { argv } = program
         type: 'boolean',
         describe: 'Flag to indicate upgrade to <version>'
       })
+      .option('force', {
+        alias: 'f',
+        describe: 'Bypass password input, must also pass in password.'
+      })
+      .option('password', {
+        alias: 'p',
+        describe: 'Password for DID'
+      })
   }, onproxy)
-  .command('standard <did> <version> <pathspec...>', 'Deploy a new AFS standard <version> with <did> (the registry contract owner)', () => {
+  .command('standard [options] <did> <version> <pathspec...>', 'Deploy a new AFS standard <version> with <did> (the registry contract owner)', () => {
     program
       .positional('did', {
         type: 'string',
@@ -47,6 +55,14 @@ const { argv } = program
       .positional('pathspec', {
         type: 'string',
         describe: "Paths to the solidity dependencies(s) of AFS.sol"
+      })
+      .option('force', {
+        alias: 'f',
+        describe: 'Bypass password input, must also pass in password.'
+      })
+      .option('password', {
+        alias: 'p',
+        describe: 'Password for DID'
       })
   }, onstandard)
 
@@ -64,8 +80,13 @@ module.exports = (async function main() {
 }())
 
 async function onproxy(argv) {
-  let { did, version, upgrade } = argv
-  const { password } = await promptForPassword()
+  let { did, version, upgrade, force, password } = argv
+  if (force && !password) {
+    onfatal(new Error('Must provide password if forcing a command.'))
+  }
+  if (!force) {
+    ({ password } = await promptForPassword())
+  }
 
   try {
     const opts = { contentDid: did, password, version }
@@ -88,9 +109,14 @@ async function onproxy(argv) {
 }
 
 async function onstandard(argv) {
-  let { did, version } = argv
+  let { did, version, force, password } = argv
   let [ ...paths ] = argv.pathspec
-  const { password } = await promptForPassword()
+  if (force && !password) {
+    onfatal(new Error('Must provide password if forcing a command.'))
+  }
+  if (!force) {
+    ({ password } = await promptForPassword())
+  }
 
   try {
     info(`deploying new AFS standard version ${version}`)
