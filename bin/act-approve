@@ -14,17 +14,17 @@ const {
 // yargs program command line interface instance
 const program = createProgram({
   usage: `
-usage: act approve: [-h] [--help] [options] [--] <approver> <spender> <amount>
+usage: act approve: [-h] [--help] [options] [--] <owner> <spender> <amount>
 `
 })
 
 // Parse program arguments based on yargs spec
 const { argv } = program
-  .command('$0 [options] <approver> <spender> <amount>', 'Sets <spender> allowance to <amount> on behalf of <spender> (overwrites any previous allowance)', () => {
+  .command('$0 [options] <owner> <spender> <amount>', 'Sets <spender> allowance to <amount> on behalf of <owner> (overwrites any previous allowance)', () => {
     program
-      .positional('approver', {
+      .positional('owner', {
         type: 'string',
-        describe: 'DID of the approver (the account that owns the tokens to be spent)'
+        describe: 'DID of the owner (the account that owns the tokens to be spent)'
       })
       .positional('spender', {
         type: 'string',
@@ -59,11 +59,11 @@ module.exports = (async function main() {
   if (argv.debug) {
     require('debug').enable('ara-contracts*')
   }
-  const { approver, spender, amount, increase, decrease } = argv
+  const { owner, spender, amount, increase, decrease } = argv
 
   const { password } = await promptForPassword()
 
-  const opts = { spender, did: approver, password, val: amount.toString() }
+  const opts = { spender, did: owner, password, val: amount.toString() }
   try {
     // act approve 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3 100 -D
     let receipt
@@ -71,19 +71,19 @@ module.exports = (async function main() {
       info(`Increasing approval by ${amount} Ara...`)
       receipt = await increaseApproval(opts)
       if (receipt.status) {
-        info(`${approver} increased allowance for ${spender} by ${amount} Ara.`)
+        info(`${owner} increased allowance for ${spender} by ${amount} Ara.`)
       }
     } else if (decrease) {
       info(`Decreasing approval by ${amount} Ara...`)
       receipt = await decreaseApproval(opts)
       if (receipt.status) {
-        info(`${approver} decreased allowance for ${spender} by ${amount} Ara.`)
+        info(`${owner} decreased allowance for ${spender} by ${amount} Ara.`)
       }
     } else {
       info(`Approving ${amount} Ara...`)
       receipt = await approve(opts)
       if (receipt.status) {
-        info(`${approver} set allowance for ${spender} to ${amount} Ara.`)
+        info(`${owner} set allowance for ${spender} to ${amount} Ara.`)
       }
     }
   } catch (err) {
