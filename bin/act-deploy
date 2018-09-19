@@ -91,16 +91,16 @@ async function onproxy(argv) {
   try {
     const opts = { contentDid: did, password, version }
     if (!upgrade) {
-      info(`deploying new proxy for ${did} at version ${version}`)
-      // DEBUG=* act deploy proxy 114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85 2
+      info(`Deploying new proxy for ${did} at version ${version}...`)
+      // DEBUG=* act deploy proxy 114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85 1
       const address = await registry.deployProxy(opts)
-      info("Proxy deployed at address", address, "for content", did)
+      info(`Proxy deployed at address ${address} for ${did}.`)
     } else {
-      info(`upgrading proxy for ${did} to version ${version}`)
-      // DEBUG=* act deploy proxy -u 114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85 3
+      info(`Upgrading proxy for ${did} to version ${version}...`)
+      // DEBUG=* act deploy proxy -u 114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85 2
       const upgraded = await registry.upgradeProxy(opts)
       if (upgraded) {
-        info("Proxy successfully upgraded to version", version)
+        info(`Proxy successfully upgraded to version ${version}.`)
       }
     }
   } catch (err) {
@@ -119,15 +119,15 @@ async function onstandard(argv) {
   }
 
   try {
-    info(`deploying new AFS standard version ${version}`)
-    // DEBUG=* act deploy standard 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 3 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/AraToken.sol
+    info(`Deploying new AFS standard version ${version}...`)
+    // DEBUG=* act deploy standard 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 1 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/AraToken.sol
     const address = await registry.deployNewStandard({
       requesterDid: did,
       password,
       version,
       paths
     })
-    info("New AFS standard version", version, "deployed at address", address)
+    info(`New AFS standard version ${version} deployed at address ${address}.`)
   } catch (err) {
     onfatal(err)
   }

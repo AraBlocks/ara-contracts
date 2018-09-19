@@ -164,7 +164,7 @@ async function transfer(opts = {}) {
     throw new Error(`'opts.to' did not resolve to a valid Ethereum address. Got ${to}. Ensure ${opts.to} is a valid Ara identity.`)
   }
 
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
   val = expandTokenValue(val)
@@ -217,7 +217,7 @@ async function approve(opts = {}) {
     throw new Error(`'opts.spender' did not resolve to a valid Ethereum address. Got ${spender}. Ensure ${opts.spender} is a valid Ara identity.`)
   }
 
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
   val = expandTokenValue(val)
@@ -290,7 +290,7 @@ async function transferFrom(opts = {}) {
     throw new Error(`'opts.to' did not resolve to a valid Ethereum address. Got ${to}. Ensure ${opts.to} is a valid Ara identity.`)
   }
 
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
   val = expandTokenValue(val)
@@ -343,7 +343,7 @@ async function increaseApproval(opts = {}) {
     throw new Error(`'opts.spender' did not resolve to a valid Ethereum address. Got ${spender}. Ensure ${opts.spender} is a valid Ara identity.`)
   }
 
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
   val = expandTokenValue(val)
@@ -396,7 +396,7 @@ async function decreaseApproval(opts = {}) {
     throw new Error(`'opts.spender' did not resolve to a valid Ethereum address. Got ${spender}. Ensure ${opts.spender} is a valid Ara identity.`)
   }
 
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
   let { val } = opts
@@ -487,7 +487,7 @@ async function deposit(opts = {}) {
     throw err
   }
 
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
   val = expandTokenValue(val)

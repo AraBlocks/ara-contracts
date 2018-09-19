@@ -16,37 +16,37 @@ usage: act reward: [-h] [--help] [options]
 })
 
 const { argv } = program
-  .command('balance <content> <did>', 'Query <did>\'s reward balance for <content>', () => {
+  .command('balance <did> <content>', 'Query <did>\'s reward balance for <content>', () => {
     program
-      .positional('content', {
-        type: 'string',
-        describe: 'The content DID where the balance is located'
-      })
       .positional('did', {
         type: 'string',
         describe: 'The DID that owns the balance'
+      })
+      .positional('content', {
+        type: 'string',
+        describe: 'The content DID where the balance is located'
       })
   }, onbalance)
-  .command('redeem <content> <did>', 'Transfer balance from <content> to <did> account', () => {
+  .command('redeem <did> <content>', 'Transfer balance from <content> to <did> account', () => {
     program
-      .positional('content', {
-        type: 'string',
-        describe: 'The content DID where the balance is located'
-      })
       .positional('did', {
         type: 'string',
         describe: 'The DID that owns the balance'
       })
-  }, onredeem)
-  .command('submit <content> <did> <budget>', 'Submit a budget for a DCDN download', () => {
-    program
       .positional('content', {
         type: 'string',
-        describe: 'The content DID where the budget will be submitted'
+        describe: 'The content DID where the balance is located'
       })
+  }, onredeem)
+  .command('submit <did> <content> <budget>', 'Submit a budget for a DCDN download', () => {
+    program
       .positional('did', {
         type: 'string',
         describe: 'The DID providing the budget'
+      })
+      .positional('content', {
+        type: 'string',
+        describe: 'The content DID where the budget will be submitted'
       })
       .positional('budget', {
         type: 'string',
@@ -64,15 +64,15 @@ const { argv } = program
         describe: 'The ID of the DCDN job the budget is for'
       })
   }, onbudget)
-  .command('allocate <content> <did> <jobId>', 'Allocate the budget for <jobId> between peers', () => {
+  .command('allocate <did> <content> <jobId>', 'Allocate the budget for <jobId> between peers', () => {
     program
-      .positional('content', {
-        type: 'string',
-        describe: 'The content DID where the budget is located'
-      })
       .positional('did', {
         type: 'string',
         describe: 'The DID allocating the budget'
+      })
+      .positional('content', {
+        type: 'string',
+        describe: 'The content DID where the budget is located'
       })
       .positional('jobId', {
         type: 'string',
@@ -97,8 +97,9 @@ async function onbalance(argv) {
   const { content, did } = argv
   const { password } = await promptForPassword()
   try {
+    info(`Getting balance for ${did} in ${content}.`)
     const balance = await rewards.getBalance({ requesterDid: did, contentDid: content, password })
-    info(did, 'balance in AFS', content, 'is', balance, 'tokens.')
+    info(`${did} has ${balance} Ara redeembale in ${content}.`)
   } catch (err) {
     onfatal(err)
   }
@@ -108,8 +109,9 @@ async function onredeem(argv) {
   const { content, did } = argv
   const { password } = await promptForPassword()
   try {
+    info(`${did} redeeming balance...`)
     const balance = await rewards.redeem({ requesterDid: did, contentDid: content, password })
-    info(did, 'redeemed', balance, 'tokens from AFS', contentDid)
+    info(`${did} redeemed ${balance} Ara from ${contentDid}.`)
   } catch (err) {
     onfatal(err)
   }
@@ -119,9 +121,11 @@ async function onsubmit(argv) {
   const { content, did, budget } = argv
   const { password } = await promptForPassword()
   try {
+    // console.log(content, did, budget)
     const jobId = ethify(randomBytes(32), true)
+    info(`Submitting ${budget} Ara for job ${jobId} in ${content}...`)
     await rewards.submit({ requesterDid: did, contentDid: content, password, job: { jobId, budget } })
-    info('submitted', budget, 'tokens as rewards for AFS', content)
+    info(`Submitted ${budget} Ara as rewards for job ${jobId} in ${content}.`)
   } catch (err) {
     onfatal(err)
   }
@@ -130,8 +134,9 @@ async function onsubmit(argv) {
 async function onbudget(argv) {
   const { content, jobId } = argv
   try {
+    info(`Getting budget for job ${jobId} in ${content}...`)
     const budget = await rewards.getBudget({ contentDid: content, jobId })
-    info('budget for job', jobId, 'is', budget, 'tokens')
+    info(`Job ${jobId} in ${content} has a budget of ${budget} Ara.`)
   } catch (err) {
     onfatal(err)
   }
@@ -155,6 +160,7 @@ async function onallocate(argv) {
   }
 
   try {
+    info(`Allocating rewards for job ${jobId} in ${content}...`)
     await rewards.allocate({ requesterDid: did,
                              contentDid: content,
                              password,

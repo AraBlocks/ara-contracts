@@ -56,6 +56,7 @@ async function ontransfer(argv) {
   try {
     let receipt
     let opts
+    info(`Transferring ${amount} Ara from ${from} to ${to}...`)
     if (sender) {
       // act transfer --sender cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3 100
       opts = { from, to, val: amount, did: sender, password }

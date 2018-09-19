@@ -67,6 +67,9 @@ async function submit(opts) {
   let { budget, jobId } = job
 
   const validJobId = isValidJobId(jobId)
+  if ('string' === typeof budget) {
+    budget = parseInt(budget, 10)
+  }
   const validBudget = budget && 'number' === typeof budget && budget > 0
 
   if (!validJobId) {
@@ -93,8 +96,9 @@ async function submit(opts) {
   did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
-  debug(did, 'submitting', budget, 'tokens as rewards for', contentDid)
+  debug(`${did} submitting ${budget} Ara as rewards for ${jobId} in ${contentDid}`)
 
+  let receipt
   try {
     if (!(await proxyExists(contentDid))) {
       throw new Error('This content does not have a valid proxy contract')
@@ -104,7 +108,7 @@ async function submit(opts) {
 
     budget = budget.toString()
 
-    let receipt = await token.increaseApproval({
+    receipt = await token.increaseApproval({
       did,
       password,
       spender: proxy,
@@ -136,7 +140,7 @@ async function submit(opts) {
     await proxyContract.events.BudgetSubmitted({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { _did, _jobId, _budget } } = log
-        info(_did, 'budgeted', _budget, 'tokens for job', _jobId)
+        info(`budgetted ${token.constrainTokenValue(_budget)} Ara for job ${_jobId} in AFS ${content}`)
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)
@@ -153,6 +157,7 @@ async function submit(opts) {
   } catch (err) {
     throw err
   }
+  return { jobId, receipt }
 }
 
 /**
@@ -257,7 +262,7 @@ async function allocate(opts) {
     await proxyContract.events.RewardsAllocated({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { _did, _allocated, _returned } } = log
-        info(_did, 'allocated', _allocated, 'tokens as rewards between farmers and returned', _returned, 'tokens')
+        info(`allocated ${token.constrainTokenValue(_allocated)} Ara as rewards between farmers; returned ${_returned} Ara`)
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)
@@ -332,7 +337,7 @@ async function redeem(opts) {
       .on('data', (log) => {
         const { returnValues: { from, to, value } } = log
         balance = value
-        info(to, 'redeemed', value, 'tokens from', from)
+        info(`${to} redeemed ${token.constrainTokenValue(value)} Ara from ${from}`)
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)
@@ -386,7 +391,7 @@ async function getBudget(opts) {
         jobId
       ]
     })
-    return budget
+    return token.constrainTokenValue(budget)
   } catch (err) {
     throw err
   }
@@ -431,7 +436,7 @@ async function getBalance(opts) {
     }
 
     const proxy = await getProxyAddress(contentDid)
-    const budget = await call({
+    const balance = await call({
       abi: afsAbi,
       address: proxy,
       functionName: 'getBalance',
@@ -439,7 +444,7 @@ async function getBalance(opts) {
         address
       ]
     })
-    return budget
+    return token.constrainTokenValue(balance)
   } catch (err) {
     throw err
   }

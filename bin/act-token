@@ -58,8 +58,9 @@ module.exports = (async function main() {
 async function ondeposited(argv) {
   const { did } = argv
   try {
+    info(`Getting deposit amount for ${did}...`)
     const amount = await token.getAmountDeposited(did)
-    info(`${did} has ${amount} Ara currently deposited`)
+    info(`${did} has ${amount} Ara currently deposited.`)
   } catch (err) {
     onfatal(err)
   }
@@ -67,8 +68,9 @@ async function ondeposited(argv) {
 
 async function onsupply(argv) {
   try {
+    info(`Getting Ara total supply...`)
     const amount = await token.totalSupply()
-    info(`The total supply of Ara is ${amount}`)
+    info(`The total supply of Ara is ${amount}.`)
   } catch (err) {
     onfatal(err)
   }
@@ -77,8 +79,9 @@ async function onsupply(argv) {
 async function onbalance(argv) {
   const { did } = argv
   try {
+    info(`Getting Ara balance for ${did}...`)
     const amount = await token.balanceOf(did)
-    info(`${did} has a balance of ${amount} Ara`)
+    info(`${did} has a balance of ${amount} Ara.`)
   } catch (err) {
     onfatal(err)
   }
@@ -87,8 +90,9 @@ async function onbalance(argv) {
 async function onallowance(argv) {
   const { did, spender } = argv
   try {
+    info(`Getting allowance for ${spender} from ${did}...`)
     const amount = await token.allowance({ owner: did, spender })
-    info(`${spender} has an allowance of ${amount} Ara to spend on behalf of ${did}`)
+    info(`${spender} has an allowance of ${amount} Ara to spend on behalf of ${did}.`)
   } catch (err) {
     onfatal(err)
   }

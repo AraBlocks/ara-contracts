@@ -43,9 +43,10 @@ module.exports = (async function main() {
 
   try {
     const opts = { did, password, val: amount }
+    info(`Withdrawing ${amount} Ara from deposit...`)
     const receipt = await withdraw(opts)
     if (receipt.status) {
-      info(did, 'withdrew', amount, 'Ara tokens')
+      info(`${did} withdrew ${amount} Ara from deposit.`)
     }
   } catch (err) {
     onfatal(err)
