@@ -7,7 +7,7 @@ module.exports = {
 
   TEMP_OWNER_DID: 'did:ara:8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67',
   OWNER_PASSWORD: 'pass',
-  OWNER_MNEMONIC: 'undo cargo steel brick stairs trash hover rent scare ribbon tired output',
+  OWNER_MNEMONIC: 'leg notable ostrich found gym honey leg arrive spend cabbage genuine light',
   // private key: 0x628a3ff0e47af58d306dfe413114acfded25a8374f562db36d8496f246dbeaf7
   DEFAULT_ADDRESS: '0x105C83b79E9170d7969Ce9806fE0B527b5f879dE',
 
