@@ -1,21 +1,23 @@
 module.exports = {
-  kDidPrefix: 'did:',
-  kAidPrefix: 'did:ara:',
-  kOwnerSuffix: '#owner',
-  kRegistryAddress: '0x40549769ca1f5ccabe18e3dda17c56e6a79bf54b',
-  kLibraryAddress: '0x2fb841a72bb5a009da48e91ec771e07bd6ac4486',
-  kAraTokenAddress: '0xa0b44aa92a3333e2965e153c21beb3ce75258f86',
+  AID_PREFIX: 'did:ara:',
 
-  kTempOwnerDid: 'did:ara:8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67',
-  kOwnerPassword: 'pass',
-  kOwnerMnemonic: 'undo cargo steel brick stairs trash hover rent scare ribbon tired output',
+  REGISTRY_ADDRESS: '0xe502f37d15a4ec888011a96c9400b195b61048aa',
+  LIBRARY_ADDRESS: '0x2f6394ade048068b15f28c08dbe02baec52ce188',
+  ARA_TOKEN_ADDRESS: '0x073b013f16f29282854c4dda4de940ec192fe364',
+
+  TEMP_OWNER_DID: 'did:ara:8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67',
+  OWNER_PASSWORD: 'pass',
+  OWNER_MNEMONIC: 'undo cargo steel brick stairs trash hover rent scare ribbon tired output',
   // private key: 0x628a3ff0e47af58d306dfe413114acfded25a8374f562db36d8496f246dbeaf7
-  kDefaultAddress: '0x105C83b79E9170d7969Ce9806fE0B527b5f879dE',
+  DEFAULT_ADDRESS: '0x105C83b79E9170d7969Ce9806fE0B527b5f879dE',
 
-  kTokenDecimals: 18,
-  kTokenSupply: 1000000000,
+  TEST_OWNER_ADDRESS: '0x105C83b79E9170d7969Ce9806fE0B527b5f879dE',
+  TEST_OWNER_PK: '0x8662c06fab466f44e0b7937812671d07b4e298a609c7d9654e27c1d0d2653f20',
+  TEST_OWNER_PASSWORD: 'pass',
 
-  kStandardVersion: '1'
+  TOKEN_DECIMALS: 18,
+  STANDARD_VERSION: '1',
+  JOB_ID_LENGTH: 64
 }
 
 // kTempOwnerDid: 'did:ara:cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3',

@@ -5,8 +5,9 @@ const { info } = require('ara-console')
 const token = require('./token')
 
 const {
-  kAidPrefix,
-  kAraTokenAddress
+  ARA_TOKEN_ADDRESS,
+  JOB_ID_LENGTH,
+  AID_PREFIX
 } = require('./constants')
 
 const {
@@ -51,7 +52,7 @@ async function submit(opts) {
     throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
-  } else if ('string' != typeof opts.password || !opts.password) {
+  } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password')
   } else if (!opts.job || 'object' !== typeof opts.job) {
     throw TypeError('Expecting job object.')
@@ -75,7 +76,7 @@ async function submit(opts) {
     throw TypeError('Expecting budget.')
   }
 
-  if (64 === jobId.length) {
+  if (JOB_ID_LENGTH === jobId.length) {
     jobId = ethify(jobId, 'string' !== typeof jobId)
   }
 
@@ -89,7 +90,7 @@ async function submit(opts) {
 
   contentDid = normalize(contentDid)
 
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
   debug(did, 'submitting', budget, 'tokens as rewards for', contentDid)
@@ -103,17 +104,16 @@ async function submit(opts) {
 
     budget = budget.toString()
 
-    const approveTx = await token.increaseApproval({
+    let receipt = await token.increaseApproval({
       did,
       password,
       spender: proxy,
       val: budget
     })
 
-    const receipt1 = await tx.sendSignedTransaction(approveTx)
-    if (receipt1.status) {
+    if (receipt.status) {
       // 30225 gas
-      debug('gas used', receipt1.gasUsed)
+      debug('gas used', receipt.gasUsed)
     }
 
     const val = token.expandTokenValue(budget)
@@ -145,10 +145,10 @@ async function submit(opts) {
         debug(`error:  ${log}`)
       })
 
-    const receipt2 = await tx.sendSignedTransaction(submitTx)
-    if (receipt2.status) {
+    receipt = await tx.sendSignedTransaction(submitTx)
+    if (receipt.status) {
       // 54073 gas
-      debug('gas used', receipt2.gasUsed)
+      debug('gas used', receipt.gasUsed)
     }
   } catch (err) {
     throw err
@@ -174,7 +174,7 @@ async function allocate(opts) {
     throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
-  } else if ('string' != typeof opts.password || !opts.password) {
+  } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password')
   } else if (!opts.job || 'object' !== typeof opts.job) {
     throw TypeError('Expecting job object.')
@@ -187,7 +187,6 @@ async function allocate(opts) {
   } = opts
 
   const { farmers } = job
-
   let { jobId, rewards } = job
 
   const validJobId = isValidJobId(jobId)
@@ -213,9 +212,10 @@ async function allocate(opts) {
     throw TypeError('Expecting farmers and rewards.')
   }
 
-  if (64 === jobId.length) {
+  if (JOB_ID_LENGTH === jobId.length) {
     jobId = ethify(jobId, 'string' !== typeof jobId)
   }
+
   let { contentDid } = opts
   let did
   try {
@@ -226,7 +226,7 @@ async function allocate(opts) {
 
   contentDid = normalize(contentDid)
 
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
   debug(did, 'allocating rewards for job:', jobId)
@@ -290,7 +290,7 @@ async function redeem(opts) {
     throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
-  } else if ('string' != typeof opts.password || !opts.password) {
+  } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password')
   }
 
@@ -306,7 +306,7 @@ async function redeem(opts) {
   contentDid = normalize(contentDid)
 
   debug(did, 'redeeming balance from', contentDid)
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
   let balance = 0
@@ -327,7 +327,7 @@ async function redeem(opts) {
       }
     })
 
-    const tokenContract = await contract.get(tokenAbi, kAraTokenAddress)
+    const tokenContract = await contract.get(tokenAbi, ARA_TOKEN_ADDRESS)
     await tokenContract.events.Transfer({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { from, to, value } } = log
@@ -407,7 +407,7 @@ async function getBalance(opts) {
     throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
-  } else if ('string' != typeof opts.password || !opts.password) {
+  } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password')
   }
 
@@ -422,7 +422,7 @@ async function getBalance(opts) {
 
   contentDid = normalize(contentDid)
 
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const { address } = await account.load({ did, password })
 
   try {

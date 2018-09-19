@@ -1,8 +1,13 @@
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
 const { randomBytes } = require('ara-crypto')
-const { kAidPrefix } = require('./constants')
+const { isValidJobId } = require('./util')
 const token = require('./token')
+
+const {
+  AID_PREFIX,
+  JOB_ID_LENGTH
+} = require('./constants')
 
 const {
   proxyExists,
@@ -27,10 +32,6 @@ const {
     contract
   }
 } = require('ara-util')
-
-const {
-  isValidJobId
-} = require('./util')
 
 /**
  * Purchase contentDid // 256649 gas
@@ -73,8 +74,7 @@ async function purchase(opts) {
     if (!validBudget) {
       throw TypeError('Expecting budget.')
     }
-
-    if (64 === jobId.length) {
+    if (JOB_ID_LENGTH === jobId.length) {
       jobId = ethify(jobId, 'string' !== typeof jobId)
     }
   } else {
@@ -95,7 +95,7 @@ async function purchase(opts) {
   debug(did, 'purchasing', contentDid)
 
   const hIdentity = hashDID(did)
-  did = `${kAidPrefix}${did}`
+  did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
   try {

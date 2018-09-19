@@ -16,11 +16,11 @@ const {
 } = require('ara-util')
 
 const {
-  kAidPrefix,
-  kLibraryAddress,
-  kRegistryAddress,
-  kAraTokenAddress,
-  kStandardVersion
+  AID_PREFIX,
+  LIBRARY_ADDRESS,
+  REGISTRY_ADDRESS,
+  ARA_TOKEN_ADDRESS,
+  STANDARD_VERSION
 } = require('./constants')
 
 const {
@@ -54,7 +54,7 @@ async function getProxyAddress(contentDid = '') {
   try {
     return call({
       abi,
-      address: kRegistryAddress,
+      address: REGISTRY_ADDRESS,
       functionName: 'getProxyAddress',
       arguments: [
         ethify(contentDid)
@@ -86,6 +86,7 @@ async function upgradeProxy(opts) {
 
   let { version } = opts
   const { contentDid, password } = opts
+
   if ('number' === typeof version) {
     version = version.toString()
   }
@@ -98,7 +99,7 @@ async function upgradeProxy(opts) {
     throw err
   }
   let owner = getDocumentOwner(ddo, true)
-  owner = `${kAidPrefix}${owner}`
+  owner = `${AID_PREFIX}${owner}`
 
   const acct = await account.load({ did: owner, password })
 
@@ -106,7 +107,7 @@ async function upgradeProxy(opts) {
   try {
     const transaction = await tx.create({
       account: acct,
-      to: kRegistryAddress,
+      to: REGISTRY_ADDRESS,
       gasLimit: 1000000,
       data: {
         abi,
@@ -118,7 +119,7 @@ async function upgradeProxy(opts) {
       }
     })
 
-    const registry = await contract.get(abi, kRegistryAddress)
+    const registry = await contract.get(abi, REGISTRY_ADDRESS)
     // listen to ProxyUpgraded event for proxy address
     await registry.events.ProxyUpgraded({ fromBlock: 'latest', function(error) { console.log(error) } })
       .on('data', (log) => {
@@ -163,7 +164,7 @@ async function deployProxy(opts) {
 
   const { password, contentDid } = opts
 
-  let version = opts.version || kStandardVersion
+  let version = opts.version || STANDARD_VERSION
   if ('number' === typeof version) {
     version = version.toString()
   }
@@ -178,15 +179,15 @@ async function deployProxy(opts) {
 
   debug('creating tx to deploy proxy for', did)
   let owner = getDocumentOwner(ddo, true)
-  owner = `${kAidPrefix}${owner}`
+  owner = `${AID_PREFIX}${owner}`
   const acct = await account.load({ did: owner, password })
 
   let proxyAddress = null
   try {
-    const encodedData = web3Abi.encodeParameters(['address', 'address', 'address', 'bytes32'], [acct.address, kAraTokenAddress, kLibraryAddress, ethify(contentDid)])
+    const encodedData = web3Abi.encodeParameters([ 'address', 'address', 'address', 'bytes32' ], [ acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, ethify(contentDid) ])
     const transaction = await tx.create({
       account: acct,
-      to: kRegistryAddress,
+      to: REGISTRY_ADDRESS,
       gasLimit: 3000000,
       data: {
         abi,
@@ -200,7 +201,7 @@ async function deployProxy(opts) {
     })
 
     // listen to ProxyDeployed event for proxy address
-    const registry = await contract.get(abi, kRegistryAddress)
+    const registry = await contract.get(abi, REGISTRY_ADDRESS)
     registry.events.ProxyDeployed({ fromBlock: 'latest', function(error) { console.log(error) } })
       .on('data', (log) => {
         const { returnValues: { _contentId, _address } } = log
@@ -236,7 +237,7 @@ async function getLatestStandard() {
   try {
     const version = await call({
       abi,
-      address: kRegistryAddress,
+      address: REGISTRY_ADDRESS,
       functionName: 'latestVersion_'
     })
     return getStandard(version)
@@ -259,7 +260,7 @@ async function getStandard(version) {
   try {
     const address = await call({
       abi,
-      address: kRegistryAddress,
+      address: REGISTRY_ADDRESS,
       functionName: 'getImplementation',
       arguments: [
         version
@@ -314,12 +315,12 @@ async function deployNewStandard(opts) {
     throw err
   }
 
-  const prefixedDid = `${kAidPrefix}${did}`
+  const prefixedDid = `${AID_PREFIX}${did}`
   const acct = await account.load({ did: prefixedDid, password })
 
   const registryOwner = await call({
     abi,
-    address: kRegistryAddress,
+    address: REGISTRY_ADDRESS,
     functionName: 'owner_'
   })
 
@@ -344,7 +345,7 @@ async function deployNewStandard(opts) {
   const afsAbi = JSON.parse(compiledContract.interface)
   const { bytecode } = compiledContract
 
-  let address
+  let address = null
   try {
     const { contract: afs, gasLimit } = await contract.deploy({
       account: acct,
@@ -354,7 +355,7 @@ async function deployNewStandard(opts) {
 
     const transaction = await tx.create({
       account: acct,
-      to: kRegistryAddress,
+      to: REGISTRY_ADDRESS,
       gasLimit: 1500000,
       data: {
         abi,
@@ -366,7 +367,7 @@ async function deployNewStandard(opts) {
       }
     })
     // listen to ProxyDeployed event for proxy address
-    const registry = await contract.get(abi, kRegistryAddress)
+    const registry = await contract.get(abi, REGISTRY_ADDRESS)
     registry.events.StandardAdded({ fromBlock: 'latest', function(error) { console.log(error) } })
       .on('data', (log) => {
         // debug('STANDARD ADDED', log)

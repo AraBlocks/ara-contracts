@@ -45,7 +45,7 @@ contract Registry {
   function getImplementation(string _version) external view returns (address) {
     return versions_[_version];
   }
-
+  
   /**
    * @dev AFS Proxy Factory
    * @param _contentId The unhashed methodless content DID
