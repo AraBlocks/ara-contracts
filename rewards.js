@@ -140,7 +140,7 @@ async function submit(opts) {
     await proxyContract.events.BudgetSubmitted({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { _did, _jobId, _budget } } = log
-        info(`budgetted ${token.constrainTokenValue(_budget)} Ara for job ${_jobId} in AFS ${content}`)
+        info(`budgetted ${token.constrainTokenValue(_budget)} Ara for job ${_jobId} in ${_did}`)
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)
@@ -262,7 +262,7 @@ async function allocate(opts) {
     await proxyContract.events.RewardsAllocated({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { _did, _allocated, _returned } } = log
-        info(`allocated ${token.constrainTokenValue(_allocated)} Ara as rewards between farmers; returned ${_returned} Ara`)
+        info(`allocated ${token.constrainTokenValue(_allocated)} Ara as rewards between farmers for content ${_did}; returned ${_returned} Ara`)
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)

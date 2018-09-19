@@ -49,8 +49,5 @@ module.exports = {
  *     MNEMONIC: < snap poet general square silk ranch whip lizard faculty upon cup degree >
  */
 
-
 // 0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e, 0x70693d8f4e1c9bA1AE0870C35128BaDfDcF28FBc, 0x19d6a7D8bB09e8A6d733a9c8D9fe7b964fD8F45e, 0x629483C72b5191C1b522E887238a0A522b1D4F74
 // 10, 20, 30, 40
-
-// Job ID: 0xed034646fb16abfe61fc9d2bbbf4348fbc86a053b7358988bafd702430c05342

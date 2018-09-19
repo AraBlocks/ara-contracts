@@ -17,7 +17,6 @@ const {
 
 const {
   isAddress,
-  contract,
   account,
   call,
   tx
@@ -87,7 +86,7 @@ async function totalSupply() {
 async function allowance(opts = {}) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError(`Expected 'opts' to be an object. Got ${opts}. Try passing in 'opts.owner' and 'opts.spender'.`)
-  } 
+  }
 
   let { owner, spender } = opts
   try {
@@ -242,14 +241,14 @@ async function approve(opts = {}) {
 
 /**
  * Transfer Ara from one address to another.
- * @param  {Object} opts 
+ * @param  {Object} opts
  * @param  {String} opts.from
  * @param  {String} opts.to
  * @param  {Number} opts.val
  * @param  {String} opts.did
  * @param  {String} opts.password
- * @return {Object} 
- * @throws {TypeError|Error} 
+ * @return {Object}
+ * @throws {TypeError|Error}
  */
 async function transferFrom(opts = {}) {
   if (!opts || 'object' !== typeof opts) {
@@ -266,7 +265,12 @@ async function transferFrom(opts = {}) {
     throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${password}.`)
   }
 
-  let { did, val, from, to } = opts
+  let {
+    did,
+    val,
+    from,
+    to
+  } = opts
   const { password } = opts
 
   try {
@@ -457,12 +461,12 @@ function constrainTokenValue(val) {
 
 /**
  * Deposits Ara to participate in earning rewards
- * @param  {Object}  opts   
+ * @param  {Object}  opts
  * @param  {String}  opts.did
  * @param  {String}  opts.password
  * @param  {Number}  opts.val
  * @param  {?Boolean} opts.withdraw
- * @return {Object} 
+ * @return {Object}
  * @throws {TypeError}
  */
 async function deposit(opts = {}) {
@@ -478,7 +482,7 @@ async function deposit(opts = {}) {
     throw new TypeError(`Expected 'opts.withdraw' to be a boolean. Got ${opts.withdraw}.`)
   }
 
-  let { did, val, withdraw } = opts
+  let { did, val, withdraw: wd } = opts
   const { password } = opts
 
   try {
@@ -491,7 +495,7 @@ async function deposit(opts = {}) {
   const acct = await account.load({ did, password })
 
   val = expandTokenValue(val)
-  withdraw = withdraw || false
+  wd = wd || false
 
   let receipt
   try {
@@ -500,7 +504,7 @@ async function deposit(opts = {}) {
       to: ARA_TOKEN_ADDRESS,
       data: {
         abi: tokenAbi,
-        functionName: withdraw ? 'withdraw' : 'deposit',
+        functionName: wd ? 'withdraw' : 'deposit',
         values: [ val ]
       }
     })
@@ -516,11 +520,11 @@ async function deposit(opts = {}) {
 
 /**
  * Withdraws Ara from deposit balance
- * @param  {Object} opts   
+ * @param  {Object} opts
  * @param  {String} opts.did
  * @param  {String} opts.password
  * @param  {Number} opts.val
- * @return {Object} 
+ * @return {Object}
  * @throws {TypeError}
  */
 async function withdraw(opts = {}) {
@@ -531,7 +535,7 @@ async function withdraw(opts = {}) {
 /**
  * Returns current deposit amount
  * @param  {String} did
- * @return {Number} 
+ * @return {Number}
  * @throws {TypeError|Error}
  */
 async function getAmountDeposited(did) {
@@ -558,7 +562,7 @@ async function getAmountDeposited(did) {
   } catch (err) {
     throw err
   }
-  
+
   return constrainTokenValue(deposited)
 }
 
@@ -572,7 +576,7 @@ function _validateApprovalOpts(opts) {
   } else if (!opts.did || 'string' !== typeof opts.did) {
     throw new TypeError(`Expected 'opts.did' to be non-empty Ara DID string. Got ${opts.did}. Ensure ${opts.did} is a valid Ara identity.`)
   } else if (!opts.password || 'string' !== typeof opts.password) {
-    throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${password}.`)
+    throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${opts.password}.`)
   }
 }
 
