@@ -79,11 +79,11 @@ module.exports = (async function main() {
       ({ did: content } = await promptForDID('Please provide the DID of the AFS.'))
     }
     if (!did) {
-      ({ did } = await promptForDID('Please provide the requester DID.'))
+      ({ did } = await promptForDID('Please provide the farmer DID.'))
     }
 
     try {
-      const balance = await rewards.getBalance({ requesterDid: did, contentDid: content, password })
+      const balance = await rewards.getBalance({ farmerDid: did, contentDid: content, password })
       info(did, 'balance in AFS', content, 'is', balance, 'tokens.')
     } catch (err) {
       throw err
@@ -94,11 +94,11 @@ module.exports = (async function main() {
       ({ did: content } = await promptForDID('Please provide the DID of the AFS.'))
     }
     if (!did) {
-      ({ did } = await promptForDID('Please provide the requester DID.'))
+      ({ did } = await promptForDID('Please provide the farmer DID.'))
     }
 
     try {
-      const balance = await rewards.redeem({ requesterDid: did, contentDid: content, password })
+      const balance = await rewards.redeem({ farmerDid: did, contentDid: content, password })
       info(did, 'redeemed', balance, 'tokens from AFS', contentDid)
     } catch (err) {
       throw err

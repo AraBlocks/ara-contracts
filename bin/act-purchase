@@ -50,12 +50,13 @@ module.exports = (async function main() {
   }
 
   const { password } = await promptForPassword()
-  let budget
+  let budget = 0
   if (job) {
     ({ budget } = await promptForBudget())
+    const jobId = ethify(randomBytes(32), true)
+    job = { jobId, budget }
   }
 
-  const jobId = ethify(randomBytes(32), true)
   info('purchasing', did)
   try {
     // DEBUG=* act purchase -j -p cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3 -d d386865d057f81da36af32e3fdc7539470128d0c90c4040789bb88d2bd95dc1b
@@ -63,7 +64,7 @@ module.exports = (async function main() {
       requesterDid: purchaser,
       contentDid: did,
       password,
-      job: job ? { jobId, budget } : {}
+      job
     })
   } catch (err) {
     onfatal(err)
