@@ -21,7 +21,6 @@ const {
   getAddressFromDID,
   web3: {
     tx,
-    sha3,
     call,
     ethify,
     account,
@@ -192,7 +191,8 @@ async function allocate(opts) {
     job
   } = opts
 
-  let { farmers, rewards, jobId } = job
+  const { farmers, rewards } = job
+  let { jobId } = job
 
   const validJobId = isValidJobId(jobId)
   if (!validJobId) {
@@ -237,7 +237,7 @@ async function allocate(opts) {
     throw err
   }
   did = `${AID_PREFIX}${did}`
-  
+
   const acct = await account.load({ did, password })
 
   debug(did, 'allocating rewards for job:', jobId)

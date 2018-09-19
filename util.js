@@ -23,8 +23,9 @@ function isValidJobId(jobId) {
 async function isValidArray(arr, fn) {
   if (arr && Array.isArray(arr) && arr.length > 0) {
     let valid = true
-    if (fn){
-      for (let i = 0; i < arr.length; i++){
+    if (fn) {
+      /* eslint-disable no-await-in-loop */
+      for (let i = 0; i < arr.length; i++) {
         const result = await fn(arr[i], i)
         valid = valid && result
       }
