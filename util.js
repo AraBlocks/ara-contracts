@@ -1,6 +1,4 @@
 const { JOB_ID_LENGTH } = require('./constants')
-const { isAddress } = require('ara-util/web3')
-
 const isBuffer = require('is-buffer')
 
 function isValidJobId(jobId) {
@@ -36,12 +34,7 @@ async function isValidArray(arr, fn) {
   return false
 }
 
-function isValidAddress(address) {
-  return address && 'string' === typeof address && isAddress(address)
-}
-
 module.exports = {
   isValidJobId,
-  isValidArray,
-  isValidAddress
+  isValidArray
 }

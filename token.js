@@ -1,5 +1,4 @@
 const { abi: tokenAbi } = require('./build/contracts/AraToken.json')
-const { isValidAddress } = require('./util')
 const BigNumber = require('bignumber.js')
 const { web3 } = require('ara-context')()
 
@@ -9,6 +8,7 @@ const {
 } = require('./constants')
 
 const {
+  isAddress,
   account,
   call,
   tx
@@ -21,7 +21,7 @@ const {
  * @throws {TypeError}
  */
 async function balanceOf(address) {
-  if (!isValidAddress(address)) {
+  if (!isAddress(address)) {
     throw new TypeError('Address is not a valid Ethereum address')
   }
 
@@ -70,7 +70,7 @@ async function totalSupply() {
 async function allowance(opts = {}) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Opts must be of type object')
-  } else if (!isValidAddress(opts.owner) || !isValidAddress(opts.spender)) {
+  } else if (!isAddress(opts.owner) || !isAddress(opts.spender)) {
     throw new TypeError('Owner and spender must be valid Ethereum addresses')
   }
 
@@ -103,7 +103,7 @@ async function allowance(opts = {}) {
 async function transfer(opts = {}) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Opts must be of type object')
-  } else if (!isValidAddress(opts.to)) {
+  } else if (!isAddress(opts.to)) {
     throw new TypeError('Address is not a valid Ethereum address')
   } else if (!opts.val || 0 >= Number(opts.val)) {
     throw new TypeError('Value must be greater than 0')
@@ -185,7 +185,7 @@ async function approve(opts = {}) {
 async function transferFrom(opts = {}) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Opts must be of type object')
-  } else if (!isValidAddress(opts.to)) {
+  } else if (!isAddress(opts.to)) {
     throw new TypeError('Address to transfer to must be a valid Ethereum address')
   } else if (!opts.did || 'string' !== typeof opts.did) {
     throw new TypeError('DID URI must be non-empty string')
@@ -331,7 +331,7 @@ function constrainTokenValue(val) {
 function _validateApprovalOpts(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Opts must be of type object')
-  } else if (!isValidAddress(opts.spender)) {
+  } else if (!isAddress(opts.spender)) {
     throw new TypeError('Spender address must be a valid Ethereum address')
   } else if (!opts.val || 0 >= Number(opts.val)) {
     throw new TypeError('Value must be greater than 0')

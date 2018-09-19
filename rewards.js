@@ -25,14 +25,14 @@ const {
     call,
     ethify,
     account,
-    contract
+    contract,
+    isAddress
   }
 } = require('ara-util')
 
 const {
   isValidJobId,
-  isValidArray,
-  isValidAddress
+  isValidArray
 } = require('./util')
 
 /**
@@ -200,7 +200,7 @@ async function allocate(opts) {
   // Convert farmer DIDs to Addresses
   const validFarmers = await isValidArray(farmers, async (farmer, index) => {
     farmers[index] = await getAddressFromDID(farmer)
-    return isValidAddress(farmers[index])
+    return isAddress(farmers[index])
   })
   if (!validFarmers) {
     throw TypeError('Invalid farmer array.')
