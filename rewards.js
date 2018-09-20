@@ -22,6 +22,7 @@ const {
   web3: {
     tx,
     call,
+    sha3,
     ethify,
     account,
     contract,

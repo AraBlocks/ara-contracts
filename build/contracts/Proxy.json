@@ -18,14 +18,14 @@
       "type": "fallback"
     }
   ],
-  "bytecode": "0x608060405234801561001057600080fd5b5060405160208061023183398101806040528101908080519060200190929190505050600060405180807f696f2e617261626c6f636b732e70726f78792e72656769737472790000000000815250601b0190506040518091039020905081815550506101b0806100816000396000f300608060405260008060008060405180807f696f2e617261626c6f636b732e70726f78792e72656769737472790000000000815250601b01905060405180910390209350835492508291508173ffffffffffffffffffffffffffffffffffffffff1663ba586e80306040518263ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001915050602060405180830381600087803b1580156100e457600080fd5b505af11580156100f8573d6000803e3d6000fd5b505050506040513d602081101561010e57600080fd5b81019080805190602001909291905050509050600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff161415151561015d57600080fd5b60405136600082376000803683855af43d806000843e8160008114610180578184f35b8184fd00a165627a7a723058209f9ef5d1f1caed96114247eebbb8daaf86d654bbdbc37c2aa4ff3e06f06f43830029",
-  "deployedBytecode": "0x608060405260008060008060405180807f696f2e617261626c6f636b732e70726f78792e72656769737472790000000000815250601b01905060405180910390209350835492508291508173ffffffffffffffffffffffffffffffffffffffff1663ba586e80306040518263ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001915050602060405180830381600087803b1580156100e457600080fd5b505af11580156100f8573d6000803e3d6000fd5b505050506040513d602081101561010e57600080fd5b81019080805190602001909291905050509050600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff161415151561015d57600080fd5b60405136600082376000803683855af43d806000843e8160008114610180578184f35b8184fd00a165627a7a723058209f9ef5d1f1caed96114247eebbb8daaf86d654bbdbc37c2aa4ff3e06f06f43830029",
+  "bytecode": "0x608060405234801561001057600080fd5b5060405160208061023183398101806040528101908080519060200190929190505050600060405180807f696f2e617261626c6f636b732e70726f78792e72656769737472790000000000815250601b0190506040518091039020905081815550506101b0806100816000396000f300608060405260008060008060405180807f696f2e617261626c6f636b732e70726f78792e72656769737472790000000000815250601b01905060405180910390209350835492508291508173ffffffffffffffffffffffffffffffffffffffff1663ba586e80306040518263ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001915050602060405180830381600087803b1580156100e457600080fd5b505af11580156100f8573d6000803e3d6000fd5b505050506040513d602081101561010e57600080fd5b81019080805190602001909291905050509050600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff161415151561015d57600080fd5b60405136600082376000803683855af43d806000843e8160008114610180578184f35b8184fd00a165627a7a72305820236eea69c2abe9f7acff57c2988074250d7f629899e9481c08cc6c3da80c36270029",
+  "deployedBytecode": "0x608060405260008060008060405180807f696f2e617261626c6f636b732e70726f78792e72656769737472790000000000815250601b01905060405180910390209350835492508291508173ffffffffffffffffffffffffffffffffffffffff1663ba586e80306040518263ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001915050602060405180830381600087803b1580156100e457600080fd5b505af11580156100f8573d6000803e3d6000fd5b505050506040513d602081101561010e57600080fd5b81019080805190602001909291905050509050600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff161415151561015d57600080fd5b60405136600082376000803683855af43d806000843e8160008114610180578184f35b8184fd00a165627a7a72305820236eea69c2abe9f7acff57c2988074250d7f629899e9481c08cc6c3da80c36270029",
   "sourceMap": "156:1089:5:-;;;327:137;8:9:-1;5:2;;;30:1;27;20:12;5:2;327:137:5;;;;;;;;;;;;;;;;;;;;;;;;;;;;;370:16;220:40;;;;;;;;;;;;;;;;;;;370:35;;445:8;435;428:26;420:40;;156:1089;;;;;;",
   "deployedSourceMap": "156:1089:5:-;;;674:16;715;792:12;831:13;220:40;;;;;;;;;;;;;;;;;;;674:35;;772:8;766:15;754:27;;816:8;792:33;;847:3;:15;;;871:4;847:30;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;847:30:5;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;847:30:5;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;847:30:5;;;;;;;;;;;;;;;;831:46;;913:1;896:19;;:5;:19;;;;888:28;;;;;;;;957:4;951:11;990:12;987:1;982:3;969:34;1071:1;1068;1054:12;1049:3;1042:5;1037:3;1024:49;1092:14;1136:4;1133:1;1128:3;1113:28;1156:6;1174:1;1169:28;;;;1226:4;1221:3;1214:17;1169:28;1190:4;1185:3;1178:17",
   "source": "pragma solidity ^0.4.24;\n\nimport \"./Registry.sol\";\n\n/**\n * @title Proxy\n * @dev Gives the possibility to delegate any call to a foreign implementation.\n */\ncontract Proxy {\n\n  bytes32 private constant registryPosition = keccak256(\"io.arablocks.proxy.registry\");\n\n  /**\n  * @dev the constructor sets the registry address\n  */\n  constructor(address registry) public {\n    bytes32 position = registryPosition;\n    assembly {\n      sstore(position, registry)\n    }\n  }\n\n  /**\n  * @dev Fallback function allowing to perform a delegatecall to the given implementation.\n  * This function will return whatever the implementation call returns\n  */\n  function () payable public {\n    bytes32 position = registryPosition;\n    address registry;\n    assembly {\n      registry := sload(position)\n    }\n    Registry reg = Registry(registry);\n    address _impl = reg.proxyImpls_(address(this));\n    \n    require(_impl != address(0));\n\n    assembly {\n      let ptr := mload(0x40)\n      calldatacopy(ptr, 0, calldatasize)\n      let result := delegatecall(gas, _impl, ptr, calldatasize, 0, 0)\n      let size := returndatasize\n      returndatacopy(ptr, 0, size)\n\n      switch result\n      case 0 { revert(ptr, size) }\n      default { return(ptr, size) }\n    }\n  }\n}\n",
-  "sourcePath": "/Users/ericjiang/Littlstar/ara-contracts/contracts/Proxy.sol",
+  "sourcePath": "/Users/charles/Desktop/Development/Ara/ara-contracts/contracts/Proxy.sol",
   "ast": {
-    "absolutePath": "/Users/ericjiang/Littlstar/ara-contracts/contracts/Proxy.sol",
+    "absolutePath": "/Users/charles/Desktop/Development/Ara/ara-contracts/contracts/Proxy.sol",
     "exportedSymbols": {
       "Proxy": [
         1353
@@ -46,7 +46,7 @@
         "src": "0:24:5"
       },
       {
-        "absolutePath": "/Users/ericjiang/Littlstar/ara-contracts/contracts/Registry.sol",
+        "absolutePath": "/Users/charles/Desktop/Development/Ara/ara-contracts/contracts/Registry.sol",
         "file": "./Registry.sol",
         "id": 1300,
         "nodeType": "ImportDirective",
@@ -813,7 +813,7 @@
     "src": "0:1246:5"
   },
   "legacyAST": {
-    "absolutePath": "/Users/ericjiang/Littlstar/ara-contracts/contracts/Proxy.sol",
+    "absolutePath": "/Users/charles/Desktop/Development/Ara/ara-contracts/contracts/Proxy.sol",
     "exportedSymbols": {
       "Proxy": [
         1353
@@ -834,7 +834,7 @@
         "src": "0:24:5"
       },
       {
-        "absolutePath": "/Users/ericjiang/Littlstar/ara-contracts/contracts/Registry.sol",
+        "absolutePath": "/Users/charles/Desktop/Development/Ara/ara-contracts/contracts/Registry.sol",
         "file": "./Registry.sol",
         "id": 1300,
         "nodeType": "ImportDirective",
@@ -1606,5 +1606,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-09-19T15:43:51.298Z"
+  "updatedAt": "2018-09-20T18:43:46.191Z"
 }
