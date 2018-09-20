@@ -6,6 +6,12 @@ module.exports = {
       port: 8545,
       gas: 2000000
     },
+    testnet: {
+      network_id: 3,
+      host: 'localhost',
+      port: 8545,
+      gas: 2000000
+    },
     privatenet: {
       network_id: 1337,
       host: 'localhost',
