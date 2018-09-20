@@ -21,7 +21,6 @@ const {
   getAddressFromDID,
   web3: {
     tx,
-    sha3,
     call,
     ethify,
     account,
@@ -38,7 +37,7 @@ const {
 /**
  * Submits a new DCDN job // 84298 gas
  * @param  {Object}         opts
- * @param  {String}         opts.requesterDid
+ * @param  {String}         opts.farmerDid
  * @param  {String}         opts.contentDid
  * @param  {String}         opts.password
  * @param  {Object}         opts.job
@@ -49,8 +48,8 @@ const {
 async function submit(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
-  } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
-    throw TypeError('Expecting non-empty requester DID')
+  } else if ('string' !== typeof opts.farmerDid || !opts.farmerDid) {
+    throw TypeError('Expecting non-empty farmer DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
   } else if ('string' !== typeof opts.password || !opts.password) {
@@ -60,14 +59,17 @@ async function submit(opts) {
   }
 
   const {
-    requesterDid,
+    farmerDid,
     password,
     job
   } = opts
 
-  let { jobId, budget } = job
+  let { budget, jobId } = job
 
   const validJobId = isValidJobId(jobId)
+  if ('string' === typeof budget) {
+    budget = parseInt(budget, 10)
+  }
   const validBudget = budget && 'number' === typeof budget && budget > 0
 
   if (!validJobId) {
@@ -84,7 +86,7 @@ async function submit(opts) {
   let { contentDid } = opts
   let did
   try {
-    ({ did } = await validate({ did: requesterDid, password, label: 'rewards' }))
+    ({ did } = await validate({ did: farmerDid, password, label: 'rewards' }))
   } catch (err) {
     throw err
   }
@@ -94,8 +96,9 @@ async function submit(opts) {
   did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
-  debug(did, 'submitting', budget, 'tokens as rewards for', contentDid)
+  debug(`${did} submitting ${budget} Ara as rewards for ${jobId} in ${contentDid}`)
 
+  let receipt
   try {
     if (!(await proxyExists(contentDid))) {
       throw new Error('This content does not have a valid proxy contract')
@@ -105,7 +108,7 @@ async function submit(opts) {
 
     budget = budget.toString()
 
-    let receipt = await token.increaseApproval({
+    receipt = await token.increaseApproval({
       did,
       password,
       spender: proxy,
@@ -137,7 +140,7 @@ async function submit(opts) {
     await proxyContract.events.BudgetSubmitted({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { _did, _jobId, _budget } } = log
-        info(_did, 'budgeted', _budget, 'tokens for job', _jobId)
+        info(`budgetted ${token.constrainTokenValue(_budget)} Ara for job ${_jobId} in ${_did}`)
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)
@@ -154,12 +157,13 @@ async function submit(opts) {
   } catch (err) {
     throw err
   }
+  return { jobId, receipt }
 }
 
 /**
  * Allocates rewards for job // 163029 gas (with return), 69637 gas (without return)
  * @param  {Object}         opts
- * @param  {String}         opts.requesterDid
+ * @param  {String}         opts.farmerDid
  * @param  {String}         opts.contentDid
  * @param  {String}         opts.password
  * @param  {Object}         opts.job
@@ -171,8 +175,8 @@ async function submit(opts) {
 async function allocate(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
-  } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
-    throw TypeError('Expecting non-empty requester DID')
+  } else if ('string' !== typeof opts.farmerDid || !opts.farmerDid) {
+    throw TypeError('Expecting non-empty farmer DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
   } else if ('string' !== typeof opts.password || !opts.password) {
@@ -182,12 +186,13 @@ async function allocate(opts) {
   }
 
   const {
-    requesterDid,
+    farmerDid,
     password,
     job
   } = opts
 
-  let { farmers, rewards, jobId } = job
+  const { farmers, rewards } = job
+  let { jobId } = job
 
   const validJobId = isValidJobId(jobId)
   if (!validJobId) {
@@ -227,12 +232,12 @@ async function allocate(opts) {
 
   let did
   try {
-    ({ did } = await validate({ did: requesterDid, password, label: 'rewards' }))
+    ({ did } = await validate({ did: farmerDid, password, label: 'rewards' }))
   } catch (err) {
     throw err
   }
   did = `${AID_PREFIX}${did}`
-  
+
   const acct = await account.load({ did, password })
 
   debug(did, 'allocating rewards for job:', jobId)
@@ -261,7 +266,7 @@ async function allocate(opts) {
     await proxyContract.events.RewardsAllocated({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { _did, _allocated, _returned } } = log
-        info(_did, 'allocated', _allocated, 'tokens as rewards between farmers and returned', _returned, 'tokens')
+        info(`allocated ${token.constrainTokenValue(_allocated)} Ara as rewards between farmers for content ${_did}; returned ${_returned} Ara`)
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)
@@ -336,7 +341,7 @@ async function redeem(opts) {
       .on('data', (log) => {
         const { returnValues: { from, to, value } } = log
         balance = value
-        info(to, 'redeemed', value, 'tokens from', from)
+        info(`${to} redeemed ${token.constrainTokenValue(value)} Ara from ${from}`)
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)
@@ -353,7 +358,6 @@ async function redeem(opts) {
   } catch (err) {
     throw err
   }
-
   return balance
 }
 
@@ -391,7 +395,7 @@ async function getBudget(opts) {
         jobId
       ]
     })
-    return budget
+    return token.constrainTokenValue(budget)
   } catch (err) {
     throw err
   }
@@ -436,7 +440,7 @@ async function getBalance(opts) {
     }
 
     const proxy = await getProxyAddress(contentDid)
-    const budget = await call({
+    const balance = await call({
       abi: afsAbi,
       address: proxy,
       functionName: 'getBalance',
@@ -444,7 +448,7 @@ async function getBalance(opts) {
         address
       ]
     })
-    return budget
+    return token.constrainTokenValue(balance)
   } catch (err) {
     throw err
   }

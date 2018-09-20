@@ -18,38 +18,53 @@ usage: act deploy: [-h] [--help]
 
 // Parse program arguments based on yargs spec
 const { argv } = program
-  .option('proxy', {
-    alias: 'P',
-    type: `boolean`,
-    describe: 'Flag to indicate proxy deployment',
-  })
-  .option('standard', {
-    alias: 'S',
-    type: `boolean`,
-    describe: 'Flag to indicate AFS standard deployment',
-  })
-  .option('did', {
-    alias: 'd',
-    describe: 'The content DID if proxy flag is set.\n Otherwise the Registry contract owner DID',
-  })
-  .option('version', {
-    alias: 'v',
-    describe: 'The version number of the AFS standard to deploy'
-  })
-  .option('upgrade', {
-    alias: 'u',
-    describe: 'Flag to indicate upgrade to version'
-  })
-  .option('force', {
-    alias: 'f',
-    describe: 'Bypass password input, must also pass in password.'
-  })
-  .option('password', {
-    alias: 'p',
-    describe: 'Password for DID'
-  })
-  .conflicts('P', ['S', 'p'])
-  .conflicts('S', 'u')
+  .command('proxy [options] <did> <version>', 'Deploy a proxy contract for <did>', () => {
+    program
+      .positional('did', {
+        type: 'string',
+        describe: 'The content DID for this proxy'
+      })
+      .positional('version', {
+        type: 'string',
+        describe: 'The version name of the AFS standard to use with this proxy'
+      })
+      .option('upgrade', {
+        alias: 'u',
+        type: 'boolean',
+        describe: 'Flag to indicate upgrade to <version>'
+      })
+      .option('force', {
+        alias: 'f',
+        describe: 'Bypass password input, must also pass in password.'
+      })
+      .option('password', {
+        alias: 'p',
+        describe: 'Password for DID'
+      })
+  }, onproxy)
+  .command('standard [options] <did> <version> <pathspec...>', 'Deploy a new AFS standard <version> with <did> (the registry contract owner)', () => {
+    program
+      .positional('did', {
+        type: 'string',
+        describe: 'The registry contract owner DID'
+      })
+      .positional('version', {
+        type: 'string',
+        describe: 'The version name of the new AFS standard'
+      })
+      .positional('pathspec', {
+        type: 'string',
+        describe: "Paths to the solidity dependencies(s) of AFS.sol"
+      })
+      .option('force', {
+        alias: 'f',
+        describe: 'Bypass password input, must also pass in password.'
+      })
+      .option('password', {
+        alias: 'p',
+        describe: 'Password for DID'
+      })
+  }, onstandard)
 
 // Emit program usage help
 if (0 == argv._.length && argv.help) {
@@ -59,61 +74,64 @@ if (0 == argv._.length && argv.help) {
 
 // Main program entry
 module.exports = (async function main() {
-  const { proxy, standard } = argv
-  let [...paths] = argv._
-
-  if ((!paths || !paths.length) && standard) {
-    onfatal(new Error("Missing local file paths. See 'act deploy --help'."))
-    process.exit(0)
+  if (argv.debug) {
+    require('debug').enable('ara-contracts*')
   }
+}())
 
+async function onproxy(argv) {
   let { did, version, upgrade, force, password } = argv
   if (force && !password) {
-    onfatal(new Error("Must provide password if forcing a command."))
+    onfatal(new Error('Must provide password if forcing a command.'))
   }
-
   if (!force) {
     ({ password } = await promptForPassword())
   }
 
-  if (!did) {
-    ({ did } = proxy ? await promptForDID("Please provide the content DID that this Proxy will be deployed for.")
-      : await promptForDID("Please provide the DID of the Registry contract owner."))
-  }
-  if (!version) {
-    ({ version } = proxy ? await promptForVersion("Please provide the AFS standard version you would like to use with this Proxy.")
-      : await promptForVersion("Please provide the version name of the new AFS standard to be deployed."))
-  }
-
-  info('deploying', proxy ? (upgrade ? 'proxy upgrade' : 'new proxy...') : 'new standard...')
   try {
-    if (proxy) {
-      const opts = { contentDid: did, password, version }
-      if (!upgrade) {
-        // DEBUG=* act deploy -P -d 114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85 -v 3
-        const address = await registry.deployProxy(opts)
-        info("Proxy deployed at address", address, "for content", did)
-      } else {
-        // DEBUG=* act deploy -P -u -d 114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85 -v 3
-        const upgraded = await registry.upgradeProxy(opts)
-        if (upgraded) {
-          info("Proxy successfully upgraded to version", version)
-        }
-      }
+    const opts = { contentDid: did, password, version }
+    if (!upgrade) {
+      info(`Deploying new proxy for ${did} at version ${version}...`)
+      // DEBUG=* act deploy proxy 114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85 1
+      const address = await registry.deployProxy(opts)
+      info(`Proxy deployed at address ${address} for ${did}.`)
     } else {
-      // DEBUG=* act deploy -S -d 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 -v 1 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/AraToken.sol
-      const address = await registry.deployNewStandard({
-        requesterDid: did,
-        password,
-        version,
-        paths
-      })
-      info("New AFS standard version", version, "deployed at address", address)
+      info(`Upgrading proxy for ${did} to version ${version}...`)
+      // DEBUG=* act deploy proxy -u 114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85 2
+      const upgraded = await registry.upgradeProxy(opts)
+      if (upgraded) {
+        info(`Proxy successfully upgraded to version ${version}.`)
+      }
     }
   } catch (err) {
     onfatal(err)
   }
-}())
+}
+
+async function onstandard(argv) {
+  let { did, version, force, password } = argv
+  let [ ...paths ] = argv.pathspec
+  if (force && !password) {
+    onfatal(new Error('Must provide password if forcing a command.'))
+  }
+  if (!force) {
+    ({ password } = await promptForPassword())
+  }
+
+  try {
+    info(`Deploying new AFS standard version ${version}...`)
+    // DEBUG=* act deploy standard 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 1 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/AraToken.sol
+    const address = await registry.deployNewStandard({
+      requesterDid: did,
+      password,
+      version,
+      paths
+    })
+    info(`New AFS standard version ${version} deployed at address ${address}.`)
+  } catch (err) {
+    onfatal(err)
+  }
+}
 
 async function promptForPassword() {
   return await inquirer.prompt([{
@@ -124,20 +142,6 @@ async function promptForPassword() {
     "complete this action.\n" +
     "Passphrase:"
   }]) 
-}
-
-async function promptForDID(message) {
-  return await inquirer.prompt([{
-    name: 'did',
-    message
-  }])
-}
-
-async function promptForVersion(message) {
-  return await inquirer.prompt([{
-    name: 'version',
-    message
-  }])
 }
 
 function onfatal(err) {

@@ -1,0 +1,107 @@
+#!/usr/bin/env node
+
+const debug = require('debug')('ara-contracts:cli:token')
+const { info, warn, error, log } = require('ara-console')
+const { createProgram } = require('../lib/program')
+const inquirer = require('inquirer')
+const token = require('../token')
+
+// yargs program command line interface instance
+const program = createProgram({
+  usage: `
+usage: act token: [-h] [--help] [options] [--] <command>
+`
+})
+
+// Parse program arguments based on yargs spec
+const { argv } = program
+  .command('deposited <did>', 'Query number of Ara currently deposited by <did>', () => { 
+    program
+      .positional('did', {
+        type: 'string',
+        describe: 'DID of the account to check'
+      })
+    }, ondeposited)
+  .command('balance <did>', 'Query Ara balance of <did>', () => { 
+    program
+      .positional('did', {
+        type: 'string',
+        describe: 'DID of the account to check'
+      })
+    }, onbalance)
+  .command('allowance <did> <spender>', 'Query number of Ara <spender> can spend on behalf of <did>', () => { 
+    program
+      .positional('did', {
+        type: 'string',
+        describe: 'DID of the owner'
+      })
+      .positional('spender', {
+        type: 'string',
+        describe: 'DID of the spender'
+      })
+    }, onallowance)
+  .command('supply', 'Query total supply of Ara', () => {}, onsupply)
+
+// Emit program usage help
+if (0 == argv._.length && argv.help) {
+  program.showHelp()
+  process.exit(0)
+}
+
+// Main program entry
+module.exports = (async function main() {
+  if (argv.debug) {
+    require('debug').enable('ara-contracts*')
+  }
+}())
+
+async function ondeposited(argv) {
+  const { did } = argv
+  try {
+    info(`Getting deposit amount for ${did}...`)
+    const amount = await token.getAmountDeposited(did)
+    info(`${did} has ${amount} Ara currently deposited.`)
+  } catch (err) {
+    onfatal(err)
+  }
+}
+
+async function onsupply(argv) {
+  try {
+    info(`Getting Ara total supply...`)
+    const amount = await token.totalSupply()
+    info(`The total supply of Ara is ${amount}.`)
+  } catch (err) {
+    onfatal(err)
+  }
+}
+
+async function onbalance(argv) {
+  const { did } = argv
+  try {
+    info(`Getting Ara balance for ${did}...`)
+    const amount = await token.balanceOf(did)
+    info(`${did} has a balance of ${amount} Ara.`)
+  } catch (err) {
+    onfatal(err)
+  }
+}
+
+async function onallowance(argv) {
+  const { did, spender } = argv
+  try {
+    info(`Getting allowance for ${spender} from ${did}...`)
+    const amount = await token.allowance({ owner: did, spender })
+    info(`${spender} has an allowance of ${amount} Ara to spend on behalf of ${did}.`)
+  } catch (err) {
+    onfatal(err)
+  }
+}
+
+function onfatal(err) {
+  if (err) {
+    debug(err)
+    error('fatal:', err.message)
+  }
+  process.exit(1)
+}

@@ -85,7 +85,8 @@ async function upgradeProxy(opts) {
   }
 
   let { version } = opts
-  const { password, contentDid } = opts
+  const { contentDid, password } = opts
+
   if ('number' === typeof version) {
     version = version.toString()
   }
@@ -141,7 +142,6 @@ async function upgradeProxy(opts) {
   } catch (err) {
     throw err
   }
-
   return upgraded
 }
 
@@ -180,8 +180,8 @@ async function deployProxy(opts) {
   debug('creating tx to deploy proxy for', did)
   let owner = getDocumentOwner(ddo, true)
   owner = `${AID_PREFIX}${owner}`
-
   const acct = await account.load({ did: owner, password })
+
   let proxyAddress = null
   try {
     const encodedData = web3Abi.encodeParameters([ 'address', 'address', 'address', 'bytes32' ], [ acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, ethify(contentDid) ])
@@ -225,7 +225,6 @@ async function deployProxy(opts) {
   } catch (err) {
     throw err
   }
-
   return proxyAddress
 }
 
