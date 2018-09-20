@@ -11,9 +11,11 @@ ganache-cli &
 sleep 5
 truffle migrate --reset --network local
 
-# ava
-ava test/registry.js --verbose
-ava test/util.js --verbose
+# truffle test
+truffle test
+
+# ava tests
+ava test/js/* --verbose
 
 # cleanup
 pkill -f ganache 

@@ -1,5 +1,5 @@
 const { randomBytes } = require('ara-crypto')
-const util = require('../util')
+const util = require('../../util')
 const test = require('ava')
 
 test('isValidJobId(jobId)', (t) => {
