@@ -16,18 +16,21 @@ usage: act purchase: [-h] [--help] [options]
 })
 
 const { argv } = program
-  .option('purchaser', {
-    alias: 'p',
-    describe: 'The purchaser DID.'
-  })
-  .option('did', {
-    alias: 'd',
-    describe: 'The content DID to purchase.'
-  })
-  .option('job', {
-    alias: 'j',
-    type: 'boolean',
-    describe: 'Flag to indicate if a new job should be created.'
+  .command('$0 <purchaser> <did> [--budget]', 'Purchase <did> from the ARA network', () => {
+    program
+      .positional('purchaser', {
+        type: 'string',
+        describe: 'The DID of the purchaser'
+      })
+      .positional('did', {
+        type: 'string',
+        describe: 'The content DID to purchase'
+      })
+      .option('budget', {
+        alias: 'b',
+        type: 'number',
+        describe: 'The amount of Ara to budget for downloading the AFS'
+      })
   })
 
 // Emit program usage help
@@ -38,33 +41,22 @@ if (0 == argv._.length && argv.help) {
 
 // Main program entry
 module.exports = (async function main() {
-  let { purchaser, did, job } = argv
-
-  if (!purchaser) {
-    onfatal(new Error("Please provide the DID of the purchaser. See 'act purchase --help'."))
-    process.exit(0)
-  }
-  if (!did) {
-    onfatal(new Error("Please provide a content DID to purchase. See 'act purchase --help'."))
-    process.exit(0)
+  let { purchaser, did, budget } = argv
+  let job = null
+  if (0 > budget) {
+    throw new TypeError(`Expecting 'budget' to be a 0 or greater. Got ${budget}. Try passing in a non-negative budget.`)
   }
 
   const { password } = await promptForPassword()
-  let budget = 0
-  if (job) {
-    ({ budget } = await promptForBudget())
-    const jobId = ethify(randomBytes(32), true)
-    job = { jobId, budget }
-  }
 
-  info('purchasing', did)
+  info(`Purchasing ${did}...`)
   try {
-    // DEBUG=* act purchase -j -p cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3 -d d386865d057f81da36af32e3fdc7539470128d0c90c4040789bb88d2bd95dc1b
+    // DEBUG=* act purchase 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 2932d07bb73160c9808b02aa061dc6ee4b759dfc0bd19656214eb651469b6ceb --budget 10
     await purchase({
       requesterDid: purchaser,
       contentDid: did,
       password,
-      job
+      budget
     })
   } catch (err) {
     onfatal(err)
@@ -79,25 +71,6 @@ async function promptForPassword() {
     "Please provide the passphrase for your identity. This is needed to " +
     "complete this action.\n" +
     "Passphrase:"
-  }]) 
-}
-
-async function promptForJobId() {
-  return await inquirer.prompt([{
-    name: 'jobId',
-    message:
-    "Please provide an existing Job ID.\n" +
-    "Job ID:"
-  }]) 
-}
-
-async function promptForBudget() {
-  return await inquirer.prompt([{
-    name: 'budget',
-    type: 'number',
-    message:
-    "Please provide a budget in Ara tokens as rewards for the job.\n" +
-    "Budget:"
   }]) 
 }
 

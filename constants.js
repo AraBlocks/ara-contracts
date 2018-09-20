@@ -1,24 +1,30 @@
 module.exports = {
   AID_PREFIX: 'did:ara:',
 
-  REGISTRY_ADDRESS: '0xe502f37d15a4ec888011a96c9400b195b61048aa',
-  LIBRARY_ADDRESS: '0x2f6394ade048068b15f28c08dbe02baec52ce188',
-  ARA_TOKEN_ADDRESS: '0x073b013f16f29282854c4dda4de940ec192fe364',
+  REGISTRY_ADDRESS: '0x3fa592a97d6be2b3f99c9ac8662205805261350d',
+  LIBRARY_ADDRESS: '0xd1ddecb62d9c2dcd756ad442911df6a868e01e31',
+  ARA_TOKEN_ADDRESS: '0xd1db2fb6b9cc0c260ea37f85e43936d1f70687c3',
 
   TEMP_OWNER_DID: 'did:ara:8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67',
   OWNER_PASSWORD: 'pass',
-  OWNER_MNEMONIC: 'undo cargo steel brick stairs trash hover rent scare ribbon tired output',
+  OWNER_MNEMONIC: 'leg notable ostrich found gym honey leg arrive spend cabbage genuine light',
   // private key: 0x628a3ff0e47af58d306dfe413114acfded25a8374f562db36d8496f246dbeaf7
   DEFAULT_ADDRESS: '0x105C83b79E9170d7969Ce9806fE0B527b5f879dE',
 
   TEST_OWNER_ADDRESS: '0x105C83b79E9170d7969Ce9806fE0B527b5f879dE',
-  TEST_OWNER_PK: '0x8662c06fab466f44e0b7937812671d07b4e298a609c7d9654e27c1d0d2653f20',
+  TEST_OWNER_PK: '8662c06fab466f44e0b7937812671d07b4e298a609c7d9654e27c1d0d2653f20',
   TEST_OWNER_PASSWORD: 'pass',
 
   TOKEN_DECIMALS: 18,
   STANDARD_VERSION: '1',
   JOB_ID_LENGTH: 64
 }
+
+// kTempOwnerDid: 'did:ara:cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3',
+// kOwnerPassword: 'lol',
+// kOwnerMnemonic: 'undo cargo steel brick stairs trash hover rent scare ribbon tired output',
+// // private key: 0x628a3ff0e47af58d306dfe413114acfded25a8374f562db36d8496f246dbeaf7
+// kDefaultAddress: '0x1019468D3060F0b8c5d9C432f0c4Db33e28b3582'
 
 // AFS standard v2: '0x5bd7C0Fcca203A3b5016cd6da530d1A72d0e5413'
 // Proxy: '0x7150c203A5A7e833BaED9c98c699eB3b96668aDd'
@@ -42,3 +48,6 @@ module.exports = {
  *          KEY: 0x32b1acdfc044649631bb22821f661ea5e9dba65e98637f1fa2ec3c3056582acc
  *     MNEMONIC: < snap poet general square silk ranch whip lizard faculty upon cup degree >
  */
+
+// 0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e, 0x70693d8f4e1c9bA1AE0870C35128BaDfDcF28FBc, 0x19d6a7D8bB09e8A6d733a9c8D9fe7b964fD8F45e, 0x629483C72b5191C1b522E887238a0A522b1D4F74
+// 10, 20, 30, 40

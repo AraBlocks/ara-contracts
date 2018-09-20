@@ -17,11 +17,24 @@ usage: act library: [-h] [--help]
 })
 
 const { argv } = program
-  .option('get', {
-    alias: 'g',
-    type: 'number',
-    describe: 'Gets the g\'th item in the library'
-  })
+  .command('$0 <did>', 'Gets a list of content DIDs purchased by <did>', () => {
+    program
+      .positional('did', {
+        type: 'string',
+        describe: 'The library owner\'s DID'
+      })
+  }, onall)
+  .command('get <did> <index>', 'Gets the content DID at <index> in <did>\'s library', () => {
+    program
+      .positional('did', {
+        type: 'string',
+        describe: 'The library owner\'s DID'
+      })
+      .positional('index', {
+        type: 'number',
+        describe: 'The position in the library'
+      })
+  }, onget)
 
 // Emit program usage help
 if (0 == argv._.length && argv.help) {
@@ -31,17 +44,30 @@ if (0 == argv._.length && argv.help) {
 
 // Main program entry
 module.exports = (async function main() {
-  if (1 !== argv._.length) {
-    onfatal(new Error('Please supply a single DID whose library you would like to view.'))
-  }
-  const did = argv._[0]
-  const { g } = argv
-  if (!g && 0 !== g) {
-    const size = await library.getLibrarySize(did)
-    const lib = await library.getLibrary(did)
-    info(did, 'library (', size, ')\n', lib)
-  } else {
-    const contentDid = await library.getLibraryItem({ requesterDid: did, index: g })
-    info('item', g, 'has did:', contentDid)
+  if (argv.debug) {
+    require('debug').enable('ara-contracts*')
   }
 }())
+
+async function onall(argv) {
+  const { did } = argv
+  try {
+    info(`Getting ${did}\'s library...`)
+    const size = await library.getLibrarySize(did)
+    const lib = await library.getLibrary(did)
+    info(`${did} library (${size})\n${lib}.`)
+  } catch (err) {
+    onfatal(err)
+  }
+}
+
+async function onget(argv) {
+  const { did, index } = argv
+  try {
+    info(`Getting item ${index} in ${did}\'s library...`)
+    const contentDid = await library.getLibraryItem({ requesterDid: did, index })
+    info(`item ${index} has did: ${contentDid}.`)
+  } catch (err) {
+    onfatal(err)
+  }
+}

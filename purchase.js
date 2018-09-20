@@ -39,7 +39,7 @@ const {
  * @param  {String} opts.requesterDid
  * @param  {String} opts.contentDid
  * @param  {String} opts.password
- * @param  {Object} opts.job
+ * @param  {Number} opts.budget
  * @throws {Error,TypeError}
  */
 async function purchase(opts) {
@@ -51,37 +51,19 @@ async function purchase(opts) {
     throw TypeError('Expecting non-empty content DID.')
   } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password.')
-  } else if (opts.job && 'object' !== typeof opts.job) {
-    throw TypeError('Expecting job object.')
+  } else if ('number' !== typeof opts.budget || 0 > opts.budget) {
+    throw TypeError('Expecting budget to be 0 or greater.')
   }
 
   const {
     requesterDid,
-    password,
-    job
+    password
   } = opts
 
-  let jobId
-  let budget
-  if (job) {
-    ({ jobId, budget } = job)
-    const validJobId = jobId && isValidJobId(jobId)
-    const validBudget = 'number' === typeof budget && 0 <= budget
+  let { budget } = opts
 
-    if (!validJobId) {
-      throw TypeError('Expecting job Id.')
-    }
-    if (!validBudget) {
-      throw TypeError('Expecting budget.')
-    }
-
-    if (JOB_ID_LENGTH === jobId.length) {
-      jobId = ethify(jobId, 'string' !== typeof jobId)
-    }
-  } else {
-    jobId = ethify(randomBytes(32), true)
-    budget = 0
-  }
+  const jobId = ethify(randomBytes(32), true)
+  budget = budget || 0
 
   let { contentDid } = opts
   let did
@@ -114,9 +96,8 @@ async function purchase(opts) {
     })
 
     price = Number(token.constrainTokenValue(price))
-    let val = job
-      ? price + budget
-      : price
+
+    let val = budget + price
     val = val.toString()
 
     let receipt = await token.increaseApproval({
@@ -164,7 +145,7 @@ async function purchase(opts) {
     await proxyContract.events.BudgetSubmitted({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { _did, _jobId, _budget } } = log
-        debug('job', _jobId, 'submitted in', _did, 'with budget', _budget)
+        debug('job', _jobId, 'submitted in', _did, 'with budget', token.constrainTokenValue(_budget))
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)
