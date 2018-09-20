@@ -340,6 +340,7 @@ async function deployNewStandard(opts) {
     path = parse(path).base
     sources[path] = src
   })
+
   const compiledFile = solc.compile({ sources }, 1)
   const compiledContract = compiledFile.contracts['AFS.sol:AFS']
   const afsAbi = JSON.parse(compiledContract.interface)
