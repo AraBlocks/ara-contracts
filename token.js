@@ -459,16 +459,16 @@ function constrainTokenValue(val) {
 }
 
 /**
- * Deposits Ara to participate in earning rewards
- * @param  {Object}  opts
- * @param  {String}  opts.did
- * @param  {String}  opts.password
- * @param  {Number}  opts.val
+ * Modify Ara deposit for earning rewards
+ * @param  {Object}   opts
+ * @param  {String}   opts.did
+ * @param  {String}   opts.password
+ * @param  {Number}   opts.val
  * @param  {?Boolean} opts.withdraw
  * @return {Object}
  * @throws {TypeError}
  */
-async function deposit(opts = {}) {
+async function modifyDeposit(opts = {}) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError(`Expected 'opts' to be an object. Got ${opts}. Try passing in 'opts.did', 'opts.password', and 'opts.val'.`)
   } else if (!opts.did || 'string' !== typeof opts.did) {
@@ -485,7 +485,7 @@ async function deposit(opts = {}) {
   const { password } = opts
 
   try {
-    ({ did } = await validate({ owner: did, password, label: 'deposit' }))
+    ({ did } = await validate({ owner: did, password, label: withdraw ? 'withdraw' : 'deposit' }))
   } catch (err) {
     throw err
   }
@@ -515,20 +515,6 @@ async function deposit(opts = {}) {
   } catch (err) {
     throw err
   }
-}
-
-/**
- * Withdraws Ara from deposit balance
- * @param  {Object} opts
- * @param  {String} opts.did
- * @param  {String} opts.password
- * @param  {Number} opts.val
- * @return {Object}
- * @throws {TypeError}
- */
-async function withdraw(opts = {}) {
-  opts = Object.assign(opts, { withdraw: true })
-  return deposit(opts)
 }
 
 /**
@@ -585,12 +571,11 @@ module.exports = {
   expandTokenValue,
   increaseApproval,
   decreaseApproval,
+  modifyDeposit,
   transferFrom,
   totalSupply,
   balanceOf,
   allowance,
   transfer,
-  withdraw,
-  deposit,
   approve
 }

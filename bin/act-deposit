@@ -3,7 +3,7 @@
 const debug = require('debug')('ara-contracts:cli:deposit')
 const { info, warn, error, log } = require('ara-console')
 const { createProgram } = require('../lib/program')
-const { deposit } = require('../token')
+const { modifyDeposit } = require('../token')
 const inquirer = require('inquirer')
 
 // yargs program command line interface instance
@@ -42,9 +42,9 @@ module.exports = (async function main() {
   const { password } = await promptForPassword()
 
   try {
-    const opts = { did, password, val: amount }
+    const opts = { did, password, val: amount, withdraw: false }
     info(`Depositing ${amount} Ara...`)
-    const receipt = await deposit(opts)
+    const receipt = await modifyDeposit(opts)
     if (receipt.status) {
       info(`${did} deposited ${amount} Ara.`)
     }
