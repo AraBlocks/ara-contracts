@@ -25,6 +25,9 @@ const {
     ethify,
     account,
     contract
+  },
+  errors: {
+    MissingOptionError
   }
 } = require('ara-util')
 
@@ -46,8 +49,18 @@ async function purchase(opts) {
     throw TypeError('Expecting non-empty content DID.')
   } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password.')
+  } else if (opts.job && 'object' !== typeof opts.job) {
+    throw TypeError('Expecting job object.')
   } else if ('number' !== typeof opts.budget || 0 > opts.budget) {
     throw TypeError('Expecting budget to be 0 or greater.')
+  } else if (!opts.keyringOpts) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
+  } else if (!opts.keyringOpts.secret) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.network) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.keyring) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
   const {
@@ -61,9 +74,10 @@ async function purchase(opts) {
   budget = budget || 0
 
   let { contentDid } = opts
+  const { keyringOpts } = opts
   let did
   try {
-    ({ did } = await validate({ did: requesterDid, password, label: 'purchase' }))
+    ({ did } = await validate({ did: requesterDid, password, label: 'purchase', keyringOpts }))
   } catch (err) {
     throw err
   }

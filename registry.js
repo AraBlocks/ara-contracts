@@ -5,17 +5,6 @@ const solc = require('solc')
 const fs = require('fs')
 
 const {
-  web3: {
-    tx,
-    call,
-    ethify,
-    account,
-    contract,
-    abi: web3Abi,
-  }
-} = require('ara-util')
-
-const {
   AID_PREFIX,
   LIBRARY_ADDRESS,
   REGISTRY_ADDRESS,
@@ -26,7 +15,18 @@ const {
 const {
   validate,
   normalize,
-  getDocumentOwner
+  getDocumentOwner,
+  web3: {
+    tx,
+    call,
+    ethify,
+    account,
+    contract,
+    abi: web3Abi,
+  },
+  errors: {
+    MissingOptionError
+  }
 } = require('ara-util')
 
 async function proxyExists(contentDid = '') {
@@ -82,10 +82,19 @@ async function upgradeProxy(opts) {
     throw TypeError('Expecting non-empty password')
   } else if (('string' !== typeof opts.version && 'number' !== typeof opts.version) || !opts.version) {
     throw TypeError('Expecting non-empty version string or number')
+  } else if (!opts.keyringOpts) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
+  } else if (!opts.keyringOpts.secret) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.network) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.keyring) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
+
   let { version } = opts
-  const { contentDid, password } = opts
+  const { contentDid, password, keyringOpts } = opts
 
   if ('number' === typeof version) {
     version = version.toString()
@@ -94,7 +103,7 @@ async function upgradeProxy(opts) {
   let did
   let ddo
   try {
-    ({ did, ddo } = await validate({ did: contentDid, password, label: 'registry' }))
+    ({ did, ddo } = await validate({ did: contentDid, password, label: 'registry', keyringOpts }))
   } catch (err) {
     throw err
   }
@@ -160,9 +169,17 @@ async function deployProxy(opts) {
     throw TypeError('Expecting non-empty content DID')
   } else if (null == opts.password || 'string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password')
+  } else if (!opts.keyringOpts) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
+  } else if (!opts.keyringOpts.secret) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.network) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.keyring) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
-  const { password, contentDid } = opts
+  const { password, contentDid, keyringOpts } = opts
 
   let version = opts.version || STANDARD_VERSION
   if ('number' === typeof version) {
@@ -172,7 +189,7 @@ async function deployProxy(opts) {
   let did
   let ddo
   try {
-    ({ did, ddo } = await validate({ did: contentDid, password, label: 'registry' }))
+    ({ did, ddo } = await validate({ did: contentDid, password, label: 'registry', keyringOpts }))
   } catch (err) {
     throw err
   }
@@ -291,6 +308,14 @@ async function deployNewStandard(opts) {
     throw TypeError('Expecting non-empty password')
   } else if (!opts.paths || !opts.paths.length) {
     throw TypeError('Expecting one or more paths')
+  } else if (!opts.keyringOpts) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
+  } else if (!opts.keyringOpts.secret) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.network) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.keyring) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
   if (null == opts.version || 'string' !== typeof opts.version || !opts.version) {
@@ -303,6 +328,7 @@ async function deployNewStandard(opts) {
 
   const {
     requesterDid,
+    keyringOpts,
     password,
     version,
     paths
@@ -310,7 +336,7 @@ async function deployNewStandard(opts) {
 
   let did
   try {
-    ({ did } = await validate({ owner: requesterDid, password, label: 'registry' }))
+    ({ did } = await validate({ owner: requesterDid, password, label: 'registry', keyringOpts }))
   } catch (err) {
     throw err
   }
