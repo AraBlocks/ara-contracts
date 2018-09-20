@@ -90,14 +90,8 @@ async function allowance(opts = {}) {
 
   let { owner, spender } = opts
   try {
-    if (!isAddress(owner)) {
-      owner = normalize(owner)
-      owner = await getAddressFromDID(owner)
-    }
-    if (!isAddress(spender)) {
-      spender = normalize(spender)
-      spender = await getAddressFromDID(spender)
-    }
+    owner = await _normalizeIDInput(owner)
+    spender = await _normalizeIDInput(spender)
   } catch (err) {
     throw err
   }
@@ -151,10 +145,7 @@ async function transfer(opts = {}) {
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transfer' }))
-    if (!isAddress(to)) {
-      to = normalize(to)
-      to = await getAddressFromDID(to)
-    }
+    to = await _normalizeIDInput(to)
   } catch (err) {
     throw err
   }
@@ -203,10 +194,7 @@ async function approve(opts = {}) {
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transfer' }))
-    if (!isAddress(spender)) {
-      spender = normalize(spender)
-      spender = await getAddressFromDID(spender)
-    }
+    spender = await _normalizeIDInput(spender)
   } catch (err) {
     throw err
   }
@@ -274,14 +262,8 @@ async function transferFrom(opts = {}) {
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transferFrom' }))
-    if (!isAddress(to)) {
-      to = normalize(to)
-      to = await getAddressFromDID(to)
-    }
-    if (!isAddress(from)) {
-      from = normalize(from)
-      from = await getAddressFromDID(from)
-    }
+    to = await _normalizeIDInput(to)
+    from = await _normalizeIDInput(from)
   } catch (err) {
     throw err
   }
@@ -334,10 +316,7 @@ async function increaseApproval(opts = {}) {
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transfer' }))
-    if (!isAddress(spender)) {
-      spender = normalize(spender)
-      spender = await getAddressFromDID(spender)
-    }
+    spender = await _normalizeIDInput(spender)
   } catch (err) {
     throw err
   }
@@ -387,10 +366,7 @@ async function decreaseApproval(opts = {}) {
 
   try {
     ({ did } = await validate({ owner: did, password, label: 'transfer' }))
-    if (!isAddress(spender)) {
-      spender = normalize(spender)
-      spender = await getAddressFromDID(spender)
-    }
+    spender = await _normalizeIDInput(spender)
   } catch (err) {
     throw err
   }
@@ -563,6 +539,18 @@ function _validateApprovalOpts(opts) {
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${opts.password}.`)
   }
+}
+
+function async _normalizeIDInput(id) {
+  try {
+    if (!isAddress(id)) {
+      id = normalize(id)
+      id = await getAddressFromDID(id)
+    }
+  } catch (err) {
+    throw err
+  }
+  return id
 }
 
 module.exports = {
