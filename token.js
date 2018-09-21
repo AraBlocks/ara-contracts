@@ -461,7 +461,7 @@ async function modifyDeposit(opts = {}) {
   const { password } = opts
 
   try {
-    ({ did } = await validate({ owner: did, password, label: withdraw ? 'withdraw' : 'deposit' }))
+    ({ did } = await validate({ owner: did, password, label: wd ? 'withdraw' : 'deposit' }))
   } catch (err) {
     throw err
   }
@@ -485,7 +485,7 @@ async function modifyDeposit(opts = {}) {
     })
     receipt = await tx.sendSignedTransaction(depositTx)
     if (receipt.status) {
-      debug(withdraw ? 'withdrew' : 'deposited', constrainTokenValue(val), 'tokens')
+      debug(wd ? 'withdrew' : 'deposited', constrainTokenValue(val), 'tokens')
     }
     return receipt
   } catch (err) {

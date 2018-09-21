@@ -22,6 +22,7 @@ const {
   web3: {
     tx,
     call,
+    sha3,
     ethify,
     account,
     contract,
@@ -204,8 +205,9 @@ async function allocate(opts) {
 
   // Convert farmer DIDs to Addresses
   const validFarmers = await isValidArray(farmers, async (farmer, index) => {
-    farmers[index] = await getAddressFromDID(farmer)
-    return isAddress(farmers[index])
+    const address = await getAddressFromDID(farmer)
+    farmers[index] = sha3({ t: 'address', v: address })
+    return isAddress(address)
   })
   if (!validFarmers) {
     throw TypeError('Invalid farmer array.')

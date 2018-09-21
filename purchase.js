@@ -1,13 +1,8 @@
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
 const { randomBytes } = require('ara-crypto')
-const { isValidJobId } = require('./util')
+const { AID_PREFIX } = require('./constants')
 const token = require('./token')
-
-const {
-  AID_PREFIX,
-  JOB_ID_LENGTH
-} = require('./constants')
 
 const {
   proxyExists,
