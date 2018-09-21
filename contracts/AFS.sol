@@ -21,7 +21,7 @@ contract AFS {
   mapping(bytes32 => Job)     public jobs_; // jobId => job { budget, sender }
   mapping(bytes32 => uint256) public rewards_;    // farmer => rewards
   mapping(bytes32 => bool)    public purchasers_; // keccak256 hashes of buyer addresses
-  mapping(uint8 => bytes)     public metadata_;
+  mapping(uint8 => mapping (uint256 => bytes))   public metadata_;
 
   struct Job {
     address sender;
@@ -171,11 +171,54 @@ contract AFS {
     }
   }
 
-  function write(bytes _mtBuffer, bytes _msBuffer) public onlyBy(owner_) {
+  function append(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
+    bytes _msBuffer) external onlyBy(owner_) {
+    
+    require(listed_, "AFS is unlisted.");
+    
+    uint256 maxOffsetLength = _mtOffsets.length > _msOffsets.length 
+      ? _mtOffsets.length 
+      : _msOffsets.length;
+
+    for (uint i = 0; i < maxOffsetLength; i++) {
+      // metadata/tree
+      if (i <= _mtOffsets.length - 1) {
+        metadata_[0][_mtOffsets[i]] = _mtBuffer.slice(i * mtBufferSize_, mtBufferSize_);
+      }
+
+      // metadata/signatures
+      if (i <= _msOffsets.length - 1) {
+        metadata_[1][_msOffsets[i]] = _msBuffer.slice(i * msBufferSize_, msBufferSize_);
+      }
+    }
+
+    emit Commit(did_);
+  }
+
+  function write(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
+    bytes _msBuffer) public onlyBy(owner_) {
+
     require(listed_, "AFS is unlisted.");
 
-    metadata_[0].concatStorage(_mtBuffer);
-    metadata_[1].concatStorage(_msBuffer);
+    uint256 maxOffsetLength = _mtOffsets.length > _msOffsets.length 
+      ? _mtOffsets.length 
+      : _msOffsets.length;
+
+    // add headers
+    metadata_[0][0] = _mtBuffer.slice(0, 32);
+    metadata_[1][0] = _msBuffer.slice(0, 32);
+
+    for (uint i = 1; i < maxOffsetLength; i++) {
+      // metadata/tree
+      if (i <= _mtOffsets.length - 1) {
+        metadata_[0][_mtOffsets[i]] = _mtBuffer.slice(_mtOffsets[i], mtBufferSize_);
+      }
+      
+      // metadata/signatures
+      if (i <= _msOffsets.length - 1) {
+        metadata_[1][_msOffsets[i]] = _msBuffer.slice(_msOffsets[i], msBufferSize_);
+      }
+    }
 
     emit Commit(did_);
   }
@@ -184,13 +227,11 @@ contract AFS {
     if (!listed_) {
       return ""; // empty bytes
     }
-    uint8 size = _file == 0 ? mtBufferSize_ : msBufferSize_;
-    bytes memory buf = metadata_[_file].slice(_offset, size);
-    return buf;
+    return metadata_[_file][_offset];
   }
 
-  function hasBuffer(uint8 _file) public view returns (bool exists) {
-    return metadata_[_file].length > 0;
+  function hasBuffer(uint8 _file, uint256 _offset, bytes _buffer) public view returns (bool exists) {
+    return metadata_[_file][_offset].equal(_buffer);
   }
 
   function unlist() public onlyBy(owner_) returns (bool success) {
