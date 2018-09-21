@@ -1,13 +1,48 @@
+<a name="0.2.5"></a>
+## [0.2.5](https://github.com/AraBlocks/ara-contracts/compare/0.2.4...0.2.5) (2018-09-21)
+
+
+### Bug Fixes
+
+* **rewards:** using sha3 of farmer address ([5ee0886](https://github.com/AraBlocks/ara-contracts/commit/5ee0886))
+* cleanup rewards.js ([dc82b14](https://github.com/AraBlocks/ara-contracts/commit/dc82b14))
+* revert commit refactor ([#55](https://github.com/AraBlocks/ara-contracts/issues/55)) ([96d19a6](https://github.com/AraBlocks/ara-contracts/commit/96d19a6))
+
+
+
+<a name="0.2.4"></a>
+## [0.2.4](https://github.com/AraBlocks/ara-contracts/compare/0.2.3...0.2.4) (2018-09-19)
+
+
+
 <a name="0.2.3"></a>
-## [0.2.3](https://github.com/AraBlocks/ara-contracts/compare/0.2.0...0.2.3) (2018-09-19)
+## [0.2.3](https://github.com/AraBlocks/ara-contracts/compare/0.2.2...0.2.3) (2018-09-19)
+
+
+### Bug Fixes
+
+* use semver for AFS.sol and Registry.sol to fix solc error ([e3a4300](https://github.com/AraBlocks/ara-contracts/commit/e3a4300))
+
+
+
+<a name="0.2.2"></a>
+## [0.2.2](https://github.com/AraBlocks/ara-contracts/compare/0.2.1...0.2.2) (2018-09-19)
+
+
+### Bug Fixes
+
+* **various:** fixes [#34](https://github.com/AraBlocks/ara-contracts/issues/34) [#36](https://github.com/AraBlocks/ara-contracts/issues/36) [#37](https://github.com/AraBlocks/ara-contracts/issues/37) [#38](https://github.com/AraBlocks/ara-contracts/issues/38) [#39](https://github.com/AraBlocks/ara-contracts/issues/39) ([5307417](https://github.com/AraBlocks/ara-contracts/commit/5307417))
+
+
+
+<a name="0.2.1"></a>
+## [0.2.1](https://github.com/AraBlocks/ara-contracts/compare/0.2.0...0.2.1) (2018-09-18)
 
 
 ### Bug Fixes
 
 * another const jobId ([ff5348d](https://github.com/AraBlocks/ara-contracts/commit/ff5348d))
 * const jobId ([ff2e0e2](https://github.com/AraBlocks/ara-contracts/commit/ff2e0e2))
-* **various:** fixes [#34](https://github.com/AraBlocks/ara-contracts/issues/34) [#36](https://github.com/AraBlocks/ara-contracts/issues/36) [#37](https://github.com/AraBlocks/ara-contracts/issues/37) [#38](https://github.com/AraBlocks/ara-contracts/issues/38) [#39](https://github.com/AraBlocks/ara-contracts/issues/39) ([5307417](https://github.com/AraBlocks/ara-contracts/commit/5307417))
-* use semver for AFS.sol and Registry.sol to fix solc error ([845ba35](https://github.com/AraBlocks/ara-contracts/commit/845ba35))
 
 
 ### Features
@@ -17,7 +52,18 @@
 
 
 <a name="0.2.0"></a>
-# [0.2.0](https://github.com/AraBlocks/ara-contracts/compare/213ae89...0.2.0) (2018-09-13)
+# [0.2.0](https://github.com/AraBlocks/ara-contracts/compare/0.1.0...0.2.0) (2018-09-13)
+
+
+### Bug Fixes
+
+* **rewards.js:** remove old code ([eae7fd1](https://github.com/AraBlocks/ara-contracts/commit/eae7fd1))
+* **token.js:** expand to string instead of BN ([c0b7cba](https://github.com/AraBlocks/ara-contracts/commit/c0b7cba))
+
+
+
+<a name="0.1.0"></a>
+# [0.1.0](https://github.com/AraBlocks/ara-contracts/compare/213ae89...0.1.0) (2018-09-12)
 
 
 ### Bug Fixes
@@ -38,11 +84,11 @@
 * remove unecessary default ([188ee2f](https://github.com/AraBlocks/ara-contracts/commit/188ee2f))
 * rename Library.json ([ac05e39](https://github.com/AraBlocks/ara-contracts/commit/ac05e39))
 * require fix ([090b4ee](https://github.com/AraBlocks/ara-contracts/commit/090b4ee))
+* **token.js:** update type checking for val ([f5b4bf5](https://github.com/AraBlocks/ara-contracts/commit/f5b4bf5))
 * revert approve function ([42359ef](https://github.com/AraBlocks/ara-contracts/commit/42359ef))
 * solidity compile error ([2b1ceb1](https://github.com/AraBlocks/ara-contracts/commit/2b1ceb1))
+* **rewards.js:** remove duplicate expand ([fc73bb3](https://github.com/AraBlocks/ara-contracts/commit/fc73bb3))
 * switch if to require in library contract ([80ebc4d](https://github.com/AraBlocks/ara-contracts/commit/80ebc4d))
-* update compiled contracts to respect new StandardToken ([5e409f7](https://github.com/AraBlocks/ara-contracts/commit/5e409f7))
-* use string interpolate ([0a98289](https://github.com/AraBlocks/ara-contracts/commit/0a98289))
 * **contracts/*:** compile fixes ([a5fc8fc](https://github.com/AraBlocks/ara-contracts/commit/a5fc8fc))
 * **contracts/*:** fix typos ([f0d514d](https://github.com/AraBlocks/ara-contracts/commit/f0d514d))
 * **index.js:** add to exports ([d8f59cc](https://github.com/AraBlocks/ara-contracts/commit/d8f59cc))
@@ -52,13 +98,11 @@
 * **registry.js:** remove AraToken.sol from compilation ([7d9e9a9](https://github.com/AraBlocks/ara-contracts/commit/7d9e9a9))
 * **Registry.sol:** fix modifier logic ([c8f8417](https://github.com/AraBlocks/ara-contracts/commit/c8f8417))
 * **rewards.js:** add budget BN conversion ([96e3a0e](https://github.com/AraBlocks/ara-contracts/commit/96e3a0e))
+* update compiled contracts to respect new StandardToken ([5e409f7](https://github.com/AraBlocks/ara-contracts/commit/5e409f7))
 * **rewards.js:** convert budget to BN ([09559a6](https://github.com/AraBlocks/ara-contracts/commit/09559a6))
-* **rewards.js:** remove duplicate expand ([fc73bb3](https://github.com/AraBlocks/ara-contracts/commit/fc73bb3))
-* **rewards.js:** remove old code ([eae7fd1](https://github.com/AraBlocks/ara-contracts/commit/eae7fd1))
+* use string interpolate ([0a98289](https://github.com/AraBlocks/ara-contracts/commit/0a98289))
 * **token.js:** expand for funcs calling contract ([fc43770](https://github.com/AraBlocks/ara-contracts/commit/fc43770))
-* **token.js:** expand to string instead of BN ([c0b7cba](https://github.com/AraBlocks/ara-contracts/commit/c0b7cba))
 * **token.js:** fix loss of precision for big numbers ([b70f60e](https://github.com/AraBlocks/ara-contracts/commit/b70f60e))
-* **token.js:** update type checking for val ([f5b4bf5](https://github.com/AraBlocks/ara-contracts/commit/f5b4bf5))
 * **util.js:** specify hex encoding ([5439189](https://github.com/AraBlocks/ara-contracts/commit/5439189))
 
 
