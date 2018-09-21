@@ -541,7 +541,7 @@ function _validateApprovalOpts(opts) {
   }
 }
 
-function async _normalizeIDInput(id) {
+async function _normalizeIDInput(id) {
   try {
     if (!isAddress(id)) {
       id = normalize(id)
