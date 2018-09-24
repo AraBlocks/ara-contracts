@@ -15,6 +15,9 @@ module.exports = {
   TEST_OWNER_PK: '0x8662c06fab466f44e0b7937812671d07b4e298a609c7d9654e27c1d0d2653f20', // 0x for ganache, no prefix for geth
   TEST_OWNER_PASSWORD: 'pass',
 
+  // TODO(cckelly) get a better hold on constants
+  TEST_OWNER_ADDRESS_2: '0x1019468D3060F0b8c5d9C432f0c4Db33e28b3582',
+
   TOKEN_DECIMALS: 18,
   STANDARD_VERSION: '1',
   JOB_ID_LENGTH: 64

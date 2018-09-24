@@ -178,6 +178,36 @@ test.serial('approve(opts) valid approve', async (t) => {
   t.true(beforeAllowed != afterAllowed)
 })
 
+test.serial('transferFrom(opts) valid transfer', async (t) => {
+  const { did } = t.context.defaultAccount
+  const { did: testDID } = t.context.testAccount
+
+  const beforeDefaultBalance = Number(await token.balanceOf(did))
+  const beforeTestBalance = Number(await token.balanceOf(testDID))
+
+  const val = 500
+  await token.approve({
+    did,
+    password,
+    val: val.toString(),
+    spender: testDID
+  })
+
+  await token.transferFrom({
+    did: testDID,
+    password: 'lol',
+    val: val.toString(),
+    to: testDID,
+    from: did
+  })
+
+  const afterDefaultBalance = Number(await token.balanceOf(did))
+  const afterTestBalance = Number(await token.balanceOf(testDID))
+
+  t.true(afterTestBalance === beforeTestBalance + val)
+  t.true(afterDefaultBalance === beforeDefaultBalance - val)
+})
+
 test('getAmountDeposited(did) invalid did', async (t) => {
   await t.throwsAsync(token.getAmountDeposited(), TypeError)
   await t.throwsAsync(token.getAmountDeposited({ }), TypeError)
@@ -186,35 +216,6 @@ test('getAmountDeposited(did) invalid did', async (t) => {
   await t.throwsAsync(token.getAmountDeposited(TEST_OWNER_ADDRESS), TypeError)
   await t.throwsAsync(token.getAmountDeposited('did:ara:1234'), Error)
 })
-
-// TODO(cckelly) broken because of deposits
-// test.serial('transferFrom(opts) valid transfer', async (t) => {
-//   const { did } = t.context.defaultAccount
-//   const { did: testDID } = t.context.testAccount
-
-//   const val = 100
-
-//   const beforeDefaultBalance = Number(await token.balanceOf(did))
-//   console.log('beforeDefaultBalance', beforeDefaultBalance)
-//   const beforeTestBalance = Number(await token.balanceOf(testDID))
-//   console.log('beforeTestBalance', beforeTestBalance)
-
-//   await token.transferFrom({
-//     did,
-//     password,
-//     val: val.toString(),
-//     to: testDID,
-//     from: did
-//   })
-
-//   const afterDefaultBalance = Number(await token.balanceOf(did))
-//   console.log('afterDefaultBalance', afterDefaultBalance)
-//   const afterTestBalance = Number(await token.balanceOf(testDID))
-//   console.log('afterTestBalance', afterTestBalance)
-
-//   t.true(afterTestBalance === beforeNewBalance + val)
-//   t.true(afterDefaultBalance === beforeDefaultBalance - val)
-// })
 
 test('allowance(opts) invalid opts', async (t) => {
   const { did } = t.context.defaultAccount
@@ -230,28 +231,55 @@ test('allowance(opts) invalid opts', async (t) => {
   await t.throwsAsync(token.allowance({ owner: did, spender: 123 }), Error)
 })
 
-// test('invalid generic opts', async (t) => {
-//   const { did } = t.context
+test('modifyDeposit(opts) invalid opts', async (t) => {
+  const { did } = t.context.defaultAccount
+  const { did: testDID } = t.context.testAccount
 
-//   for (const func of funcMap) {
-//     await t.throwsAsync(func(), TypeError)
-//     await t.throwsAsync(func({ }), TypeError)
-//     await t.throwsAsync(func({ to: '' }), TypeError)
-//     await t.throwsAsync(func({ to: 1234 }), TypeError)
-//     await t.throwsAsync(func({ to: DEFAULT_ADDRESS, val: '1000' }), TypeError)
-//     await t.throwsAsync(func({ to: DEFAULT_ADDRESS, val: 1000 }), TypeError)
-//     await t.throwsAsync(func({ to: DEFAULT_ADDRESS, val: 1000, did: null }), TypeError)
-//     await t.throwsAsync(func({ to: DEFAULT_ADDRESS, val: 1000, did: '' }), TypeError)
-//     await t.throwsAsync(func({ to: DEFAULT_ADDRESS, val: 1000, did: 1234 }), TypeError)
-//     await t.throwsAsync(func({ to: DEFAULT_ADDRESS, val: 1000, did: 1234 }), TypeError)
-//     await t.throwsAsync(func({
-//       to: DEFAULT_ADDRESS, val: 1000, did, password: null
-//     }), TypeError)
-//     await t.throwsAsync(func({
-//       to: DEFAULT_ADDRESS, val: 1000, did, password: 123
-//     }), TypeError)
-//     await t.throwsAsync(func({
-//       to: DEFAULT_ADDRESS, val: 1000, did, password
-//     }), Error)
-//   }
-// })
+  await t.throwsAsync(token.modifyDeposit(), TypeError)
+  await t.throwsAsync(token.modifyDeposit({ }), TypeError)
+  await t.throwsAsync(token.modifyDeposit({ to: '' }), TypeError)
+  await t.throwsAsync(token.modifyDeposit({ to: 1234 }), TypeError)
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: 1000 }), TypeError)
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '10.00' }), TypeError)
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '-1' }), TypeError)
+
+  // did
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did: null }), TypeError)
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did: '' }), TypeError)
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did: 1234 }), TypeError)
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did: 1234 }), TypeError)
+
+  // withdraw
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did, withdraw: 'true' }))
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did, withdraw: { } }))
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did, withdraw: 123 }))
+
+  // password
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did, password: null }), TypeError)
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did, password: 123 }), TypeError)
+})
+
+test('invalid generic opts', async (t) => {
+  const { did } = t.context.defaultAccount
+  const { did: testDID } = t.context.testAccount
+
+  for (const func of funcMap) {
+    await t.throwsAsync(func(), TypeError)
+    await t.throwsAsync(func({ }), TypeError)
+    await t.throwsAsync(func({ to: '' }), TypeError)
+    await t.throwsAsync(func({ to: 1234 }), TypeError)
+    await t.throwsAsync(func({ to: testDID, val: 1000 }), TypeError)
+    await t.throwsAsync(func({ to: testDID, val: '10.00' }), TypeError)
+    await t.throwsAsync(func({ to: testDID, val: '1000', did: null }), TypeError)
+    await t.throwsAsync(func({ to: testDID, val: '1000', did: '' }), TypeError)
+    await t.throwsAsync(func({ to: testDID, val: '1000', did: 1234 }), TypeError)
+    await t.throwsAsync(func({ to: testDID, val: '1000', did: 1234 }), TypeError)
+
+    await t.throwsAsync(func({
+      to: testDID, val: '1000', did, password: null
+    }), TypeError)
+    await t.throwsAsync(func({
+      to: testDID, val: '1000', did, password: 123
+    }), TypeError)
+  }
+})
