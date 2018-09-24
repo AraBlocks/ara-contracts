@@ -151,7 +151,7 @@ async function upgradeProxy(opts) {
 
     const registry = await contract.get(abi, REGISTRY_ADDRESS)
     // listen to ProxyUpgraded event for proxy address
-    await re gistry.events.ProxyUpgraded({ fromBlock: 'latest', function(error) { console.log(error) } })
+    await registry.events.ProxyUpgraded({ fromBlock: 'latest', function(error) { console.log(error) } })
       .on('data', (log) => {
         const { returnValues: { _contentId, _version } } = log
         if (_contentId === ethify(did)) {
