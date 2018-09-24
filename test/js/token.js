@@ -98,7 +98,7 @@ test.serial('allowance(opts) allowance query', async (t) => {
 test.serial('increaseApproval(opts) valid increase', async (t) => {
   const { did } = t.context.defaultAccount
   const { did: testDID } = t.context.testAccount
-  
+
   const beforeAllowed = Number(await token.allowance({ owner: did, spender: testDID }))
 
   const val = 100
@@ -131,25 +131,61 @@ test.serial('decreaseApproval(opts) valid decrease', async (t) => {
   t.is(afterAllowed, beforeAllowed - val)
 })
 
-// test.serial('approve(opts) valid approve', async (t) => {
-//   const { did } = t.context.defaultAccount
-//   const { did: testDID } = t.context.testAccount
+test.serial('modifyDeposit(opts) valid deposit/withdraw', async (t) => {
+  const { did } = t.context.defaultAccount
 
-//   const beforeAllowed = Number(await token.allowance({ owner: did, spender: testDID }))
+  const beforeAmount = Number(await token.getAmountDeposited(did))
+  t.is(beforeAmount, 0)
 
-//   const val = 100
-//   await token.approve({
-//     did,
-//     password,
-//     val: val.toString(),
-//     spender: testDID
-//   })
+  const depositAmount = 100
+  await token.modifyDeposit({
+    did,
+    password,
+    val: depositAmount.toString()
+  })
 
-//   const afterAllowed = Number(await token.allowance({ owner: did, spender: testDID }))
+  let afterAmount = Number(await token.getAmountDeposited(did))
+  t.is(afterAmount, depositAmount)
 
-//   t.is(afterAllowed, val)
-//   t.true(beforeAllowed != afterAllowed)
-// })
+  await token.modifyDeposit({
+    did,
+    password,
+    val: depositAmount.toString(),
+    withdraw: true
+  })
+
+  afterAmount = Number(await token.getAmountDeposited(did))
+  t.is(afterAmount, 0)
+})
+
+test.serial('approve(opts) valid approve', async (t) => {
+  const { did } = t.context.defaultAccount
+  const { did: testDID } = t.context.testAccount
+
+  const beforeAllowed = Number(await token.allowance({ owner: did, spender: testDID }))
+
+  const val = 500
+  await token.approve({
+    did,
+    password,
+    val: val.toString(),
+    spender: testDID
+  })
+
+  const afterAllowed = Number(await token.allowance({ owner: did, spender: testDID }))
+
+  t.is(afterAllowed, val)
+  t.true(beforeAllowed != afterAllowed)
+})
+
+test('getAmountDeposited(did) invalid did', async (t) => {
+  await t.throwsAsync(token.getAmountDeposited(), TypeError)
+  await t.throwsAsync(token.getAmountDeposited({ }), TypeError)
+  await t.throwsAsync(token.getAmountDeposited(1234), TypeError)
+  await t.throwsAsync(token.getAmountDeposited([]), TypeError)
+  await t.throwsAsync(token.getAmountDeposited(TEST_OWNER_ADDRESS), TypeError)
+  await t.throwsAsync(token.getAmountDeposited('did:ara:1234'), Error)
+})
 
 // TODO(cckelly) broken because of deposits
 // test.serial('transferFrom(opts) valid transfer', async (t) => {
@@ -180,21 +216,19 @@ test.serial('decreaseApproval(opts) valid decrease', async (t) => {
 //   t.true(afterDefaultBalance === beforeDefaultBalance - val)
 // })
 
-// test('allowance(opts) invalid opts', async (t) => {
-//   const { address } = t.context.account
+test('allowance(opts) invalid opts', async (t) => {
+  const { did } = t.context.defaultAccount
 
-//   t.plan(10) 
-//   await t.throwsAsync(token.allowance(), TypeError)
-//   await t.throwsAsync(token.allowance({ }), TypeError)
-//   await t.throwsAsync(token.allowance([]), TypeError)
-//   await t.throwsAsync(token.allowance({ owner: null }), TypeError)
-//   await t.throwsAsync(token.allowance({ owner: 123 }), TypeError)
-//   await t.throwsAsync(token.allowance({ owner: DEFAULT_ADDRESS }), TypeError)
-//   await t.throwsAsync(token.allowance({ owner: DEFAULT_ADDRESS, spender: null }), TypeError)
-//   await t.throwsAsync(token.allowance({ owner: DEFAULT_ADDRESS, spender: 123 }), TypeError)
-//   await t.throwsAsync(token.allowance({ owner: null, spender: address }), TypeError)
-//   await t.throwsAsync(token.allowance({ owner: 123, spender: address }), TypeError)
-// })
+  await t.throwsAsync(token.allowance(), TypeError)
+  await t.throwsAsync(token.allowance({ }), TypeError)
+  await t.throwsAsync(token.allowance([]), TypeError)
+  await t.throwsAsync(token.allowance({ owner: null }), TypeError)
+  await t.throwsAsync(token.allowance({ owner: 123 }), TypeError)
+  await t.throwsAsync(token.allowance({ owner: TEST_OWNER_ADDRESS }), TypeError)
+  await t.throwsAsync(token.allowance({ owner: did }))
+  await t.throwsAsync(token.allowance({ owner: did, spender: null }), Error)
+  await t.throwsAsync(token.allowance({ owner: did, spender: 123 }), Error)
+})
 
 // test('invalid generic opts', async (t) => {
 //   const { did } = t.context
@@ -221,5 +255,3 @@ test.serial('decreaseApproval(opts) valid decrease', async (t) => {
 //     }), Error)
 //   }
 // })
-
-// TODO(cckelly) deposits testing
