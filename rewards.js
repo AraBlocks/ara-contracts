@@ -164,7 +164,7 @@ async function submit(opts) {
 /**
  * Allocates rewards for job // 163029 gas (with return), 69637 gas (without return)
  * @param  {Object}         opts
- * @param  {String}         opts.farmerDid
+ * @param  {String}         opts.requesterDid
  * @param  {String}         opts.contentDid
  * @param  {String}         opts.password
  * @param  {Object}         opts.job
@@ -176,8 +176,8 @@ async function submit(opts) {
 async function allocate(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
-  } else if ('string' !== typeof opts.farmerDid || !opts.farmerDid) {
-    throw TypeError('Expecting non-empty farmer DID')
+  } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
+    throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
   } else if ('string' !== typeof opts.password || !opts.password) {
@@ -187,7 +187,7 @@ async function allocate(opts) {
   }
 
   const {
-    farmerDid,
+    requesterDid,
     password,
     job
   } = opts
@@ -234,7 +234,7 @@ async function allocate(opts) {
 
   let did
   try {
-    ({ did } = await validate({ did: farmerDid, password, label: 'rewards' }))
+    ({ did } = await validate({ did: requesterDid, password, label: 'rewards' }))
   } catch (err) {
     throw err
   }
