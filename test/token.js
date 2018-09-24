@@ -250,13 +250,44 @@ test('modifyDeposit(opts) invalid opts', async (t) => {
   await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did: 1234 }), TypeError)
 
   // withdraw
-  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did, withdraw: 'true' }))
-  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did, withdraw: { } }))
-  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did, withdraw: 123 }))
+  await t.throwsAsync(token.modifyDeposit({
+    to: testDID,
+    val: '1000',
+    did,
+    password,
+    withdraw: 'true'
+  }))
+
+  await t.throwsAsync(token.modifyDeposit({
+    to: testDID,
+    val: '1000',
+    did,
+    password,
+    withdraw: { }
+  }))
+
+  await t.throwsAsync(token.modifyDeposit({
+    to: testDID,
+    val: '1000',
+    did,
+    password,
+    withdraw: 123
+  }))
 
   // password
-  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did, password: null }), TypeError)
-  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did, password: 123 }), TypeError)
+  await t.throwsAsync(token.modifyDeposit({
+    to: testDID,
+    val: '1000',
+    did,
+    password: null
+  }), TypeError)
+
+  await t.throwsAsync(token.modifyDeposit({
+    to: testDID,
+    val: '1000',
+    did,
+    password: 123
+  }), TypeError)
 })
 
 test('invalid generic opts', async (t) => {
