@@ -7,7 +7,7 @@ npm run lint
 npm install -g ganache-cli truffle
 
 # run local ganache node
-ganache-cli &
+ganache-cli --port 9500 &
 sleep 5
 truffle migrate --reset --network local
 
