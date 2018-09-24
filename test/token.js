@@ -6,7 +6,7 @@
  */
 
 const { mirrorIdentity } = require('./_util')
-const { token } = require('../../')
+const { token } = require('../')
 const test = require('ava')
 
 const {

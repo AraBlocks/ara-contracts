@@ -3,7 +3,7 @@ module.exports = {
     local: {
       network_id: '*',
       host: 'localhost',
-      port: 9500,
+      port: 8545,
       gas: 2000000
     },
     testnet: {
