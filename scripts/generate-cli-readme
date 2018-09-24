@@ -1,0 +1,189 @@
+#!/usr/bin/env node
+
+// WARNING:
+// 
+// This generator is very opinionated about what is and isn't the right way to have a 
+// CLI help section. If you want to know the preferred way to write CLI help sections, 
+// look at `cfs-cli` or `ara-network-node-dcdn`
+
+const { info, warn } = require('ara-console')
+const { execFile } = require('child_process')
+const { resolve } = require('path')
+const pify = require('pify')
+const fs = require('fs')
+
+let commandSections = []
+
+const PROJECT_NAME = process.argv[2]
+
+if (!PROJECT_NAME) {
+  process.stdout.write('No project name was declared!\n')
+  process.exit(1)
+}
+
+// Description of the main command since it doesn't have one written already
+const MAIN_CMD_DESCRIPTION = `Command line interface runner for ${PROJECT_NAME} commands. A ${PROJECT_NAME} command is any command
+found in a user's \`PATH\` or \`PATHEXT\` that is excutable and is prefixed with
+a \`${PROJECT_NAME}-\` in the name.
+`
+
+// What goes on top of the file
+const HEADER = `${PROJECT_NAME} CLI
+===
+Command line interface for interacting with ${PROJECT_NAME}
+
+## CLI`
+
+void async function main() {
+
+  /**
+   * Extract command descriptions from command help
+   *
+   * @param  {String} commands Command descriptions in the help menu initiated by `-h`
+   *
+   * @return {Object}          Key-value of name and description
+   */
+
+  const getCommandDescriptions = (commands) => {
+    commandsSplit = commands.split('\n')
+
+    const descriptions = {}
+
+    commandsSplit.forEach(cmd => {
+      let [ name, ...description ] = cmd.trim().split('  ')
+
+      description = description.slice(-1)[0]
+      if (description) {
+        description = description.trim().toLowerCase()
+      }
+
+      descriptions[name.replace(' ', '-')] = `This command will ${description}`
+    })
+
+    return descriptions
+  }
+
+  /**
+   * Runs the given command with the `-h` flag and splits into sections
+   *
+   * @param  {String} name CFS command to run
+   * @return {[String]}    Response split by \n\n (each should be a different section)
+   */
+
+  const getCommandHelp = async (name) => {
+    // Get the help section of a specifc command
+    const path = resolve(`./bin/${name}`)
+    let [ _, stderr ] = await pify(execFile, { multiArgs: true })(path, [ '--help' ])
+
+    return stderr.split('\n\n')
+  }
+
+  /**
+   * Builds the README output of a given command
+   *
+   * @param  {String} options.name          Command name
+   * @param  {String} options.description   Description of the command
+   * @param  {String} options.usage         Usage of the command
+   * @param  {[String]} options.options     Options of the command
+   *
+   * @return {String}                       Final output for command README
+   */
+
+  const buildHelpSection = ({ name, description, usage, options }) => { 
+    // Split by line
+    // Filter out the options header
+    // Break each line into a table row
+    // Join all the lines back together
+
+    options = options.split('\n')
+               .filter(opt => opt !== 'Options:')
+               .map((opt) => {
+                  // Parse each option to extract the flag(s) and the flag description
+                  let [ description, ...flags ] = opt.split(/(\-?\-[A-z]+)/g).reverse()
+
+                  // Parse out non-flags (like empty strings)
+                  flags = flags.filter(c =>  c && '-' == c[0]).join(', ')
+                  // Remove excessive padding to not exceed line length
+                  description = description.replace(/\s{3,}/g, '  ')
+
+                  return `|${flags}|${description}|`
+               })
+               .join('\n')
+
+    return `
+      ### ${name}(1)
+
+      #### Abstract
+
+      ${description}
+
+      #### Usage
+
+      \`\`\`sh
+      ${usage}
+      \`\`\`
+
+      #### Options
+    | Flag(s) | Description |
+    |--|--|
+      ${options}
+    `
+  }
+
+  try {
+    const files = fs.readdirSync('./bin')
+    // Only includes files prepended with PROJECT_NAME-
+    // Gets all matching files
+    const commandFiles = files.filter(file => file.includes(`${PROJECT_NAME.toLowerCase()}-`))
+
+    // Break the output into individual pieces
+    const [ usage, _, commands, options ] = await getCommandHelp(PROJECT_NAME.toLowerCase())
+
+    // Build the help section of the main command (`cfs`, `dcdn`, etc)
+    commandSections.push(buildHelpSection({
+      name: PROJECT_NAME.toLowerCase(),
+      description: MAIN_CMD_DESCRIPTION,
+      usage,
+      options
+    }))
+
+    // Get the descriptions of all of the commands from the main commands help menu
+    const commandDescriptions = getCommandDescriptions(commands)
+
+    // Build of the individual commands help sections
+    const promises = commandFiles.map(async (file) => {
+      try {
+        let [ usage, options, ...assorted ] = await getCommandHelp(file)
+
+        // Options have to be prepended with `Options:` to be understood as options. Opiniated!
+        if (!options.includes("Options:")) {
+          [ options ] = assorted.filter((section) => section.includes("Options:"))
+        }
+
+        return buildHelpSection({
+          name: file,
+          description: commandDescriptions[file],
+          usage,
+          options
+        })
+      } catch (e) {
+        return
+      }
+    })
+
+    // Put all of the commands together into one array!
+    const commandsHelp = await Promise.all(promises)
+    commandSections.push(...commandsHelp)
+
+    // Build the final output
+    const readme = `
+      ${HEADER}
+      ${commandSections.join('---')}
+    `
+
+    // Trim tabs that are in groups of three or more
+    process.stdout.write(readme.replace(/[ \t]{3,}/gm, ''))
+  } catch (e) {
+    console.error(e)
+  }
+}()
