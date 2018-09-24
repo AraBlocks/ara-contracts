@@ -38,7 +38,7 @@ const {
 /**
  * Submits a new DCDN job // 84298 gas
  * @param  {Object}         opts
- * @param  {String}         opts.farmerDid
+ * @param  {String}         opts.requesterDid
  * @param  {String}         opts.contentDid
  * @param  {String}         opts.password
  * @param  {Object}         opts.job
@@ -49,8 +49,8 @@ const {
 async function submit(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
-  } else if ('string' !== typeof opts.farmerDid || !opts.farmerDid) {
-    throw TypeError('Expecting non-empty farmer DID')
+  } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
+    throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
   } else if ('string' !== typeof opts.password || !opts.password) {
@@ -60,7 +60,7 @@ async function submit(opts) {
   }
 
   const {
-    farmerDid,
+    requesterDid,
     password,
     job
   } = opts
@@ -87,7 +87,7 @@ async function submit(opts) {
   let { contentDid } = opts
   let did
   try {
-    ({ did } = await validate({ did: farmerDid, password, label: 'rewards' }))
+    ({ did } = await validate({ did: requesterDid, password, label: 'rewards' }))
   } catch (err) {
     throw err
   }
