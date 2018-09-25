@@ -267,7 +267,7 @@ const contentDid = await library.getLibraryItem({ requesterDid, index: 1 })
 Submits new DCDN job.
 
 - `opts`
-  - `farmerDid` - The `DID` of the person submitting the job
+  - `requesterDid` - The `DID` of the person submitting the job
   - `contentDid` - The `DID` of the content this job is for
   - `password` - The password of the person submitting the job
   - `job`
@@ -278,7 +278,7 @@ Submits new DCDN job.
 const jobId = '0x7dc039cfb220029c371d0f4aabf4a956ed0062d66c447df7b4595d7e11187271'
 const budget = 10
 await rewards.submit({ 
-  farmerDid,
+  requesterDid,
   contentDid,
   password,
   job: {
@@ -294,7 +294,7 @@ await rewards.submit({
 Allocates `rewards` amongst `farmers` for `jobId`.
 
 - `opts`
-  - `farmerDid` - The `DID` of the person who submitted the job
+  - `requesterDid` - The `DID` of the person who submitted the job
   - `contentDid` - The `DID` of the content the job is for
   - `password` - The password of the person who submitted the job
   - `job`
@@ -310,7 +310,7 @@ const farmers = ['0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e',
                  '0x629483C72b5191C1b522E887238a0A522b1D4F74']
 const distribution = [10, 20, 30, 40]
 await rewards.allocate({
-  farmerDid,
+  requesterDid,
   contentDid,
   password,
   job: {
