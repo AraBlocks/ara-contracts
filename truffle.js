@@ -4,7 +4,7 @@ module.exports = {
       network_id: '*',
       host: 'localhost',
       port: 8545,
-      gas: 2000000
+      gas: 4000000
     },
     testnet: {
       network_id: 3,
@@ -18,7 +18,7 @@ module.exports = {
       host: 'localhost',
       port: 8545,
       from: '0x105c83b79e9170d7969ce9806fe0b527b5f879de',
-      gas: 4000000
+      gas: 4700000
     }
   }
 }

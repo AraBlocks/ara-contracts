@@ -7,7 +7,7 @@ contract Registry {
   mapping (bytes32 => address) private proxies_; // contentId (unhashed) => proxy
   mapping (bytes32 => address) private proxyOwners_; // contentId (unhashed) => owner
   mapping (string => address) private versions_; // version => implementation
-  mapping (address => address) public proxyImpls_; // proxy => implementation
+  mapping (address => string) public proxyImpls_; // proxy => version
   string public latestVersion_;
 
   event ProxyDeployed(bytes32 _contentId, address _address);
@@ -34,16 +34,20 @@ contract Registry {
     _;
   }
 
-  function getProxyAddress(bytes32 _contentId) external view returns (address) {
+  function getProxyAddress(bytes32 _contentId) public view returns (address) {
     return proxies_[_contentId];
   }
 
-  function getProxyOwner(bytes32 _contentId) external view returns (address) {
+  function getProxyOwner(bytes32 _contentId) public view returns (address) {
     return proxyOwners_[_contentId];
   }
 
-  function getImplementation(string _version) external view returns (address) {
+  function getImplementation(string _version) public view returns (address) {
     return versions_[_version];
+  }
+
+  function getProxyVersion(bytes32 _contentId) public view returns (string) {
+    return proxyImpls_[getProxyAddress(_contentId)];
   }
   
   /**
@@ -69,7 +73,7 @@ contract Registry {
    */
   function upgradeProxy(bytes32 _contentId, string _version) public onlyProxyOwner(_contentId) {
     require(versions_[_version] != address(0), "Version does not exist.");
-    proxyImpls_[proxies_[_contentId]] = versions_[_version];
+    proxyImpls_[proxies_[_contentId]] = _version;
     emit ProxyUpgraded(_contentId, _version);
   }
 
@@ -82,7 +86,7 @@ contract Registry {
   function upgradeProxyAndCall(bytes32 _contentId, string _version, bytes _data) public onlyProxyOwner(_contentId) {
     require(versions_[_version] != address(0), "Version does not exist.");
     Proxy proxy = Proxy(proxies_[_contentId]);
-    proxyImpls_[proxy] = versions_[_version];
+    proxyImpls_[proxy] = _version;
     require(address(proxy).call(abi.encodeWithSignature("init(bytes)", _data)), "Init failed.");
     emit ProxyUpgraded(_contentId, _version);
   }

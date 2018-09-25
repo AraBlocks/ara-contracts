@@ -19,14 +19,14 @@ module.exports = (deployer, network) => {
 
     // this account needs to match DID to be used with testing
     // so needs to be unlocked on local ganache node
-    if ('privatenet' !== network) {
-      const currAccounts = await web3.eth.getAccounts()
-      if (!currAccounts.includes(constants.TEST_OWNER_ADDRESS)) {
+    if ('local' === network) {
+      const accounts = await web3.eth.getAccounts()
+      if (!accounts.includes(constants.TEST_OWNER_ADDRESS)) {
         await web3.eth.personal.importRawKey(constants.TEST_OWNER_PK, constants.PASSWORD)
       }
       await web3.eth.personal.unlockAccount(constants.TEST_OWNER_ADDRESS, constants.PASSWORD, 0)
-      await web3.eth.sendTransaction({ from: currAccounts[0], to: constants.TEST_OWNER_ADDRESS, value: 1000000000000000000 })
-      await web3.eth.sendTransaction({ from: currAccounts[0], to: constants.TEST_OWNER_ADDRESS_2, value: 1000000000000000000 })
+      await web3.eth.sendTransaction({ from: accounts[0], to: constants.TEST_OWNER_ADDRESS, value: 10000000000000000000 })
+      await web3.eth.sendTransaction({ from: accounts[0], to: constants.TEST_OWNER_ADDRESS_2, value: 10000000000000000000 })
     }
 
     // deploy
