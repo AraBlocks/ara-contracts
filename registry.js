@@ -205,8 +205,10 @@ async function deployProxy(opts) {
 
   let proxyAddress = null
   try {
-    const encodedData = web3Abi.encodeParameters([ 'address', 'address', 'address', 'bytes32' ],
-      [ acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, ethify(contentDid) ])
+    const encodedData = web3Abi.encodeParameters(
+      [ 'address', 'address', 'address', 'bytes32' ],
+      [ acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, ethify(contentDid) ]
+    )
     const transaction = await tx.create({
       account: acct,
       to: REGISTRY_ADDRESS,
