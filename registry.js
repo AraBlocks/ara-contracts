@@ -65,6 +65,27 @@ async function getProxyAddress(contentDid = '') {
   }
 }
 
+async function getProxyVersion(contentDid = '') {
+  if (null == contentDid || 'string' !== typeof contentDid || !contentDid) {
+    throw TypeError('Expecting non-empty content DID')
+  }
+
+  contentDid = normalize(contentDid)
+
+  try {
+    return call({
+      abi,
+      address: REGISTRY_ADDRESS,
+      functionName: 'getProxyVersion',
+      arguments: [
+        ethify(contentDid)
+      ]
+    })
+  } catch (err) {
+    throw err
+  }
+}
+
 /**
  * Upgrades a proxy to a new version // 33834 gas
  * @param  {String} opts.contentDid // unhashed
@@ -184,7 +205,8 @@ async function deployProxy(opts) {
 
   let proxyAddress = null
   try {
-    const encodedData = web3Abi.encodeParameters([ 'address', 'address', 'address', 'bytes32' ], [ acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, ethify(contentDid) ])
+    const encodedData = web3Abi.encodeParameters([ 'address', 'address', 'address', 'bytes32' ],
+      [ acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, ethify(contentDid) ])
     const transaction = await tx.create({
       account: acct,
       to: REGISTRY_ADDRESS,
@@ -403,6 +425,7 @@ module.exports = {
   getStandard,
   upgradeProxy,
   getProxyAddress,
+  getProxyVersion,
   getLatestStandard,
   deployNewStandard
 }

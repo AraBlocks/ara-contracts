@@ -31,7 +31,7 @@ contract Proxy {
       registry := sload(position)
     }
     Registry reg = Registry(registry);
-    address _impl = reg.proxyImpls_(address(this));
+    address _impl = reg.getImplementation(reg.proxyImpls_(address(this)));
     
     require(_impl != address(0));
 
