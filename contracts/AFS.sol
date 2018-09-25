@@ -139,7 +139,7 @@ contract AFS {
     }
   }
 
-  function getBalance(address _farmer) public view returns (uint256) {
+  function getRewardsBalance(address _farmer) public view returns (uint256) {
     return rewards_[keccak256(abi.encodePacked(_farmer))];
   }
 

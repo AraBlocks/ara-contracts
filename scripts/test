@@ -6,14 +6,15 @@ npm run lint
 # installation
 npm install -g ganache-cli truffle
 
-# run local truffle node
+# run local ganache node
 ganache-cli &
 sleep 5
 truffle migrate --reset --network local
 
-# ava
-ava test/registry.js --verbose
-ava test/util.js --verbose
+# truffle test
+
+# ava tests
+ava test/* --verbose
 
 # cleanup
 pkill -f ganache 
