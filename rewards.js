@@ -411,7 +411,7 @@ async function getBudget(opts) {
  * @param  {String} opts.password
  * @throws {Error,TypeError}
  */
-async function getBalance(opts) {
+async function getRewardsBalance(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.farmerDid || !opts.farmerDid) {
@@ -445,7 +445,7 @@ async function getBalance(opts) {
     const balance = await call({
       abi: afsAbi,
       address: proxy,
-      functionName: 'getBalance',
+      functionName: 'getRewardsBalance',
       arguments: [
         address
       ]
@@ -461,5 +461,5 @@ module.exports = {
   redeem,
   allocate,
   getBudget,
-  getBalance
+  getRewardsBalance
 }

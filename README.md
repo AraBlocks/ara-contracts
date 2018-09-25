@@ -74,7 +74,7 @@ The contracts in this repository are deployed on [Ara Privatenet](https://github
 * [rewards.allocate(opts)](#allocate)
 * [rewards.redeem(opts)](#redeem)
 * [rewards.getBudget(opts)](#budget)
-* [rewards.getBalance(opts)](#balance)
+* [rewards.getRewardsBalance(opts)](#balance)
 
 ### Token
 
@@ -356,7 +356,7 @@ const budget = await rewards.getBudget({
 ```
 
 <a name="balance"></a>
-### `rewards.getBalance(opts)`
+### `rewards.getRewardsBalance(opts)`
 
 Gets the balance (resulting from allocation return or from rewards) of `requesterDid` stored in `contentDid`.
 
@@ -366,7 +366,7 @@ Gets the balance (resulting from allocation return or from rewards) of `requeste
   - `password` - The password of the person to check the balance of
 
 ```js
-const balance = await rewards.getBalance({
+const balance = await rewards.getRewardsBalance({
   requesterDid,
   contentDid,
   password
@@ -468,7 +468,7 @@ Transfers Ara from one address to another. This differs from `transfer` by requi
 ```js
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
-const recipient = '0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e'
+const recipient = ''did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
 const receipt = await token.transferFrom({
   did,
   password,
@@ -485,13 +485,13 @@ Increases the approved amount that a `spender` can spend on behalf of an `owner`
 - `opts`
   - `did` - URI of the account that owns the Ara
   - `password` - Password of the owning account
-  - `to` - Address that will be spending the tokens
+  - `to` - `DID` of the spender
   - `val` - Amount to increase the approval by
 
 ```js
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
-const spender = '0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e'
+const spender = ''did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
 const receipt = await token.increaseApproval({
   did,
   password,
@@ -508,13 +508,13 @@ Decreases the approved amount that a `spender` can spend on behalf of an `owner`
 - `opts`
   - `did` - URI of the account that owns the Ara
   - `password` - Password of the owning account
-  - `to` - Address that will be spending the tokens
+  - `to` - `DID` of the spender
   - `val` - Amount to decrease the approval by
 
 ```js
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
-const spender = '0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e'
+const spender = ''did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
 const receipt = await token.decreaseApproval({
   did,
   password,
@@ -526,8 +526,46 @@ const receipt = await token.decreaseApproval({
 <a name="modifydeposit"></a>
 ### `token.modifyDeposit(opts)`
 
+Modifies the current amount deposited for rewards for a particular account.
+
+- `opts`
+  - `did` - URI of the account to update the deposit for
+  - `password` - password of the account
+  - `val` - value as `string` to deposit/withdraw
+  - `withdraw` - `boolean` whether this should be a deposit or withdraw (defaults to `false` if not given)
+
+```js
+// withdraws 50 Ara from deposit
+const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
+const password = 'password'
+const receipt = await token.modifyDeposit({
+  did,
+  password,
+  val: '50',
+  withdraw: true
+})
+
+// deposits 50 Ara
+const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
+const password = 'password'
+const receipt = await token.modifyDeposit({
+  did,
+  password,
+  val: '50'
+})
+```
+
 <a name="getamountdeposited"></a>
 ### `token.getAmountDeposited(did)`
+
+Gets the current amount deposited by an account to be used for redeeming rewards.
+
+- `did` - URI of the account to get the deposit balance for
+
+```js
+const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
+const amount = await token.getAmountDeposited(did) // '100'
+```
 
 ## Contributing
 - [Commit message format](/.github/COMMIT_FORMAT.md)
