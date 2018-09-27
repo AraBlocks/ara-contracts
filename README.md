@@ -68,6 +68,7 @@ The contracts in this repository are deployed on [Ara Privatenet](https://github
 * [library.checkLibrary(opts)](#checklibrary)
 * [library.getLibrarySize(requesterDid)](#librarysize)
 * [library.getLibraryItem(opts)](#libraryitem)
+* [library.hasPurchased(opts)](#haspurchased)
 
 ### Rewards
 * [rewards.submit(opts)](#submit)
@@ -259,6 +260,20 @@ Gets the `DID` of the item at the provided `index` in `requesterDid`'s library.
 
 ```js
 const contentDid = await library.getLibraryItem({ requesterDid, index: 1 })
+```
+
+<a name="haspurchased"></a>
+### `library.hasPurchased(opts)`
+
+- `opts`
+  - `contentDid` - `DID` of the content to check the purchase of
+  - `purchaserDid` - `DID` of purchaser
+
+```js
+const purchased = await token.hasPurchased({
+  contentDid: 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85',
+  purchaserDid: 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
+})
 ```
 
 <a name="submit"></a>
