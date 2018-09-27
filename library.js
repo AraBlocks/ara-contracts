@@ -1,15 +1,20 @@
 /* eslint-disable no-await-in-loop */
 
-const { abi } = require('./build/contracts/Library.json')
+const { abi: libAbi } = require('./build/contracts/Library.json')
+const { abi: proxyAbi } = require('./build/contracts/AFS.json')
 const { LIBRARY_ADDRESS } = require('./constants')
+const { getProxyAddress } = require('./registry')
 
 const {
   hashDID,
   normalize,
   web3: {
+    sha3,
     call,
-    ethify
-  }
+    ethify,
+    isAddress
+  },
+  getAddressFromDID
 } = require('ara-util')
 
 /**
@@ -76,7 +81,7 @@ async function getLibrarySize(requesterDid = '') {
   const hIdentity = hashDID(requesterDid)
 
   return call({
-    abi,
+    abi: libAbi,
     address: LIBRARY_ADDRESS,
     functionName: 'getLibrarySize',
     arguments: [
@@ -110,7 +115,7 @@ async function getLibraryItem(opts) {
   }
 
   return call({
-    abi,
+    abi: libAbi,
     address: LIBRARY_ADDRESS,
     functionName: 'getLibraryItem',
     arguments: [
@@ -120,9 +125,38 @@ async function getLibraryItem(opts) {
   })
 }
 
+async function hasPurchased(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object.')
+  } else if (!opts.purchaserDid || 'string' !== typeof opts.purchaserDid) {
+    throw new TypeError('Expecting non-empty string for purchaser DID')
+  } else if (!opts.contentDid || 'string' !== typeof opts.contentDid) {
+    throw new TypeError('Expecting non-empty string for content DID')
+  }
+
+  const { purchaserDid, contentDid } = opts
+  const proxy = await getProxyAddress(contentDid)
+  let purchaser = await getAddressFromDID(purchaserDid)
+
+  if (!isAddress(purchaser)) {
+    // TODO(cckelly) convert all ara-contracts errors to this style
+    throw new Error(`${purchaserDid} did not resolve to a valid Ethereum address. Got ${purchaser}. Ensure ${purchaserDid} is a valid Ara identity.`)
+  }
+
+  purchaser = sha3(purchaser)
+
+  return call({
+    abi: proxyAbi,
+    address: proxy,
+    functionName: 'purchasers_',
+    arguments: [ purchaser ]
+  })
+}
+
 module.exports = {
   getLibrary,
   checkLibrary,
   getLibrarySize,
-  getLibraryItem
+  getLibraryItem,
+  hasPurchased
 }
