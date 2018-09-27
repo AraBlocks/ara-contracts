@@ -24,44 +24,16 @@ const {
  * @throws {TypeError}
  */
 async function getLibrary(requesterDid = '') {
-  if ('string' !== typeof requesterDid || !requesterDid) {
+  if (!requesterDid || 'string' !== typeof requesterDid) {
     throw TypeError('Expecting non-empty requester DID')
   }
-
-  return checkLibrary({ requesterDid })
-}
-
-/**
- * Checks to see if contentDid is in the requesterDid's library
- * @param  {Object} opts
- * @param  {String} opts.requesterDid
- * @param  {String} opts.contentDid
- * @return {Array}
- * @throws {Error,TypeError}
- */
-async function checkLibrary(opts) {
-  if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('Expecting opts object.')
-  } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
-    throw TypeError('Expecting non-empty requester DID')
-  } else if (opts.contentDid && 'string' !== typeof opts.contentDid) {
-    throw TypeError('Expecting valid content DID')
-  }
-
-  let { requesterDid, contentDid } = opts
 
   requesterDid = normalize(requesterDid)
-  if (contentDid) {
-    contentDid = normalize(contentDid)
-  }
 
   const libSize = await getLibrarySize(requesterDid)
   const lib = []
   for (let i = 0; i < libSize; i++) {
     const item = await getLibraryItem({ requesterDid, index: i })
-    if (contentDid && item === ethify(contentDid)) {
-      throw new Error('Item is already in user library and cannot be purchased again')
-    }
     lib.push(item)
   }
   return lib
@@ -125,6 +97,13 @@ async function getLibraryItem(opts) {
   })
 }
 
+/**
+ * Checks whether a user has purchased an AFS.
+ * @param  {Object}  opts
+ * @param  {String}  opts.purchaserDid
+ * @param  {String}  opts.contentDid
+ * @return {Boolean}      [description]
+ */
 async function hasPurchased(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
@@ -154,9 +133,8 @@ async function hasPurchased(opts) {
 }
 
 module.exports = {
-  getLibrary,
-  checkLibrary,
   getLibrarySize,
   getLibraryItem,
-  hasPurchased
+  hasPurchased,
+  getLibrary
 }
