@@ -65,7 +65,6 @@ The contracts in this repository are deployed on [Ara Privatenet](https://github
 
 ### Library
 * [library.getLibrary(requesterDid)](#getlibrary)
-* [library.checkLibrary(opts)](#checklibrary)
 * [library.getLibrarySize(requesterDid)](#librarysize)
 * [library.getLibraryItem(opts)](#libraryitem)
 * [library.hasPurchased(opts)](#haspurchased)
@@ -219,23 +218,6 @@ Gets the content `DID`s purchased by the `requesterDID`.
 
 ```js
 const lib = await library.getLibrary(did)
-```
-
-<a name="checklibrary"></a>
-### `library.checkLibrary(opts)`
-
-Checks to see if `contentDid` is in the `requesterDid`'s library.
-
-- `opts`
-  - `requesterDid` - The `DID` of the owner of the library
-  - `contentDid` - The `DID` of the content to check
-
-```js
-try { 
-  const lib = await library.checkLibrary({ requesterDid, contentDid })
-} catch (err) {
-  throw err // Item is already in user library and cannot be purchased again
-}
 ```
 
 <a name="librarysize"></a>
