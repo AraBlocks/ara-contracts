@@ -10,7 +10,7 @@ const {
 } = require('./registry')
 
 const {
-  checkLibrary,
+  hasPurchased,
   getLibrarySize,
   getLibraryItem
 } = require('./library')
@@ -77,7 +77,10 @@ async function purchase(opts) {
   const acct = await account.load({ did, password })
 
   try {
-    await checkLibrary({ requesterDid: did, contentDid })
+    const purchased = await hasPurchased({ purchaserDid: did, contentDid })
+    if (purchased) {
+      throw new Error('Identity has already purchased this')
+    }
 
     if (!(await proxyExists(contentDid))) {
       throw new Error('This content does not have a valid proxy contract')
