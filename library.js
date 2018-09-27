@@ -3,7 +3,11 @@
 const { abi: libAbi } = require('./build/contracts/Library.json')
 const { abi: proxyAbi } = require('./build/contracts/AFS.json')
 const { LIBRARY_ADDRESS } = require('./constants')
-const { getProxyAddress } = require('./registry')
+
+const {
+  proxyExists,
+  getProxyAddress
+} = require('./registry')
 
 const {
   hashDID,
@@ -114,6 +118,10 @@ async function hasPurchased(opts) {
   }
 
   const { purchaserDid, contentDid } = opts
+  if (!(await proxyExists(contentDid))) {
+    throw new Error('This content does not have a valid proxy contract')
+  }
+  
   const proxy = await getProxyAddress(contentDid)
   let purchaser = await getAddressFromDID(purchaserDid)
 
