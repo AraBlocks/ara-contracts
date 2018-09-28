@@ -76,6 +76,7 @@ async function purchase(opts) {
   did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
+  let result
   try {
     const purchased = await hasPurchased({ purchaserDid: did, contentDid })
     if (purchased) {
@@ -98,17 +99,12 @@ async function purchase(opts) {
     let val = budget + price
     val = val.toString()
 
-    let receipt = await token.increaseApproval({
+    await token.increaseApproval({
       did,
       password,
       spender: proxy,
       val
     })
-
-    if (receipt.status) {
-      // 45353 gas
-      debug('gas used', receipt.gasUsed)
-    }
 
     budget = token.expandTokenValue(budget.toString())
 
@@ -128,43 +124,27 @@ async function purchase(opts) {
     })
 
     const proxyContract = await contract.get(afsAbi, proxy)
-    await proxyContract.events.Purchased({ fromBlock: 'latest', function(error) { debug(error) } })
-      .on('data', (log) => {
-        const { returnValues: { _purchaser, _did } } = log
-        debug(_purchaser, 'purchased', _did)
-      })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
+    await proxyContract.events.Purchased({ fromBlock: 'latest' }).on('data', log => onpurchased(log))
+    await proxyContract.events.BudgetSubmitted({ fromBlock: 'latest' }).on('data', log => onbudgetsubmitted(log))
 
-    await proxyContract.events.BudgetSubmitted({ fromBlock: 'latest', function(error) { debug(error) } })
-      .on('data', (log) => {
-        const { returnValues: { _did, _jobId, _budget } } = log
-        debug('job', _jobId, 'submitted in', _did, 'with budget', token.constrainTokenValue(_budget))
-      })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
-
-    receipt = await tx.sendSignedTransaction(purchaseTx)
-    if (receipt.status) {
-      // 211296 gas
-      debug('gas used', receipt.gasUsed)
-      const size = await getLibrarySize(did)
-
-      const contentId = await getLibraryItem({ requesterDid: did, index: size - 1 })
-
-      debug(contentId, `added to library (${size})`)
-    }
+    result = tx.sendSignedTransaction(purchaseTx)
+    
   } catch (err) {
     throw err
   }
+
+  return result
+
+  function onpurchased(log) {
+    const { returnValues: { _purchaser, _did } } = log
+    debug(_purchaser, 'purchased', _did) 
+  }
+
+  function onbudgetsubmitted(log) {
+    const { returnValues: { _did, _jobId, _budget } } = log
+    debug('job', _jobId, 'submitted in', _did, 'with budget', token.constrainTokenValue(_budget))
+  }
+
 }
 
 module.exports = {
