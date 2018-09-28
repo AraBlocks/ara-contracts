@@ -413,7 +413,7 @@ function expandTokenValue(val) {
     return '0'
   }
   const input = `${val}e${TOKEN_DECIMALS}`
-  return web3.utils.toBN(BigNumber(input)).toString()
+  return web3.utils.toBN(Math.floor(BigNumber(input))).toString()
 }
 
 /**
