@@ -162,6 +162,8 @@ async function purchase(opts) {
   } catch (err) {
     throw err
   }
+
+  return { jobId }
 }
 
 module.exports = {
