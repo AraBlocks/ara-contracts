@@ -77,7 +77,9 @@ async function purchase(opts) {
   const { keyringOpts } = opts
   let did
   try {
-    ({ did } = await validate({ did: requesterDid, password, label: 'purchase', keyringOpts }))
+    ({ did } = await validate({
+      did: requesterDid, password, label: 'purchase', keyringOpts
+    }))
   } catch (err) {
     throw err
   }

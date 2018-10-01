@@ -113,7 +113,6 @@ async function upgradeProxy(opts) {
     throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
-
   let { version } = opts
   const { contentDid, password, keyringOpts } = opts
 
@@ -124,7 +123,9 @@ async function upgradeProxy(opts) {
   let did
   let ddo
   try {
-    ({ did, ddo } = await validate({ did: contentDid, password, label: 'registry', keyringOpts }))
+    ({ did, ddo } = await validate({
+      did: contentDid, password, label: 'registry', keyringOpts
+    }))
   } catch (err) {
     throw err
   }
@@ -210,7 +211,9 @@ async function deployProxy(opts) {
   let did
   let ddo
   try {
-    ({ did, ddo } = await validate({ did: contentDid, password, label: 'registry', keyringOpts }))
+    ({ did, ddo } = await validate({
+      did: contentDid, password, label: 'registry', keyringOpts
+    }))
   } catch (err) {
     throw err
   }
@@ -360,7 +363,9 @@ async function deployNewStandard(opts) {
 
   let did
   try {
-    ({ did } = await validate({ owner: requesterDid, password, label: 'registry', keyringOpts }))
+    ({ did } = await validate({
+      owner: requesterDid, password, label: 'registry', keyringOpts
+    }))
   } catch (err) {
     throw err
   }

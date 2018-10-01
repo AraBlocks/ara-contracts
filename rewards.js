@@ -99,7 +99,9 @@ async function submit(opts) {
   let { contentDid } = opts
   let did
   try {
-    ({ did } = await validate({ did: requesterDid, password, label: 'rewards', keyringOpts }))
+    ({ did } = await validate({
+      did: requesterDid, password, label: 'rewards', keyringOpts
+    }))
   } catch (err) {
     throw err
   }
@@ -210,7 +212,7 @@ async function allocate(opts) {
     requesterDid,
     keyringOpts,
     password,
-    job,
+    job
   } = opts
 
   const { farmers, rewards } = job
@@ -255,7 +257,9 @@ async function allocate(opts) {
 
   let did
   try {
-    ({ did } = await validate({ did: requesterDid, password, label: 'rewards', keyringOpts }))
+    ({ did } = await validate({
+      did: requesterDid, password, label: 'rewards', keyringOpts
+    }))
   } catch (err) {
     throw err
   }
@@ -338,7 +342,9 @@ async function redeem(opts) {
   let { contentDid } = opts
   let did
   try {
-    ({ did } = await validate({ did: farmerDid, password, label: 'rewards', keyringOpts }))
+    ({ did } = await validate({
+      did: farmerDid, password, label: 'rewards', keyringOpts
+    }))
   } catch (err) {
     throw err
   }
@@ -463,7 +469,9 @@ async function getRewardsBalance(opts) {
   let { contentDid } = opts
   let did
   try {
-    ({ did } = await validate({ did: farmerDid, password, label: 'rewards', keyringOpts }))
+    ({ did } = await validate({
+      did: farmerDid, password, label: 'rewards', keyringOpts
+    }))
   } catch (err) {
     throw err
   }

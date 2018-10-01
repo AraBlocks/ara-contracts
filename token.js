@@ -155,7 +155,9 @@ async function transfer(opts = {}) {
   const { password, keyringOpts } = opts
 
   try {
-    ({ did } = await validate({ owner: did, password, label: 'transfer', keyringOpts }))
+    ({ did } = await validate({
+      owner: did, password, label: 'transfer', keyringOpts
+    }))
     to = await _normalizeIDInput(to)
   } catch (err) {
     throw err
@@ -214,7 +216,9 @@ async function approve(opts = {}) {
   const { password, keyringOpts } = opts
 
   try {
-    ({ did } = await validate({ owner: did, password, label: 'transfer', keyringOpts }))
+    ({ did } = await validate({
+      owner: did, password, label: 'transfer', keyringOpts
+    }))
     spender = await _normalizeIDInput(spender)
   } catch (err) {
     throw err
@@ -290,7 +294,9 @@ async function transferFrom(opts = {}) {
   const { password, keyringOpts } = opts
 
   try {
-    ({ did } = await validate({ owner: did, password, label: 'transferFrom', keyringOpts }))
+    ({ did } = await validate({
+      owner: did, password, label: 'transferFrom', keyringOpts
+    }))
     to = await _normalizeIDInput(to)
     from = await _normalizeIDInput(from)
   } catch (err) {
@@ -351,10 +357,12 @@ async function increaseApproval(opts = {}) {
   _validateApprovalOpts(opts)
 
   let { did, spender, val } = opts
-  const { password } = opts
+  const { password, keyringOpts } = opts
 
   try {
-    ({ did } = await validate({ owner: did, password, label: 'transfer', keyringOpts }))
+    ({ did } = await validate({
+      owner: did, password, label: 'transfer', keyringOpts
+    }))
     spender = await _normalizeIDInput(spender)
   } catch (err) {
     throw err
@@ -414,7 +422,9 @@ async function decreaseApproval(opts = {}) {
   const { password, keyringOpts } = opts
 
   try {
-    ({ did } = await validate({ owner: did, password, label: 'transfer', keyringOpts }))
+    ({ did } = await validate({
+      owner: did, password, label: 'transfer', keyringOpts
+    }))
     spender = await _normalizeIDInput(spender)
   } catch (err) {
     throw err
@@ -518,7 +528,9 @@ async function modifyDeposit(opts = {}) {
   const { password, keyringOpts } = opts
 
   try {
-    ({ did } = await validate({ owner: did, password, label: wd ? 'withdraw' : 'deposit', keyringOpts }))
+    ({ did } = await validate({
+      owner: did, password, label: wd ? 'withdraw' : 'deposit', keyringOpts
+    }))
   } catch (err) {
     throw err
   }
