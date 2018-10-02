@@ -1,10 +1,11 @@
 pragma solidity ^0.4.24;
 
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./Library.sol";
 import "./AraToken.sol";
 import "bytes/BytesLib.sol";
 
-contract AFS {
+contract AFS is Ownable {
 
   using BytesLib for bytes;
 

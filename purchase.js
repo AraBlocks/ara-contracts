@@ -40,7 +40,7 @@ const {
  */
 async function purchase(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError(' Expecting opts object.')
+    throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
     throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
