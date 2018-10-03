@@ -127,7 +127,7 @@ async function hasPurchased(opts) {
 
   if (!isAddress(purchaser)) {
     // TODO(cckelly) convert all ara-contracts errors to this style
-    throw new Error(`${purchaserDid} did not resolve to a valid Ethereum address. Got ${purchaser}. Ensure ${purchaserDid} is a valid Ara identity.`)
+    throw new Error(`opts.purchaserDid did not resolve to a valid Ethereum address. Got ${purchaser}. Ensure ${purchaserDid} is a valid Ara identity.`)
   }
 
   purchaser = sha3(purchaser)
@@ -137,7 +137,7 @@ async function hasPurchased(opts) {
     address: proxy,
     functionName: 'purchasers_',
     arguments: [ purchaser ]
-  })
+  })[0] > 0
 }
 
 module.exports = {

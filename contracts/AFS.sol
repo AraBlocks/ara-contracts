@@ -8,33 +8,51 @@ contract AFS {
 
   using BytesLib for bytes;
 
-  address  public owner_;
-  string   public version_ = "1";
+  address   public owner_;
+  string    public version_ = "1";
 
-  AraToken public token_;
-  Library  public lib_;
+  AraToken  public token_;
+  Library   public lib_;
 
-  bytes32  public did_;
-  bool     public listed_;
-  uint256  public price_;
+  bytes32   public did_;
+  bool      public listed_;
+  mapping(uint256 => uint256) public prices_; // quantity (lower bound) => price
+  uint256[] public priceTiers_; // quantity tiers
+
+  int256    public totalCopies_ = -1;
+
+  uint256   public minResalePrice_;
+  uint256   public maxNumResales_; // < maxNumResales_ can be resold
 
   mapping(bytes32 => Job)     public jobs_; // jobId => job { budget, sender }
   mapping(bytes32 => uint256) public rewards_;    // farmer => rewards
-  mapping(bytes32 => bool)    public purchasers_; // keccak256 hashes of buyer addresses
-  mapping(uint8 => mapping (uint256 => bytes))   public metadata_;
+  mapping(bytes32 => Content) public purchasers_; // keccak256 hashes of buyer addresses
+  mapping(uint8 => mapping (uint256 => bytes)) public metadata_;
 
   struct Job {
     address sender;
     uint256 budget;
   }
 
+  struct Content {
+    uint256 quantity;
+    uint256 resalePrice;
+    mapping(uint256 => uint256) resales; // total quantity owned => number of previous resales -- 0 indexed
+  }
+
   event Commit(bytes32 _did);
   event Unlisted(bytes32 _did);
-  event PriceSet(bytes32 _did, uint256 _price);
+  event MinResalePriceSet(bytes32 _did, uint256 _price);
+  event ResalePriceSet(bytes32 _did, address _purchaser, uint256 _price);
+  event PriceSet(bytes32 _did, uint256 _quantity, uint256 _price);
   event BudgetSubmitted(bytes32 _did, bytes32 _jobId, uint256 _budget);
   event RewardsAllocated(bytes32 _did, uint256 _allocated, uint256 _returned);
-  event Purchased(bytes32 _purchaser, bytes32 _did, uint256 _price);
+  event Purchased(bytes32 _purchaser, bytes32 _did, uint256 _quantity, uint256 _price);
+  event PurchasedResale(bytes32 _purchaser, bytes32 _did, uint256 _quantity, uint256 _price);
   event Redeemed(address _sender);
+  event AddedCopies(bytes32 _did, int256 _added, int256 _total);
+  event RemovedCopies(bytes32 _did, int256 _removed, int256 _total);
+  event RemovedScarcity(bytes32 _did);
 
   uint8 constant mtBufferSize_ = 40;
   uint8 constant msBufferSize_ = 64;
@@ -51,7 +69,7 @@ contract AFS {
   modifier purchaseRequired()
   {
     require(
-      purchasers_[keccak256(abi.encodePacked(msg.sender))],
+      purchasers_[keccak256(abi.encodePacked(msg.sender))].quantity > 0,
       "Content was never purchased."
     );
     _;
@@ -72,6 +90,7 @@ contract AFS {
     address tokenAddr;
     address libAddr;
     bytes32 did;
+    int256 totalCopies;
     /* solium-disable-next-line security/no-inline-assembly */
     assembly {
         btsptr := add(_data, 32)
@@ -82,18 +101,72 @@ contract AFS {
         libAddr := mload(btsptr)
         btsptr := add(_data, 128)
         did := mload(btsptr)
+        btsptr := add(_data, 160)
+        totalCopies := mload(btsptr)
     }
     owner_    = ownerAddr;
     token_    = AraToken(tokenAddr);
     lib_      = Library(libAddr);
     did_      = did;
     listed_   = true;
-    price_    = 0;
+    totalCopies_ = totalCopies;
   }
 
-  function setPrice(uint256 _price) external onlyBy(owner_) {
-    price_ = _price;
-    emit PriceSet(did_, price_);
+  function setMinResalePrice(uint256 _price) external onlyBy(owner_) {
+    require(_price >= 0, "Price cannot be negative.");
+    minResalePrice_ = _price;
+    emit MinResalePriceSet(did_, _price);
+  }
+
+  function setResalePrice(uint256 _price) external purchaseRequired {
+    require(_price >= minResalePrice_, "Resale price must be at least the minimum resale price.");
+    purchasers_[keccak256(abi.encodePacked(msg.sender))].resalePrice = _price;
+    emit ResalePriceSet(did_, msg.sender, _price);
+  }
+
+  function setPrice(uint256 _quantity, uint256 _price) external onlyBy(owner_) {
+    require(_quantity > 0, "Quantity must be greater than 0.");
+    require(_price > 0, "Price must be greater than 0.");
+    if (prices_[_quantity] == 0) {
+      priceTiers_.push(_quantity);
+    }
+    prices_[_quantity] = _price;
+    emit PriceSet(did_, _quantity, prices_[_quantity]);
+  }
+
+  function addCopies(int256 _quantity) public onlyBy(owner_) {
+    require(_quantity > 0, "Quantity must be greater than 0.");
+    if (totalCopies_ < 0) {
+      totalCopies_ = _quantity;
+    } else {
+      totalCopies_ += _quantity;
+    }
+    emit AddedCopies(did_, _quantity, totalCopies_);
+  }
+
+  function removeCopies(int256 _quantity) public onlyBy(owner_) {
+    require(_quantity > 0, "Cannot remove non-positive number of copies.");
+    require(totalCopies_ > 0, "Cannot remove anymore copies.");
+    require(totalCopies_ - _quantity >= 0, "Trying to remove more copies than already exist.");
+    totalCopies_ -= _quantity;
+    emit RemovedCopies(did_, _quantity, totalCopies_);
+  }
+
+  function removeScarcity() public onlyBy(owner_) {
+    totalCopies_ = -1;
+    emit RemovedScarcity(did_);
+  }
+
+  function getPrice(uint256 _quantity) public view returns (uint256) {
+    uint256 tier;
+    for (uint256 i = 0; i < priceTiers_.length; i++) {
+      if (priceTiers_[i] == _quantity) {
+        return prices_[_quantity];
+      } else if (priceTiers_[i] < _quantity && priceTiers_[i] > tier) {
+        tier = priceTiers_[i];
+      }
+    }
+    return prices_[tier];
   }
 
   function submitBudget(bytes32 _jobId, uint256 _budget) public purchaseRequired {
@@ -155,15 +228,59 @@ contract AFS {
    * @param _jobId The jobId of the download, or 0x00000000000000000000000000000000 if N/A
    * @param _budget The reward budget for jobId, or 0 if N/A
    */
-  function purchase(bytes32 _purchaser, bytes32 _jobId, uint256 _budget) external {
+  function purchase(bytes32 _purchaser, uint256 _quantity, bytes32 _jobId, uint256 _budget) external {
+    require(totalCopies_ != 0, "No more copies available for purchase.");
+    require(_quantity > 0, "Must purchase at least 1 copy.");
     uint256 allowance = token_.allowance(msg.sender, address(this));
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
-    require (!purchasers_[hashedAddress] && allowance >= price_ + _budget, "Unable to purchase.");
+    require (allowance >= prices_[_quantity] + _budget, "Proxy must be approved for purchase.");
 
-    if (token_.transferFrom(msg.sender, owner_, price_)) {
-      purchasers_[hashedAddress] = true;
+    if (token_.transferFrom(msg.sender, owner_, prices_[_quantity])) {
+      purchasers_[hashedAddress].quantity += _quantity;
+      purchasers_[hashedAddress].resalePrice = minResalePrice_;
+      if (totalCopies_ > 0) {
+        totalCopies_--;
+        if (totalCopies_ == 0) {
+          unlist();
+        }
+      }
       lib_.addLibraryItem(_purchaser, did_);
-      emit Purchased(_purchaser, did_, price_);
+      emit Purchased(_purchaser, did_, _quantity, prices_[_quantity]);
+
+      if (_jobId != bytes32(0) && _budget > 0) {
+        submitBudget(_jobId, _budget);
+      }
+    }
+  }
+
+  /**
+   * @param _seller seller's Ethereum address
+   * 
+   */
+  function purchaseResale(address _seller, bytes32 _purchaser, uint256 _quantity, bytes32 _jobId, uint256 _budget) external {
+    require(maxNumResales_ > 0, "Item is not available for resale.");
+    require(_quantity > 0, "Must purchase at least 1 copy.");
+    bytes32 seller = keccak256(abi.encodePacked(_seller));
+    require(purchasers_[seller].quantity > 0, "Seller must own at least 1 copy.");
+    require(purchasers_[seller].resales[_quantity - 1] == maxNumResales_, "Copy has already been sold the maximum number of times.");
+    uint256 allowance = token_.allowance(msg.sender, address(this));
+    require (allowance >= purchasers_[seller].resalePrice + _budget, "Proxy must be approved for purchase.");
+
+    if (token_.transferFrom(msg.sender, _seller, purchasers_[seller].resalePrice - minResalePrice_)
+      && token_.transferFrom(msg.sender, owner_, minResalePrice_)) {
+      purchasers_[seller].quantity -= _quantity;
+
+      bytes32 purchaser = keccak256(abi.encodePacked(msg.sender));
+      uint256 oldPurchaserQuantity = purchasers_[purchaser].quantity;
+      for (uint256 i = 0; i < _quantity; i++) {
+        purchasers_[seller].resales[i + purchasers_[seller].quantity] = 0;
+        purchasers_[purchaser].resales[i + oldPurchaserQuantity]++;
+      }
+
+      purchasers_[purchaser].quantity += _quantity;
+      purchasers_[purchaser].resalePrice = minResalePrice_;
+      lib_.addLibraryItem(_purchaser, did_);
+      emit PurchasedResale(_purchaser, did_, _quantity, prices_[_quantity]);
 
       if (_jobId != bytes32(0) && _budget > 0) {
         submitBudget(_jobId, _budget);
