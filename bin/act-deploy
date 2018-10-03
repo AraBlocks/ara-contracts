@@ -92,7 +92,7 @@ async function onproxy(argv) {
     const opts = { contentDid: did, password, version }
     if (!upgrade) {
       info(`Deploying new proxy for ${did} at version ${version}...`)
-      // act deploy proxy 7278cc43820a31d6907b8ed358b05bcc03c6a9bf6bbaefdcb1d7baeff33de0a6 2 -D
+      // act deploy proxy e3d08278d27b9aef975a95aa1be340bff211f5ef3d243e22aea9e249cce8182f 1 -D
       const address = await registry.deployProxy(opts)
       info(`Proxy deployed at address ${address} for ${did}.`)
     } else {

@@ -7,6 +7,7 @@ const {
   web3: {
     isAddress,
     account,
+    call,
     tx
   }
 } = require('ara-util')
@@ -25,6 +26,8 @@ async function transferOwnership(opts) {
     throw new TypeError('Expecting non-empty password')
   } else if (!opts.contentDid || 'string' !== typeof opts.contentDid) {
     throw new TypeError('Expecting non-empty content DID')
+  } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
+    throw new TypeError('Expecting boolean for estimate')
   } else if (!opts.newOwnerDid || 'string' !== typeof opts.newOwnerDid) {
     throw new TypeError('Expecting non-empty new owner DID')
   }
@@ -72,6 +75,19 @@ async function transferOwnership(opts) {
       values: [ newOwnerAddress ]
     }
   })
+
+  const owner = await call({
+    abi,
+    address: proxy,
+    functionName: 'owner'
+  })
+  debug('current AFS owner', owner)
+
+  const estimate = opts.estimate || false
+
+  if (estimate) {
+    return tx.estimateCost(transferTx)
+  }
 
   return tx.sendSignedTransaction(transferTx)
 }

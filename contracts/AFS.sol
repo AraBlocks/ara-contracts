@@ -9,7 +9,6 @@ contract AFS is Ownable {
 
   using BytesLib for bytes;
 
-  address  public owner_;
   string   public version_ = "1";
 
   AraToken public token_;
@@ -75,16 +74,16 @@ contract AFS is Ownable {
     bytes32 did;
     /* solium-disable-next-line security/no-inline-assembly */
     assembly {
-        btsptr := add(_data, 32)
-        ownerAddr := mload(btsptr)
-        btsptr := add(_data, 64)
-        tokenAddr := mload(btsptr)
-        btsptr := add(_data, 96)
-        libAddr := mload(btsptr)
-        btsptr := add(_data, 128)
-        did := mload(btsptr)
+      btsptr := add(_data, 32)
+      ownerAddr := mload(btsptr)
+      btsptr := add(_data, 64)
+      tokenAddr := mload(btsptr)
+      btsptr := add(_data, 96)
+      libAddr := mload(btsptr)
+      btsptr := add(_data, 128)
+      did := mload(btsptr)
     }
-    owner_    = ownerAddr;
+    owner     = ownerAddr;
     token_    = AraToken(tokenAddr);
     lib_      = Library(libAddr);
     did_      = did;
@@ -92,7 +91,7 @@ contract AFS is Ownable {
     price_    = 0;
   }
 
-  function setPrice(uint256 _price) external onlyBy(owner_) {
+  function setPrice(uint256 _price) external onlyBy(owner) {
     price_ = _price;
     emit PriceSet(did_, price_);
   }
@@ -161,7 +160,7 @@ contract AFS is Ownable {
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
     require (!purchasers_[hashedAddress] && allowance >= price_ + _budget, "Unable to purchase.");
 
-    if (token_.transferFrom(msg.sender, owner_, price_)) {
+    if (token_.transferFrom(msg.sender, owner, price_)) {
       purchasers_[hashedAddress] = true;
       lib_.addLibraryItem(_purchaser, did_);
       emit Purchased(_purchaser, did_, price_);
@@ -173,7 +172,7 @@ contract AFS is Ownable {
   }
 
   function append(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
-    bytes _msBuffer) external onlyBy(owner_) {
+    bytes _msBuffer) external onlyBy(owner) {
     
     require(listed_, "AFS is unlisted.");
     
@@ -197,7 +196,7 @@ contract AFS is Ownable {
   }
 
   function write(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
-    bytes _msBuffer) public onlyBy(owner_) {
+    bytes _msBuffer) public onlyBy(owner) {
 
     require(listed_, "AFS is unlisted.");
 
@@ -235,7 +234,7 @@ contract AFS is Ownable {
     return metadata_[_file][_offset].equal(_buffer);
   }
 
-  function unlist() public onlyBy(owner_) returns (bool success) {
+  function unlist() public onlyBy(owner) returns (bool success) {
     listed_ = false;
     emit Unlisted(did_);
     return true;
