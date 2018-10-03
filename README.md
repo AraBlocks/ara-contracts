@@ -90,7 +90,8 @@ The contracts in this repository are deployed on [Ara Privatenet](https://github
 * [token.getAmountDeposited(did)](#getamountdeposited)
 
 ### Commerce
-* [commerce.stageOwnershipTransfer(opts)](#stagetransfer)
+* [commerce.requestOwnership(opts)](#requestownership)
+* [commerce.revokeOwnershipRequest(opts)](#revokerequest)
 * [commerce.approveOwnershipTransfer(opts)](#approvetransfer)
 
 <a name="purchase"></a>
@@ -568,28 +569,73 @@ const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a3
 const amount = await token.getAmountDeposited(did) // '100'
 ```
 
-<a name="stagetransfer"></a>
-### `commerce.stageOwnershipTransfer(opts)`
+* [commerce.requestOwnership(opts)](#requestownership)
+* [commerce.revokeOwnershipRequest(opts)](#revokerequest)
+* [commerce.approveOwnershipTransfer(opts)](#approvetransfer)
 
-Stages the transfer of an AFS to another identity. The identity the transfer was staged for must approve the transfer.
+<a name="requestownership"></a>
+### `commerce.requestOwnership(opts)`
+
+Requests the transfer of ownership of an AFS to `ownerDid`. Must be approved by the current owner.
 
 - `opts`
-  - `ownerDid` - `DID` of the current owner
-  - `password` - Password of the owner
-  - `contentDid` - `DID` of the AFS to stage ownership for
-  - `newOwnerDid` - `DID` to transfer ownership to
+  - `did` - `DID` of the requester
+  - `password` - password of the requester
+  - `contentDid` - `DID` of the AFS to request ownership for
   - `estimate` - Should transaction be sent or just estimate cost
+
+```js
+const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
+const password = 'pass'
+const contentDid = did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
+const receipt = await commerce.requestOwnership({ did, password, contentDid })
+
+// estimate
+const cost = await commerce.requestOwnership({ did, password, contentDid, estimate: true })
+```
+
+<a name="revokerequest"></a>
+### `commerce.revokeOwnershipRequest(opts)`
+
+Revokes a previous request for AFS ownership transfer.
+
+- `opts`
+  - `did` - `DID` of the requester
+  - `password` - password of the requester
+  - `contentDid` - `DID` of the AFS to revoke ownership request for
+  - `estimate` - Should transaction be sent or just estimate cost
+
+```js
+const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
+const password = 'pass'
+const contentDid = did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
+const receipt = await commerce.revokeOwnershipRequest({ did, password, contentDid })
+
+// estimate
+const cost = await commerce.revokeOwnershipRequest({ did, password, contentDid, estimate: true })
+```
 
 <a name="approvetransfer"></a>a>
 ### `commerce.approveOwnershipTransfer(opts)`
 
-Approves a pending staged transfer, this officially transfers ownership for the given AFS.
+Approves a pending transfer request, this officially transfers ownership for the given AFS.
 
 - `opts`
   - `did` - `DID` of the staged owner
   - `password` - Password of the staged owner
+  - `newOwnerDid` - `DID` of the owner to transfer ownership to
   - `contentDid` - `DID` of the AFS to approve ownership transfer for
   - `estimate` - Should transaction be sent or just estimate cost
+
+```js
+const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
+const password = 'pass'
+const contentDid = did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
+const newOwnerDid = 'did:ara:7dc039cfb220029c371d0f4aabf4a956ed0062d66c447df7b4595d7e11187271'
+const receipt = await commerce.approveOwnershipTransfer({ did, password, contentDid, newOwnerDid })
+
+const cost = await commerce.approveOwnershipTransfer({ did, password, contentDid, newOwnerDid, estimate: true })
+```
 
 ## Contributing
 - [Commit message format](/.github/COMMIT_FORMAT.md)

@@ -16,6 +16,14 @@ const {
   proxyExists
 } = require('./registry')
 
+async function requestOwnership(opts) {
+  return _updateOwnershipRequest(opts, 'requestOwnership')
+}
+
+async function revokeOwnershipRequest(opts) {
+  return _updateOwnershipRequest(opts, 'revokeOwnershipRequest')
+}
+
 /**
  * Approves a pending staged transfer.
  * This officially transfers ownership for the given AFS.
@@ -36,6 +44,8 @@ async function approveOwnershipTransfer(opts) {
     throw new TypeError('Expecting non-empty password')
   } else if (!opts.contentDid || 'string' !== typeof opts.contentDid) {
     throw new TypeError('Expecting non-empty content DID')
+  } else if (!opts.newOwnerDid || 'string' !== typeof opts.newOwnerDid) {
+    throw new TypeError('Expecting non-empty new owner DID')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting boolean for estimate')
   }
@@ -44,12 +54,15 @@ async function approveOwnershipTransfer(opts) {
     did,
     password,
     contentDid,
+    newOwnerDid,
   } = opts
 
-  let stagedOwnerAddress
+  let ownerAddress
+  let newOwnerAddress
   try {
     await validate({ did, password, label: 'approveOwnershipTransfer' })
-    stagedOwnerAddress = await getAddressFromDID(normalize(did))
+    ownerAddress = await getAddressFromDID(normalize(did))
+    newOwnerAddress = await getAddressFromDID(normalize(newOwnerDid))
   } catch (err) {
     throw err
   }
@@ -58,9 +71,14 @@ async function approveOwnershipTransfer(opts) {
     throw new Error('Content does not have a valid proxy contract')
   }
 
-  if (!isAddress(stagedOwnerAddress)) {
+  if (!isAddress(ownerAddress)) {
     throw new Error(`opts.did did not resolve to a valid Ethereum address. 
       Ensure ${did} is a valid Ara identity.`)
+  }
+
+  if (!isAddress(newOwnerAddress)) {
+    throw new Error(`opts.newOwnerDid did not resolve to a valid Ethereum address.
+      Ensure ${newOwnerDid} is a valid Ara identity.`)
   }
 
   const proxy = await getProxyAddress(contentDid)
@@ -71,7 +89,8 @@ async function approveOwnershipTransfer(opts) {
     gasLimit: 1000000,
     data: {
       abi,
-      functionName: 'approveOwnershipTransfer'
+      functionName: 'approveOwnershipTransfer',
+      values: [ newOwnerAddress ]
     }
   })
 
@@ -84,21 +103,10 @@ async function approveOwnershipTransfer(opts) {
   return tx.sendSignedTransaction(approveTx)
 }
 
-/**
- * Stages the transfer of an AFS to another identity.
- * The identity the transfer was staged for must approve the transfer.
- * @param  {Object}  opts
- * @param  {String}  opts.ownerDid
- * @param  {String}  opts.password
- * @param  {String}  opts.contentDid
- * @param  {String}  opts.newOwnerDid
- * @param  {Boolean} opts.estimate
- * @return {Object}
- */
-async function stageOwnershipTransfer(opts) {
+async function _updateOwnershipRequest(opts, functionName = '') {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object')
-  } else if (!opts.ownerDid || 'string' !== typeof opts.ownerDid) {
+  } else if (!opts.did || 'string' !== typeof opts.did) {
     throw new TypeError('Expecting non-empty owner DID')
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError('Expecting non-empty password')
@@ -106,23 +114,18 @@ async function stageOwnershipTransfer(opts) {
     throw new TypeError('Expecting non-empty content DID')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting boolean for estimate')
-  } else if (!opts.newOwnerDid || 'string' !== typeof opts.newOwnerDid) {
-    throw new TypeError('Expecting non-empty new owner DID')
   }
 
   const {
-    newOwnerDid,
+    did,
     contentDid,
-    password,
-    ownerDid
+    password
   } = opts
 
-  let ownerAddress
-  let newOwnerAddress
+  let requesterAddress
   try {
-    await validate({ did: ownerDid, password, label: 'stageOwnershipTransfer' })
-    ownerAddress = await getAddressFromDID(normalize(ownerDid))
-    newOwnerAddress = await getAddressFromDID(normalize(newOwnerDid))
+    await validate({ did, password, label: functionName })
+    requesterAddress = await getAddressFromDID(normalize(did))
   } catch (err) {
     throw err
   }
@@ -131,39 +134,34 @@ async function stageOwnershipTransfer(opts) {
     throw new Error('Content does not have a valid proxy contract')
   }
 
-  if (!isAddress(ownerAddress)) {
-    throw new Error(`opts.ownerDid did not resolve to a valid Ethereum address. 
-      Ensure ${ownerDid} is a valid Ara identity.`)
-  }
-
-  if (!isAddress(newOwnerAddress)) {
-    throw new Error(`opts.newOwnerDid did not resolve to a valid Ethereum address. 
-      Ensure ${newOwnerDid} is a valid Ara identity.`)
+  if (!isAddress(requesterAddress)) {
+    throw new Error(`opts.requesterDid did not resolve to a valid Ethereum address. 
+      Ensure ${did} is a valid Ara identity.`)
   }
 
   const proxy = await getProxyAddress(contentDid)
-  const acct = await account.load({ did: ownerDid, password })
-  const stageTx = await tx.create({
+  const acct = await account.load({ did, password })
+  const requestTx = await tx.create({
     account: acct,
     to: proxy,
     gasLimit: 1000000,
     data: {
       abi,
-      functionName: 'stageOwnershipTransfer',
-      values: [ newOwnerAddress ]
+      functionName
     }
   })
 
   const estimate = opts.estimate || false
 
   if (estimate) {
-    return tx.estimateCost(stageTx)
+    return tx.estimateCost(requestTx)
   }
 
-  return tx.sendSignedTransaction(stageTx)
+  return tx.sendSignedTransaction(requestTx)
 }
 
 module.exports = {
   approveOwnershipTransfer,
-  stageOwnershipTransfer
+  revokeOwnershipRequest,
+  requestOwnership
 }
