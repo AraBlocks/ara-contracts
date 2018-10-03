@@ -3,31 +3,38 @@ pragma solidity ^0.4.24;
 contract Ownable {
 
   address public owner_;
-  address public stagedOwner_;
 
   event TransferApproved(address indexed _previousOwner, address indexed _newOwner);
-  event TransferStaged(address indexed _currentOwner, address indexed _stagedOwner);
+  event TransferRequested(address indexed _currentOwner, address indexed _requestedOwner);
+  event RequestRevoked(address indexed _currentOwner, address indexed _requestOwner);
+
+  mapping(bytes32 => bool) public requesters_; // keccak256 hashes of requester addresses
 
   modifier onlyOwner() {
     require(msg.sender == owner_);
     _;
   }
 
-  modifier onlyStagedOwner() {
-    require(msg.sender == stagedOwner_);
+  modifier hasRequested(address _newOwner) {
+    require(requesters_[keccak256(abi.encodePacked(_newOwner))], 
+      "Owner request has not been sent.");
     _;
   }
 
-  function stageOwnershipTransfer(address _stagedOwner) public onlyOwner {
-    require(_stagedOwner != address(0));
-    emit TransferStaged(owner_, _stagedOwner);
-    stagedOwner_ = _stagedOwner;
+  function requestOwnership() public {
+    bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
+    requesters_[hashedAddress] = true;
+    emit TransferRequested(owner_, msg.sender);
   }
 
-  function approveOwnershipTransfer() public onlyStagedOwner {
-    require(stagedOwner_ != address(0));
-    emit TransferApproved(owner_, stagedOwner_);
-    owner_ = stagedOwner_;
+  function revokeOwnershipRequest() public hasRequested(msg.sender) {
+    bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
+    requesters_[hashedAddress] = false;
+    emit RequestRevoked(owner_, msg.sender);
+  }
+
+  function approveOwnershipTransfer(address _newOwner) public onlyOwner hasRequested(_newOwner) {
+    owner_ = _newOwner;
   }
 
 }
