@@ -181,6 +181,7 @@ async function upgradeProxy(opts) {
  * @param  {String} opts.contentDid // unhashed
  * @param  {String} opts.password
  * @param  {String|number} opts.version
+ * @param  {String|number} opts.scarcity // -1 for infinite
  * @return {string}
  * @throws {Error,TypeError}
  */
@@ -208,6 +209,8 @@ async function deployProxy(opts) {
     version = version.toString()
   }
 
+  const scarcity = Number(opts.scarcity) || -1
+
   let did
   let ddo
   try {
@@ -226,8 +229,8 @@ async function deployProxy(opts) {
   let proxyAddress = null
   try {
     const encodedData = web3Abi.encodeParameters(
-      [ 'address', 'address', 'address', 'bytes32' ],
-      [ acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, ethify(contentDid) ]
+      [ 'address', 'address', 'address', 'bytes32', 'int256' ],
+      [ acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, ethify(contentDid), scarcity ]
     )
     const transaction = await tx.create({
       account: acct,
