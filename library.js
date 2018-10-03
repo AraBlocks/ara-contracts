@@ -121,7 +121,7 @@ async function hasPurchased(opts) {
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
   }
-  
+
   const proxy = await getProxyAddress(contentDid)
   let purchaser = await getAddressFromDID(purchaserDid)
 
