@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "./Ownable.sol";
 import "./Library.sol";
 import "./AraToken.sol";
 import "bytes/BytesLib.sol";
@@ -83,7 +83,7 @@ contract AFS is Ownable {
       btsptr := add(_data, 128)
       did := mload(btsptr)
     }
-    owner     = ownerAddr;
+    owner_    = ownerAddr;
     token_    = AraToken(tokenAddr);
     lib_      = Library(libAddr);
     did_      = did;
@@ -91,7 +91,7 @@ contract AFS is Ownable {
     price_    = 0;
   }
 
-  function setPrice(uint256 _price) external onlyBy(owner) {
+  function setPrice(uint256 _price) external onlyBy(owner_) {
     price_ = _price;
     emit PriceSet(did_, price_);
   }
@@ -160,7 +160,7 @@ contract AFS is Ownable {
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
     require (!purchasers_[hashedAddress] && allowance >= price_ + _budget, "Unable to purchase.");
 
-    if (token_.transferFrom(msg.sender, owner, price_)) {
+    if (token_.transferFrom(msg.sender, owner_, price_)) {
       purchasers_[hashedAddress] = true;
       lib_.addLibraryItem(_purchaser, did_);
       emit Purchased(_purchaser, did_, price_);
@@ -172,7 +172,7 @@ contract AFS is Ownable {
   }
 
   function append(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
-    bytes _msBuffer) external onlyBy(owner) {
+    bytes _msBuffer) external onlyBy(owner_) {
     
     require(listed_, "AFS is unlisted.");
     
@@ -196,7 +196,7 @@ contract AFS is Ownable {
   }
 
   function write(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
-    bytes _msBuffer) public onlyBy(owner) {
+    bytes _msBuffer) public onlyBy(owner_) {
 
     require(listed_, "AFS is unlisted.");
 
@@ -234,7 +234,7 @@ contract AFS is Ownable {
     return metadata_[_file][_offset].equal(_buffer);
   }
 
-  function unlist() public onlyBy(owner) returns (bool success) {
+  function unlist() public onlyBy(owner_) returns (bool success) {
     listed_ = false;
     emit Unlisted(did_);
     return true;
