@@ -89,6 +89,10 @@ The contracts in this repository are deployed on [Ara Privatenet](https://github
 * [token.modifyDeposit(opts)](#modifydeposit)
 * [token.getAmountDeposited(did)](#getamountdeposited)
 
+### Commerce
+* [commerce.stageOwnershipTransfer(opts)](#stagetransfer)
+* [commerce.approveOwnershipTransfer(opts)](#approvetransfer)
+
 <a name="purchase"></a>
 ### `purchase(opts)`
 
@@ -563,6 +567,29 @@ Gets the current amount deposited by an account to be used for redeeming rewards
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const amount = await token.getAmountDeposited(did) // '100'
 ```
+
+<a name="stagetransfer"></a>
+### `commerce.stageOwnershipTransfer(opts)`
+
+Stages the transfer of an AFS to another identity. The identity the transfer was staged for must approve the transfer.
+
+- `opts`
+  - `ownerDid` - `DID` of the current owner
+  - `password` - Password of the owner
+  - `contentDid` - `DID` of the AFS to stage ownership for
+  - `newOwnerDid` - `DID` to transfer ownership to
+  - `estimate` - Should transaction be sent or just estimate cost
+
+<a name="approvetransfer"></a>a>
+### `commerce.approveOwnershipTransfer(opts)`
+
+Approves a pending staged transfer, this officially transfers ownership for the given AFS.
+
+- `opts`
+  - `did` - `DID` of the staged owner
+  - `password` - Password of the staged owner
+  - `contentDid` - `DID` of the AFS to approve ownership transfer for
+  - `estimate` - Should transaction be sent or just estimate cost
 
 ## Contributing
 - [Commit message format](/.github/COMMIT_FORMAT.md)

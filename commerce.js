@@ -16,6 +16,17 @@ const {
   proxyExists
 } = require('./registry')
 
+/**
+ * Approves a pending staged transfer.
+ * This officially transfers ownership for the given AFS.
+ * @param  {Object}  opts
+ * @param  {String}  opts.did
+ * @param  {String}  opts.password
+ * @param  {String}  opts.contentDid
+ * @param  {Boolean} opts.estimate
+ * @throws {Error|TypeError}
+ * @return {Object}
+ */
 async function approveOwnershipTransfer(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object')
@@ -48,7 +59,7 @@ async function approveOwnershipTransfer(opts) {
   }
 
   if (!isAddress(stagedOwnerAddress)) {
-    throw new Error(`${did} did not resolve to a valid Ethereum address. 
+    throw new Error(`opts.did did not resolve to a valid Ethereum address. 
       Got ${stagedOwnerAddress}. Ensure ${did} is a valid Ara identity.`)
   }
 
@@ -73,6 +84,17 @@ async function approveOwnershipTransfer(opts) {
   return tx.sendSignedTransaction(approveTx)
 }
 
+/**
+ * Stages the transfer of an AFS to another identity.
+ * The identity the transfer was staged for must approve the transfer.
+ * @param  {Object}  opts
+ * @param  {String}  opts.ownerDid
+ * @param  {String}  opts.password
+ * @param  {String}  opts.contentDid
+ * @param  {String}  opts.newOwnerDid
+ * @param  {Boolean} opts.estimate
+ * @return {Object}
+ */
 async function stageOwnershipTransfer(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object')
@@ -110,12 +132,12 @@ async function stageOwnershipTransfer(opts) {
   }
 
   if (!isAddress(ownerAddress)) {
-    throw new Error(`${ownerDid} did not resolve to a valid Ethereum address. 
+    throw new Error(`opts.ownerDid did not resolve to a valid Ethereum address. 
       Got ${ownerAddress}. Ensure ${ownerDid} is a valid Ara identity.`)
   }
 
   if (!isAddress(newOwnerAddress)) {
-    throw new Error(`${newOwnerDid} did not resolve to a valid Ethereum address. 
+    throw new Error(`opts.newOwnerDid did not resolve to a valid Ethereum address. 
       Got ${newOwnerAddress}. Ensure ${newOwnerDid} is a valid Ara identity.`)
   }
 
