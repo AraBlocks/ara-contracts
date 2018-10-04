@@ -243,7 +243,7 @@ async function setMaxNumResales(opts) {
  * @param  {Number} opts.quantity
  * @throws {Error,TypeError}
  */
-async function addCopies(opts) {
+async function increaseSupply(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
@@ -306,7 +306,7 @@ async function addCopies(opts) {
  * @param  {Number} opts.quantity
  * @throws {Error,TypeError}
  */
-async function removeCopies(opts) {
+async function decreaseSupply(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
@@ -368,7 +368,7 @@ async function removeCopies(opts) {
  * @param  {String} opts.password
  * @throws {Error,TypeError}
  */
-async function removeScarcity(opts) {
+async function setUnlimitedSupply(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
@@ -419,10 +419,10 @@ async function removeScarcity(opts) {
 }
 
 module.exports = {
-  addCopies,
-  removeCopies,
+  setUnlimitedSupply,
+  setMinResalePrice,
+  setResaleQuantity,
   setResalePrice,
-  removeScarcity,
-  setMaxNumResales,
-  setMinResalePrice
+  decreaseSupply,
+  increaseSupply
 }

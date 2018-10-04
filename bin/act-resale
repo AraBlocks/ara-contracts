@@ -1,0 +1,125 @@
+#!/usr/bin/env node
+
+const debug = require('debug')('ara-contracts:cli:resale')
+const { info, warn, error, log } = require('ara-console')
+const { createProgram } = require('../lib/program')
+const inquirer = require('inquirer')
+
+const {
+  setMinResalePrice,
+  setResaleQuantity,
+  setResalePrice
+} = require('../commerce')
+
+// yargs program command line interface instance
+const program = createProgram({
+  usage: `
+usage: act resale: [-h] [--help] [options] [--] <command>
+`
+})
+
+const { argv } = program
+  .command('price [--seller] <did> <price>', 'Set the (minimum) resale price of an AFS. If the seller option is not passed in, the minimum resale price will be set.', () => {
+    program
+      .positional('did', {
+        type: 'string',
+        describe: 'The AFS DID'
+      })
+      .positional('price', {
+        type: 'string',
+        describe: 'The resale price to set for the AFS'
+      })
+      .option('seller', {
+        alias: 's',
+        type: 'string',
+        describe: 'DID of the AFS seller (if the seller is not also the AFS owner)'
+      })
+  }, onprice)
+  .command('quantity <did> <amount>', 'Set the number of times an AFS can be resold', () => {
+    program
+      .positional('did', {
+        type: 'string',
+        describe: 'The AFS DID'
+      })
+      .positional('amount', {
+        type: 'string',
+        describe: 'The number of times the AFS can be resold'
+      })
+  }, onquantity)
+
+// Emit program usage help
+if (0 == argv._.length && argv.help) {
+  program.showHelp()
+  process.exit(0)
+}
+
+module.exports = (async function main() {
+  if (argv.debug) {
+    require('debug').enable('ara-contracts*')
+  }
+}())
+
+async function onprice(argv) {
+  const { did, price, seller } = argv
+  const { password } = await promptForPassword()
+
+  try {
+    let receipt
+    if (seller) {
+      info(`Setting the resale price for ${did} from seller ${seller} to ${price} Ara...`)
+      await setResalePrice({
+        requesterDid: seller,
+        contentDid: did,
+        password,
+        price
+      })
+      info(`Resale price for ${did} from seller ${seller} successfully set to ${price} Ara.`)
+    } else {
+      info(`Setting the minimum resale price for ${did} to ${price} Ara...`)
+      await setMinResalePrice({
+        contentDid: did,
+        password,
+        price
+      })
+      info(`Minimum resale price for ${did} successfully set to ${price} Ara.`)
+    }
+  } catch (err) {
+    onfatal(err)
+  }
+}
+
+async function onquantity(argv) {
+  const { did, amount } = argv
+  const { password } = await promptForPassword()
+
+  try {
+    info(`Setting resale quantity for ${did} to ${amount}...`)
+    await setResaleQuantity({
+      contentDid: did,
+      password,
+      maxResales: amount
+    })
+    info(`Resale quantity for ${did} successfully set to ${amount}.`)
+  } catch (err) {
+    onfatal(err)
+  }
+}
+
+async function promptForPassword() {
+  return await inquirer.prompt([{
+    type: 'password',
+    name: 'password',
+    message:
+    'Please provide the passphrase for your identity. This is needed to ' +
+    'complete this action.\n' +
+    'Passphrase:'
+  }]) 
+}
+
+function onfatal(err) {
+  if (err) {
+    debug(err)
+    error('fatal:', err.message)
+  }
+  process.exit(1)
+}

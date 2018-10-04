@@ -51,9 +51,9 @@ contract AFS {
   event Purchased(bytes32 _purchaser, bytes32 _did, uint256 _quantity, uint256 _price);
   event PurchasedResale(bytes32 _purchaser, bytes32 _did, uint256 _quantity, uint256 _price);
   event Redeemed(address _sender);
-  event AddedCopies(bytes32 _did, int256 _added, int256 _total);
-  event RemovedCopies(bytes32 _did, int256 _removed, int256 _total);
-  event RemovedScarcity(bytes32 _did);
+  event IncreasedSupply(bytes32 _did, int256 _added, int256 _total);
+  event DecreasedSupply(bytes32 _did, int256 _removed, int256 _total);
+  event UnlimitedSupplySet(bytes32 _did);
 
   uint8 constant mtBufferSize_ = 40;
   uint8 constant msBufferSize_ = 64;
@@ -151,32 +151,32 @@ contract AFS {
     emit ResalePriceSet(did_, msg.sender, _price);
   }
 
-  function setMaxNumResales(uint256 _quantity) external onlyBy(owner_) {
+  function setResaleQuantity(uint256 _quantity) external onlyBy(owner_) {
     maxNumResales_ = _quantity;
     emit MaxNumResalesSet(did_, maxNumResales_);
   }
 
-  function addCopies(int256 _quantity) public onlyBy(owner_) {
+  function increaseSupply(int256 _quantity) public onlyBy(owner_) {
     require(_quantity > 0, "Quantity must be greater than 0.");
     if (totalCopies_ < 0) {
       totalCopies_ = _quantity;
     } else {
       totalCopies_ += _quantity;
     }
-    emit AddedCopies(did_, _quantity, totalCopies_);
+    emit IncreasedSupply(did_, _quantity, totalCopies_);
   }
 
-  function removeCopies(int256 _quantity) public onlyBy(owner_) {
+  function decreaseSupply(int256 _quantity) public onlyBy(owner_) {
     require(_quantity > 0, "Cannot remove non-positive number of copies.");
     require(totalCopies_ > 0, "Cannot remove anymore copies.");
     require(totalCopies_ - _quantity >= 0, "Trying to remove more copies than already exist.");
     totalCopies_ -= _quantity;
-    emit RemovedCopies(did_, _quantity, totalCopies_);
+    emit DecreasedSupply(did_, _quantity, totalCopies_);
   }
 
-  function removeScarcity() public onlyBy(owner_) {
+  function setUnlimitedSupply() public onlyBy(owner_) {
     totalCopies_ = -1;
-    emit RemovedScarcity(did_);
+    emit UnlimitedSupplySet(did_);
   }
 
 /**

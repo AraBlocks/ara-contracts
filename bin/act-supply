@@ -1,0 +1,131 @@
+#!/usr/bin/env node
+
+const debug = require('debug')('ara-contracts:cli:resale')
+const { info, warn, error, log } = require('ara-console')
+const { createProgram } = require('../lib/program')
+const inquirer = require('inquirer')
+
+const {
+  setUnlimitedSupply,
+  decreaseSupply,
+  increaseSupply
+} = require('../commerce')
+
+// yargs program command line interface instance
+const program = createProgram({
+  usage: `
+usage: act supply: [-h] [--help] [options] [--] <command>
+`
+})
+
+const { argv } = program
+  .command('increase <did> <quantity>', 'Increase the total supply of an AFS.', () => {
+    program
+      .positional('did', {
+        type: 'string',
+        describe: 'The AFS DID'
+      })
+      .positional('quantity', {
+        type: 'number',
+        describe: 'The quantity by which to increase the AFS supply.'
+      })
+  }, onincrease)
+  .command('decrease <did> <quantity>', 'Decrease the total supply of an AFS.', () => {
+    program
+      .positional('did', {
+        type: 'string',
+        describe: 'The AFS DID'
+      })
+      .positional('quantity', {
+        type: 'number',
+        describe: 'The quantity by which to decrease the AFS supply.'
+      })
+  }, ondecrease)
+  .command('set-unlimited <did>', 'Sets the AFS supply to unlimited.', () => {
+    program
+      .positional('did', {
+        type: 'string',
+        describe: 'The AFS DID'
+      })
+  }, onsetunlimited)
+
+// Emit program usage help
+if (0 == argv._.length && argv.help) {
+  program.showHelp()
+  process.exit(0)
+}
+
+module.exports = (async function main() {
+  if (argv.debug) {
+    require('debug').enable('ara-contracts*')
+  }
+}())
+
+async function onincrease(argv) {
+  const { did, quantity } = argv
+  const { password } = await promptForPassword()
+
+  try {
+    info(`Increasing the total supply of ${did} by ${quantity}...`)
+    await increaseSupply({
+      contentDid: did,
+      password,
+      quantity
+    })
+    info(`Total supply of ${did} successfully increased by ${quantity}.`)
+  } catch (err) {
+    onfatal(err)
+  }
+}
+
+async function ondecrease(argv) {
+  const { did, quantity } = argv
+  const { password } = await promptForPassword()
+
+  try {
+    info(`Decreasing the total supply of ${did} by ${quantity}...`)
+    await decreaseSupply({
+      contentDid: did,
+      password,
+      quantity
+    })
+    info(`Total supply of ${did} successfully decreased by ${quantity}.`)
+  } catch (err) {
+    onfatal(err)
+  }
+}
+
+async function onsetunlimited(argv) {
+  const { did } = argv
+  const { password } = await promptForPassword()
+
+  try {
+    info(`Setting the total supply of ${did} to unlimited...`)
+    await setUnlimitedSupply({
+      contentDid: did,
+      password
+    })
+    info(`Total supply of ${did} successfully set to unlimited.`)
+  } catch (err) {
+    onfatal(err)
+  }
+}
+
+async function promptForPassword() {
+  return await inquirer.prompt([{
+    type: 'password',
+    name: 'password',
+    message:
+    'Please provide the passphrase for your identity. This is needed to ' +
+    'complete this action.\n' +
+    'Passphrase:'
+  }]) 
+}
+
+function onfatal(err) {
+  if (err) {
+    debug(err)
+    error('fatal:', err.message)
+  }
+  process.exit(1)
+}
