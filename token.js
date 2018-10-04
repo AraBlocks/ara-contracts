@@ -6,7 +6,10 @@ const { web3 } = require('ara-context')()
 const {
   validate,
   normalize,
-  getAddressFromDID
+  getAddressFromDID,
+  errors: {
+    MissingOptionError
+  }
 } = require('ara-util')
 
 const {
@@ -138,13 +141,23 @@ async function transfer(opts = {}) {
     throw new TypeError(`Expected 'opts.did' to be non-empty Ara DID string. Got ${opts.did}. Ensure ${opts.did} is a valid Ara identity.`)
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${opts.password}.`)
+  } else if (!opts.keyringOpts) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
+  } else if (!opts.keyringOpts.secret) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.network) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.keyring) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
   let { did, val, to } = opts
-  const { password } = opts
+  const { password, keyringOpts } = opts
 
   try {
-    ({ did } = await validate({ owner: did, password, label: 'transfer' }))
+    ({ did } = await validate({
+      owner: did, password, label: 'transfer', keyringOpts
+    }))
     to = await _normalizeIDInput(to)
   } catch (err) {
     throw err
@@ -187,13 +200,25 @@ async function transfer(opts = {}) {
  * @throws {TypeError|Error}
  */
 async function approve(opts = {}) {
+  if (!opts.keyringOpts) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
+  } else if (!opts.keyringOpts.secret) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.network) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.keyring) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
+  }
+
   _validateApprovalOpts(opts)
 
   let { did, spender, val } = opts
-  const { password } = opts
+  const { password, keyringOpts } = opts
 
   try {
-    ({ did } = await validate({ owner: did, password, label: 'transfer' }))
+    ({ did } = await validate({
+      owner: did, password, label: 'transfer', keyringOpts
+    }))
     spender = await _normalizeIDInput(spender)
   } catch (err) {
     throw err
@@ -250,6 +275,14 @@ async function transferFrom(opts = {}) {
     throw new TypeError(`Expected 'opts.did' to be non-empty Ara DID string. Got ${opts.did}. Ensure ${opts.did} is a valid Ara identity.`)
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${opts.password}.`)
+  } else if (!opts.keyringOpts) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
+  } else if (!opts.keyringOpts.secret) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.network) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.keyring) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
   let {
@@ -258,10 +291,12 @@ async function transferFrom(opts = {}) {
     from,
     to
   } = opts
-  const { password } = opts
+  const { password, keyringOpts } = opts
 
   try {
-    ({ did } = await validate({ owner: did, password, label: 'transferFrom' }))
+    ({ did } = await validate({
+      owner: did, password, label: 'transferFrom', keyringOpts
+    }))
     to = await _normalizeIDInput(to)
     from = await _normalizeIDInput(from)
   } catch (err) {
@@ -309,13 +344,25 @@ async function transferFrom(opts = {}) {
  * @throws {TypeError|Error}
  */
 async function increaseApproval(opts = {}) {
+  if (!opts.keyringOpts) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
+  } else if (!opts.keyringOpts.secret) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.network) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.keyring) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
+  }
+
   _validateApprovalOpts(opts)
 
   let { did, spender, val } = opts
-  const { password } = opts
+  const { password, keyringOpts } = opts
 
   try {
-    ({ did } = await validate({ owner: did, password, label: 'transfer' }))
+    ({ did } = await validate({
+      owner: did, password, label: 'transfer', keyringOpts
+    }))
     spender = await _normalizeIDInput(spender)
   } catch (err) {
     throw err
@@ -359,13 +406,25 @@ async function increaseApproval(opts = {}) {
  * @throws {TypeError|Error}
  */
 async function decreaseApproval(opts = {}) {
+  if (!opts.keyringOpts) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
+  } else if (!opts.keyringOpts.secret) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.network) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.keyring) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
+  }
+
   _validateApprovalOpts(opts)
 
   let { did, spender } = opts
-  const { password } = opts
+  const { password, keyringOpts } = opts
 
   try {
-    ({ did } = await validate({ owner: did, password, label: 'transfer' }))
+    ({ did } = await validate({
+      owner: did, password, label: 'transfer', keyringOpts
+    }))
     spender = await _normalizeIDInput(spender)
   } catch (err) {
     throw err
@@ -455,13 +514,23 @@ async function modifyDeposit(opts = {}) {
     throw new TypeError(`Expected 'opts.val' to be greater than 0. Got ${opts.val}. Ensure ${opts.val} is a positive number.`)
   } else if (opts.withdraw && 'boolean' !== typeof opts.withdraw) {
     throw new TypeError(`Expected 'opts.withdraw' to be a boolean. Got ${opts.withdraw}.`)
+  } else if (!opts.keyringOpts) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
+  } else if (!opts.keyringOpts.secret) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.network) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
+  } else if (!opts.keyringOpts.keyring) {
+    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
   let { did, val, withdraw: wd } = opts
-  const { password } = opts
+  const { password, keyringOpts } = opts
 
   try {
-    ({ did } = await validate({ owner: did, password, label: wd ? 'withdraw' : 'deposit' }))
+    ({ did } = await validate({
+      owner: did, password, label: wd ? 'withdraw' : 'deposit', keyringOpts
+    }))
   } catch (err) {
     throw err
   }
