@@ -38,9 +38,9 @@ test('isValidArray(arr, fn)', async (t) => {
   result = await util.isValidArray([])
   t.false(result)
 
-  result = await util.isValidArray([1, 2, 3])
+  result = await util.isValidArray([ 1, 2, 3 ])
   t.true(result)
 
-  result = await util.isValidArray(['apple', 3, 'banana', {}])
+  result = await util.isValidArray([ 'apple', 3, 'banana', {} ])
   t.true(result)
 })
