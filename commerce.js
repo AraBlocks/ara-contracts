@@ -1,7 +1,9 @@
 const { abi } = require('./build/contracts/AFS.json')
+const { AID_PREFIX } = require('./constants')
 
 const {
   getAddressFromDID,
+  getDocumentOwner,
   normalize,
   validate,
   web3: {
@@ -16,21 +18,40 @@ const {
   proxyExists
 } = require('./registry')
 
+/**
+ * Requests ownership of an AFS.
+ * @param  {Object} opts 
+ * @param  {String} opts.requesterDid
+ * @param  {String} opts.contentDid
+ * @param  {String} opts.password
+ * @param  {String} opts.estimate
+ * @throws {Error|TypeError}
+ * @return {Object}
+ */
 async function requestOwnership(opts) {
   return _updateOwnershipRequest(opts, 'requestOwnership')
 }
 
+/**
+ * Revokes a previous ownership request of an AFS.
+ * @param  {Object} opts 
+ * @param  {String} opts.requesterDid
+ * @param  {String} opts.contentDid
+ * @param  {String} opts.password
+ * @param  {String} opts.estimate
+ * @throws {Error|TypeError}
+ * @return {Object}
+ */
 async function revokeOwnershipRequest(opts) {
   return _updateOwnershipRequest(opts, 'revokeOwnershipRequest')
 }
 
 /**
- * Approves a pending staged transfer.
+ * Approves an ownership transfer request.
  * This officially transfers ownership for the given AFS.
  * @param  {Object}  opts
  * @param  {String}  opts.did
  * @param  {String}  opts.password
- * @param  {String}  opts.contentDid
  * @param  {Boolean} opts.estimate
  * @throws {Error|TypeError}
  * @return {Object}
@@ -39,11 +60,9 @@ async function approveOwnershipTransfer(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object')
   } else if (!opts.did || 'string' !== typeof opts.did) {
-    throw new TypeError('Expecting non-empty staged owner DID')
+    throw new TypeError('Expecting non-empty content DID')
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError('Expecting non-empty password')
-  } else if (!opts.contentDid || 'string' !== typeof opts.contentDid) {
-    throw new TypeError('Expecting non-empty content DID')
   } else if (!opts.newOwnerDid || 'string' !== typeof opts.newOwnerDid) {
     throw new TypeError('Expecting non-empty new owner DID')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
@@ -53,7 +72,6 @@ async function approveOwnershipTransfer(opts) {
   const {
     did,
     password,
-    contentDid,
     newOwnerDid,
   } = opts
 
@@ -77,12 +95,15 @@ async function approveOwnershipTransfer(opts) {
       Ensure ${newOwnerDid} is a valid Ara identity.`)
   }
 
-  if (!(await proxyExists(contentDid))) {
+  if (!(await proxyExists(did))) {
     throw new Error('Content does not have a valid proxy contract')
   }
 
-  const proxy = await getProxyAddress(contentDid)
-  const acct = await account.load({ did, password })
+  const proxy = await getProxyAddress(did)
+  let owner = getDocumentOwner(ddo, true)
+  owner = `${AID_PREFIX}${owner}`
+
+  const acct = await account.load({ did: owner, password })
   const approveTx = await tx.create({
     account: acct,
     to: proxy,
@@ -106,33 +127,33 @@ async function approveOwnershipTransfer(opts) {
 async function _updateOwnershipRequest(opts, functionName = '') {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object')
-  } else if (!opts.did || 'string' !== typeof opts.did) {
-    throw new TypeError('Expecting non-empty owner DID')
-  } else if (!opts.password || 'string' !== typeof opts.password) {
-    throw new TypeError('Expecting non-empty password')
   } else if (!opts.contentDid || 'string' !== typeof opts.contentDid) {
     throw new TypeError('Expecting non-empty content DID')
+  } else if (!opts.requesterDid || 'string' !== typeof opts.requesterDid) {
+    throw new TypeError('Expecting non-empty requester DID')
+  } else if (!opts.password || 'string' !== typeof opts.password) {
+    throw new TypeError('Expecting non-empty password')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting boolean for estimate')
   }
 
   const {
-    did,
     contentDid,
+    requesterDid,
     password
   } = opts
 
   let requesterAddress
   try {
-    await validate({ did, password, label: functionName })
-    requesterAddress = await getAddressFromDID(normalize(did))
+    await validate({ did: requesterDid, password, label: functionName })
+    requesterAddress = await getAddressFromDID(normalize(requesterDid))
   } catch (err) {
     throw err
   }
 
   if (!isAddress(requesterAddress)) {
     throw new Error(`opts.requesterDid did not resolve to a valid Ethereum address. 
-      Ensure ${did} is a valid Ara identity.`)
+      Ensure ${requesterDid} is a valid Ara identity.`)
   }
 
   if (!(await proxyExists(contentDid))) {
@@ -140,7 +161,8 @@ async function _updateOwnershipRequest(opts, functionName = '') {
   }
 
   const proxy = await getProxyAddress(contentDid)
-  const acct = await account.load({ did, password })
+
+  const acct = await account.load({ did: requesterDid, password })
   const requestTx = await tx.create({
     account: acct,
     to: proxy,

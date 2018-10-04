@@ -576,22 +576,22 @@ const amount = await token.getAmountDeposited(did) // '100'
 <a name="requestownership"></a>
 ### `commerce.requestOwnership(opts)`
 
-Requests the transfer of ownership of an AFS to `ownerDid`. Must be approved by the current owner.
+Requests the transfer of ownership of an AFS to `requesterDid`. Must be approved by the current owner.
 
 - `opts`
-  - `did` - `DID` of the requester
-  - `password` - password of the requester
+  - `requesterDid` - `DID` of the requester
   - `contentDid` - `DID` of the AFS to request ownership for
+  - `password` - password of the requester
   - `estimate` - Should transaction be sent or just estimate cost
 
 ```js
-const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
+const requesterDid = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'pass'
 const contentDid = did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
-const receipt = await commerce.requestOwnership({ did, password, contentDid })
+const receipt = await commerce.requestOwnership({ requesterDid, password, contentDid })
 
 // estimate
-const cost = await commerce.requestOwnership({ did, password, contentDid, estimate: true })
+const cost = await commerce.requestOwnership({ requesterDid, password, contentDid, estimate: true })
 ```
 
 <a name="revokerequest"></a>
@@ -600,19 +600,19 @@ const cost = await commerce.requestOwnership({ did, password, contentDid, estima
 Revokes a previous request for AFS ownership transfer.
 
 - `opts`
-  - `did` - `DID` of the requester
+  - `requesterDid` - `DID` of the requester
+  - `contentDid` - `DID` of the AFS to revoke ownership reequest for
   - `password` - password of the requester
-  - `contentDid` - `DID` of the AFS to revoke ownership request for
   - `estimate` - Should transaction be sent or just estimate cost
 
 ```js
-const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
+const requesterDid = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'pass'
 const contentDid = did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
-const receipt = await commerce.revokeOwnershipRequest({ did, password, contentDid })
+const receipt = await commerce.revokeOwnershipRequest({ requesterDid, password, contentDid })
 
 // estimate
-const cost = await commerce.revokeOwnershipRequest({ did, password, contentDid, estimate: true })
+const cost = await commerce.revokeOwnershipRequest({ requesterDid, password, contentDid, estimate: true })
 ```
 
 <a name="approvetransfer"></a>a>
@@ -621,20 +621,18 @@ const cost = await commerce.revokeOwnershipRequest({ did, password, contentDid, 
 Approves a pending transfer request, this officially transfers ownership for the given AFS.
 
 - `opts`
-  - `did` - `DID` of the staged owner
+  - `did` - `DID` of the content to change ownership for
   - `password` - Password of the staged owner
   - `newOwnerDid` - `DID` of the owner to transfer ownership to
-  - `contentDid` - `DID` of the AFS to approve ownership transfer for
   - `estimate` - Should transaction be sent or just estimate cost
 
 ```js
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'pass'
-const contentDid = did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
 const newOwnerDid = 'did:ara:7dc039cfb220029c371d0f4aabf4a956ed0062d66c447df7b4595d7e11187271'
-const receipt = await commerce.approveOwnershipTransfer({ did, password, contentDid, newOwnerDid })
+const receipt = await commerce.approveOwnershipTransfer({ did, password, newOwnerDid })
 
-const cost = await commerce.approveOwnershipTransfer({ did, password, contentDid, newOwnerDid, estimate: true })
+const cost = await commerce.approveOwnershipTransfer({ did, password, newOwnerDid, estimate: true })
 ```
 
 ## Contributing
