@@ -67,10 +67,6 @@ async function approveOwnershipTransfer(opts) {
     throw err
   }
 
-  if (!(await proxyExists(contentDid))) {
-    throw new Error('Content does not have a valid proxy contract')
-  }
-
   if (!isAddress(ownerAddress)) {
     throw new Error(`opts.did did not resolve to a valid Ethereum address. 
       Ensure ${did} is a valid Ara identity.`)
@@ -79,6 +75,10 @@ async function approveOwnershipTransfer(opts) {
   if (!isAddress(newOwnerAddress)) {
     throw new Error(`opts.newOwnerDid did not resolve to a valid Ethereum address.
       Ensure ${newOwnerDid} is a valid Ara identity.`)
+  }
+
+  if (!(await proxyExists(contentDid))) {
+    throw new Error('Content does not have a valid proxy contract')
   }
 
   const proxy = await getProxyAddress(contentDid)

@@ -35,6 +35,8 @@ contract Ownable {
 
   function approveOwnershipTransfer(address _newOwner) public onlyOwner hasRequested(_newOwner) {
     owner_ = _newOwner;
+    bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
+    requesters_[hashedAddress] = false;
   }
 
 }
