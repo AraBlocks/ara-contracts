@@ -99,6 +99,39 @@ async function setMinResalePrice(opts) {
 }
 
 /**
+ * Get the minimum resale price for an AFS
+ * @param  {Object} opts
+ * @param  {String} opts.contentDid
+ * @throws {Error,TypeError}
+ */
+async function getMinResalePrice(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object.')
+  } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
+    throw new TypeError('Expecting non-empty content DID.')
+  }
+
+  const { contentDid } = opts
+
+  if (!(await proxyExists(contentDid))) {
+    throw new Error('This content does not have a valid proxy contract')
+  }
+
+  const proxy = await getProxyAddress(contentDid)
+
+  try {
+    price = await call({
+      abi,
+      address: proxy,
+      functionName: 'minResalePrice_'
+    })
+  } catch (err) {
+    throw err
+  }
+  return token.constrainTokenValue(price)
+}
+
+/**
  * Set the resale price for an AFS
  * @param  {Object}        opts
  * @param  {String}        opts.requesterDid
@@ -173,6 +206,48 @@ async function setResalePrice(opts) {
 }
 
 /**
+ * Get the resale price for an AFS
+ * @param  {Object} opts
+ * @param  {String} opts.contentDid
+ * @param  {String} opts.seller
+ * @throws {Error,TypeError}
+ */
+async function getResalePrice(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object.')
+  } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
+    throw new TypeError('Expecting non-empty content DID.')
+  } else if ('string' !== typeof opts.seller || !opts.seller) {
+    throw new TypeError('Expecting non-empty seller DID.')
+  }
+
+  const { contentDid } = opts
+  let { seller } = opts
+
+  if (!(await proxyExists(contentDid))) {
+    throw new Error('This content does not have a valid proxy contract')
+  }
+
+  const proxy = await getProxyAddress(contentDid)
+
+  seller = await getAddressFromDID(seller)
+
+  try {
+    price = await call({
+      abi,
+      address: proxy,
+      functionName: 'purchasers_',
+      arguments: [ 
+        sha3({ t: 'address', v: seller })
+      ]
+    })[1]
+  } catch (err) {
+    throw err
+  }
+  return token.constrainTokenValue(price)
+}
+
+/**
  * Set the maximum number of resales for an AFS
  * @param  {Object} opts
  * @param  {String} opts.contentDid
@@ -180,7 +255,7 @@ async function setResalePrice(opts) {
  * @param  {Number} opts.maxResales
  * @throws {Error,TypeError}
  */
-async function setMaxNumResales(opts) {
+async function setResaleQuantity(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
@@ -233,6 +308,39 @@ async function setMaxNumResales(opts) {
   } catch (err) {
     throw err
   }
+}
+
+/**
+ * Get the number of times an AFS can be resold
+ * @param  {Object} opts
+ * @param  {String} opts.contentDid
+ * @throws {Error,TypeError}
+ */
+async function getResaleQuantity(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object.')
+  } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
+    throw new TypeError('Expecting non-empty content DID.')
+  }
+
+  const { contentDid } = opts
+
+  if (!(await proxyExists(contentDid))) {
+    throw new Error('This content does not have a valid proxy contract')
+  }
+
+  const proxy = await getProxyAddress(contentDid)
+
+  try {
+    quantity = await call({
+      abi,
+      address: proxy,
+      functionName: 'maxNumResales_'
+    })
+  } catch (err) {
+    throw err
+  }
+  return quantity
 }
 
 /**
@@ -418,11 +526,47 @@ async function setUnlimitedSupply(opts) {
   }
 }
 
+/**
+ * Get the total supply of an AFS
+ * @param  {Object} opts
+ * @param  {String} opts.contentDid
+ * @throws {Error,TypeError}
+ */
+async function getResaleQuantity(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object.')
+  } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
+    throw new TypeError('Expecting non-empty content DID.')
+  }
+
+  const { contentDid } = opts
+
+  if (!(await proxyExists(contentDid))) {
+    throw new Error('This content does not have a valid proxy contract')
+  }
+
+  const proxy = await getProxyAddress(contentDid)
+
+  try {
+    quantity = await call({
+      abi,
+      address: proxy,
+      functionName: 'totalCopies_'
+    })
+  } catch (err) {
+    throw err
+  }
+  return quantity
+}
+
 module.exports = {
   setUnlimitedSupply,
+  getMinResalePrice,
   setMinResalePrice,
   setResaleQuantity,
+  getResaleQuantity,
   setResalePrice,
   decreaseSupply,
-  increaseSupply
+  increaseSupply,
+  getResalePrice,
 }
