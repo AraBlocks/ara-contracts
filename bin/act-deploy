@@ -5,6 +5,7 @@ const { info, warn, error, log } = require('ara-console')
 const { createProgram } = require('../lib/program')
 const registry = require('../registry')
 const inquirer = require('inquirer')
+const rc = require('../rc')()
 
 const toLower = x => String(x).toLowerCase()
 
@@ -41,6 +42,21 @@ const { argv } = program
         alias: 'p',
         describe: 'Password for DID'
       })
+      .option('secret', {
+        alias: 's',
+        type: 'string',
+        describe: 'Shared secret for the keyring',
+      })
+      .option('network', {
+        alias: 'n',
+        type: 'string',
+        describe: 'Network name of the key for the DID resolver in the keyring',
+      })
+      .option('keyring', {
+        alias: 'k',
+        type: 'string',
+        describe: 'Path to the keyring',
+      })
   }, onproxy)
   .command('standard [options] <did> <version> <pathspec...>', 'Deploy a new AFS standard <version> with <did> (the registry contract owner)', () => {
     program
@@ -64,6 +80,21 @@ const { argv } = program
         alias: 'p',
         describe: 'Password for DID'
       })
+      .option('secret', {
+        alias: 's',
+        type: 'string',
+        describe: 'Shared secret for the keyring',
+      })
+      .option('network', {
+        alias: 'n',
+        type: 'string',
+        describe: 'Network name of the key for the DID resolver in the keyring',
+      })
+      .option('keyring', {
+        alias: 'k',
+        type: 'string',
+        describe: 'Path to the keyring',
+      })
   }, onstandard)
 
 // Emit program usage help
@@ -81,23 +112,26 @@ module.exports = (async function main() {
 
 async function onproxy(argv) {
   let { did, version, upgrade, force, password } = argv
+  const { secret, network, keyring } = argv
+  const keyringOpts = { secret, network, keyring }
   if (force && !password) {
     onfatal(new Error('Must provide password if forcing a command.'))
   }
+
   if (!force) {
     ({ password } = await promptForPassword())
   }
 
   try {
-    const opts = { contentDid: did, password, version }
+    const opts = { contentDid: did, password, version, keyringOpts }
     if (!upgrade) {
       info(`Deploying new proxy for ${did} at version ${version}...`)
-      // act deploy proxy 7278cc43820a31d6907b8ed358b05bcc03c6a9bf6bbaefdcb1d7baeff33de0a6 2 -D
+      // act deploy proxy 7278cc43820a31d6907b8ed358b05bcc03c6a9bf6bbaefdcb1d7baeff33de0a6 2 -s test-node -n resolver -k /Users/ericjiang/.ara/keyrings/aws-test.pub -D
       const address = await registry.deployProxy(opts)
       info(`Proxy deployed at address ${address} for ${did}.`)
     } else {
       info(`Upgrading proxy for ${did} to version ${version}...`)
-      // act deploy proxy -u f5153d78579dcc7d4ed57acd3cc789a69fe3780314432443a471d1e2dea577b8 2 -D
+      // act deploy proxy -u f5153d78579dcc7d4ed57acd3cc789a69fe3780314432443a471d1e2dea577b8 2 -s test-node -n resolver -k /Users/ericjiang/.ara/keyrings/aws-test.pub -D
       const upgraded = await registry.upgradeProxy(opts)
       if (upgraded) {
         info(`Proxy successfully upgraded to version ${version}.`)
@@ -111,6 +145,9 @@ async function onproxy(argv) {
 async function onstandard(argv) {
   let { did, version, force, password } = argv
   let [ ...paths ] = argv.pathspec
+  const { secret, network, keyring } = argv
+  const keyringOpts = { secret, network, keyring }
+
   if (force && !password) {
     onfatal(new Error('Must provide password if forcing a command.'))
   }
@@ -120,12 +157,13 @@ async function onstandard(argv) {
 
   try {
     info(`Deploying new AFS standard version ${version}...`)
-    // act deploy standard 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 1 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/AraToken.sol -D
+    // act deploy standard 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 1 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/AraToken.sol -s test-node -n resolver -k /Users/ericjiang/.ara/keyrings/aws-test.pub -D
     const address = await registry.deployNewStandard({
       requesterDid: did,
       password,
       version,
-      paths
+      paths,
+      keyringOpts
     })
     info(`New AFS standard version ${version} deployed at address ${address}.`)
   } catch (err) {

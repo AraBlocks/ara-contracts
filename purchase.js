@@ -46,7 +46,7 @@ const {
  */
 async function purchase(opts) {
   if (!opts || 'object' !== typeof opts) {
-    throw new TypeError(' Expecting opts object.')
+    throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
     throw new TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
@@ -57,14 +57,6 @@ async function purchase(opts) {
     throw TypeError('Expecting job object.')
   } else if ('number' !== typeof opts.budget || 0 > opts.budget) {
     throw TypeError('Expecting budget to be 0 or greater.')
-  } else if (!opts.keyringOpts) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
-  } else if (!opts.keyringOpts.secret) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.network) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.keyring) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
   const quantity = Number(opts.quantity) || 1
@@ -141,7 +133,7 @@ async function purchase(opts) {
       })
     }
 
-    price = Number(token.constrainTokenValue(price))
+    price = quantity * Number(token.constrainTokenValue(price))
 
     let val = budget + price
     val = val.toString()
@@ -160,7 +152,7 @@ async function purchase(opts) {
 
     budget = token.expandTokenValue(budget.toString())
 
-    let values = [ethify(hIdentity), jobId, budget]
+    let values = [ethify(hIdentity), quantity, jobId, budget]
     if (resale) {
       values.unshift(seller)
     }
