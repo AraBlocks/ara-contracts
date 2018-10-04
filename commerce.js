@@ -130,13 +130,13 @@ async function _updateOwnershipRequest(opts, functionName = '') {
     throw err
   }
 
-  if (!(await proxyExists(contentDid))) {
-    throw new Error('Content does not have a valid proxy contract')
-  }
-
   if (!isAddress(requesterAddress)) {
     throw new Error(`opts.requesterDid did not resolve to a valid Ethereum address. 
       Ensure ${did} is a valid Ara identity.`)
+  }
+
+  if (!(await proxyExists(contentDid))) {
+    throw new Error('Content does not have a valid proxy contract')
   }
 
   const proxy = await getProxyAddress(contentDid)
