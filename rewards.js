@@ -41,6 +41,7 @@ const {
  * @param  {String}         opts.requesterDid
  * @param  {String}         opts.contentDid
  * @param  {String}         opts.password
+ * @param  {Object}         [opts.keyringOpts]
  * @param  {Object}         opts.job
  * @param  {string|Buffer}  opts.job.jobId
  * @param  {number}         opts.job.budget
@@ -170,6 +171,7 @@ async function submit(opts) {
  * @param  {String}         opts.requesterDid
  * @param  {String}         opts.contentDid
  * @param  {String}         opts.password
+ * @param  {Object}         [opts.keyringOpts]
  * @param  {Object}         opts.job
  * @param  {string|Buffer}  opts.job.jobId
  * @param  {Array}          opts.job.farmers
@@ -298,6 +300,7 @@ async function allocate(opts) {
  * @param  {String}         opts.farmerDid
  * @param  {String}         opts.contentDid
  * @param  {String}         opts.password
+ * @param  {Object}         [opts.keyringOpts]
  * @throws {Error,TypeError}
  */
 async function redeem(opts) {
@@ -417,6 +420,7 @@ async function getBudget(opts) {
  * @param  {String} opts.farmerDid
  * @param  {String} opts.contentDid
  * @param  {String} opts.password
+ * @param  {Object} [opts.keyringOpts]
  * @throws {Error,TypeError}
  */
 async function getRewardsBalance(opts) {

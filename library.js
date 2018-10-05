@@ -106,7 +106,7 @@ async function getLibraryItem(opts) {
  * @param  {Object}  opts
  * @param  {String}  opts.purchaserDid
  * @param  {String}  opts.contentDid
- * @param  {?Object} opts.keyringOpts
+ * @param  {Object} [opts.keyringOpts]
  * @return {Boolean}      [description]
  */
 async function hasPurchased(opts) {

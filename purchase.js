@@ -35,7 +35,7 @@ const {
  * @param  {String}  opts.contentDid
  * @param  {String}  opts.password
  * @param  {Number}  opts.budget
- * @param  {?Object} opts.keyringOpts
+ * @param  {Object} [opts.keyringOpts]
  * @throws {Error,TypeError}
  */
 async function purchase(opts) {

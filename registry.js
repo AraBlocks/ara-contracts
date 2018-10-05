@@ -88,7 +88,7 @@ async function getProxyVersion(contentDid = '') {
  * @param  {String} opts.contentDid // unhashed
  * @param  {String} opts.password
  * @param  {String|number} opts.version
- * @param  {?Object} opts.keyringOpts
+ * @param  {Object} [opts.keyringOpts]
  * @return {Bool}
  * @throws {Error,TypeError}
  */
@@ -171,6 +171,7 @@ async function upgradeProxy(opts) {
  * @param  {String} opts.contentDid // unhashed
  * @param  {String} opts.password
  * @param  {String|number} opts.version
+ * @param  {Object} [opts.keyringOpts]
  * @return {string}
  * @throws {Error,TypeError}
  */
@@ -305,6 +306,7 @@ async function getStandard(version) {
  * @param  {String} opts.password
  * @param  {String} opts.version
  * @param  {String} opts.paths
+ * @param  {Object} [opts.keyringOpts]
  * @return {String}
  * @throws {Error,TypeError}
  */
