@@ -10,7 +10,6 @@ const {
 } = require('./registry')
 
 const {
-  hasPurchased,
   getLibrarySize,
   getLibraryItem
 } = require('./library')
@@ -27,9 +26,6 @@ const {
     ethify,
     account,
     contract
-  },
-  errors: {
-    MissingOptionError
   }
 } = require('ara-util')
 
@@ -67,17 +63,15 @@ async function purchase(opts) {
 
   const {
     requesterDid,
-    password,
-    seller
+    password
   } = opts
 
-  let { budget } = opts
+  let { seller, budget } = opts
 
   let resale = false
-  let sellerAddress
   if (seller) {
     try {
-      sellerAddress = await getAddressFromDID(seller)
+      seller = await getAddressFromDID(seller)
       resale = true
     } catch (err) {
       throw err
@@ -152,7 +146,7 @@ async function purchase(opts) {
 
     budget = token.expandTokenValue(budget.toString())
 
-    let values = [ethify(hIdentity), quantity, jobId, budget]
+    const values = [ethify(hIdentity), quantity, jobId, budget]
     if (resale) {
       values.unshift(seller)
     }

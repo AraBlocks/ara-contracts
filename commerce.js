@@ -1,5 +1,6 @@
-const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:commerce')
+const { abi } = require('./build/contracts/AFS.json')
+const { AID_PREFIX } = require('./constants')
 const token = require('./token')
 
 const {
@@ -8,7 +9,6 @@ const {
 } = require('./registry')
 
 const {
-  hashDID,
   validate,
   normalize,
   getDocumentOwner,
@@ -17,9 +17,7 @@ const {
     tx,
     call,
     sha3,
-    ethify,
-    account,
-    contract
+    account
   }
 } = require('ara-util')
 
@@ -47,6 +45,7 @@ async function setMinResalePrice(opts) {
 
   const { password, keyringOpts, estimate } = opts
   let { contentDid, price } = opts
+  let ddo
   try {
     ({ did: contentDid, ddo } = await validate({
       did: contentDid, password, label: 'setMinResalePrice', keyringOpts
@@ -63,7 +62,7 @@ async function setMinResalePrice(opts) {
   const proxy = await getProxyAddress(contentDid)
 
   let owner = getDocumentOwner(ddo)
-  owner = `${kAidPrefix}${owner}`
+  owner = `${AID_PREFIX}${owner}`
   const acct = await account.load({ did: owner, password })
 
   if ('string' !== typeof price) {
@@ -157,7 +156,7 @@ async function setResalePrice(opts) {
   const { password, keyringOpts, estimate } = opts
   let { requesterDid, contentDid, price } = opts
   try {
-    ({ did: requesterDid, ddo } = await validate({
+    ({ did: requesterDid } = await validate({
       did: requesterDid, password, label: 'setResalePrice', keyringOpts
     }))
   } catch (err) {
@@ -239,7 +238,7 @@ async function getResalePrice(opts) {
       abi,
       address: proxy,
       functionName: 'purchasers_',
-      arguments: [ 
+      arguments: [
         sha3({ t: 'address', v: seller })
       ]
     })[2]
@@ -305,12 +304,17 @@ async function _setResaleAvailability(opts) {
     throw new TypeError('Expecting opts.estimate to be a boolean.')
   }
 
-  const { password, keyringOpts, quantity, estimate } = opts
+  const {
+    password,
+    keyringOpts,
+    quantity,
+    estimate
+  } = opts
   let { requesterDid, contentDid } = opts
   const unlock = opts.unlock || false
 
   try {
-    ({ did: requesterDid, ddo } = await validate({
+    ({ did: requesterDid } = await validate({
       did: requesterDid, password, label: '_setResaleAvailability', keyringOpts
     }))
   } catch (err) {
@@ -319,8 +323,11 @@ async function _setResaleAvailability(opts) {
 
   contentDid = normalize(contentDid)
 
-  unlock ? debug(`Unlocking ${contentDid} for resale for seller ${requesterDid}`) :
-  debug(`Locking ${contentDid} for resale for seller ${requesterDid}`) :
+  if (unlock) {
+    debug(`Unlocking ${contentDid} for resale for seller ${requesterDid}`)
+  } else {
+    debug(`Locking ${contentDid} for resale for seller ${requesterDid}`)
+  }
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
@@ -387,7 +394,7 @@ async function getResaleAvailability(opts) {
       abi,
       address: proxy,
       functionName: 'purchasers_',
-      arguments: [ 
+      arguments: [
         sha3({ t: 'address', v: seller })
       ]
     })[1]
@@ -396,7 +403,6 @@ async function getResaleAvailability(opts) {
   }
   return quantity
 }
-
 
 /**
  * Set the maximum number of resales for an AFS
@@ -420,8 +426,15 @@ async function setResaleQuantity(opts) {
     throw new TypeError('Expecting opts.estimate to be a boolean.')
   }
 
-  const { password, keyringOpts, estimate } = opts
-  let { contentDid, maxResales } = opts
+  const {
+    password,
+    keyringOpts,
+    estimate,
+    maxResales
+  } = opts
+  let { contentDid } = opts
+
+  let ddo
   try {
     ({ did: contentDid, ddo } = await validate({
       did: contentDid, password, label: 'setResaleQuantity', keyringOpts
@@ -438,7 +451,7 @@ async function setResaleQuantity(opts) {
   const proxy = await getProxyAddress(contentDid)
 
   let owner = getDocumentOwner(ddo)
-  owner = `${kAidPrefix}${owner}`
+  owner = `${AID_PREFIX}${owner}`
   const acct = await account.load({ did: owner, password })
 
   try {
@@ -520,8 +533,15 @@ async function setSupply(opts) {
     throw new TypeError('Expecting opts.estimate to be a boolean.')
   }
 
-  const { password, keyringOpts, estimate } = opts
-  let { contentDid, quantity } = opts
+  const {
+    password,
+    keyringOpts,
+    estimate,
+    quantity
+  } = opts
+  let { contentDid } = opts
+
+  let ddo
   try {
     ({ did: contentDid, ddo } = await validate({
       did: contentDid, password, label: 'setSupply', keyringOpts
@@ -538,7 +558,7 @@ async function setSupply(opts) {
   const proxy = await getProxyAddress(contentDid)
 
   let owner = getDocumentOwner(ddo)
-  owner = `${kAidPrefix}${owner}`
+  owner = `${AID_PREFIX}${owner}`
   const acct = await account.load({ did: owner, password })
 
   try {
@@ -586,8 +606,15 @@ async function increaseSupply(opts) {
     throw new TypeError('Expecting opts.estimate to be a boolean.')
   }
 
-  const { password, keyringOpts, estimate } = opts
-  let { contentDid, quantity } = opts
+  const {
+    password,
+    keyringOpts,
+    estimate,
+    quantity
+  } = opts
+  let { contentDid } = opts
+
+  let ddo
   try {
     ({ did: contentDid, ddo } = await validate({
       did: contentDid, password, label: 'increaseSupply', keyringOpts
@@ -604,7 +631,7 @@ async function increaseSupply(opts) {
   const proxy = await getProxyAddress(contentDid)
 
   let owner = getDocumentOwner(ddo)
-  owner = `${kAidPrefix}${owner}`
+  owner = `${AID_PREFIX}${owner}`
   const acct = await account.load({ did: owner, password })
 
   try {
@@ -652,8 +679,15 @@ async function decreaseSupply(opts) {
     throw new TypeError('Expecting opts.estimate to be a boolean.')
   }
 
-  const { password, keyringOpts, estimate } = opts
-  let { contentDid, quantity } = opts
+  const {
+    password,
+    keyringOpts,
+    estimate,
+    quantity
+  } = opts
+  let { contentDid } = opts
+
+  let ddo
   try {
     ({ did: contentDid, ddo } = await validate({
       did: contentDid, password, label: 'decreaseSupply', keyringOpts
@@ -670,7 +704,7 @@ async function decreaseSupply(opts) {
   const proxy = await getProxyAddress(contentDid)
 
   let owner = getDocumentOwner(ddo)
-  owner = `${kAidPrefix}${owner}`
+  owner = `${AID_PREFIX}${owner}`
   const acct = await account.load({ did: owner, password })
 
   try {
@@ -717,6 +751,8 @@ async function setUnlimitedSupply(opts) {
 
   const { password, keyringOpts, estimate } = opts
   let { contentDid } = opts
+
+  let ddo
   try {
     ({ did: contentDid, ddo } = await validate({
       did: contentDid, password, label: 'setUnlimitedSupply', keyringOpts
@@ -733,7 +769,7 @@ async function setUnlimitedSupply(opts) {
   const proxy = await getProxyAddress(contentDid)
 
   let owner = getDocumentOwner(ddo)
-  owner = `${kAidPrefix}${owner}`
+  owner = `${AID_PREFIX}${owner}`
   const acct = await account.load({ did: owner, password })
 
   try {

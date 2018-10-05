@@ -23,9 +23,6 @@ const {
     account,
     contract,
     abi: web3Abi,
-  },
-  errors: {
-    MissingOptionError
   }
 } = require('ara-util')
 

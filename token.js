@@ -6,10 +6,7 @@ const { web3 } = require('ara-context')()
 const {
   validate,
   normalize,
-  getAddressFromDID,
-  errors: {
-    MissingOptionError
-  }
+  getAddressFromDID
 } = require('ara-util')
 
 const {

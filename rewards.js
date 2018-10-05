@@ -27,9 +27,6 @@ const {
     account,
     contract,
     isAddress
-  },
-  errors: {
-    MissingOptionError
   }
 } = require('ara-util')
 
