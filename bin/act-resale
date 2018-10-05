@@ -6,12 +6,15 @@ const { createProgram } = require('../lib/program')
 const inquirer = require('inquirer')
 
 const {
+  getResaleAvailability,
   setMinResalePrice,
   getMinResalePrice,
   setResaleQuantity,
   getResaleQuantity,
   setResalePrice,
-  getResalePrice
+  getResalePrice,
+  unlockResale,
+  lockResale
 } = require('../commerce')
 
 // yargs program command line interface instance
@@ -70,9 +73,39 @@ const { argv } = program
       .option('seller', {
         alias: 's',
         type: 'string',
-        describe: 'DID of the AFS seller (if the seller is not also the AFS owner)'
+        describe: 'The seller DID (if not the AFS owner)'
       })
     }, ongetquantity)
+  .command('lock <seller> <did> <quantity>', 'Locks a number of purchased AFSs from resale', () => {
+    program
+      .positional('seller', {
+        type: 'string',
+        describe: 'The seller DID'
+      })
+      .positional('did', {
+        type: 'string',
+        describe: 'The AFS DID'
+      })
+      .positional('quantity', {
+        type: 'number',
+        describe: 'The number of AFSs to lock from resale'
+      })
+  }, onlock)
+  .command('unlock <seller> <did> <quantity>', 'Unlocks a number of purchased AFSs for resale', () => {
+    program
+      .positional('seller', {
+        type: 'string',
+        describe: 'The seller DID'
+      })
+      .positional('did', {
+        type: 'string',
+        describe: 'The AFS DID'
+      })
+      .positional('quantity', {
+        type: 'number',
+        describe: 'The number of AFSs to unlock for resale'
+      })
+  }, onunlock)
 
 // Emit program usage help
 if (0 == argv._.length && argv.help) {
@@ -163,7 +196,7 @@ async function ongetquantity(argv) {
     let quantity
     if (seller) {
       info(`Getting quantity of ${did} available for purchase from ${seller}...`)
-      quantity = await getResaleQuantity({
+      quantity = await getResaleAvailability({
         contentDid: did,
         seller
       })
@@ -175,6 +208,42 @@ async function ongetquantity(argv) {
       })
       info(`${did} can be resold ${quantity} times.`)
     }
+  } catch (err) {
+    onfatal(err)
+  }
+}
+
+async function onlock(argv) {
+  const { seller, did, quantity } = argv
+  const { password } = await promptForPassword()
+
+  try {
+    info(`Locking ${quantity} copies of ${did} from resale by seller ${seller}...`)
+    await lockResale({
+      requesterDid: seller,
+      contentDid: did,
+      password,
+      quantity
+    })
+    info(`${quantity} copies of ${did} locked from resale by seller ${seller}.`)
+  } catch (err) {
+    onfatal(err)
+  }
+}
+
+async function onunlock(argv) {
+  const { seller, did, quantity } = argv
+  const { password } = await promptForPassword()
+
+  try {
+    info(`Unlocking ${quantity} copies of ${did} for resale by seller ${seller}...`)
+    await unlockResale({
+      requesterDid: seller,
+      contentDid: did,
+      password,
+      quantity
+    })
+    info(`${quantity} copies of ${did} unlocked for resale by seller ${seller}.`)
   } catch (err) {
     onfatal(err)
   }

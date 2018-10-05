@@ -397,7 +397,7 @@ async function getResaleAvailability(opts) {
       arguments: [
         sha3({ t: 'address', v: seller })
       ]
-    })[1]
+    })[0]
   } catch (err) {
     throw err
   }

@@ -9,6 +9,7 @@ const {
   setUnlimitedSupply,
   decreaseSupply,
   increaseSupply,
+  setSupply,
   getSupply
 } = require('../commerce')
 
@@ -20,6 +21,17 @@ usage: act supply: [-h] [--help] [options] [--] <command>
 })
 
 const { argv } = program
+  .command('set <did> <quantity>', 'Sets the current supply of an AFS.' () => {
+    program
+      .positional('did', {
+        type: 'string',
+        describe: 'The AFS DID'
+      })
+      .positional('quantity', {
+        type: 'number',
+        describe: 'The quantity to set the AFS supply.'
+      })
+  }, onset)
   .command('increase <did> <quantity>', 'Increase the current supply of an AFS.', () => {
     program
       .positional('did', {
@@ -68,6 +80,23 @@ module.exports = (async function main() {
     require('debug').enable('ara-contracts*')
   }
 }())
+
+async function onset(argv) {
+  const { did, quantity } = argv
+  const { password } = await promptForPassword()
+
+  try {
+    info(`Setting the total supply of ${did} to ${quantity}...`)
+    await setSupply({
+      contentDid: did,
+      password,
+      quantity
+    })
+    info(`Total supply of ${did} successfully set to ${quantity}.`)
+  } catch (err) {
+    onfatal(err)
+  }
+}
 
 async function onincrease(argv) {
   const { did, quantity } = argv
