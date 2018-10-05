@@ -27,9 +27,6 @@ const {
     account,
     contract,
     isAddress
-  },
-  errors: {
-    MissingOptionError
   }
 } = require('ara-util')
 
@@ -60,14 +57,6 @@ async function submit(opts) {
     throw TypeError('Expecting non-empty password')
   } else if (!opts.job || 'object' !== typeof opts.job) {
     throw TypeError('Expecting job object.')
-  } else if (!opts.keyringOpts) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
-  } else if (!opts.keyringOpts.secret) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.network) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.keyring) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
   const {
@@ -198,14 +187,6 @@ async function allocate(opts) {
     throw TypeError('Expecting non-empty password')
   } else if (!opts.job || 'object' !== typeof opts.job) {
     throw TypeError('Expecting job object.')
-  } else if (!opts.keyringOpts) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
-  } else if (!opts.keyringOpts.secret) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.network) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.keyring) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
   const {
@@ -228,7 +209,7 @@ async function allocate(opts) {
 
   // Convert farmer DIDs to Addresses
   const validFarmers = await isValidArray(farmers, async (farmer, index) => {
-    const address = await getAddressFromDID(farmer)
+    const address = await getAddressFromDID(farmer, keyringOpts)
     farmers[index] = sha3({ t: 'address', v: address })
     return isAddress(address)
   })
@@ -328,14 +309,6 @@ async function redeem(opts) {
     throw TypeError('Expecting non-empty content DID')
   } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password')
-  } else if (!opts.keyringOpts) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
-  } else if (!opts.keyringOpts.secret) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.network) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.keyring) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
   const { farmerDid, password, keyringOpts } = opts
@@ -455,14 +428,6 @@ async function getRewardsBalance(opts) {
     throw TypeError('Expecting non-empty content DID')
   } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password')
-  } else if (!opts.keyringOpts) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
-  } else if (!opts.keyringOpts.secret) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.network) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.keyring) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
   const { farmerDid, password, keyringOpts } = opts

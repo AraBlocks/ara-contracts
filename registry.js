@@ -23,9 +23,6 @@ const {
     account,
     contract,
     abi: web3Abi,
-  },
-  errors: {
-    MissingOptionError
   }
 } = require('ara-util')
 
@@ -91,6 +88,7 @@ async function getProxyVersion(contentDid = '') {
  * @param  {String} opts.contentDid // unhashed
  * @param  {String} opts.password
  * @param  {String|number} opts.version
+ * @param  {?Object} opts.keyringOpts
  * @return {Bool}
  * @throws {Error,TypeError}
  */
@@ -103,14 +101,6 @@ async function upgradeProxy(opts) {
     throw TypeError('Expecting non-empty password')
   } else if (('string' !== typeof opts.version && 'number' !== typeof opts.version) || !opts.version) {
     throw TypeError('Expecting non-empty version string or number')
-  } else if (!opts.keyringOpts) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
-  } else if (!opts.keyringOpts.secret) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.network) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.keyring) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
   let { version } = opts
@@ -191,14 +181,6 @@ async function deployProxy(opts) {
     throw TypeError('Expecting non-empty content DID')
   } else if (null == opts.password || 'string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password')
-  } else if (!opts.keyringOpts) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
-  } else if (!opts.keyringOpts.secret) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.network) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.keyring) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
   const { password, contentDid, keyringOpts } = opts
@@ -335,14 +317,6 @@ async function deployNewStandard(opts) {
     throw TypeError('Expecting non-empty password')
   } else if (!opts.paths || !opts.paths.length) {
     throw TypeError('Expecting one or more paths')
-  } else if (!opts.keyringOpts) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
-  } else if (!opts.keyringOpts.secret) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.network) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.keyring) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
   if (null == opts.version || 'string' !== typeof opts.version || !opts.version) {
