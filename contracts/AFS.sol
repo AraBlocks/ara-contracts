@@ -35,6 +35,7 @@ contract AFS {
   }
 
   struct Content {
+    uint256 available;
     uint256 quantity;
     uint256 resalePrice;
     mapping(uint256 => uint256) resales; // total quantity owned => number of previous resales -- 0 indexed
@@ -53,7 +54,9 @@ contract AFS {
   event Redeemed(address _sender);
   event IncreasedSupply(bytes32 _did, int256 _added, int256 _total);
   event DecreasedSupply(bytes32 _did, int256 _removed, int256 _total);
-  event UnlimitedSupplySet(bytes32 _did);
+  event SupplySet(bytes32 _did, int256 _quantity);
+  event ResaleUnlocked(bytes32 _did, address _seller, uint256 _available);
+  event ResaleLocked(bytes32 _did, address _seller, uint256 _available);
 
   uint8 constant mtBufferSize_ = 40;
   uint8 constant msBufferSize_ = 64;
@@ -140,6 +143,22 @@ contract AFS {
     return prices_[tier];
   }
 
+  function unlockResale(uint256 _quantity) public purchaseRequired {
+    bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
+    require(_quantity + purchasers_[hashedAddress].available <= purchasers_[hashedAddress].quantity, "Cannot unlock more for resale than owned.");
+    purchasers_[hashedAddress].available += _quantity;
+    assert(purchasers_[hashedAddress].available <= purchasers_[hashedAddress].quantity);
+    emit ResaleUnlocked(did_, msg.sender, purchasers_[hashedAddress].available);
+  }
+
+  function lockResale(uint256 _quantity) public purchaseRequired {
+    bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
+    require(purchasers_[hashedAddress].available >= _quantity, "Cannot lock more than is available for resale.");
+    purchasers_[hashedAddress].available -= _quantity;
+    assert(purchasers_[hashedAddress].available <= purchasers_[hashedAddress].quantity);
+    emit ResaleLocked(did_, msg.sender, purchasers_[hashedAddress].available);
+  }
+
   function setMinResalePrice(uint256 _price) external onlyBy(owner_) {
     minResalePrice_ = _price;
     emit MinResalePriceSet(did_, _price);
@@ -156,6 +175,12 @@ contract AFS {
     emit MaxNumResalesSet(did_, maxNumResales_);
   }
 
+  function setSupply(int256 _quantity) public onlyBy(owner_) {
+    require(_quantity > 0, "Quantity must be greater than 0.");
+    totalCopies_ = _quantity;
+    emit SupplySet(did_, totalCopies_);
+  }
+
   function increaseSupply(int256 _quantity) public onlyBy(owner_) {
     require(_quantity > 0, "Quantity must be greater than 0.");
     if (totalCopies_ < 0) {
@@ -164,6 +189,7 @@ contract AFS {
       totalCopies_ += _quantity;
     }
     emit IncreasedSupply(did_, _quantity, totalCopies_);
+    emit SupplySet(did_, totalCopies_);
   }
 
   function decreaseSupply(int256 _quantity) public onlyBy(owner_) {
@@ -172,11 +198,12 @@ contract AFS {
     require(totalCopies_ - _quantity >= 0, "Trying to remove more copies than already exist.");
     totalCopies_ -= _quantity;
     emit DecreasedSupply(did_, _quantity, totalCopies_);
+    emit SupplySet(did_, totalCopies_);
   }
 
   function setUnlimitedSupply() public onlyBy(owner_) {
     totalCopies_ = -1;
-    emit UnlimitedSupplySet(did_);
+    emit SupplySet(did_, totalCopies_);
   }
 
 /**
@@ -225,6 +252,7 @@ contract AFS {
     require(maxNumResales_ > 0, "Item is not available for resale.");
     require(_quantity > 0, "Must purchase at least 1 copy.");
     bytes32 seller = keccak256(abi.encodePacked(_seller));
+    require(purchasers_[seller].available > 0, "Seller has not authorized resale.");
     require(purchasers_[seller].quantity > 0, "Seller must own at least 1 copy.");
     require(purchasers_[seller].resales[_quantity - 1] == maxNumResales_, "Copy has already been sold the maximum number of times.");
     uint256 allowance = token_.allowance(msg.sender, address(this));

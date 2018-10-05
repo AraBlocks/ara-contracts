@@ -121,7 +121,7 @@ async function purchase(opts) {
         arguments: [
           sha3({ t: 'address', v: seller })
         ]
-      })[1]
+      })[2]
     } else {
       price = await call({
         abi: afsAbi,

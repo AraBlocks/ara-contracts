@@ -20,14 +20,11 @@ const {
     ethify,
     account,
     contract
-  },
-  errors: {
-    MissingOptionError
   }
 } = require('ara-util')
 
 /**
- * Set the minimum resale price for an AFS
+ * As an owner, set the minimum resale price for an AFS
  * @param  {Object}        opts
  * @param  {String}        opts.contentDid
  * @param  {String}        opts.password
@@ -48,7 +45,7 @@ async function setMinResalePrice(opts) {
     throw new TypeError('Expecting opts.estimate to be a boolean.')
   }
 
-  const { password, keyringOpts } = opts
+  const { password, keyringOpts, estimate } = opts
   let { contentDid, price } = opts
   try {
     ({ did: contentDid, ddo } = await validate({
@@ -119,6 +116,7 @@ async function getMinResalePrice(opts) {
 
   const proxy = await getProxyAddress(contentDid)
 
+  let price
   try {
     price = await call({
       abi,
@@ -132,12 +130,13 @@ async function getMinResalePrice(opts) {
 }
 
 /**
- * Set the resale price for an AFS
+ * As a reseller, set the resale price for an AFS
  * @param  {Object}        opts
  * @param  {String}        opts.requesterDid
  * @param  {String}        opts.contentDid
  * @param  {String}        opts.password
  * @param  {String|Number} opts.price
+ * @param  {Boolean}       opts.estimate
  * @throws {Error,TypeError}
  */
 async function setResalePrice(opts) {
@@ -151,9 +150,11 @@ async function setResalePrice(opts) {
     throw TypeError('Expecting non-empty password.')
   } else if (('number' !== typeof opts.price && !Number(opts.price)) || 0 >= Number(opts.price)) {
     throw new TypeError('Expecting whole number price.')
+  } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
+    throw new TypeError('Expecting opts.estimate to be a boolean.')
   }
 
-  const { password, keyringOpts } = opts
+  const { password, keyringOpts, estimate } = opts
   let { requesterDid, contentDid, price } = opts
   try {
     ({ did: requesterDid, ddo } = await validate({
@@ -232,8 +233,157 @@ async function getResalePrice(opts) {
 
   seller = await getAddressFromDID(seller)
 
+  let price
   try {
     price = await call({
+      abi,
+      address: proxy,
+      functionName: 'purchasers_',
+      arguments: [ 
+        sha3({ t: 'address', v: seller })
+      ]
+    })[2]
+  } catch (err) {
+    throw err
+  }
+  return token.constrainTokenValue(price)
+}
+
+/**
+ * Unlock a quantity of a purchased AFS for resale
+ * @param  {Object}  opts
+ * @param  {String}  opts.requesterDid
+ * @param  {String}  opts.contentDid
+ * @param  {String}  opts.password
+ * @param  {Number}  opts.quantity
+ * @param  {Boolean} opts.estimate
+ * @throws {Error,TypeError}
+ */
+async function unlockResale(opts) {
+  opts = Object.assign(opts, { unlock: true })
+  return _setResaleAvailability(opts)
+}
+
+/**
+ * Lock a quantity of a purchased AFS for resale
+ * @param  {Object}  opts
+ * @param  {String}  opts.requesterDid
+ * @param  {String}  opts.contentDid
+ * @param  {String}  opts.password
+ * @param  {Number}  opts.quantity
+ * @param  {Boolean} opts.estimate
+ * @throws {Error,TypeError}
+ */
+async function lockResale(opts) {
+  opts = Object.assign(opts, { unlock: false })
+  return _setResaleAvailability(opts)
+}
+
+/**
+ * Modify the resale availability of a purchased AFS
+ * @param  {Object}  opts
+ * @param  {String}  opts.requesterDid
+ * @param  {String}  opts.contentDid
+ * @param  {String}  opts.password
+ * @param  {Number}  opts.quantity
+ * @param  {Boolean} opts.estimate
+ * @param  {Boolean} [opts.unlock]
+ * @throws {Error,TypeError}
+ */
+async function _setResaleAvailability(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object.')
+  } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
+    throw new TypeError('Expecting non-empty requester DID')
+  } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
+    throw new TypeError('Expecting non-empty content DID.')
+  } else if ('string' !== typeof opts.password || !opts.password) {
+    throw TypeError('Expecting non-empty password.')
+  } else if ('number' !== typeof opts.quantity || 0 >= opts.quantity) {
+    throw new TypeError('Expecting positive number of resales.')
+  } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
+    throw new TypeError('Expecting opts.estimate to be a boolean.')
+  }
+
+  const { password, keyringOpts, quantity, estimate } = opts
+  let { requesterDid, contentDid } = opts
+  const unlock = opts.unlock || false
+
+  try {
+    ({ did: requesterDid, ddo } = await validate({
+      did: requesterDid, password, label: '_setResaleAvailability', keyringOpts
+    }))
+  } catch (err) {
+    throw err
+  }
+
+  contentDid = normalize(contentDid)
+
+  unlock ? debug(`Unlocking ${contentDid} for resale for seller ${requesterDid}`) :
+  debug(`Locking ${contentDid} for resale for seller ${requesterDid}`) :
+
+  if (!(await proxyExists(contentDid))) {
+    throw new Error('This content does not have a valid proxy contract')
+  }
+
+  const proxy = await getProxyAddress(contentDid)
+
+  requesterDid = `${AID_PREFIX}${requesterDid}`
+  const acct = await account.load({ did: requesterDid, password })
+
+  try {
+    const transaction = await tx.create({
+      account: acct,
+      to: proxy,
+      data: {
+        abi,
+        functionName: unlock ? 'unlockResale' : 'lockResale',
+        values: [
+          quantity
+        ]
+      }
+    })
+
+    if (estimate) {
+      return tx.estimateCost(transaction)
+    }
+
+    return tx.sendSignedTransaction(transaction)
+  } catch (err) {
+    throw err
+  }
+}
+
+/**
+ * Get the number of purchased AFSs available for resale
+ * @param  {Object} opts
+ * @param  {String} opts.contentDid
+ * @param  {String} opts.seller
+ * @throws {Error,TypeError}
+ */
+async function getResaleAvailability(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object.')
+  } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
+    throw new TypeError('Expecting non-empty content DID.')
+  } else if ('string' !== typeof opts.seller || !opts.seller) {
+    throw new TypeError('Expecting non-empty seller DID.')
+  }
+
+  const { contentDid } = opts
+  let { seller } = opts
+
+  if (!(await proxyExists(contentDid))) {
+    throw new Error('This content does not have a valid proxy contract')
+  }
+
+  const proxy = await getProxyAddress(contentDid)
+
+  seller = await getAddressFromDID(seller)
+
+  let quantity
+  try {
+    quantity = await call({
       abi,
       address: proxy,
       functionName: 'purchasers_',
@@ -244,15 +394,17 @@ async function getResalePrice(opts) {
   } catch (err) {
     throw err
   }
-  return token.constrainTokenValue(price)
+  return quantity
 }
+
 
 /**
  * Set the maximum number of resales for an AFS
- * @param  {Object} opts
- * @param  {String} opts.contentDid
- * @param  {String} opts.password
- * @param  {Number} opts.maxResales
+ * @param  {Object}  opts
+ * @param  {String}  opts.contentDid
+ * @param  {String}  opts.password
+ * @param  {Number}  opts.maxResales
+ * @param  {Boolean} opts.estimate
  * @throws {Error,TypeError}
  */
 async function setResaleQuantity(opts) {
@@ -264,13 +416,15 @@ async function setResaleQuantity(opts) {
     throw TypeError('Expecting non-empty password.')
   } else if ('number' !== typeof opts.maxResales || 0 >= opts.maxResales) {
     throw new TypeError('Expecting positive number of resales.')
+  } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
+    throw new TypeError('Expecting opts.estimate to be a boolean.')
   }
 
-  const { password, keyringOpts } = opts
+  const { password, keyringOpts, estimate } = opts
   let { contentDid, maxResales } = opts
   try {
     ({ did: contentDid, ddo } = await validate({
-      did: contentDid, password, label: 'setMaxNumResales', keyringOpts
+      did: contentDid, password, label: 'setResaleQuantity', keyringOpts
     }))
   } catch (err) {
     throw err
@@ -293,7 +447,7 @@ async function setResaleQuantity(opts) {
       to: proxy,
       data: {
         abi,
-        functionName: 'setMaxNumResales',
+        functionName: 'setResaleQuantity',
         values: [
           maxResales
         ]
@@ -331,6 +485,7 @@ async function getResaleQuantity(opts) {
 
   const proxy = await getProxyAddress(contentDid)
 
+  let quantity
   try {
     quantity = await call({
       abi,
@@ -344,11 +499,78 @@ async function getResaleQuantity(opts) {
 }
 
 /**
- * Increase the total number of copies of an AFS
- * @param  {Object} opts
- * @param  {String} opts.contentDid
- * @param  {String} opts.password
- * @param  {Number} opts.quantity
+ * Sets the supply of an AFS
+ * @param  {Object}  opts
+ * @param  {String}  opts.contentDid
+ * @param  {String}  opts.password
+ * @param  {Number}  opts.quantity
+ * @param  {Boolean} opts.estimate
+ * @throws {Error,TypeError}
+ */
+async function setSupply(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object.')
+  } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
+    throw new TypeError('Expecting non-empty content DID.')
+  } else if ('string' !== typeof opts.password || !opts.password) {
+    throw TypeError('Expecting non-empty password.')
+  } else if ('number' !== typeof opts.quantity || 0 >= opts.quantity) {
+    throw new TypeError('Expecting positive number to increase by.')
+  } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
+    throw new TypeError('Expecting opts.estimate to be a boolean.')
+  }
+
+  const { password, keyringOpts, estimate } = opts
+  let { contentDid, quantity } = opts
+  try {
+    ({ did: contentDid, ddo } = await validate({
+      did: contentDid, password, label: 'setSupply', keyringOpts
+    }))
+  } catch (err) {
+    throw err
+  }
+  debug(`setting supply for ${contentDid} to ${quantity}`)
+
+  if (!(await proxyExists(contentDid))) {
+    throw new Error('This content does not have a valid proxy contract')
+  }
+
+  const proxy = await getProxyAddress(contentDid)
+
+  let owner = getDocumentOwner(ddo)
+  owner = `${kAidPrefix}${owner}`
+  const acct = await account.load({ did: owner, password })
+
+  try {
+    const transaction = await tx.create({
+      account: acct,
+      to: proxy,
+      data: {
+        abi,
+        functionName: 'setSupply',
+        values: [
+          quantity
+        ]
+      }
+    })
+
+    if (estimate) {
+      return tx.estimateCost(transaction)
+    }
+
+    return tx.sendSignedTransaction(transaction)
+  } catch (err) {
+    throw err
+  }
+}
+
+/**
+ * Increase the supply of an AFS
+ * @param  {Object}  opts
+ * @param  {String}  opts.contentDid
+ * @param  {String}  opts.password
+ * @param  {Number}  opts.quantity
+ * @param  {Boolean} opts.estimate
  * @throws {Error,TypeError}
  */
 async function increaseSupply(opts) {
@@ -360,13 +582,15 @@ async function increaseSupply(opts) {
     throw TypeError('Expecting non-empty password.')
   } else if ('number' !== typeof opts.quantity || 0 >= opts.quantity) {
     throw new TypeError('Expecting positive number to increase by.')
+  } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
+    throw new TypeError('Expecting opts.estimate to be a boolean.')
   }
 
-  const { password, keyringOpts } = opts
+  const { password, keyringOpts, estimate } = opts
   let { contentDid, quantity } = opts
   try {
     ({ did: contentDid, ddo } = await validate({
-      did: contentDid, password, label: 'addCopies', keyringOpts
+      did: contentDid, password, label: 'increaseSupply', keyringOpts
     }))
   } catch (err) {
     throw err
@@ -407,11 +631,12 @@ async function increaseSupply(opts) {
 }
 
 /**
- * Decrease the total number of copies of an AFS
+ * Decrease the supply of an AFS
  * @param  {Object} opts
  * @param  {String} opts.contentDid
  * @param  {String} opts.password
  * @param  {Number} opts.quantity
+ * @param  {Boolean} opts.estimate
  * @throws {Error,TypeError}
  */
 async function decreaseSupply(opts) {
@@ -423,13 +648,15 @@ async function decreaseSupply(opts) {
     throw TypeError('Expecting non-empty password.')
   } else if ('number' !== typeof opts.quantity || 0 > opts.quantity) {
     throw new TypeError('Expecting positive number to decrease by.')
+  } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
+    throw new TypeError('Expecting opts.estimate to be a boolean.')
   }
 
-  const { password, keyringOpts } = opts
+  const { password, keyringOpts, estimate } = opts
   let { contentDid, quantity } = opts
   try {
     ({ did: contentDid, ddo } = await validate({
-      did: contentDid, password, label: 'addCopies', keyringOpts
+      did: contentDid, password, label: 'decreaseSupply', keyringOpts
     }))
   } catch (err) {
     throw err
@@ -471,9 +698,10 @@ async function decreaseSupply(opts) {
 
 /**
  * Remove scarcity limitations from an AFS
- * @param  {Object} opts
- * @param  {String} opts.contentDid
- * @param  {String} opts.password
+ * @param  {Object}  opts
+ * @param  {String}  opts.contentDid
+ * @param  {String}  opts.password
+ * @param  {Boolean} opts.estimate
  * @throws {Error,TypeError}
  */
 async function setUnlimitedSupply(opts) {
@@ -483,13 +711,15 @@ async function setUnlimitedSupply(opts) {
     throw new TypeError('Expecting non-empty content DID.')
   } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password.')
+  } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
+    throw new TypeError('Expecting opts.estimate to be a boolean.')
   }
 
-  const { password, keyringOpts } = opts
+  const { password, keyringOpts, estimate } = opts
   let { contentDid } = opts
   try {
     ({ did: contentDid, ddo } = await validate({
-      did: contentDid, password, label: 'addCopies', keyringOpts
+      did: contentDid, password, label: 'setUnlimitedSupply', keyringOpts
     }))
   } catch (err) {
     throw err
@@ -527,12 +757,12 @@ async function setUnlimitedSupply(opts) {
 }
 
 /**
- * Get the total supply of an AFS
+ * Gets the current supply of an AFS
  * @param  {Object} opts
  * @param  {String} opts.contentDid
  * @throws {Error,TypeError}
  */
-async function getResaleQuantity(opts) {
+async function getSupply(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
@@ -547,6 +777,7 @@ async function getResaleQuantity(opts) {
 
   const proxy = await getProxyAddress(contentDid)
 
+  let quantity
   try {
     quantity = await call({
       abi,
@@ -560,13 +791,18 @@ async function getResaleQuantity(opts) {
 }
 
 module.exports = {
+  getResaleAvailability,
   setUnlimitedSupply,
-  getMinResalePrice,
   setMinResalePrice,
+  getMinResalePrice,
   setResaleQuantity,
   getResaleQuantity,
   setResalePrice,
+  getResalePrice,
   decreaseSupply,
   increaseSupply,
-  getResalePrice,
+  unlockResale,
+  lockResale,
+  setSupply,
+  getSupply
 }

@@ -8,7 +8,8 @@ const inquirer = require('inquirer')
 const {
   setUnlimitedSupply,
   decreaseSupply,
-  increaseSupply
+  increaseSupply,
+  getSupply
 } = require('../commerce')
 
 // yargs program command line interface instance
@@ -19,7 +20,7 @@ usage: act supply: [-h] [--help] [options] [--] <command>
 })
 
 const { argv } = program
-  .command('increase <did> <quantity>', 'Increase the total supply of an AFS.', () => {
+  .command('increase <did> <quantity>', 'Increase the current supply of an AFS.', () => {
     program
       .positional('did', {
         type: 'string',
@@ -30,7 +31,7 @@ const { argv } = program
         describe: 'The quantity by which to increase the AFS supply.'
       })
   }, onincrease)
-  .command('decrease <did> <quantity>', 'Decrease the total supply of an AFS.', () => {
+  .command('decrease <did> <quantity>', 'Decrease the current supply of an AFS.', () => {
     program
       .positional('did', {
         type: 'string',
@@ -48,6 +49,13 @@ const { argv } = program
         describe: 'The AFS DID'
       })
   }, onsetunlimited)
+  .command('get <did>', 'Gets the current supply of an AFS.', () => {
+    program
+      .positional('did', {
+        type: 'string',
+        describe: 'The AFS DID'
+      })
+  }, onget)
 
 // Emit program usage help
 if (0 == argv._.length && argv.help) {
@@ -106,6 +114,20 @@ async function onsetunlimited(argv) {
       password
     })
     info(`Total supply of ${did} successfully set to unlimited.`)
+  } catch (err) {
+    onfatal(err)
+  }
+}
+
+async function onget(argv) {
+  const { did } = argv
+
+  try {
+    info(`Getting the current supply of ${did}...`)
+    const supply = await getSupply({
+      contentDid: did
+    })
+    info(`The current supply of ${did} is ${supply}.`)
   } catch (err) {
     onfatal(err)
   }
