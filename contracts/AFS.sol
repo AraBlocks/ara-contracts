@@ -254,13 +254,14 @@ contract AFS {
     bytes32 seller = keccak256(abi.encodePacked(_seller));
     require(purchasers_[seller].available > 0, "Seller has not authorized resale.");
     require(purchasers_[seller].quantity > 0, "Seller must own at least 1 copy.");
-    require(purchasers_[seller].resales[_quantity - 1] == maxNumResales_, "Copy has already been sold the maximum number of times.");
+    require(purchasers_[seller].resales[_quantity - 1] < maxNumResales_, "Copy has already been sold the maximum number of times.");
     uint256 allowance = token_.allowance(msg.sender, address(this));
     require (allowance >= (_quantity * purchasers_[seller].resalePrice) + _budget, "Proxy must be approved for purchase.");
 
     if (token_.transferFrom(msg.sender, _seller, _quantity * (purchasers_[seller].resalePrice - minResalePrice_))
       && token_.transferFrom(msg.sender, owner_, _quantity * minResalePrice_)) {
       purchasers_[seller].quantity -= _quantity;
+      purchasers_[seller].available -= _quantity;
 
       bytes32 purchaser = keccak256(abi.encodePacked(msg.sender));
       uint256 oldPurchaserQuantity = purchasers_[purchaser].quantity;
@@ -272,7 +273,7 @@ contract AFS {
       purchasers_[purchaser].quantity += _quantity;
       purchasers_[purchaser].resalePrice = minResalePrice_;
       lib_.addLibraryItem(_purchaser, did_);
-      emit PurchasedResale(_purchaser, did_, _quantity, _quantity * prices_[_quantity]);
+      emit PurchasedResale(_purchaser, did_, _quantity, _quantity * purchasers_[seller].resalePrice);
 
       if (_jobId != bytes32(0) && _budget > 0) {
         submitBudget(_jobId, _budget);

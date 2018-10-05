@@ -109,6 +109,17 @@ async function getLibraryItem(opts) {
  * @return {Boolean}      [description]
  */
 async function hasPurchased(opts) {
+  return getNumberCopiesOwned(opts) > 0
+}
+
+/**
+ * Gets number of copies of an AFS a purchaser owns.
+ * @param  {Object}  opts
+ * @param  {String}  opts.purchaserDid
+ * @param  {String}  opts.contentDid
+ * @return {Boolean}      [description]
+ */
+async function getNumberCopiesOwned(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
   } else if (!opts.purchaserDid || 'string' !== typeof opts.purchaserDid) {
@@ -130,17 +141,20 @@ async function hasPurchased(opts) {
     throw new Error(`opts.purchaserDid did not resolve to a valid Ethereum address. Got ${purchaser}. Ensure ${purchaserDid} is a valid Ara identity.`)
   }
 
-  purchaser = sha3(purchaser)
-
-  return call({
+  const quantity = (await call({
     abi: proxyAbi,
     address: proxy,
     functionName: 'purchasers_',
-    arguments: [ purchaser ]
-  })[0] > 0
+    arguments: [
+      sha3({ t: 'address', v: purchaser })
+    ]
+  })).quantity
+  
+  return quantity
 }
 
 module.exports = {
+  getNumberCopiesOwned,
   getLibrarySize,
   getLibraryItem,
   hasPurchased,

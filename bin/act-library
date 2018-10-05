@@ -35,6 +35,17 @@ const { argv } = program
         describe: 'The position in the library'
       })
   }, onget)
+  .command('get-copies <owner> <did>', 'Gets the number of copies of an AFS a purchaser owns', () => {
+    program
+      .positional('owner', {
+        type: 'string',
+        describe: 'The AFS owner\'s DID'
+      })
+      .positional('did', {
+        type: 'string',
+        describe: 'The AFS DID'
+      })
+  }, oncopies)
 
 // Emit program usage help
 if (0 == argv._.length && argv.help) {
@@ -67,6 +78,18 @@ async function onget(argv) {
     info(`Getting item ${index} in ${did}\'s library...`)
     const contentDid = await library.getLibraryItem({ requesterDid: did, index })
     info(`item ${index} has did: ${contentDid}.`)
+  } catch (err) {
+    onfatal(err)
+  }
+}
+
+async function oncopies(argv) {
+  const { owner, did } = argv
+
+  try {
+    info(`Getting number of copies of ${did} owned by ${owner}...`)
+    const copies = await library.getNumberCopiesOwned({ purchaserDid: owner, contentDid: did })
+    info(`${owner} owns ${copies} copies of ${did}.`)
   } catch (err) {
     onfatal(err)
   }
