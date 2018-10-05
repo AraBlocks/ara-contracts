@@ -25,19 +25,17 @@ const {
     ethify,
     account,
     contract
-  },
-  errors: {
-    MissingOptionError
   }
 } = require('ara-util')
 
 /**
  * Purchase contentDid // 256649 gas
- * @param  {Object} opts
- * @param  {String} opts.requesterDid
- * @param  {String} opts.contentDid
- * @param  {String} opts.password
- * @param  {Number} opts.budget
+ * @param  {Object}  opts
+ * @param  {String}  opts.requesterDid
+ * @param  {String}  opts.contentDid
+ * @param  {String}  opts.password
+ * @param  {Number}  opts.budget
+ * @param  {?Object} opts.keyringOpts
  * @throws {Error,TypeError}
  */
 async function purchase(opts) {
@@ -53,28 +51,19 @@ async function purchase(opts) {
     throw TypeError('Expecting job object.')
   } else if ('number' !== typeof opts.budget || 0 > opts.budget) {
     throw TypeError('Expecting budget to be 0 or greater.')
-  } else if (!opts.keyringOpts) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
-  } else if (!opts.keyringOpts.secret) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.network) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.keyring) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
   const {
     requesterDid,
-    password
+    password,
+    keyringOpts
   } = opts
 
-  let { budget } = opts
+  let { budget, contentDid } = opts
 
   const jobId = ethify(randomBytes(32), true)
   budget = budget || 0
 
-  let { contentDid } = opts
-  const { keyringOpts } = opts
   let did
   try {
     ({ did } = await validate({
