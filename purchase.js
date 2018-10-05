@@ -53,6 +53,8 @@ async function purchase(opts) {
     throw TypeError('Expecting job object.')
   } else if ('number' !== typeof opts.budget || 0 > opts.budget) {
     throw TypeError('Expecting budget to be 0 or greater.')
+  } else if (opts.seller && 'string' !== typeof opts.seller) {
+    throw new TypeError('Expecting opts.seller to be a non-empty string.')
   }
 
   const quantity = Number(opts.quantity) || 1
@@ -94,12 +96,13 @@ async function purchase(opts) {
 
   contentDid = normalize(contentDid)
 
-  debug(did, 'purchasing', contentDid)
+  debug(`${did} purchasing ${quantity} copies of ${contentDid}`)
 
   const hIdentity = hashDID(did)
   did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
+  let receipt
   try {
     if (!(await proxyExists(contentDid))) {
       throw new Error('This content does not have a valid proxy contract')
@@ -108,14 +111,14 @@ async function purchase(opts) {
     const proxy = await getProxyAddress(contentDid)
     let price
     if (resale) {
-      price = await call({
+      price = (await call({
         abi: afsAbi,
         address: proxy,
         functionName: 'purchasers_',
         arguments: [
           sha3({ t: 'address', v: seller })
         ]
-      })[2]
+      })).resalePrice
     } else {
       price = await call({
         abi: afsAbi,
@@ -132,7 +135,7 @@ async function purchase(opts) {
     let val = budget + price
     val = val.toString()
 
-    let receipt = await token.increaseApproval({
+    receipt = await token.increaseApproval({
       did,
       password,
       spender: proxy,
@@ -166,8 +169,8 @@ async function purchase(opts) {
     const eventName = resale ? 'PurchasedResale' : 'Purchased'
     await proxyContract.events[`${eventName}`]({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
-        const { returnValues: { _purchaser, _did } } = log
-        debug(_purchaser, 'purchased', _did)
+        const { returnValues: { _purchaser, _did, _quantity, _price } } = log
+        debug(`${_purchaser} purchased ${_quantity} copies of ${_did} for ${_price} Ara`)
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)
@@ -201,6 +204,7 @@ async function purchase(opts) {
   } catch (err) {
     throw err
   }
+  return receipt
 }
 
 module.exports = {

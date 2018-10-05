@@ -192,7 +192,6 @@ async function deployProxy(opts) {
 
   const scarcity = Number(opts.scarcity) || -1
 
-  console.log(scarcity)
   let did
   let ddo
   try {

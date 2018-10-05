@@ -234,14 +234,14 @@ async function getResalePrice(opts) {
 
   let price
   try {
-    price = await call({
+    price = (await call({
       abi,
       address: proxy,
       functionName: 'purchasers_',
       arguments: [
         sha3({ t: 'address', v: seller })
       ]
-    })[2]
+    })).resalePrice
   } catch (err) {
     throw err
   }
@@ -390,14 +390,14 @@ async function getResaleAvailability(opts) {
 
   let quantity
   try {
-    quantity = await call({
+    quantity = (await call({
       abi,
       address: proxy,
       functionName: 'purchasers_',
       arguments: [
         sha3({ t: 'address', v: seller })
       ]
-    })[0]
+    })).available
   } catch (err) {
     throw err
   }
@@ -778,7 +778,7 @@ async function setUnlimitedSupply(opts) {
       to: proxy,
       data: {
         abi,
-        functionName: 'removeScarcity'
+        functionName: 'setUnlimitedSupply'
       }
     })
 

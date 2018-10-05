@@ -21,7 +21,7 @@ usage: act supply: [-h] [--help] [options] [--] <command>
 })
 
 const { argv } = program
-  .command('set <did> <quantity>', 'Sets the current supply of an AFS.' () => {
+  .command('set <did> <quantity>', 'Sets the current supply of an AFS.', () => {
     program
       .positional('did', {
         type: 'string',
@@ -156,7 +156,11 @@ async function onget(argv) {
     const supply = await getSupply({
       contentDid: did
     })
-    info(`The current supply of ${did} is ${supply}.`)
+    if (-1 === Number(supply)) {
+      info(`${did} has an unlimited supply.`)  
+    } else {
+      info(`The current supply of ${did} is ${supply}.`)
+    }
   } catch (err) {
     onfatal(err)
   }

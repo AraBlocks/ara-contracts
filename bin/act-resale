@@ -48,7 +48,7 @@ const { argv } = program
         describe: 'The AFS DID'
       })
       .positional('amount', {
-        type: 'string',
+        type: 'number',
         describe: 'The number of times the AFS can be resold'
       })
   }, onquantity)
@@ -171,12 +171,12 @@ async function ongetprice(argv) {
   try {
     let price
     if (seller) {
-      info(`Getting resale price for ${did} from ${seller}...`)
+      info(`Getting resale price for ${did} from seller ${seller}...`)
       price = await getResalePrice({
         contentDid: did,
         seller
       })
-      info(`Resale price for ${did} from ${seller} is ${price} Ara.`)
+      info(`Resale price for ${did} from seller ${seller} is ${price} Ara.`)
     } else {
       info(`Getting minimum resale price for ${did}...`)
       price = await getMinResalePrice({
@@ -200,7 +200,7 @@ async function ongetquantity(argv) {
         contentDid: did,
         seller
       })
-      info(`Resale price for ${did} from ${seller} is ${price} Ara.`)
+      info(`${seller} has ${quantity} copies of ${did} available for purchase.`)
     } else {
       info(`Getting maximum number of times ${did} can be resold...`)
       quantity = await getResaleQuantity({
