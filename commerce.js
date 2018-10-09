@@ -1,4 +1,5 @@
 const { abi } = require('./build/contracts/AFS.json')
+const hasDIDMethod = require('has-did-method')
 const { AID_PREFIX } = require('./constants')
 
 const {
@@ -145,21 +146,15 @@ async function _updateOwnershipRequest(opts, functionName = '') {
   }
 
   const {
+    keyringOpts,
     contentDid,
-    requesterDid,
-    password,
-    keyringOpts
+    password
   } = opts
+  let { requesterDid } = opts
 
   let requesterAddress
-  let ddo
   try {
-    ({ ddo } = await validate({
-      did: requesterDid,
-      password,
-      label: functionName,
-      keyringOpts
-    }))
+    await validate({ did: requesterDid, password, label: functionName, keyringOpts })
     requesterAddress = await getAddressFromDID(normalize(requesterDid))
   } catch (err) {
     throw err
@@ -175,10 +170,12 @@ async function _updateOwnershipRequest(opts, functionName = '') {
   }
 
   const proxy = await getProxyAddress(contentDid)
-  let owner = getDocumentOwner(ddo, true)
-  owner = `${AID_PREFIX}${owner}`
 
-  const acct = await account.load({ did: owner, password })
+  if (!hasDIDMethod(requesterDid)) {
+    requesterDid = `${AID_PREFIX}${requesterDid}`
+  }
+
+  const acct = await account.load({ did: requesterDid, password })
   const requestTx = await tx.create({
     account: acct,
     to: proxy,
