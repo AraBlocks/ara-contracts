@@ -7,9 +7,6 @@ const {
   validate,
   normalize,
   getAddressFromDID,
-  errors: {
-    MissingOptionError
-  }
 } = require('ara-util')
 
 const {
@@ -28,14 +25,15 @@ const {
 /**
  * Get the Ara balance of a specific Ara DID.
  * @param  {String} did
+ * @param  {Object} [keyringOpts]
  * @return {Number}
  * @throws {Error|TypeError}
  */
-async function balanceOf(did) {
+async function balanceOf(did, keyringOpts) {
   let address
   try {
     did = normalize(did)
-    address = await getAddressFromDID(did)
+    address = await getAddressFromDID(did, keyringOpts)
   } catch (err) {
     throw err
   }
@@ -127,6 +125,7 @@ async function allowance(opts = {}) {
  * @param  {Number} opts.val
  * @param  {String} opts.did
  * @param  {String} opts.password
+ * @param  {Object} [opts.keyringOpts]
  * @return {Object}
  * @throws {TypeError|Error}
  */
@@ -141,14 +140,6 @@ async function transfer(opts = {}) {
     throw new TypeError(`Expected 'opts.did' to be non-empty Ara DID string. Got ${opts.did}. Ensure ${opts.did} is a valid Ara identity.`)
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${opts.password}.`)
-  } else if (!opts.keyringOpts) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
-  } else if (!opts.keyringOpts.secret) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.network) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.keyring) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
   let { did, val, to } = opts
@@ -195,21 +186,12 @@ async function transfer(opts = {}) {
  * @param  {String} opts.spender
  * @param  {String} opts.did
  * @param  {String} opts.password
+ * @param  {Object} [opts.keyringOpts]
  * @param  {Number} opts.val
  * @return {Object}
  * @throws {TypeError|Error}
  */
 async function approve(opts = {}) {
-  if (!opts.keyringOpts) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
-  } else if (!opts.keyringOpts.secret) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.network) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.keyring) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
-  }
-
   _validateApprovalOpts(opts)
 
   let { did, spender, val } = opts
@@ -259,6 +241,7 @@ async function approve(opts = {}) {
  * @param  {Number} opts.val
  * @param  {String} opts.did
  * @param  {String} opts.password
+ * @param  {Object} [opts.keyringOpts]
  * @return {Object}
  * @throws {TypeError|Error}
  */
@@ -275,14 +258,6 @@ async function transferFrom(opts = {}) {
     throw new TypeError(`Expected 'opts.did' to be non-empty Ara DID string. Got ${opts.did}. Ensure ${opts.did} is a valid Ara identity.`)
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${opts.password}.`)
-  } else if (!opts.keyringOpts) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
-  } else if (!opts.keyringOpts.secret) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.network) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.keyring) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
   let {
@@ -340,20 +315,11 @@ async function transferFrom(opts = {}) {
  * @param  {String} opts.did
  * @param  {String} opts.password
  * @param  {Number} opts.val
+ * @param  {Object} [opts.keyringOpts]
  * @return {Object}
  * @throws {TypeError|Error}
  */
 async function increaseApproval(opts = {}) {
-  if (!opts.keyringOpts) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
-  } else if (!opts.keyringOpts.secret) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.network) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.keyring) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
-  }
-
   _validateApprovalOpts(opts)
 
   let { did, spender, val } = opts
@@ -402,20 +368,11 @@ async function increaseApproval(opts = {}) {
  * @param  {String} opts.did
  * @param  {String} opts.password
  * @param  {Number} opts.val
+ * @param  {Object} [opts.keyringOpts]
  * @return {Object}
  * @throws {TypeError|Error}
  */
 async function decreaseApproval(opts = {}) {
-  if (!opts.keyringOpts) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
-  } else if (!opts.keyringOpts.secret) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.network) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.keyring) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
-  }
-
   _validateApprovalOpts(opts)
 
   let { did, spender } = opts
@@ -500,6 +457,7 @@ function constrainTokenValue(val) {
  * @param  {String}   opts.password
  * @param  {Number}   opts.val
  * @param  {?Boolean} opts.withdraw
+ * @param  {Object} [opts.keyringOpts]
  * @return {Object}
  * @throws {TypeError}
  */
@@ -514,14 +472,6 @@ async function modifyDeposit(opts = {}) {
     throw new TypeError(`Expected 'opts.val' to be greater than 0. Got ${opts.val}. Ensure ${opts.val} is a positive number.`)
   } else if (opts.withdraw && 'boolean' !== typeof opts.withdraw) {
     throw new TypeError(`Expected 'opts.withdraw' to be a boolean. Got ${opts.withdraw}.`)
-  } else if (!opts.keyringOpts) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts', actualValue: opts })
-  } else if (!opts.keyringOpts.secret) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.secret', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.network) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.network', actualValue: opts.keyringOpts })
-  } else if (!opts.keyringOpts.keyring) {
-    throw new MissingOptionError({ expectedKey: 'opts.keyringOpts.keyring', actualValue: opts.keyringOpts })
   }
 
   let { did, val, withdraw: wd } = opts
@@ -565,14 +515,15 @@ async function modifyDeposit(opts = {}) {
 /**
  * Returns current deposit amount
  * @param  {String} did
+ * @param  {Object} [keyringOpts]
  * @return {Number}
  * @throws {TypeError|Error}
  */
-async function getAmountDeposited(did) {
+async function getAmountDeposited(did, keyringOpts) {
   let address
   try {
     did = normalize(did)
-    address = await getAddressFromDID(did)
+    address = await getAddressFromDID(did, keyringOpts)
   } catch (err) {
     throw err
   }

@@ -106,6 +106,7 @@ async function getLibraryItem(opts) {
  * @param  {Object}  opts
  * @param  {String}  opts.purchaserDid
  * @param  {String}  opts.contentDid
+ * @param  {Object} [opts.keyringOpts]
  * @return {Boolean}      [description]
  */
 async function hasPurchased(opts) {
@@ -117,13 +118,13 @@ async function hasPurchased(opts) {
     throw new TypeError('Expecting non-empty string for content DID')
   }
 
-  const { purchaserDid, contentDid } = opts
+  const { purchaserDid, contentDid, keyringOpts } = opts
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
   }
 
   const proxy = await getProxyAddress(contentDid)
-  let purchaser = await getAddressFromDID(purchaserDid)
+  let purchaser = await getAddressFromDID(purchaserDid, keyringOpts)
 
   if (!isAddress(purchaser)) {
     // TODO(cckelly) convert all ara-contracts errors to this style
