@@ -20,7 +20,7 @@ const {
 
 /**
  * Requests ownership of an AFS.
- * @param  {Object} opts 
+ * @param  {Object} opts
  * @param  {String} opts.requesterDid
  * @param  {String} opts.contentDid
  * @param  {String} opts.password
@@ -34,7 +34,7 @@ async function requestOwnership(opts) {
 
 /**
  * Revokes a previous ownership request of an AFS.
- * @param  {Object} opts 
+ * @param  {Object} opts
  * @param  {String} opts.requesterDid
  * @param  {String} opts.contentDid
  * @param  {String} opts.password
@@ -80,7 +80,12 @@ async function approveOwnershipTransfer(opts) {
   let newOwnerAddress
   let ddo
   try {
-    ({ ddo } = await validate({ did, password, label: 'approveOwnershipTransfer', keyringOpts }))
+    ({ ddo } = await validate({
+      did,
+      password,
+      label: 'approveOwnershipTransfer',
+      keyringOpts
+    }))
     ownerAddress = await getAddressFromDID(normalize(did))
     newOwnerAddress = await getAddressFromDID(normalize(newOwnerDid))
   } catch (err) {
@@ -149,7 +154,12 @@ async function _updateOwnershipRequest(opts, functionName = '') {
   let requesterAddress
   let ddo
   try {
-    ({ ddo } = await validate({ did: requesterDid, password, label: functionName, keyringOpts }))
+    ({ ddo } = await validate({
+      did: requesterDid,
+      password,
+      label: functionName,
+      keyringOpts
+    }))
     requesterAddress = await getAddressFromDID(normalize(requesterDid))
   } catch (err) {
     throw err
