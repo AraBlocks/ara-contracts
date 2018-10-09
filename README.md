@@ -424,7 +424,7 @@ Transfers Ara from one account to another.
 ```js
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
-const recipient = ''did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
+const recipient = 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
 const receipt = await token.transfer({
   did,
   password,
@@ -447,7 +447,7 @@ Sets the approved token amount to be spent on an owner's behalf. This will overw
 ```js
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
-const recipient = ''did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
+const recipient = 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
 const receipt = await token.approve({
   did,
   password,
@@ -470,7 +470,7 @@ Transfers Ara from one address to another. This differs from `transfer` by requi
 ```js
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
-const recipient = ''did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
+const recipient = 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
 const receipt = await token.transferFrom({
   did,
   password,
@@ -493,7 +493,7 @@ Increases the approved amount that a `spender` can spend on behalf of an `owner`
 ```js
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
-const spender = ''did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
+const spender = 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
 const receipt = await token.increaseApproval({
   did,
   password,
@@ -516,7 +516,7 @@ Decreases the approved amount that a `spender` can spend on behalf of an `owner`
 ```js
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
-const spender = ''did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
+const spender = 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
 const receipt = await token.decreaseApproval({
   did,
   password,
@@ -569,10 +569,6 @@ const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a3
 const amount = await token.getAmountDeposited(did) // '100'
 ```
 
-* [commerce.requestOwnership(opts)](#requestownership)
-* [commerce.revokeOwnershipRequest(opts)](#revokerequest)
-* [commerce.approveOwnershipTransfer(opts)](#approvetransfer)
-
 <a name="requestownership"></a>
 ### `commerce.requestOwnership(opts)`
 
@@ -582,12 +578,12 @@ Requests the transfer of ownership of an AFS to `requesterDid`. Must be approved
   - `requesterDid` - `DID` of the requester
   - `contentDid` - `DID` of the AFS to request ownership for
   - `password` - password of the requester
-  - `estimate` - Should transaction be sent or just estimate cost
+  - `estimate` - optional flag to check cost of setPrice
 
 ```js
 const requesterDid = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'pass'
-const contentDid = did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
+const contentDid = 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
 const receipt = await commerce.requestOwnership({ requesterDid, password, contentDid })
 
 // estimate
@@ -603,19 +599,19 @@ Revokes a previous request for AFS ownership transfer.
   - `requesterDid` - `DID` of the requester
   - `contentDid` - `DID` of the AFS to revoke ownership reequest for
   - `password` - password of the requester
-  - `estimate` - Should transaction be sent or just estimate cost
+  - `estimate` - optional flag to check cost of setPrice
 
 ```js
 const requesterDid = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'pass'
-const contentDid = did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
+const contentDid = 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
 const receipt = await commerce.revokeOwnershipRequest({ requesterDid, password, contentDid })
 
 // estimate
 const cost = await commerce.revokeOwnershipRequest({ requesterDid, password, contentDid, estimate: true })
 ```
 
-<a name="approvetransfer"></a>a>
+<a name="approvetransfer"></a>
 ### `commerce.approveOwnershipTransfer(opts)`
 
 Approves a pending transfer request, this officially transfers ownership for the given AFS.
@@ -624,7 +620,7 @@ Approves a pending transfer request, this officially transfers ownership for the
   - `did` - `DID` of the content to change ownership for
   - `password` - Password of the staged owner
   - `newOwnerDid` - `DID` of the owner to transfer ownership to
-  - `estimate` - Should transaction be sent or just estimate cost
+  - `estimate` - optional flag to check cost of setPrice
 
 ```js
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
