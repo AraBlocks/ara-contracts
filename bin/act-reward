@@ -94,11 +94,12 @@ module.exports = (async function main() {
 }())
 
 async function onbalance(argv) {
-  const { content, did } = argv
+  const { content, did, secret, network, keyring } = argv
+  const keyringOpts = { secret, network, keyring }
   const { password } = await promptForPassword()
   try {
     info(`Getting balance for ${did} in ${content}.`)
-    const balance = await rewards.getRewardsBalance({ farmerDid: did, contentDid: content, password })
+    const balance = await rewards.getRewardsBalance({ farmerDid: did, contentDid: content, password, keyringOpts })
     info(`${did} has ${balance} Ara redeembale in ${content}.`)
   } catch (err) {
     onfatal(err)
@@ -106,11 +107,12 @@ async function onbalance(argv) {
 }
 
 async function onredeem(argv) {
-  const { content, did } = argv
+  const { content, did, secret, network, keyring } = argv
+  const keyringOpts = { secret, network, keyring }
   const { password } = await promptForPassword()
   try {
     info(`${did} redeeming balance...`)
-    const balance = await rewards.redeem({ farmerDid: did, contentDid: content, password })
+    const balance = await rewards.redeem({ farmerDid: did, contentDid: content, password, keyringOpts })
     info(`${did} redeemed ${balance} Ara from ${contentDid}.`)
   } catch (err) {
     onfatal(err)
@@ -118,13 +120,14 @@ async function onredeem(argv) {
 }
 
 async function onsubmit(argv) {
-  const { content, did, budget } = argv
+  const { content, did, budget, secret, network, keyring } = argv
+  const keyringOpts = { secret, network, keyring }
   const { password } = await promptForPassword()
   try {
     // console.log(content, did, budget)
     const jobId = ethify(randomBytes(32), true)
     info(`Submitting ${budget} Ara for job ${jobId} in ${content}...`)
-    await rewards.submit({ farmerDid: did, contentDid: content, password, job: { jobId, budget } })
+    await rewards.submit({ farmerDid: did, contentDid: content, password, job: { jobId, budget }, keyringOpts })
     info(`Submitted ${budget} Ara as rewards for job ${jobId} in ${content}.`)
   } catch (err) {
     onfatal(err)
@@ -143,7 +146,8 @@ async function onbudget(argv) {
 }
 
 async function onallocate(argv) {
-  const { content, did, jobId } = argv
+  const { content, did, jobId, secret, network, keyring } = argv
+  const keyringOpts = { secret, network, keyring }
   const { password } = await promptForPassword()
 
   let { farmers } = await promptForFarmers()
@@ -161,14 +165,16 @@ async function onallocate(argv) {
 
   try {
     info(`Allocating rewards for job ${jobId} in ${content}...`)
-    await rewards.allocate({ farmerDid: did,
-                             contentDid: content,
-                             password,
-                             job: {
-                              jobId,
-                              farmers,
-                              rewards: distrib
-                             }})
+    await rewards.allocate({
+      contentDid: content,
+      farmerDid: did,
+      keyringOpts,
+      password,
+      job: {
+        jobId,
+        farmers,
+        rewards: distrib
+      }})
   } catch (err) {
     onfatal(err)
   }

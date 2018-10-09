@@ -38,11 +38,12 @@ module.exports = (async function main() {
   if (argv.debug) {
     require('debug').enable('ara-contracts*')
   }
-  const { did, amount } = argv
+  const { did, amount, secret, network, keyring } = argv
+  const keyringOpts = { secret, network, keyring }
   const { password } = await promptForPassword()
 
   try {
-    const opts = { did, password, val: amount, withdraw: true }
+    const opts = { did, password, val: amount, withdraw: true, keyringOpts }
     info(`Withdrawing ${amount} Ara from deposit...`)
     const receipt = await modifyDeposit(opts)
     if (receipt.status) {

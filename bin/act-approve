@@ -60,10 +60,12 @@ module.exports = (async function main() {
     require('debug').enable('ara-contracts*')
   }
   const { owner, spender, amount, increase, decrease } = argv
+  const { secret, network, keyring } = argv
+  const keyringOpts = { secret, network, keyring }
 
   const { password } = await promptForPassword()
 
-  const opts = { spender, did: owner, password, val: amount.toString() }
+  const opts = { spender, did: owner, password, val: amount.toString(), keyringOpts }
   try {
     // act approve 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3 100 -D
     let receipt

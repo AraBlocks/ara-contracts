@@ -56,10 +56,11 @@ module.exports = (async function main() {
 }())
 
 async function ondeposited(argv) {
-  const { did } = argv
+  const { did, secret, network, keyring } = argv
+  const keyringOpts = { secret, network, keyring }
   try {
     info(`Getting deposit amount for ${did}...`)
-    const amount = await token.getAmountDeposited(did)
+    const amount = await token.getAmountDeposited(did, keyringOpts)
     info(`${did} has ${amount} Ara currently deposited.`)
   } catch (err) {
     onfatal(err)
@@ -77,10 +78,11 @@ async function onsupply(argv) {
 }
 
 async function onbalance(argv) {
-  const { did } = argv
+  const { did, secret, network, keyring } = argv
+  const keyringOpts = { secret, network, keyring }
   try {
     info(`Getting Ara balance for ${did}...`)
-    const amount = await token.balanceOf(did)
+    const amount = await token.balanceOf(did, keyringOpts)
     info(`${did} has a balance of ${amount} Ara.`)
   } catch (err) {
     onfatal(err)
