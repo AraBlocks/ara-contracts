@@ -134,22 +134,22 @@ async function getNumberCopiesOwned(opts) {
   }
 
   const proxy = await getProxyAddress(contentDid)
-  let purchaser = await getAddressFromDID(purchaserDid)
+  const purchaser = await getAddressFromDID(purchaserDid)
 
   if (!isAddress(purchaser)) {
     // TODO(cckelly) convert all ara-contracts errors to this style
     throw new Error(`opts.purchaserDid did not resolve to a valid Ethereum address. Got ${purchaser}. Ensure ${purchaserDid} is a valid Ara identity.`)
   }
 
-  const quantity = (await call({
+  const { quantity } = await call({
     abi: proxyAbi,
     address: proxy,
     functionName: 'purchasers_',
     arguments: [
       sha3({ t: 'address', v: purchaser })
     ]
-  })).quantity
-  
+  })
+
   return quantity
 }
 

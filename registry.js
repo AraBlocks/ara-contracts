@@ -22,7 +22,7 @@ const {
     ethify,
     account,
     contract,
-    abi: web3Abi,
+    abi: web3Abi
   }
 } = require('ara-util')
 
@@ -374,14 +374,14 @@ async function deployNewStandard(opts) {
 
   const compiledFile = solc.compile({ sources }, 1)
   const compiledContract = compiledFile.contracts['AFS.sol:AFS']
-  const afsAbi = JSON.parse(compiledContract.interface)
+  const compiledAbi = JSON.parse(compiledContract.interface)
   const { bytecode } = compiledContract
 
   let address = null
   try {
     const { contract: afs, gasLimit } = await contract.deploy({
       account: acct,
-      abi: afsAbi,
+      abi: compiledAbi,
       bytecode: ethify(bytecode)
     })
 

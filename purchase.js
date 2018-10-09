@@ -111,14 +111,14 @@ async function purchase(opts) {
     const proxy = await getProxyAddress(contentDid)
     let price
     if (resale) {
-      price = (await call({
+      ({ resalePrice: price } = (await call({
         abi: afsAbi,
         address: proxy,
         functionName: 'purchasers_',
         arguments: [
           sha3({ t: 'address', v: seller })
         ]
-      })).resalePrice
+      })))
     } else {
       price = await call({
         abi: afsAbi,
@@ -169,7 +169,14 @@ async function purchase(opts) {
     const eventName = resale ? 'PurchasedResale' : 'Purchased'
     await proxyContract.events[`${eventName}`]({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
-        const { returnValues: { _purchaser, _did, _quantity, _price } } = log
+        const {
+          returnValues: {
+            _purchaser,
+            _did,
+            _quantity,
+            _price
+          }
+        } = log
         debug(`${_purchaser} purchased ${_quantity} copies of ${_did} for ${token.constrainTokenValue(_price)} Ara`)
       })
       .on('changed', (log) => {

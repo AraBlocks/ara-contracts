@@ -8,8 +8,9 @@ contract AFS {
 
   using BytesLib for bytes;
 
+  bool      private once_;
+
   address   public owner_;
-  string    public version_ = "1";
 
   AraToken  public token_;
   Library   public lib_;
@@ -88,7 +89,14 @@ contract AFS {
     _;
   }
 
-  function init(bytes _data) public {
+  modifier onlyOnce()
+  {
+    require(!once_, "Init function can only be called once.");
+    _;
+  }
+
+  function init(bytes _data) public onlyOnce {
+    once_ = true;
     uint256 btsptr;
     address ownerAddr;
     address tokenAddr;
@@ -108,11 +116,11 @@ contract AFS {
         btsptr := add(_data, 160)
         totalCopies := mload(btsptr)
     }
-    owner_    = ownerAddr;
-    token_    = AraToken(tokenAddr);
-    lib_      = Library(libAddr);
-    did_      = did;
-    listed_   = true;
+    owner_       = ownerAddr;
+    token_       = AraToken(tokenAddr);
+    lib_         = Library(libAddr);
+    did_         = did;
+    listed_      = true;
     totalCopies_ = totalCopies;
   }
 
