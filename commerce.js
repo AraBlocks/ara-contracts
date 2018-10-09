@@ -73,12 +73,14 @@ async function approveOwnershipTransfer(opts) {
     did,
     password,
     newOwnerDid,
+    keyringOpts
   } = opts
 
   let ownerAddress
   let newOwnerAddress
+  let ddo
   try {
-    await validate({ did, password, label: 'approveOwnershipTransfer' })
+    ({ ddo } = await validate({ did, password, label: 'approveOwnershipTransfer', keyringOpts }))
     ownerAddress = await getAddressFromDID(normalize(did))
     newOwnerAddress = await getAddressFromDID(normalize(newOwnerDid))
   } catch (err) {
@@ -140,12 +142,14 @@ async function _updateOwnershipRequest(opts, functionName = '') {
   const {
     contentDid,
     requesterDid,
-    password
+    password,
+    keyringOpts
   } = opts
 
   let requesterAddress
+  let ddo
   try {
-    await validate({ did: requesterDid, password, label: functionName })
+    ({ ddo } = await validate({ did: requesterDid, password, label: functionName, keyringOpts }))
     requesterAddress = await getAddressFromDID(normalize(requesterDid))
   } catch (err) {
     throw err
@@ -161,8 +165,10 @@ async function _updateOwnershipRequest(opts, functionName = '') {
   }
 
   const proxy = await getProxyAddress(contentDid)
+  let owner = getDocumentOwner(ddo, true)
+  owner = `${AID_PREFIX}${owner}`
 
-  const acct = await account.load({ did: requesterDid, password })
+  const acct = await account.load({ did: owner, password })
   const requestTx = await tx.create({
     account: acct,
     to: proxy,

@@ -15,13 +15,19 @@ contract Ownable {
     _;
   }
 
+  modifier hasNotRequested() {
+    require(!requesters_[keccak256(abi.encodePacked(msg.sender))],
+      "Ownership request already active.");
+    _;
+  }
+
   modifier hasRequested(address _newOwner) {
     require(requesters_[keccak256(abi.encodePacked(_newOwner))], 
       "Owner request has not been sent.");
     _;
   }
 
-  function requestOwnership() public {
+  function requestOwnership() public hasNotRequested {
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
     requesters_[hashedAddress] = true;
     emit TransferRequested(owner_, msg.sender);
