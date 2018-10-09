@@ -578,7 +578,7 @@ Requests the transfer of ownership of an AFS to `requesterDid`. Must be approved
   - `requesterDid` - `DID` of the requester
   - `contentDid` - `DID` of the AFS to request ownership for
   - `password` - password of the requester
-  - `estimate` - optional flag to check cost of setPrice
+  - `estimate` - optional Flag to check cost of setPrice
 
 ```js
 const requesterDid = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
@@ -599,7 +599,7 @@ Revokes a previous request for AFS ownership transfer.
   - `requesterDid` - `DID` of the requester
   - `contentDid` - `DID` of the AFS to revoke ownership reequest for
   - `password` - password of the requester
-  - `estimate` - optional flag to check cost of setPrice
+  - `estimate` - optional Flag to check cost of setPrice
 
 ```js
 const requesterDid = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
@@ -620,7 +620,7 @@ Approves a pending transfer request, this officially transfers ownership for the
   - `did` - `DID` of the content to change ownership for
   - `password` - Password of the staged owner
   - `newOwnerDid` - `DID` of the owner to transfer ownership to
-  - `estimate` - optional flag to check cost of setPrice
+  - `estimate` - optional Flag to check cost of setPrice
 
 ```js
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
