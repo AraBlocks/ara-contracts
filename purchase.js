@@ -38,6 +38,7 @@ const {
  * @param  {Number}  opts.quantity
  * @param  {Number}  opts.budget
  * @param  {?String} [opts.seller]
+ * @param  {Object}  [opts.keyringOpts]
  * @throws {Error,TypeError}
  */
 async function purchase(opts) {
@@ -65,10 +66,11 @@ async function purchase(opts) {
 
   const {
     requesterDid,
-    password
+    password,
+    keyringOpts
   } = opts
 
-  let { seller, budget } = opts
+  let { seller, budget, contentDid } = opts
 
   let resale = false
   if (seller) {
@@ -83,8 +85,6 @@ async function purchase(opts) {
   const jobId = ethify(randomBytes(32), true)
   budget = budget || 0
 
-  let { contentDid } = opts
-  const { keyringOpts } = opts
   let did
   try {
     ({ did } = await validate({

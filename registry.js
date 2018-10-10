@@ -88,6 +88,7 @@ async function getProxyVersion(contentDid = '') {
  * @param  {String} opts.contentDid // unhashed
  * @param  {String} opts.password
  * @param  {String|number} opts.version
+ * @param  {Object} [opts.keyringOpts]
  * @return {Bool}
  * @throws {Error,TypeError}
  */
@@ -171,6 +172,7 @@ async function upgradeProxy(opts) {
  * @param  {String} opts.password
  * @param  {String|number} opts.version
  * @param  {String|number} opts.scarcity // -1 for infinite
+ * @param  {Object} [opts.keyringOpts]
  * @return {string}
  * @throws {Error,TypeError}
  */
@@ -307,6 +309,7 @@ async function getStandard(version) {
  * @param  {String} opts.password
  * @param  {String} opts.version
  * @param  {String} opts.paths
+ * @param  {Object} [opts.keyringOpts]
  * @return {String}
  * @throws {Error,TypeError}
  */
@@ -363,6 +366,7 @@ async function deployNewStandard(opts) {
     'ERC20.sol': fs.readFileSync(resolve(__dirname, './contracts/ERC20.sol'), 'utf8'),
     'StandardToken.sol': fs.readFileSync(resolve(__dirname, './contracts/StandardToken.sol'), 'utf8'),
     'openzeppelin-solidity/contracts/math/SafeMath.sol': fs.readFileSync(resolve(__dirname, './node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol'), 'utf8'),
+    'Ownable.sol': fs.readFileSync(resolve(__dirname, './contracts/Ownable.sol'), 'utf8'),
     'bytes/BytesLib.sol': fs.readFileSync(resolve(__dirname, './installed_contracts/bytes/contracts/BytesLib.sol'), 'utf8')
   }
 

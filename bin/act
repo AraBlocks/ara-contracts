@@ -48,6 +48,21 @@ const { argv } = program
     alias: 'D',
     describe: "Enable debug output (Sets 'DEBUG+=ara-contracts:*')",
   })
+  .option('secret', {
+    alias: 's',
+    type: 'string',
+    describe: 'Shared secret for the keyring'
+  })
+  .option('network', {
+    alias: 'n',
+    type: 'string',
+    describe: 'Network name of the key for the DID resolver in the keyring'
+  })
+  .option('keyring', {
+    alias: 'k',
+    type: 'string',
+    describe: 'Path to the keyring'
+  })
 
 // Emit program version
 if (0 == argv._.length && argv.version) {

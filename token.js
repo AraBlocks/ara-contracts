@@ -25,14 +25,15 @@ const {
 /**
  * Get the Ara balance of a specific Ara DID.
  * @param  {String} did
+ * @param  {Object} [keyringOpts]
  * @return {Number}
  * @throws {Error|TypeError}
  */
-async function balanceOf(did) {
+async function balanceOf(did, keyringOpts) {
   let address
   try {
     did = normalize(did)
-    address = await getAddressFromDID(did)
+    address = await getAddressFromDID(did, keyringOpts)
   } catch (err) {
     throw err
   }
@@ -124,6 +125,7 @@ async function allowance(opts = {}) {
  * @param  {Number} opts.val
  * @param  {String} opts.did
  * @param  {String} opts.password
+ * @param  {Object} [opts.keyringOpts]
  * @return {Object}
  * @throws {TypeError|Error}
  */
@@ -184,6 +186,7 @@ async function transfer(opts = {}) {
  * @param  {String} opts.spender
  * @param  {String} opts.did
  * @param  {String} opts.password
+ * @param  {Object} [opts.keyringOpts]
  * @param  {Number} opts.val
  * @return {Object}
  * @throws {TypeError|Error}
@@ -238,6 +241,7 @@ async function approve(opts = {}) {
  * @param  {Number} opts.val
  * @param  {String} opts.did
  * @param  {String} opts.password
+ * @param  {Object} [opts.keyringOpts]
  * @return {Object}
  * @throws {TypeError|Error}
  */
@@ -311,6 +315,7 @@ async function transferFrom(opts = {}) {
  * @param  {String} opts.did
  * @param  {String} opts.password
  * @param  {Number} opts.val
+ * @param  {Object} [opts.keyringOpts]
  * @return {Object}
  * @throws {TypeError|Error}
  */
@@ -363,6 +368,7 @@ async function increaseApproval(opts = {}) {
  * @param  {String} opts.did
  * @param  {String} opts.password
  * @param  {Number} opts.val
+ * @param  {Object} [opts.keyringOpts]
  * @return {Object}
  * @throws {TypeError|Error}
  */
@@ -451,6 +457,7 @@ function constrainTokenValue(val) {
  * @param  {String}   opts.password
  * @param  {Number}   opts.val
  * @param  {?Boolean} opts.withdraw
+ * @param  {Object} [opts.keyringOpts]
  * @return {Object}
  * @throws {TypeError}
  */
@@ -508,14 +515,15 @@ async function modifyDeposit(opts = {}) {
 /**
  * Returns current deposit amount
  * @param  {String} did
+ * @param  {Object} [keyringOpts]
  * @return {Number}
  * @throws {TypeError|Error}
  */
-async function getAmountDeposited(did) {
+async function getAmountDeposited(did, keyringOpts) {
   let address
   try {
     did = normalize(did)
-    address = await getAddressFromDID(did)
+    address = await getAddressFromDID(did, keyringOpts)
   } catch (err) {
     throw err
   }

@@ -53,6 +53,9 @@ if (0 == argv._.length && argv.help) {
 // Main program entry
 module.exports = (async function main() {
   let { purchaser, did, quantity, budget, seller } = argv
+  const { secret, network, keyring } = argv
+  const keyringOpts = { secret, network, keyring }
+  
   let job = null
   if (0 > budget) {
     throw new TypeError(`Expecting 'budget' to be a 0 or greater. Got ${budget}. Try passing in a non-negative budget.`)
@@ -72,6 +75,7 @@ module.exports = (async function main() {
     let opts = {
       requesterDid: purchaser,
       contentDid: did,
+      keyringOpts,
       password,
       quantity,
       budget
