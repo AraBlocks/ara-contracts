@@ -42,22 +42,23 @@ module.exports = {
 }
 
 const rc = require('ara-runtime-configuration')()
+
 const env = rc.web3.network_id
 
 function getAddress(privatenet, testnet, mainnet) {
   let address = privatenet
-  switch(env) {
-    case 'privatenet':
-      address = privatenet
-      break;
-    case 'testnet':
-      address = testnet
-      break;
-    case 'mainnet':
-      address = mainnet
-      break;
-    default:
-      address = privatenet
+  switch (env) {
+  case 'privatenet':
+    address = privatenet
+    break
+  case 'testnet':
+    address = testnet
+    break
+  case 'mainnet':
+    address = mainnet
+    break
+  default:
+    address = privatenet
   }
   return address
 }
