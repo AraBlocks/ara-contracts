@@ -981,6 +981,7 @@ async function _updateOwnershipRequest(opts, functionName = '') {
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('Content does not have a valid proxy contract')
+  }
   if (!hasDIDMethod(requesterDid)) {
     requesterDid = `${AID_PREFIX}${requesterDid}`
   }
