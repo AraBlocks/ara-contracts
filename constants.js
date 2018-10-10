@@ -1,9 +1,26 @@
 module.exports = {
   AID_PREFIX: 'did:ara:',
 
-  REGISTRY_ADDRESS: '0x4c0500f568bbd95bc8eeb9915acdebd5a86f02f8',
-  LIBRARY_ADDRESS: '0x4e3797d2c783dedcc6c29512a91c56c857b2eb49',
-  ARA_TOKEN_ADDRESS: '0x6643dd369bacecda73ff92c5fee25f6bf3823106',
+  get REGISTRY_ADDRESS() {
+    const privatenet = '0x1e07881fd1e0d78c5359c8828bcf300500f58ba2'
+    const testnet = '0x4c0500f568bbd95bc8eeb9915acdebd5a86f02f8'
+    const mainnet = ''
+    return getAddress(privatenet, testnet, mainnet)
+  },
+
+  get LIBRARY_ADDRESS() {
+    const privatenet = '0xc7708df08812bc904e3b1973cb35b69727bc1194'
+    const testnet = '0x4e3797d2c783dedcc6c29512a91c56c857b2eb49'
+    const mainnet = ''
+    return getAddress(privatenet, testnet, mainnet)
+  },
+
+  get ARA_TOKEN_ADDRESS() {
+    const privatenet = '0x586dfaa3a51a7cc557a3052e10a72231181b398b'
+    const testnet = '0x6643dd369bacecda73ff92c5fee25f6bf3823106'
+    const mainnet = ''
+    return getAddress(privatenet, testnet, mainnet)
+  },
 
   TEMP_OWNER_DID: 'did:ara:8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67',
   OWNER_PASSWORD: 'pass',
@@ -22,6 +39,27 @@ module.exports = {
   TOKEN_DECIMALS: 18,
   STANDARD_VERSION: '1',
   JOB_ID_LENGTH: 64
+}
+
+const rc = require('ara-runtime-configuration')()
+const env = rc.web3.network_id
+
+function getAddress(privatenet, testnet, mainnet) {
+  let address = privatenet
+  switch(env) {
+    case 'privatenet':
+      address = privatenet
+      break;
+    case 'testnet':
+      address = testnet
+      break;
+    case 'mainnet':
+      address = mainnet
+      break;
+    default:
+      address = privatenet
+  }
+  return address
 }
 
 // kTempOwnerDid: 'did:ara:cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3',
