@@ -16,7 +16,7 @@ usage: act purchase: [-h] [--help] [options]
 })
 
 const { argv } = program
-  .command('$0 [--seller] <purchaser> <did> [--budget]', 'Purchase <did> from the ARA network', () => {
+  .command('$0 [--seller] <purchaser> <did> [--quantity] [--budget]', 'Purchase <did> from the ARA network', () => {
     program
       .positional('purchaser', {
         type: 'string',

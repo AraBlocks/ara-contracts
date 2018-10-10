@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const debug = require('debug')('ara-contracts:commerce')
 const { abi } = require('./build/contracts/AFS.json')
 const hasDIDMethod = require('has-did-method')
