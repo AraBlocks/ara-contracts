@@ -45,6 +45,7 @@ contract AFS is Ownable {
 
   event Commit(bytes32 _did);
   event Unlisted(bytes32 _did);
+  event Listed(bytes32 _did);
   event MinResalePriceSet(bytes32 _did, uint256 _price);
   event ResalePriceSet(bytes32 _did, address _purchaser, uint256 _price);
   event MaxNumResalesSet(bytes32 _did, uint256 _quantity);
@@ -121,7 +122,6 @@ contract AFS is Ownable {
     token_       = AraToken(tokenAddr);
     lib_         = Library(libAddr);
     did_         = did;
-    listed_      = true;
     totalCopies_ = totalCopies;
   }
 
@@ -186,7 +186,7 @@ contract AFS is Ownable {
 
   function setSupply(int256 _quantity) public onlyBy(owner_) {
     require(_quantity > 0, "Quantity must be greater than 0.");
-    
+
     totalCopies_ = _quantity;
     emit SupplySet(did_, totalCopies_);
   }
@@ -360,10 +360,10 @@ contract AFS is Ownable {
  */
 
   function append(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
-    bytes _msBuffer) external onlyBy(owner_) {
+    bytes _msBuffer, bool _list) external onlyBy(owner_) {
     
-    require(listed_, "AFS is unlisted.");
-    
+    listed_ |= _list;
+
     uint256 maxOffsetLength = _mtOffsets.length > _msOffsets.length 
       ? _mtOffsets.length 
       : _msOffsets.length;
@@ -384,9 +384,9 @@ contract AFS is Ownable {
   }
 
   function write(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
-    bytes _msBuffer) public onlyBy(owner_) {
+    bytes _msBuffer, bool _list) public onlyBy(owner_) {
 
-    require(listed_, "AFS is unlisted.");
+    listed_ |= _list;
 
     uint256 maxOffsetLength = _mtOffsets.length > _msOffsets.length 
       ? _mtOffsets.length 
@@ -422,9 +422,13 @@ contract AFS is Ownable {
     return metadata_[_file][_offset].equal(_buffer);
   }
 
-  function unlist() public onlyBy(owner_) returns (bool success) {
+  function list() public onlyBy(owner_) {
+    listed_ = true;
+    emit Listed(did_);
+  }
+
+  function unlist() public onlyBy(owner_) {
     listed_ = false;
     emit Unlisted(did_);
-    return true;
   }
 }
