@@ -827,7 +827,7 @@ async function getSupply(opts) {
   }
   return quantity
 }
-  
+
 /**
  * Requests ownership of an AFS.
  * @param  {Object} opts
@@ -982,6 +982,9 @@ async function _updateOwnershipRequest(opts, functionName = '') {
   if (!(await proxyExists(contentDid))) {
     throw new Error('Content does not have a valid proxy contract')
   }
+
+  const proxy = await getProxyAddress(contentDid)
+
   if (!hasDIDMethod(requesterDid)) {
     requesterDid = `${AID_PREFIX}${requesterDid}`
   }

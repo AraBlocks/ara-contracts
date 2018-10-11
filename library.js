@@ -85,7 +85,8 @@ async function hasPurchased(opts) {
     throw new TypeError('Expecting non-empty string for content DID')
   }
 
-  const { purchaserDid, contentDid } = opts
+  const { purchaserDid } = opts
+  let { contentDid } = opts
   const hIdentity = hashDID(purchaserDid)
   contentDid = normalize(contentDid)
 
@@ -98,7 +99,6 @@ async function hasPurchased(opts) {
       ethify(contentDid)
     ]
   })
-
 }
 
 /**
