@@ -43,6 +43,11 @@ contract AFS is Ownable {
     mapping(uint256 => uint256) resales; // total quantity owned => number of previous resales -- 0 indexed
   }
 
+  struct ResaleConfig {
+    uint256 resalePrice;
+    uint256 quantity;
+    uint256 available;
+  }
   event Commit(bytes32 _did);
   event Unlisted(bytes32 _did);
   event Listed(bytes32 _did);
@@ -230,6 +235,7 @@ contract AFS is Ownable {
    * @param _budget The reward budget for jobId, or 0 if N/A
    */
   function purchase(bytes32 _purchaser, uint256 _quantity, bytes32 _jobId, uint256 _budget) external {
+    require(listed_, "AFS has not been listed for sale.");
     require(totalCopies_ != 0, "No more copies available for purchase.");
     require(_quantity > 0, "Must purchase at least 1 copy.");
     uint256 allowance = token_.allowance(msg.sender, address(this));
@@ -282,8 +288,8 @@ contract AFS is Ownable {
     bytes32 purchaser = keccak256(abi.encodePacked(msg.sender));
     uint256 oldPurchaserQuantity = purchasers_[purchaser].quantity;
     for (uint256 i = 0; i < _quantity; i++) {
+      purchasers_[purchaser].resales[i + oldPurchaserQuantity] = purchasers_[seller].resales[i + purchasers_[seller].quantity] + 1;
       purchasers_[seller].resales[i + purchasers_[seller].quantity] = 0;
-      purchasers_[purchaser].resales[i + oldPurchaserQuantity]++;
     }
 
     purchasers_[purchaser].quantity += _quantity;
