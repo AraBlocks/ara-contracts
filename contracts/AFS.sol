@@ -362,7 +362,7 @@ contract AFS is Ownable {
   function append(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
     bytes _msBuffer, bool _list) external onlyBy(owner_) {
     
-    listed_ |= _list;
+    listed_ = listed_ || _list;
 
     uint256 maxOffsetLength = _mtOffsets.length > _msOffsets.length 
       ? _mtOffsets.length 
@@ -386,7 +386,7 @@ contract AFS is Ownable {
   function write(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
     bytes _msBuffer, bool _list) public onlyBy(owner_) {
 
-    listed_ |= _list;
+    listed_ = listed_ || _list;
 
     uint256 maxOffsetLength = _mtOffsets.length > _msOffsets.length 
       ? _mtOffsets.length 
