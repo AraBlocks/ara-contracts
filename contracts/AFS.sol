@@ -186,6 +186,7 @@ contract AFS is Ownable {
 
   function setSupply(int256 _quantity) public onlyBy(owner_) {
     require(_quantity > 0, "Quantity must be greater than 0.");
+    
     totalCopies_ = _quantity;
     emit SupplySet(did_, totalCopies_);
   }
@@ -233,23 +234,25 @@ contract AFS is Ownable {
     require(_quantity > 0, "Must purchase at least 1 copy.");
     uint256 allowance = token_.allowance(msg.sender, address(this));
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
-    require (allowance >= (_quantity * prices_[_quantity]) + _budget, "Proxy must be approved for purchase.");
+    require (allowance >= (_quantity * getPrice(_quantity)) + _budget, "Proxy must be approved for purchase.");
 
-    if (token_.transferFrom(msg.sender, owner_, _quantity * prices_[_quantity])) {
-      purchasers_[hashedAddress].quantity += _quantity;
-      purchasers_[hashedAddress].resalePrice = minResalePrice_;
-      if (totalCopies_ > 0) {
-        totalCopies_--;
-        if (totalCopies_ == 0) {
-          unlist();
-        }
+    require (token_.transferFrom(msg.sender, owner_, _quantity * getPrice(_quantity)), "Ara transfer failed.");
+
+    purchasers_[hashedAddress].quantity += _quantity;
+    purchasers_[hashedAddress].resalePrice = minResalePrice_;
+    if (totalCopies_ > 0) {
+      totalCopies_--;
+      if (totalCopies_ == 0) {
+        unlist();
       }
+    }
+    if (!lib_.owns(_purchaser, did_)) {
       lib_.addLibraryItem(_purchaser, did_);
-      emit Purchased(_purchaser, did_, _quantity, _quantity * prices_[_quantity]);
+    }
+    emit Purchased(_purchaser, did_, _quantity, _quantity * getPrice(_quantity));
 
-      if (_jobId != bytes32(0) && _budget > 0) {
-        submitBudget(_jobId, _budget);
-      }
+    if (_jobId != bytes32(0) && _budget > 0) {
+      submitBudget(_jobId, _budget);
     }
   }
 
@@ -261,32 +264,37 @@ contract AFS is Ownable {
     require(maxNumResales_ > 0, "Item is not available for resale.");
     require(_quantity > 0, "Must purchase at least 1 copy.");
     bytes32 seller = keccak256(abi.encodePacked(_seller));
-    require(purchasers_[seller].available > 0, "Seller has not authorized resale.");
-    require(purchasers_[seller].quantity > 0, "Seller must own at least 1 copy.");
+    require(purchasers_[seller].available >= _quantity, "Seller does not have enough copies available copies for resale.");
     require(purchasers_[seller].resales[_quantity - 1] < maxNumResales_, "Copy has already been sold the maximum number of times.");
     uint256 allowance = token_.allowance(msg.sender, address(this));
     require (allowance >= (_quantity * purchasers_[seller].resalePrice) + _budget, "Proxy must be approved for purchase.");
 
-    if (token_.transferFrom(msg.sender, _seller, _quantity * (purchasers_[seller].resalePrice - minResalePrice_))
-      && token_.transferFrom(msg.sender, owner_, _quantity * minResalePrice_)) {
-      purchasers_[seller].quantity -= _quantity;
-      purchasers_[seller].available -= _quantity;
+    require (token_.transferFrom(msg.sender, _seller, _quantity * (purchasers_[seller].resalePrice - minResalePrice_))
+      && token_.transferFrom(msg.sender, owner_, _quantity * minResalePrice_), "Ara transfer failed.");
+    
+    purchasers_[seller].quantity -= _quantity;
+    purchasers_[seller].available -= _quantity;
 
-      bytes32 purchaser = keccak256(abi.encodePacked(msg.sender));
-      uint256 oldPurchaserQuantity = purchasers_[purchaser].quantity;
-      for (uint256 i = 0; i < _quantity; i++) {
-        purchasers_[seller].resales[i + purchasers_[seller].quantity] = 0;
-        purchasers_[purchaser].resales[i + oldPurchaserQuantity]++;
-      }
+    if (purchasers_[seller].quantity == 0) {
+      lib_.removeLibraryItem(seller, did_);
+    }
 
-      purchasers_[purchaser].quantity += _quantity;
-      purchasers_[purchaser].resalePrice = minResalePrice_;
+    bytes32 purchaser = keccak256(abi.encodePacked(msg.sender));
+    uint256 oldPurchaserQuantity = purchasers_[purchaser].quantity;
+    for (uint256 i = 0; i < _quantity; i++) {
+      purchasers_[seller].resales[i + purchasers_[seller].quantity] = 0;
+      purchasers_[purchaser].resales[i + oldPurchaserQuantity]++;
+    }
+
+    purchasers_[purchaser].quantity += _quantity;
+    purchasers_[purchaser].resalePrice = minResalePrice_;
+    if (!lib_.owns(_purchaser, did_)) {
       lib_.addLibraryItem(_purchaser, did_);
-      emit PurchasedResale(_purchaser, did_, _quantity, _quantity * purchasers_[seller].resalePrice);
+    }
+    emit PurchasedResale(_purchaser, did_, _quantity, _quantity * purchasers_[seller].resalePrice);
 
-      if (_jobId != bytes32(0) && _budget > 0) {
-        submitBudget(_jobId, _budget);
-      }
+    if (_jobId != bytes32(0) && _budget > 0) {
+      submitBudget(_jobId, _budget);
     }
   }
 

@@ -84,7 +84,7 @@ module.exports = (async function main() {
       // DEBUG=* act purchase --seller 24b25a3e363dd76dac479dc9c24d91d9b85ca7c36ddf469c59df1303c46c2a05 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 9272a89f3f87d2b2b6ada9f7040794d3a8e847a0db38fc2257702beec82e4611 --quantity 5 --budget 10
       opts = Object.assign(opts, { seller })
     }
-    // DEBUG=* act purchase 24b25a3e363dd76dac479dc9c24d91d9b85ca7c36ddf469c59df1303c46c2a05 9272a89f3f87d2b2b6ada9f7040794d3a8e847a0db38fc2257702beec82e4611 --quantity 5 --budget 10
+    // DEBUG=* act purchase 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 2a1e0641a8ed4b168860e98372d958a0f89a0e06759c0ae13890cf1ebf710b11 --quantity 5 --budget 10
     await purchase(opts)
     info(`${purchaser} purchased ${quantity} copies of ${did}.`)
   } catch (err) {

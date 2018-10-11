@@ -24,17 +24,6 @@ const { argv } = program
         describe: 'The library owner\'s DID'
       })
   }, onall)
-  .command('get <did> <index>', 'Gets the content DID at <index> in <did>\'s library', () => {
-    program
-      .positional('did', {
-        type: 'string',
-        describe: 'The library owner\'s DID'
-      })
-      .positional('index', {
-        type: 'number',
-        describe: 'The position in the library'
-      })
-  }, onget)
   .command('get-copies <owner> <did>', 'Gets the number of copies of an AFS a purchaser owns', () => {
     program
       .positional('owner', {
@@ -46,7 +35,7 @@ const { argv } = program
         describe: 'The AFS DID'
       })
   }, oncopies)
-
+ 
 // Emit program usage help
 if (0 == argv._.length && argv.help) {
   program.showHelp()
@@ -72,17 +61,6 @@ async function onall(argv) {
   }
 }
 
-async function onget(argv) {
-  const { did, index } = argv
-  try {
-    info(`Getting item ${index} in ${did}\'s library...`)
-    const contentDid = await library.getLibraryItem({ requesterDid: did, index })
-    info(`item ${index} has did: ${contentDid}.`)
-  } catch (err) {
-    onfatal(err)
-  }
-}
-
 async function oncopies(argv) {
   const { owner, did } = argv
 
@@ -93,4 +71,12 @@ async function oncopies(argv) {
   } catch (err) {
     onfatal(err)
   }
+}
+
+function onfatal(err) {
+  if (err) {
+    debug(err)
+    error("fatal:", err.message)
+  }
+  process.exit(1)
 }

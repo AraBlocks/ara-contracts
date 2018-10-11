@@ -3,6 +3,7 @@
 const { abi: libAbi } = require('./build/contracts/Library.json')
 const { abi: proxyAbi } = require('./build/contracts/AFS.json')
 const { LIBRARY_ADDRESS } = require('./constants')
+const util = require('util')
 
 const {
   proxyExists,
@@ -32,15 +33,16 @@ async function getLibrary(requesterDid = '') {
     throw TypeError('Expecting non-empty requester DID')
   }
 
-  requesterDid = normalize(requesterDid)
+  const hIdentity = hashDID(requesterDid)
 
-  const libSize = await getLibrarySize(requesterDid)
-  const lib = []
-  for (let i = 0; i < libSize; i++) {
-    const item = await getLibraryItem({ requesterDid, index: i })
-    lib.push(item)
-  }
-  return lib
+  return call({
+    abi: libAbi,
+    address: LIBRARY_ADDRESS,
+    functionName: 'getLibrary',
+    arguments: [
+      ethify(hIdentity)
+    ]
+  })
 }
 
 /**
@@ -67,41 +69,6 @@ async function getLibrarySize(requesterDid = '') {
 }
 
 /**
- * Gets the DID of the item at index in requesterDid's library
- * @param  {Object} opts
- * @param  {String} opts.requesterDid
- * @param  {int}    opts.index
- * @return {string}
- * @throws {Error, TypeError}
- */
-async function getLibraryItem(opts) {
-  if (!opts || 'object' !== typeof opts) {
-    throw new TypeError('Expecting opts object.')
-  } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
-    throw TypeError('Expecting non-empty requester DID')
-  } else if ('number' !== typeof opts.index || opts.index < 0) {
-    throw TypeError('Expecting a whole number index')
-  }
-
-  const { requesterDid, index } = opts
-  const hIdentity = hashDID(requesterDid)
-
-  if (await getLibrarySize(requesterDid) <= index) {
-    throw Error('Invalid index')
-  }
-
-  return call({
-    abi: libAbi,
-    address: LIBRARY_ADDRESS,
-    functionName: 'getLibraryItem',
-    arguments: [
-      ethify(hIdentity),
-      index
-    ]
-  })
-}
-
-/**
  * Checks whether a user has purchased an AFS.
  * @param  {Object}  opts
  * @param  {String}  opts.purchaserDid
@@ -110,7 +77,28 @@ async function getLibraryItem(opts) {
  * @return {Boolean}      [description]
  */
 async function hasPurchased(opts) {
-  return getNumberCopiesOwned(opts) > 0
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object.')
+  } else if (!opts.purchaserDid || 'string' !== typeof opts.purchaserDid) {
+    throw new TypeError('Expecting non-empty string for purchaser DID')
+  } else if (!opts.contentDid || 'string' !== typeof opts.contentDid) {
+    throw new TypeError('Expecting non-empty string for content DID')
+  }
+
+  const { purchaserDid, contentDid } = opts
+  const hIdentity = hashDID(purchaserDid)
+  contentDid = normalize(contentDid)
+
+  return call({
+    abi: libAbi,
+    address: LIBRARY_ADDRESS,
+    functionName: 'owns',
+    arguments: [
+      ethify(hIdentity),
+      ethify(contentDid)
+    ]
+  })
+
 }
 
 /**
@@ -157,7 +145,8 @@ async function getNumberCopiesOwned(opts) {
 module.exports = {
   getNumberCopiesOwned,
   getLibrarySize,
-  getLibraryItem,
   hasPurchased,
   getLibrary
 }
+
+module.exports.getLibraryItem = util.deprecate(() => {}, 'getLibraryItem() is deprecated. Use getLibrary() instead.')

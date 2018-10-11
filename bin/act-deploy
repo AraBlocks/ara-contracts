@@ -131,7 +131,7 @@ async function onproxy(argv) {
       info(`Proxy deployed at address ${address} for ${did}.`)
     } else {
       info(`Upgrading proxy for ${did} to version ${version}...`)
-      // act deploy proxy -u 9272a89f3f87d2b2b6ada9f7040794d3a8e847a0db38fc2257702beec82e4611 3 -s test-node -n resolver -k /Users/ericjiang/.ara/keyrings/aws-test.pub -D
+      // act deploy proxy -u 1cdf07cbabb42a1abbe095a2d595771c8a24a59deb7642726eb70d89aee30db0 4
       const upgraded = await registry.upgradeProxy(opts)
       if (upgraded) {
         info(`Proxy successfully upgraded to version ${version}.`)
