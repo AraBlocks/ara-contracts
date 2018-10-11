@@ -1,6 +1,10 @@
 module.exports = {
   AID_PREFIX: 'did:ara:',
 
+  get WEB3_NETWORK() {
+    return rc.web3.network_id
+  },
+
   get REGISTRY_ADDRESS() {
     const privatenet = '0x1e07881fd1e0d78c5359c8828bcf300500f58ba2'
     const testnet = '0x4c0500f568bbd95bc8eeb9915acdebd5a86f02f8'
@@ -43,11 +47,9 @@ module.exports = {
 
 const rc = require('ara-runtime-configuration')()
 
-const env = rc.web3.network_id
-
 function getAddress(privatenet, testnet, mainnet) {
   let address = privatenet
-  switch (env) {
+  switch (module.exports.WEB3_NETWORK) {
   case 'privatenet':
   case '1337':
     address = privatenet
