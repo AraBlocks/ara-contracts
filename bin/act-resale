@@ -45,6 +45,7 @@ const { argv } = program
         type: 'string',
         describe: 'The seller resale config ID'
       })
+      .implies('seller', 'config')
   }, onprice)
   .command('set-quantity <did> <amount>', 'Set the number of times an AFS can be resold', () => {
     program
@@ -73,6 +74,7 @@ const { argv } = program
         type: 'string',
         describe: 'The seller resale config ID'
       })
+      .implies('seller', 'config')
   }, ongetprice)
   .command('get-quantity [--seller|config] <did>', 'Get the number of time an AFS can be resold. If the seller option is passed in, the seller\'s available supply will be returned.', () => {
     program
@@ -90,6 +92,7 @@ const { argv } = program
         type: 'string',
         describe: 'The seller resale config ID'
       })
+      .implies('seller', 'config')
     }, ongetquantity)
   .command('lock <seller> <config> <did> <quantity>', 'Locks a number of purchased AFSs from resale', () => {
     program

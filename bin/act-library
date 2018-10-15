@@ -24,7 +24,7 @@ const { argv } = program
         describe: 'The library owner\'s DID'
       })
   }, onall)
-  .command('get-copies <owner> <did>', 'Gets the number of copies of an AFS a purchaser owns', () => {
+  .command('get-copies <owner> <did> [--config]', 'Gets the number of copies of an AFS a purchaser owns', () => {
     program
       .positional('owner', {
         type: 'string',
@@ -34,8 +34,13 @@ const { argv } = program
         type: 'string',
         describe: 'The AFS DID'
       })
+      .option('config', {
+        alias: 'c',
+        type: 'string',
+        describe: 'The seller resale config ID'
+      })
   }, oncopies)
- 
+
 // Emit program usage help
 if (0 == argv._.length && argv.help) {
   program.showHelp()
@@ -62,12 +67,24 @@ async function onall(argv) {
 }
 
 async function oncopies(argv) {
-  const { owner, did } = argv
+  const { owner, did, config } = argv
 
   try {
-    info(`Getting number of copies of ${did} owned by ${owner}...`)
-    const copies = await library.getNumberCopiesOwned({ purchaserDid: owner, contentDid: did })
-    info(`${owner} owns ${copies} copies of ${did}.`)
+    if (config) {
+      info(`Getting number of copies of ${did} owned by ${owner} with resale config ${config}...`)
+    } else {
+      info(`Getting number of copies of ${did} owned by ${owner}...`)
+    }
+    let opts = { purchaserDid: owner, contentDid: did }
+    if (config) {
+      opts = Object.assign(opts, { config })
+    }
+    const copies = await library.getNumberCopiesOwned(opts)
+    if (config) {
+      info(`${owner} owns ${copies} copies of ${did} with resale config ${config}.`)
+    } else {
+      info(`${owner} owns ${copies} copies of ${did}.`)
+    }
   } catch (err) {
     onfatal(err)
   }
