@@ -303,7 +303,7 @@ async function getStandard(version) {
 }
 
 /**
- * Deploys a new AFS Standard // 2322093 gas (contract deploy) + 58053 gas (add standard)
+ * Deploys a new AFS Standard // 5201392 gas (contract deploy) + 58053 gas (add standard)
  * @param  {Object} opts
  * @param  {String} opts.requesterDid
  * @param  {String} opts.password

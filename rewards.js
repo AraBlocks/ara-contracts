@@ -6,7 +6,7 @@ const token = require('./token')
 
 const {
   ARA_TOKEN_ADDRESS,
-  JOB_ID_LENGTH,
+  BYTES32_LENGTH,
   AID_PREFIX
 } = require('./constants')
 
@@ -31,7 +31,7 @@ const {
 } = require('ara-util')
 
 const {
-  isValidJobId,
+  isValidBytes32,
   isValidArray
 } = require('./util')
 
@@ -69,7 +69,7 @@ async function submit(opts) {
 
   let { budget, jobId } = job
 
-  const validJobId = isValidJobId(jobId)
+  const validJobId = isValidBytes32(jobId)
   if ('string' === typeof budget) {
     budget = parseInt(budget, 10)
   }
@@ -82,7 +82,7 @@ async function submit(opts) {
     throw TypeError('Expecting budget.')
   }
 
-  if (JOB_ID_LENGTH === jobId.length) {
+  if (BYTES32_LENGTH === jobId.length) {
     jobId = ethify(jobId, 'string' !== typeof jobId)
   }
 
@@ -201,11 +201,11 @@ async function allocate(opts) {
   const { farmers, rewards } = job
   let { jobId } = job
 
-  const validJobId = isValidJobId(jobId)
+  const validJobId = isValidBytes32(jobId)
   if (!validJobId) {
     throw TypeError('Invalid job Id.')
   }
-  if (JOB_ID_LENGTH === jobId.length) {
+  if (BYTES32_LENGTH === jobId.length) {
     jobId = ethify(jobId, 'string' !== typeof jobId)
   }
 
@@ -386,7 +386,7 @@ async function getBudget(opts) {
     throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
-  } else if (!isValidJobId(opts.jobId)) {
+  } else if (!isValidBytes32(opts.jobId)) {
     throw TypeError('Expecting valid jobId.')
   }
 

@@ -38,6 +38,7 @@ const {
  * @param  {Number}  opts.quantity
  * @param  {Number}  opts.budget
  * @param  {?String} [opts.seller]
+ * @param  {String}  [opts.configID]
  * @param  {Object}  [opts.keyringOpts]
  * @throws {Error,TypeError}
  */
@@ -67,7 +68,8 @@ async function purchase(opts) {
   const {
     requesterDid,
     password,
-    keyringOpts
+    keyringOpts,
+    configID
   } = opts
 
   let { seller, budget, contentDid } = opts
@@ -111,14 +113,17 @@ async function purchase(opts) {
     const proxy = await getProxyAddress(contentDid)
     let price
     if (resale) {
-      ({ resalePrice: price } = (await call({
+      const { configs } = await call({
         abi: afsAbi,
         address: proxy,
-        functionName: 'purchasers_',
+        functionName: 'purchases_',
         arguments: [
           sha3({ t: 'address', v: seller })
         ]
-      })))
+      })
+
+      const config = configs[configID];
+      ({ resalePrice: price } = config)
     } else {
       price = await call({
         abi: afsAbi,
@@ -151,6 +156,7 @@ async function purchase(opts) {
 
     const values = [ethify(hIdentity), quantity, jobId, budget]
     if (resale) {
+      values.unshift(configID)
       values.unshift(seller)
     }
 
@@ -167,6 +173,7 @@ async function purchase(opts) {
 
     const proxyContract = await contract.get(afsAbi, proxy)
     const eventName = resale ? 'PurchasedResale' : 'Purchased'
+    let config
     await proxyContract.events[`${eventName}`]({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const {
@@ -174,10 +181,17 @@ async function purchase(opts) {
             _purchaser,
             _did,
             _quantity,
-            _price
+            _price,
+            _configID
           }
         } = log
-        debug(`${_purchaser} purchased ${_quantity} copies of ${_did} for ${token.constrainTokenValue(_price)} Ara`)
+        config = _configID
+        if (resale) {
+          const { returnValues: { _seller } } = log
+          debug(`${_purchaser} purchased ${_quantity} copies of ${_did} from ${_seller} with resale config ID ${config} for ${token.constrainTokenValue(_price)} Ara`)
+        } else {
+          debug(`${_purchaser} purchased ${_quantity} copies of ${_did} with resale config ID ${config} for ${token.constrainTokenValue(_price)} Ara`)
+        }
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)
@@ -208,10 +222,14 @@ async function purchase(opts) {
 
       debug(contentId, `added to library (${size})`)
     }
+
+    return {
+      receipt,
+      config
+    }
   } catch (err) {
     throw err
   }
-  return receipt
 }
 
 module.exports = {

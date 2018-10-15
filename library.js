@@ -1,8 +1,9 @@
 /* eslint-disable no-await-in-loop */
 
 const { abi: libAbi } = require('./build/contracts/Library.json')
+const { LIBRARY_ADDRESS, BYTES32_LENGTH } = require('./constants')
 const { abi: proxyAbi } = require('./build/contracts/AFS.json')
-const { LIBRARY_ADDRESS } = require('./constants')
+const { isValidBytes32 } = require('./util')
 const util = require('util')
 
 const {
@@ -106,6 +107,7 @@ async function hasPurchased(opts) {
  * @param  {Object}  opts
  * @param  {String}  opts.purchaserDid
  * @param  {String}  opts.contentDid
+ * @param  {String}  [opts.configID]
  * @return {Boolean}      [description]
  */
 async function getNumberCopiesOwned(opts) {
@@ -117,7 +119,22 @@ async function getNumberCopiesOwned(opts) {
     throw new TypeError('Expecting non-empty string for content DID')
   }
 
-  const { purchaserDid, contentDid, keyringOpts } = opts
+  const {
+    purchaserDid,
+    contentDid,
+    keyringOpts
+  } = opts
+
+  let { configID } = opts
+
+  if (configID && !isValidBytes32(configID)) {
+    throw new TypeError(`Expected opts.configID to be bytes32. Got ${configID}. Ensure opts.configID is a valid bytes32 string`)
+  }
+
+  if (BYTES32_LENGTH === configID.length) {
+    configID = ethify(configID, 'string' !== typeof configID)
+  }
+
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
   }
@@ -130,14 +147,21 @@ async function getNumberCopiesOwned(opts) {
     throw new Error(`opts.purchaserDid did not resolve to a valid Ethereum address. Got ${purchaser}. Ensure ${purchaserDid} is a valid Ara identity.`)
   }
 
-  const { quantity } = await call({
+  const purchases = await call({
     abi: proxyAbi,
     address: proxy,
-    functionName: 'purchasers_',
+    functionName: 'purchases_',
     arguments: [
       sha3({ t: 'address', v: purchaser })
     ]
   })
+  let { quantity } = purchases
+  const { configs } = purchases
+
+  if (configID) {
+    const config = configs[configID];
+    ({ quantity } = config)
+  }
 
   return quantity
 }

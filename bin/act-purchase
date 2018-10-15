@@ -85,8 +85,8 @@ module.exports = (async function main() {
       opts = Object.assign(opts, { seller })
     }
     // DEBUG=* act purchase 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 2a1e0641a8ed4b168860e98372d958a0f89a0e06759c0ae13890cf1ebf710b11 --quantity 5 --budget 10
-    await purchase(opts)
-    info(`${purchaser} purchased ${quantity} copies of ${did}.`)
+    const { configID } = await purchase(opts)
+    info(`${purchaser} purchased ${quantity} copies of ${did} with resale configID ${configID}.`)
   } catch (err) {
     onfatal(err)
   }

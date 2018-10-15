@@ -25,7 +25,7 @@ usage: act resale: [-h] [--help] [options] [--] <command>
 })
 
 const { argv } = program
-  .command('set-price [--seller] <did> <price>', 'Set the (minimum) resale price of an AFS. If the seller option is not passed in, the minimum resale price will be set.', () => {
+  .command('set-price [--seller|config] <did> <price>', 'Set the (minimum) resale price of an AFS. If the seller option is not passed in, the minimum resale price will be set.', () => {
     program
       .positional('did', {
         type: 'string',
@@ -40,6 +40,11 @@ const { argv } = program
         type: 'string',
         describe: 'DID of the AFS seller (if the seller is not also the AFS owner)'
       })
+      .option('config', {
+        alias: 'c',
+        type: 'string',
+        describe: 'The seller resale config ID'
+      })
   }, onprice)
   .command('set-quantity <did> <amount>', 'Set the number of times an AFS can be resold', () => {
     program
@@ -52,7 +57,7 @@ const { argv } = program
         describe: 'The number of times the AFS can be resold'
       })
   }, onquantity)
-  .command('get-price [--seller] <did>', 'Get the (minimum) resale price of an AFS. If the seller option is not passed in, the minimum resale price will be returned.', () => {
+  .command('get-price [--seller|config] <did>', 'Get the (minimum) resale price of an AFS. If the seller option is not passed in, the minimum resale price will be returned.', () => {
     program
       .positional('did', {
         type: 'string',
@@ -63,8 +68,13 @@ const { argv } = program
         type: 'string',
         describe: 'DID of the AFS seller (if the seller is not also the AFS owner)'
       })
+      .option('config', {
+        alias: 'c',
+        type: 'string',
+        describe: 'The seller resale config ID'
+      })
   }, ongetprice)
-  .command('get-quantity [--seller] <did>', 'Get the number of time an AFS can be resold. If the seller option is passed in, the seller\'s supply will be returned.', () => {
+  .command('get-quantity [--seller|config] <did>', 'Get the number of time an AFS can be resold. If the seller option is passed in, the seller\'s available supply will be returned.', () => {
     program
       .positional('did', {
         type: 'string',
@@ -75,12 +85,21 @@ const { argv } = program
         type: 'string',
         describe: 'The seller DID (if not the AFS owner)'
       })
+      .option('config', {
+        alias: 'c',
+        type: 'string',
+        describe: 'The seller resale config ID'
+      })
     }, ongetquantity)
-  .command('lock <seller> <did> <quantity>', 'Locks a number of purchased AFSs from resale', () => {
+  .command('lock <seller> <config> <did> <quantity>', 'Locks a number of purchased AFSs from resale', () => {
     program
       .positional('seller', {
         type: 'string',
         describe: 'The seller DID'
+      })
+      .positional('config', {
+        type: 'string',
+        describe: 'The seller resale config ID'
       })
       .positional('did', {
         type: 'string',
@@ -91,11 +110,15 @@ const { argv } = program
         describe: 'The number of AFSs to lock from resale'
       })
   }, onlock)
-  .command('unlock <seller> <did> <quantity>', 'Unlocks a number of purchased AFSs for resale', () => {
+  .command('unlock <seller> <config> <did> <quantity>', 'Unlocks a number of purchased AFSs for resale', () => {
     program
       .positional('seller', {
         type: 'string',
         describe: 'The seller DID'
+      })
+      .positional('config', {
+        type: 'string',
+        describe: 'The seller resale config ID'
       })
       .positional('did', {
         type: 'string',
@@ -120,7 +143,7 @@ module.exports = (async function main() {
 }())
 
 async function onprice(argv) {
-  const { did, price, seller } = argv
+  const { did, price, seller, config } = argv
   const { password } = await promptForPassword()
 
   try {
@@ -131,6 +154,7 @@ async function onprice(argv) {
         requesterDid: seller,
         contentDid: did,
         password,
+        config,
         price
       })
       info(`Resale price for ${did} from seller ${seller} successfully set to ${price} Ara.`)
@@ -166,7 +190,7 @@ async function onquantity(argv) {
 }
 
 async function ongetprice(argv) {
-  const { did, seller } = argv
+  const { did, seller, config } = argv
 
   try {
     let price
@@ -174,7 +198,8 @@ async function ongetprice(argv) {
       info(`Getting resale price for ${did} from seller ${seller}...`)
       price = await getResalePrice({
         contentDid: did,
-        seller
+        seller,
+        config
       })
       info(`Resale price for ${did} from seller ${seller} is ${price} Ara.`)
     } else {
@@ -190,7 +215,7 @@ async function ongetprice(argv) {
 }
 
 async function ongetquantity(argv) {
-  const { did, seller } = argv
+  const { did, seller, config } = argv
 
   try {
     let quantity
@@ -198,7 +223,8 @@ async function ongetquantity(argv) {
       info(`Getting quantity of ${did} available for purchase from ${seller}...`)
       quantity = await getResaleAvailability({
         contentDid: did,
-        seller
+        seller,
+        config
       })
       info(`${seller} has ${quantity} copies of ${did} available for purchase.`)
     } else {
@@ -214,7 +240,7 @@ async function ongetquantity(argv) {
 }
 
 async function onlock(argv) {
-  const { seller, did, quantity } = argv
+  const { seller, did, quantity, config } = argv
   const { password } = await promptForPassword()
 
   try {
@@ -223,7 +249,8 @@ async function onlock(argv) {
       requesterDid: seller,
       contentDid: did,
       password,
-      quantity
+      quantity,
+      config
     })
     info(`${quantity} copies of ${did} locked from resale by seller ${seller}.`)
   } catch (err) {
@@ -232,7 +259,7 @@ async function onlock(argv) {
 }
 
 async function onunlock(argv) {
-  const { seller, did, quantity } = argv
+  const { seller, did, quantity, config } = argv
   const { password } = await promptForPassword()
 
   try {
@@ -241,7 +268,8 @@ async function onunlock(argv) {
       requesterDid: seller,
       contentDid: did,
       password,
-      quantity
+      quantity,
+      config
     })
     info(`${quantity} copies of ${did} unlocked for resale by seller ${seller}.`)
   } catch (err) {

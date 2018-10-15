@@ -1,19 +1,19 @@
-const { JOB_ID_LENGTH } = require('./constants')
+const { BYTES32_LENGTH } = require('./constants')
 const isBuffer = require('is-buffer')
 
-function isValidJobId(jobId) {
-  if (!jobId || ('string' !== typeof jobId && !isBuffer(jobId))) {
+function isValidBytes32(bytes32) {
+  if (!bytes32 || ('string' !== typeof bytes32 && !isBuffer(bytes32))) {
     return false
   }
 
-  if (isBuffer(jobId)) {
-    jobId = jobId.toString('hex')
+  if (isBuffer(bytes32)) {
+    bytes32 = bytes32.toString('hex')
   }
 
   const n = 2
-  const isHex = '0x' === jobId.slice(0, n)
-  if ((isHex && JOB_ID_LENGTH !== jobId.length - n)
-    || (!isHex && (JOB_ID_LENGTH !== jobId.length))) {
+  const isHex = '0x' === bytes32.slice(0, n)
+  if ((isHex && BYTES32_LENGTH !== bytes32.length - n)
+    || (!isHex && (BYTES32_LENGTH !== bytes32.length))) {
     return false
   }
 
@@ -36,6 +36,6 @@ async function isValidArray(arr, fn) {
 }
 
 module.exports = {
-  isValidJobId,
+  isValidBytes32,
   isValidArray
 }
