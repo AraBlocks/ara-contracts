@@ -708,7 +708,7 @@ async function increaseSupply(opts) {
       to: proxy,
       data: {
         abi,
-        functionName: 'addCopies',
+        functionName: 'increaseSupply',
         values: [
           quantity
         ]
@@ -781,7 +781,7 @@ async function decreaseSupply(opts) {
       to: proxy,
       data: {
         abi,
-        functionName: 'removeCopies',
+        functionName: 'decreaseSupply',
         values: [
           quantity
         ]

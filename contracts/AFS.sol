@@ -76,6 +76,8 @@ contract AFS is Ownable {
   event SupplySet(bytes32 _did, int256 _quantity);
   event ResaleUnlocked(bytes32 _did, address _seller, uint256 _available);
   event ResaleLocked(bytes32 _did, address _seller, uint256 _available);
+  event MarkedForResale(bytes32 _did);
+  event MarkedNotForResale(bytes32 _did);
 
   modifier onlyBy(address _account)
   {
@@ -151,6 +153,16 @@ contract AFS is Ownable {
   function unlist() public onlyBy(owner_) {
     listed_ = false;
     emit Unlisted(did_);
+  }
+
+  function markForResale() public onlyBy(owner_) {
+    resellable_ = true;
+    emit MarkedForResale(did_);
+  }
+
+  function markNotForResale() public onlyBy(owner_) {
+    resellable_ = false;
+    emit MarkedNotForResale(did_);
   }
 
   function setPrice(uint256 _quantity, uint256 _price) external onlyBy(owner_) {
@@ -297,7 +309,7 @@ contract AFS is Ownable {
     }
 
     if (totalCopies_ > 0) {
-      totalCopies_--;
+      totalCopies_ -= int(_quantity);
       if (totalCopies_ == 0) {
         unlist();
       }

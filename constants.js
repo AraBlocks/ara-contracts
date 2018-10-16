@@ -20,7 +20,7 @@ module.exports = {
   TEST_OWNER_ADDRESS_2: '0x1019468D3060F0b8c5d9C432f0c4Db33e28b3582',
 
   TOKEN_DECIMALS: 18,
-  STANDARD_VERSION: '1',
+  STANDARD_VERSION: '2',
   BYTES32_LENGTH: 64
 }
 
@@ -30,23 +30,23 @@ module.exports = {
 // // private key: 0x628a3ff0e47af58d306dfe413114acfded25a8374f562db36d8496f246dbeaf7
 // kDefaultAddress: '0x1019468D3060F0b8c5d9C432f0c4Db33e28b3582'
 
-// AFS standard v2: '0x5bd7C0Fcca203A3b5016cd6da530d1A72d0e5413'
-// Proxy: '0x7150c203A5A7e833BaED9c98c699eB3b96668aDd'
-
 /**
  * TEST IDs:
  *  (1)     DID: did:ara:77da0a6389fd2942d30c794c7a7dd61c97d7f7b0ee3a795100d171404f9073e0
  *      ADDRESS: 0xfe710619a6d1c5ebc64137e14274cf241f99fc65
  *          KEY: 0x531b61453fbe1dd07ed57e6ebb0f05d0a990285ed83045040133e5cf202c6830
  *     MNEMONIC: < naive shrimp confirm vault seed baby deny happy equal chronic where grass >
+ *
  *  (2)     DID: did:ara:b2dc6cc7fb4606d2fc17bb07462668b1a25994af77071e39ac60948f8b55023c
  *      ADDRESS: 0x642745c23733143b518002e02a627ad505df2826
  *          KEY: 0x41de20fda97629a8bebe802a946e21c6ebd1a5b2f3f1698272acc60c770ba18d
  *     MNEMONIC: < become initial climb snow eight develop exclude tooth marriage mirror champion sponsor >
+ *
  *  (3)     DID: did:ara:5cb1634bd218d1a29053a764ef0f7945bff862477905eb5bb31cc3eb56d61ef4
  *      ADDRESS: 0x4fc75e4957cb3acd8069c356077c9b708812ade9
  *          KEY: 0x008d6f00bc9b66e7ecff45628f148d1d4f8c75acd6b741b18decf91e405d5d7e
  *     MNEMONIC: < chuckle total inquiry rebuild fruit cousin excess century crush tag test fresh >
+ *
  *  (4)     DID: did:ara:08228219008e3c7ab8b7f23a161c196be44ff33525ebea01d841b707b34b7adc
  *      ADDRESS: 0x75111692d6b0cf3371ec243be04954d3ddec00ed
  *          KEY: 0x0a613c9d539fbf6fe9d834b612ad010283753637d3164605416cdbb6c50340ee

@@ -163,7 +163,7 @@ async function purchase(opts) {
     const purchaseTx = await tx.create({
       account: acct,
       to: proxy,
-      gasLimit: 1000000,
+      gasLimit: 4000000,
       data: {
         abi: afsAbi,
         functionName: resale ? 'purchaseResale' : 'purchase',
@@ -186,6 +186,7 @@ async function purchase(opts) {
           }
         } = log
         config = _configID
+        console.log(config, _configID)
         if (resale) {
           const { returnValues: { _seller } } = log
           debug(`${_purchaser} purchased ${_quantity} copies of ${_did} from ${_seller} with resale config ID ${config} for ${token.constrainTokenValue(_price)} Ara`)
