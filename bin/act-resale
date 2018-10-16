@@ -248,7 +248,7 @@ async function onlock(argv) {
 
   try {
     info(`Locking ${quantity} copies of ${did} from resale by seller ${seller}...`)
-    await lockResale({
+    await lockResaleQuantity({
       requesterDid: seller,
       contentDid: did,
       password,
@@ -267,7 +267,7 @@ async function onunlock(argv) {
 
   try {
     info(`Unlocking ${quantity} copies of ${did} for resale by seller ${seller}...`)
-    await unlockResale({
+    await unlockResaleQuantity({
       requesterDid: seller,
       contentDid: did,
       password,
