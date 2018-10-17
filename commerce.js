@@ -1150,9 +1150,9 @@ async function getResaleConfig(opts) {
       ]
     })
     config = {
-      minResalePrice: resaleConfig.minResalePrice,
+      minResalePrice: token.constrainTokenValue(resaleConfig.minResalePrice),
       maxNumResales: resaleConfig.maxNumResales,
-      resalePrice: resaleConfig.resalePrice,
+      resalePrice: token.constrainTokenValue(resaleConfig.resalePrice),
       available: resaleConfig.available,
       quantity: resaleConfig.quantity
     }

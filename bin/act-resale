@@ -347,17 +347,22 @@ async function onunlockquantity(argv) {
 async function ongetconfig(argv) {
   const { seller, did, config } = argv
 
-
   try {
+    // act resale get-config 77da0a6389fd2942d30c794c7a7dd61c97d7f7b0ee3a795100d171404f9073e0 0xde63a8f44964c2c060b346b24adc91b3065f7d9cf79b0c89d6bf5871726b65e5 196ebd2be2ecac1c7ee2593be97c3c25af7326565a8fe3835be496814dc6792f
     info(`Getting resale config ${config} in AFS ${did} from seller ${seller}...`)
-    await getResaleConfig({
-      requesterDid: seller,
+    let resaleConfig = await getResaleConfig({
+      sellerDid: seller,
       contentDid: did,
-      password,
-      quantity,
       configID: config
     })
-    info(`${quantity} copies of ${did} unlocked for resale by seller ${seller}.`)
+    info(`\nResale config ${config}:\n
+    {\n\t
+      Minimum resale price: ${resaleConfig.minResalePrice} Ara\n\t
+      Maximum # of resales: ${resaleConfig.maxNumResales}\n\n\t
+      Resale Price: ${resaleConfig.resalePrice} Ara\n\t
+      # available for resale: ${resaleConfig.available}\n\t
+      # owned total: ${resaleConfig.quantity}\n
+    }`)
   } catch (err) {
     onfatal(err)
   }
