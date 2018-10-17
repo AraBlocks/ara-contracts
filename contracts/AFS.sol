@@ -28,6 +28,7 @@ contract AFS is Ownable {
 
   uint256   public minResalePrice_;
   uint256   public maxNumResales_; // < maxNumResales_ can be resold
+  Royalties public royalties_;
 
   mapping(bytes32 => Job)                      public jobs_; // jobId => job { budget, sender }
   mapping(bytes32 => uint256)                  public rewards_;    // farmer => rewards
@@ -59,6 +60,15 @@ contract AFS is Ownable {
     uint256 quantity; // of non-resellable purchases independent of configs
   }
 
+  struct Royalties {
+    mapping(address => uint256) royalitySplit;
+    address[] addresses;
+    uint256 totalRoyalties;
+  }
+
+  // constants
+  uint256 public constant decimals = 2;
+
   event Commit(bytes32 _did);
   event Unlisted(bytes32 _did);
   event Listed(bytes32 _did);
@@ -78,6 +88,7 @@ contract AFS is Ownable {
   event ResaleLocked(bytes32 _did, address _seller, uint256 _available);
   event MarkedForResale(bytes32 _did);
   event MarkedNotForResale(bytes32 _did);
+  event RoyaltiesUpdated();
 
   modifier onlyBy(address _account)
   {
@@ -236,6 +247,25 @@ contract AFS is Ownable {
   function setUnlimitedSupply() public onlyBy(owner_) {
     totalCopies_ = -1;
     emit SupplySet(did_, totalCopies_);
+  }
+
+  function setRoyalties(address[] addresses, uint256[] amounts, uint256 total) public onlyBy(owner_) {
+    require(priceTiers_.length > 0, "Price must be set prior to setting royalties.");
+
+    Royalties storage royalties;
+    for(uint256 i = 0; i < addresses.length; i++) {
+      royalties.royalitySplit[addresses[i]] = formatDecimals(amounts[i]);
+      royalties.addresses[i] = addresses[i];
+    }
+    royalties.totalRoyalties = formatDecimals(total);
+
+    royalties_ = royalties;
+
+    emit RoyaltiesUpdated();
+  }
+
+  function formatDecimals(uint256 _value) internal pure returns (uint256) {
+    return _value * 10 ** decimals;
   }
 
 /**
