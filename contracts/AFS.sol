@@ -24,11 +24,12 @@ contract AFS is Ownable {
   mapping(uint256 => uint256) public prices_; // quantity (lower bound) => price
   uint256[] public priceTiers_; // quantity tiers
 
-  uint256   public totalCopies_; // scarcity quantity; -1 for unlimited copies
+  uint256   public currGlobalConfigID_;
+  mapping(uint256 => GlobalResaleConfig)       public globalConfigs_; // configID => GlobalResaleConfig
+
+  uint256   public totalCopies_; // scarcity quantity
   bool      public unlimited_ = false;
 
-  uint256   public minResalePrice_;
-  uint256   public maxNumResales_; // < maxNumResales_ can be resold
   Royalties public royalties_;
 
   mapping(bytes32 => Job)                      public jobs_; // jobId => job { budget, sender }
@@ -41,10 +42,15 @@ contract AFS is Ownable {
     uint256 budget;
   }
 
+  struct GlobalResaleConfig {
+    bool locked;
+
+    uint256  minResalePrice;
+    uint256  maxNumResales;
+  }
+
   struct ResaleConfig {
-    // purchase-time config
-    uint256 minResalePrice;
-    uint256 maxNumResales;
+    bool enabled;
 
     // reseller set config
     uint256 resalePrice;
@@ -54,9 +60,9 @@ contract AFS is Ownable {
   }
 
   struct Purchases {
-    bytes32[] configIDs;
-    mapping(bytes32 => uint256) configIDIndices; // configID => configIDs index
-    mapping(bytes32 => ResaleConfig) configs; // configID => ResaleConfig
+    uint256[] configIDs;
+    mapping(uint256 => uint256) configIDIndices; // configID => configIDs index
+    mapping(uint256 => ResaleConfig) configs; // configID => ResaleConfig
 
     uint256 quantity; // of non-resellable purchases independent of configs
   }
@@ -79,8 +85,8 @@ contract AFS is Ownable {
   event PriceSet(bytes32 _did, uint256 _quantity, uint256 _price);
   event BudgetSubmitted(bytes32 _did, bytes32 _jobId, uint256 _budget);
   event RewardsAllocated(bytes32 _did, uint256 _allocated, uint256 _returned);
-  event Purchased(bytes32 _purchaser, bytes32 _did, uint256 _quantity, uint256 _price, bytes32 _configID);
-  event PurchasedResale(bytes32 _purchaser, address _seller, bytes32 _did, uint256 _quantity, uint256 _price, bytes32 _configID);
+  event Purchased(bytes32 _purchaser, bytes32 _did, uint256 _quantity, uint256 _price, uint256 _configID);
+  event PurchasedResale(bytes32 _purchaser, address _seller, bytes32 _did, uint256 _quantity, uint256 _price, uint256 _configID);
   event Redeemed(address _sender);
   event IncreasedSupply(bytes32 _did, uint256 _added, uint256 _total);
   event DecreasedSupply(bytes32 _did, uint256 _removed, uint256 _total);
@@ -172,8 +178,11 @@ contract AFS is Ownable {
     emit Unlisted(did_);
   }
 
-  function unlockResale() public onlyBy(owner_) {
+  function unlockResale(uint256 _globalConfigID) public onlyBy(owner_) {
+    require(globalConfigs_[_globalConfigID].maxNumResales > 0, "Cannot unlock for resale because resale configuration has not been setup.");
     resellable_ = true;
+    currGlobalConfigID_ = _globalConfigID;
+    globalConfigs_[_globalConfigID].locked = true;
     emit ResaleUnlocked(did_);
   }
 
@@ -213,14 +222,16 @@ contract AFS is Ownable {
     }
   }
 
-  function setMinResalePrice(uint256 _price) external onlyBy(owner_) {
-    minResalePrice_ = _price;
+  function setMinResalePrice(uint256 _configID, uint256 _price) external onlyBy(owner_) {
+    require(!globalConfigs_[_configID].locked, "Cannot modify a locked resale configuration.");
+    globalConfigs_[_configID].minResalePrice = _price;
     emit MinResalePriceSet(did_, _price);
   }
 
-  function setResaleQuantity(uint256 _quantity) external onlyBy(owner_) {
-    maxNumResales_ = _quantity;
-    emit MaxNumResalesSet(did_, maxNumResales_);
+  function setResaleQuantity(uint256 _configID, uint256 _quantity) external onlyBy(owner_) {
+    require(!globalConfigs_[_configID].locked, "Cannot modify a locked resale configuration.");
+    globalConfigs_[_configID].maxNumResales = _quantity;
+    emit MaxNumResalesSet(did_, _quantity);
   }
 
   function setSupply(uint256 _quantity) public onlyBy(owner_) {
@@ -290,7 +301,8 @@ contract AFS is Ownable {
  * ===============================================================================================
  */
 
-  function unlockResaleQuantity(bytes32 _configID, uint256 _quantity) public purchaseRequired {
+  function unlockResaleQuantity(uint256 _configID, uint256 _quantity) public purchaseRequired {
+    require(globalConfigs_[_configID].maxNumResales > 0, "Not a valid resale configuration.");
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
     require(_quantity + purchases_[hashedAddress].configs[_configID].available <= purchases_[hashedAddress].configs[_configID].quantity, "Cannot unlock more for resale than owned.");
     purchases_[hashedAddress].configs[_configID].available += _quantity;
@@ -298,7 +310,8 @@ contract AFS is Ownable {
     emit ResaleUnlocked(did_, msg.sender, purchases_[hashedAddress].configs[_configID].available);
   }
 
-  function lockResaleQuantity(bytes32 _configID, uint256 _quantity) public purchaseRequired {
+  function lockResaleQuantity(uint256 _configID, uint256 _quantity) public purchaseRequired {
+    require(globalConfigs_[_configID].maxNumResales > 0, "Not a valid resale configuration.");
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
     require(purchases_[hashedAddress].configs[_configID].available >= _quantity, "Cannot lock more than is available for resale.");
     purchases_[hashedAddress].configs[_configID].available -= _quantity;
@@ -306,9 +319,10 @@ contract AFS is Ownable {
     emit ResaleLocked(did_, msg.sender, purchases_[hashedAddress].configs[_configID].available);
   }
 
-  function setResalePrice(bytes32 _configID, uint256 _price) external purchaseRequired {
+  function setResalePrice(uint256 _configID, uint256 _price) external purchaseRequired {
+    require(globalConfigs_[_configID].maxNumResales > 0, "Not a valid resale configuration.");
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
-    require(_price >= purchases_[hashedAddress].configs[_configID].minResalePrice, "Resale price must be at least the minimum resale price.");
+    require(_price >= globalConfigs_[_configID].minResalePrice, "Resale price must be at least the minimum resale price.");
     purchases_[hashedAddress].configs[_configID].resalePrice = _price;
     emit ResalePriceSet(did_, msg.sender, _price);
   }
@@ -339,19 +353,19 @@ contract AFS is Ownable {
 
     require(token_.transferFrom(msg.sender, owner_, totalPrice), "Ara transfer failed.");
 
-    bytes32 configID = bytes32(0);
     if (resellable_) {
-      configID = keccak256(abi.encodePacked(msg.sender, did_, now, purchases_[hashedAddress].configIDs.length));
+      if (purchases_[hashedAddress].configs[currGlobalConfigID_].enabled) {
+        purchases_[hashedAddress].configs[currGlobalConfigID_].quantity += _quantity;
+      } else {
+        ResaleConfig memory config;
+        config.resalePrice = globalConfigs_[currGlobalConfigID_].minResalePrice;
+        config.quantity = _quantity;
+        config.enabled = true;
 
-      ResaleConfig memory config;
-      config.minResalePrice = minResalePrice_;
-      config.maxNumResales = maxNumResales_;
-      config.resalePrice = minResalePrice_;
-      config.quantity = _quantity;
-
-      purchases_[hashedAddress].configIDIndices[configID] = purchases_[hashedAddress].configIDs.length;
-      purchases_[hashedAddress].configIDs.push(configID);
-      purchases_[hashedAddress].configs[configID] = config;
+        purchases_[hashedAddress].configIDIndices[currGlobalConfigID_] = purchases_[hashedAddress].configIDs.length;
+        purchases_[hashedAddress].configIDs.push(currGlobalConfigID_);
+        purchases_[hashedAddress].configs[currGlobalConfigID_] = config;
+      }
     } else {
       purchases_[hashedAddress].quantity += _quantity;
     }
@@ -367,7 +381,7 @@ contract AFS is Ownable {
       lib_.addLibraryItem(_purchaser, did_);
     }
 
-    emit Purchased(_purchaser, did_, _quantity, totalPrice, configID);
+    emit Purchased(_purchaser, did_, _quantity, totalPrice, currGlobalConfigID_);
 
     if (_jobId != bytes32(0) && _budget > 0) {
       submitBudget(_jobId, _budget);
@@ -378,22 +392,21 @@ contract AFS is Ownable {
    * @param _seller seller's Ethereum address
    * 
    */
-  function purchaseResale(address _seller, bytes32 _configID, bytes32 _purchaser, uint256 _quantity, bytes32 _jobId, uint256 _budget) external {
+  function purchaseResale(address _seller, uint256 _configID, bytes32 _purchaser, uint256 _quantity, bytes32 _jobId, uint256 _budget) external {
     require(_quantity > 0, "Must purchase at least 1 copy.");
-
     bytes32 seller = keccak256(abi.encodePacked(_seller));
-    Purchases storage sellerPurchases = purchases_[seller];
-    ResaleConfig storage sellerConfig = sellerPurchases.configs[_configID];
+    ResaleConfig storage sellerConfig = purchases_[seller].configs[_configID];
 
+    require(sellerConfig.enabled, "Please provide a valid seller resale configuration.");
     require(sellerConfig.available >= _quantity, "This quantity is not available for resale from this seller using this resale configuration.");
-    require(sellerConfig.resales[_quantity - 1] < sellerConfig.maxNumResales, "Copy has already been sold the maximum number of times.");
+    require(sellerConfig.resales[_quantity - 1] < globalConfigs_[_configID].maxNumResales, "Copy has already been sold the maximum number of times.");
 
     uint256 totalPrice = _quantity * sellerConfig.resalePrice;
     require(token_.allowance(msg.sender, address(this)) >= totalPrice + _budget, "Proxy must be approved for purchase.");
 
     // transfer minimum resale price to owner and transfer remainder to reseller
-    require(token_.transferFrom(msg.sender, _seller, _quantity * (sellerConfig.resalePrice - sellerConfig.minResalePrice))
-      && token_.transferFrom(msg.sender, owner_, _quantity * sellerConfig.minResalePrice), "Ara transfer failed.");
+    require(token_.transferFrom(msg.sender, _seller, _quantity * (sellerConfig.resalePrice - globalConfigs_[_configID].minResalePrice))
+      && token_.transferFrom(msg.sender, owner_, _quantity * globalConfigs_[_configID].minResalePrice), "Ara transfer failed.");
     
     // decrement seller resale availability/quantity
     sellerConfig.quantity -= _quantity;
@@ -402,17 +415,20 @@ contract AFS is Ownable {
     bytes32 purchaser = keccak256(abi.encodePacked(msg.sender));
     Purchases storage purchaserPurchases = purchases_[purchaser];
 
-    bytes32 newConfigID = keccak256(abi.encodePacked(msg.sender, did_, now, purchaserPurchases.configIDs.length));
-    _createConfig(purchaser, newConfigID, _quantity, sellerConfig);
+    if (purchaserPurchases.configs[_configID].enabled) {
+      purchaserPurchases.configs[_configID].quantity += _quantity;
+    } else {
+      _createConfig(purchaser, _configID, _quantity, sellerConfig);
+    }
 
     if (!lib_.owns(_purchaser, did_)) {
       lib_.addLibraryItem(_purchaser, did_);
     }
 
-    emit PurchasedResale(_purchaser, _seller, did_, _quantity, totalPrice, newConfigID);
+    emit PurchasedResale(_purchaser, _seller, did_, _quantity, totalPrice, _configID);
 
     if (sellerConfig.quantity == 0) {
-      _deleteConfig(seller, _configID, sellerPurchases);
+      _deleteConfig(seller, _configID, seller);
     }
 
     if (_jobId != bytes32(0) && _budget > 0) {
@@ -420,13 +436,12 @@ contract AFS is Ownable {
     }
   }
 
-  function _createConfig(bytes32 _owner, bytes32 _id, uint256 _quantity, ResaleConfig storage oldConfig) internal {
+  function _createConfig(bytes32 _owner, uint256 _id, uint256 _quantity, ResaleConfig storage oldConfig) internal {
     ResaleConfig memory newConfig;
 
-    newConfig.minResalePrice = oldConfig.minResalePrice;
-    newConfig.maxNumResales = oldConfig.maxNumResales;
-    newConfig.resalePrice = oldConfig.minResalePrice;
+    newConfig.resalePrice = globalConfigs_[_id].minResalePrice;
     newConfig.quantity = _quantity;
+    newConfig.enabled = true;
 
     Purchases storage purchases = purchases_[_owner];
 
@@ -442,8 +457,9 @@ contract AFS is Ownable {
     }
   }
 
-  function _deleteConfig(bytes32 seller, bytes32 _id, Purchases storage sellerPurchases) internal {
+  function _deleteConfig(bytes32 seller, uint256 _id, bytes32 _seller) internal {
     // delete config
+    Purchases storage sellerPurchases = purchases_[_seller];
     delete sellerPurchases.configs[_id]; // delete config mapping
     uint256 configIDIndex = sellerPurchases.configIDIndices[_id]; // get configID index
     delete sellerPurchases.configIDIndices[_id]; // delete configID index mapping
@@ -455,9 +471,9 @@ contract AFS is Ownable {
     }
   }
 
-  function getResaleConfig(bytes32 _owner, bytes32 _id) public view returns (uint256 minResalePrice, uint256 maxNumResales, uint256 resalePrice, uint256 available, uint256 quantity) {
+  function getResaleConfig(bytes32 _owner, uint256 _id) public view returns (uint256 minResalePrice, uint256 maxNumResales, uint256 resalePrice, uint256 available, uint256 quantity) {
     ResaleConfig storage config = purchases_[_owner].configs[_id];
-    return (config.minResalePrice, config.maxNumResales, config.resalePrice, config.available, config.quantity);
+    return (globalConfigs_[_id].minResalePrice, globalConfigs_[_id].maxNumResales, config.resalePrice, config.available, config.quantity);
   }
 
 /**
