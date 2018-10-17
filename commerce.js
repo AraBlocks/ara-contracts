@@ -36,7 +36,8 @@ const {
  * @param  {String}        opts.contentDid
  * @param  {String}        opts.password
  * @param  {String|Number} opts.price
- * @param {Boolean}        opts.estimate
+ * @param  {Boolean}       opts.estimate
+ * @param  {Object}        [opts.keyringOpts]
  * @throws {Error,TypeError}
  */
 async function setMinResalePrice(opts) {
@@ -146,6 +147,7 @@ async function getMinResalePrice(opts) {
  * @param  {String}        opts.configID
  * @param  {String|Number} opts.price
  * @param  {Boolean}       opts.estimate
+ * @param  {Object}        [opts.keyringOpts]
  * @throws {Error,TypeError}
  */
 async function setResalePrice(opts) {
@@ -298,9 +300,10 @@ async function getResalePrice(opts) {
  * @param  {Number}  opts.quantity
  * @param  {String}  opts.configID
  * @param  {Boolean} opts.estimate
+ * @param  {Object}  [opts.keyringOpts]
  * @throws {Error,TypeError}
  */
-async function unlockResale(opts) {
+async function unlockResaleQuantity(opts) {
   opts = Object.assign(opts, { unlock: true })
   return _setResaleAvailability(opts)
 }
@@ -314,9 +317,10 @@ async function unlockResale(opts) {
  * @param  {Number}  opts.quantity
  * @param  {String}  opts.configID
  * @param  {Boolean} opts.estimate
+ * @param  {Object}  [opts.keyringOpts]
  * @throws {Error,TypeError}
  */
-async function lockResale(opts) {
+async function lockResaleQuantity(opts) {
   opts = Object.assign(opts, { unlock: false })
   return _setResaleAvailability(opts)
 }
@@ -331,6 +335,7 @@ async function lockResale(opts) {
  * @param  {String}  opts.configID
  * @param  {Boolean} opts.estimate
  * @param  {Boolean} [opts.unlock]
+ * @param  {Object}  [opts.keyringOpts]
  * @throws {Error,TypeError}
  */
 async function _setResaleAvailability(opts) {
@@ -398,7 +403,7 @@ async function _setResaleAvailability(opts) {
       to: proxy,
       data: {
         abi,
-        functionName: unlock ? 'unlockResale' : 'lockResale',
+        functionName: unlock ? 'unlockResaleQuantity' : 'lockResaleQuantity',
         values: [
           configID,
           quantity
@@ -480,6 +485,7 @@ async function getResaleAvailability(opts) {
  * @param  {String}  opts.password
  * @param  {Number}  opts.maxResales
  * @param  {Boolean} opts.estimate
+ * @param  {Object}  [opts.keyringOpts]
  * @throws {Error,TypeError}
  */
 async function setResaleQuantity(opts) {
@@ -587,6 +593,7 @@ async function getResaleQuantity(opts) {
  * @param  {String}  opts.password
  * @param  {Number}  opts.quantity
  * @param  {Boolean} opts.estimate
+ * @param  {Object}  [opts.keyringOpts]
  * @throws {Error,TypeError}
  */
 async function setSupply(opts) {
@@ -660,6 +667,7 @@ async function setSupply(opts) {
  * @param  {String}  opts.password
  * @param  {Number}  opts.quantity
  * @param  {Boolean} opts.estimate
+ * @param  {Object}  [opts.keyringOpts]
  * @throws {Error,TypeError}
  */
 async function increaseSupply(opts) {
@@ -728,11 +736,12 @@ async function increaseSupply(opts) {
 
 /**
  * Decrease the supply of an AFS
- * @param  {Object} opts
- * @param  {String} opts.contentDid
- * @param  {String} opts.password
- * @param  {Number} opts.quantity
+ * @param  {Object}  opts
+ * @param  {String}  opts.contentDid
+ * @param  {String}  opts.password
+ * @param  {Number}  opts.quantity
  * @param  {Boolean} opts.estimate
+ * @param  {Object}  [opts.keyringOpts]
  * @throws {Error,TypeError}
  */
 async function decreaseSupply(opts) {
@@ -805,6 +814,7 @@ async function decreaseSupply(opts) {
  * @param  {String}  opts.contentDid
  * @param  {String}  opts.password
  * @param  {Boolean} opts.estimate
+ * @param  {Object}  [opts.keyringOpts]
  * @throws {Error,TypeError}
  */
 async function setUnlimitedSupply(opts) {
@@ -893,6 +903,210 @@ async function getSupply(opts) {
     throw err
   }
   return quantity
+}
+
+/**
+ * List an AFS for sale
+ * @param  {Object}  opts
+ * @param  {String}  opts.contentDid
+ * @param  {String}  opts.password
+ * @param  {Boolean} opts.estimate
+ * @param  {Object}  [opts.keyringOpts]
+ * @throws {Error,TypeError}
+ */
+async function listAFS(opts) {
+  opts = Object.assign(opts, { list: true })
+  return _toggleList(opts)
+}
+
+/**
+ * Unlist an AFS for sale
+ * @param  {Object}  opts
+ * @param  {String}  opts.contentDid
+ * @param  {String}  opts.password
+ * @param  {Boolean} opts.estimate
+ * @param  {Object}  [opts.keyringOpts]
+ * @throws {Error,TypeError}
+ */
+async function unlistAFS(opts) {
+  opts = Object.assign(opts, { list: false })
+  return _toggleList(opts)
+}
+
+/**
+ * Toggle an AFS's listing status
+ * @param  {Object}  opts
+ * @param  {String}  opts.contentDid
+ * @param  {String}  opts.password
+ * @param  {Boolean} opts.estimate
+ * @param  {Boolean} opts.list
+ * @param  {Object}  [opts.keyringOpts]
+ * @throws {Error,TypeError}
+ */
+async function _toggleList(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object.')
+  } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
+    throw new TypeError('Expecting non-empty content DID.')
+  } else if ('string' !== typeof opts.password || !opts.password) {
+    throw TypeError('Expecting non-empty password.')
+  } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
+    throw new TypeError('Expecting opts.estimate to be a boolean.')
+  }
+
+  const {
+    password,
+    keyringOpts,
+    estimate,
+    list
+  } = opts
+  let { contentDid } = opts
+
+  let ddo
+  try {
+    ({ did: contentDid, ddo } = await validate({
+      did: contentDid, password, label: 'toggleList', keyringOpts
+    }))
+  } catch (err) {
+    throw err
+  }
+
+  if (list) {
+    debug(`listing ${contentDid}...`)
+  } else {
+    debug(`unlisting ${contentDid}...`)
+  }
+
+  if (!(await proxyExists(contentDid))) {
+    throw new Error('This content does not have a valid proxy contract')
+  }
+
+  const proxy = await getProxyAddress(contentDid)
+
+  let owner = getDocumentOwner(ddo)
+  owner = `${AID_PREFIX}${owner}`
+  const acct = await account.load({ did: owner, password })
+
+  try {
+    const transaction = await tx.create({
+      account: acct,
+      to: proxy,
+      data: {
+        abi,
+        functionName: list ? 'list' : 'unlist'
+      }
+    })
+
+    if (estimate) {
+      return tx.estimateCost(transaction)
+    }
+
+    return tx.sendSignedTransaction(transaction)
+  } catch (err) {
+    throw err
+  }
+}
+
+/**
+ * Mark an AFS available for resale
+ * @param  {Object}  opts
+ * @param  {String}  opts.contentDid
+ * @param  {String}  opts.password
+ * @param  {Boolean} opts.estimate
+ * @param  {Object}  [opts.keyringOpts]
+ * @throws {Error,TypeError}
+ */
+async function unlockResale(opts) {
+  opts = Object.assign(opts, { resale: true })
+  return _toggleResale(opts)
+}
+
+/**
+ * Mark an AFS unavailable for resale
+ * @param  {Object}  opts
+ * @param  {String}  opts.contentDid
+ * @param  {String}  opts.password
+ * @param  {Boolean} opts.estimate
+ * @param  {Object}  [opts.keyringOpts]
+ * @throws {Error,TypeError}
+ */
+async function lockResale(opts) {
+  opts = Object.assign(opts, { resale: false })
+  return _toggleResale(opts)
+}
+
+/**
+ * Toggle an AFS's listing status
+ * @param  {Object}  opts
+ * @param  {String}  opts.contentDid
+ * @param  {String}  opts.password
+ * @param  {Boolean} opts.estimate
+ * @param  {Boolean} opts.list
+ * @param  {Object}  [opts.keyringOpts]
+ * @throws {Error,TypeError}
+ */
+async function _toggleResale(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object.')
+  } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
+    throw new TypeError('Expecting non-empty content DID.')
+  } else if ('string' !== typeof opts.password || !opts.password) {
+    throw TypeError('Expecting non-empty password.')
+  } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
+    throw new TypeError('Expecting opts.estimate to be a boolean.')
+  }
+
+  const {
+    password,
+    keyringOpts,
+    estimate,
+    resale
+  } = opts
+  let { contentDid } = opts
+
+  let ddo
+  try {
+    ({ did: contentDid, ddo } = await validate({
+      did: contentDid, password, label: 'toggleResale', keyringOpts
+    }))
+  } catch (err) {
+    throw err
+  }
+
+  if (resale) {
+    debug(`Marking ${contentDid} available for resale...`)
+  } else {
+    debug(`Marking ${contentDid} unavailable for resale...`)
+  }
+
+  if (!(await proxyExists(contentDid))) {
+    throw new Error('This content does not have a valid proxy contract')
+  }
+
+  const proxy = await getProxyAddress(contentDid)
+
+  let owner = getDocumentOwner(ddo)
+  owner = `${AID_PREFIX}${owner}`
+  const acct = await account.load({ did: owner, password })
+
+  try {
+    const transaction = await tx.create({
+      account: acct,
+      to: proxy,
+      data: {
+        abi,
+        functionName: resale ? 'markForResale' : 'markNotForResale'
+      }
+    })
+
+    if (estimate) {
+      return tx.estimateCost(transaction)
+    }
+
+    return tx.sendSignedTransaction(transaction)
+  } catch (err) {
+    throw err
+  }
 }
 
 /**
@@ -1210,6 +1424,8 @@ module.exports = {
   approveOwnershipTransfer,
   revokeOwnershipRequest,
   getResaleAvailability,
+  unlockResaleQuantity,
+  lockResaleQuantity,
   setUnlimitedSupply,
   setMinResalePrice,
   getMinResalePrice,
@@ -1224,5 +1440,7 @@ module.exports = {
   unlockResale,
   lockResale,
   setSupply,
-  getSupply
+  getSupply,
+  unlistAFS,
+  listAFS
 }

@@ -88,6 +88,8 @@ contract AFS is Ownable {
   event ResaleLocked(bytes32 _did, address _seller, uint256 _available);
   event MarkedForResale(bytes32 _did);
   event MarkedNotForResale(bytes32 _did);
+  event ResaleUnlocked(bytes32 _did);
+  event ResaleLocked(bytes32 _did);
   event RoyaltiesUpdated();
 
   modifier onlyBy(address _account)
@@ -166,14 +168,14 @@ contract AFS is Ownable {
     emit Unlisted(did_);
   }
 
-  function markForResale() public onlyBy(owner_) {
+  function unlockResale() public onlyBy(owner_) {
     resellable_ = true;
-    emit MarkedForResale(did_);
+    emit ResaleUnlocked(did_);
   }
 
-  function markNotForResale() public onlyBy(owner_) {
+  function lockResale() public onlyBy(owner_) {
     resellable_ = false;
-    emit MarkedNotForResale(did_);
+    emit ResaleLocked(did_);
   }
 
   function setPrice(uint256 _quantity, uint256 _price) external onlyBy(owner_) {
@@ -273,7 +275,7 @@ contract AFS is Ownable {
  * ===============================================================================================
  */
 
-  function unlockResale(bytes32 _configID, uint256 _quantity) public purchaseRequired {
+  function unlockResaleQuantity(bytes32 _configID, uint256 _quantity) public purchaseRequired {
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
     require(_quantity + purchases_[hashedAddress].configs[_configID].available <= purchases_[hashedAddress].configs[_configID].quantity, "Cannot unlock more for resale than owned.");
     purchases_[hashedAddress].configs[_configID].available += _quantity;
@@ -281,7 +283,7 @@ contract AFS is Ownable {
     emit ResaleUnlocked(did_, msg.sender, purchases_[hashedAddress].configs[_configID].available);
   }
 
-  function lockResale(bytes32 _configID, uint256 _quantity) public purchaseRequired {
+  function lockResaleQuantity(bytes32 _configID, uint256 _quantity) public purchaseRequired {
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
     require(purchases_[hashedAddress].configs[_configID].available >= _quantity, "Cannot lock more than is available for resale.");
     purchases_[hashedAddress].configs[_configID].available -= _quantity;
