@@ -455,6 +455,11 @@ contract AFS is Ownable {
     }
   }
 
+  function getResaleConfig(bytes32 _owner, bytes32 _id) public view returns (uint256 minResalePrice, uint256 maxNumResales, uint256 resalePrice, uint256 available, uint256 quantity) {
+    ResaleConfig storage config = purchases_[_owner].configs[_id];
+    return (config.minResalePrice, config.maxNumResales, config.resalePrice, config.available, config.quantity);
+  }
+
 /**
  * REWARDS
  * ===============================================================================================

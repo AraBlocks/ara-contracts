@@ -3,6 +3,7 @@
 const { abi: libAbi } = require('./build/contracts/Library.json')
 const { LIBRARY_ADDRESS, BYTES32_LENGTH } = require('./constants')
 const { abi: proxyAbi } = require('./build/contracts/AFS.json')
+const { getResaleConfig } = require('./commerce')
 const { isValidBytes32 } = require('./util')
 const util = require('util')
 
@@ -127,12 +128,14 @@ async function getNumberCopiesOwned(opts) {
 
   let { configID } = opts
 
-  if (configID && !isValidBytes32(configID)) {
-    throw new TypeError(`Expected opts.configID to be bytes32. Got ${configID}. Ensure opts.configID is a valid bytes32 string`)
-  }
+  if (configID) {
+    if (!isValidBytes32(configID)) {
+      throw new TypeError(`Expected opts.configID to be bytes32. Got ${configID}. Ensure opts.configID is a valid bytes32 string`)
+    }
 
-  if (BYTES32_LENGTH === configID.length) {
-    configID = ethify(configID, 'string' !== typeof configID)
+    if (BYTES32_LENGTH === configID.length) {
+      configID = ethify(configID, 'string' !== typeof configID)
+    }
   }
 
   if (!(await proxyExists(contentDid))) {
@@ -147,20 +150,23 @@ async function getNumberCopiesOwned(opts) {
     throw new Error(`opts.purchaserDid did not resolve to a valid Ethereum address. Got ${purchaser}. Ensure ${purchaserDid} is a valid Ara identity.`)
   }
 
-  const purchases = await call({
-    abi: proxyAbi,
-    address: proxy,
-    functionName: 'purchases_',
-    arguments: [
-      sha3({ t: 'address', v: purchaser })
-    ]
-  })
-  let { quantity } = purchases
-  const { configs } = purchases
-
+  let quantity
   if (configID) {
-    const config = configs[configID];
-    ({ quantity } = config)
+    const config = await getResaleConfig({
+      sellerDid: purchaserDid,
+      contentDid,
+      configID
+    })
+    quantity = config.quantity
+  } else {
+    quantity = await call({
+      abi: proxyAbi,
+      address: proxy,
+      functionName: 'purchases_',
+      arguments: [
+        sha3({ t: 'address', v: purchaser })
+      ]
+    })
   }
 
   return quantity

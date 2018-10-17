@@ -77,7 +77,7 @@ async function oncopies(argv) {
     }
     let opts = { purchaserDid: owner, contentDid: did }
     if (config) {
-      opts = Object.assign(opts, { config })
+      opts = Object.assign(opts, { configID: config })
     }
     const copies = await library.getNumberCopiesOwned(opts)
     if (config) {

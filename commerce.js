@@ -238,7 +238,7 @@ async function setResalePrice(opts) {
  * Get the resale price for an AFS
  * @param  {Object} opts
  * @param  {String} opts.contentDid
- * @param  {String} opts.seller
+ * @param  {String} opts.sellerDid
  * @param  {String} opts.configID
  * @throws {Error,TypeError}
  */
@@ -247,14 +247,14 @@ async function getResalePrice(opts) {
     throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw new TypeError('Expecting non-empty content DID.')
-  } else if ('string' !== typeof opts.seller || !opts.seller) {
+  } else if ('string' !== typeof opts.sellerDid || !opts.sellerDid) {
     throw new TypeError('Expecting non-empty seller DID.')
   } else if ('string' !== typeof opts.configID || !opts.configID) {
     throw new TypeError('Expecting non-empty resale config ID.')
   }
 
   const { contentDid } = opts
-  let { seller, configID } = opts
+  let { sellerDid, configID } = opts
 
   if (!isValidBytes32(configID)) {
     throw new TypeError(`Expected opts.configID to be bytes32. Got ${configID}. Ensure opts.configID is a valid bytes32 string`)
@@ -270,21 +270,16 @@ async function getResalePrice(opts) {
 
   const proxy = await getProxyAddress(contentDid)
 
-  seller = await getAddressFromDID(seller)
+  seller = await getAddressFromDID(normalize(sellerDid))
 
   let price
   try {
-    const { configs } = await call({
-      abi,
-      address: proxy,
-      functionName: 'purchases_',
-      arguments: [
-        sha3({ t: 'address', v: seller })
-      ]
+    const config = await getResaleConfig({
+      sellerDid,
+      contentDid,
+      configID
     })
-
-    const config = configs[configID];
-    ({ resalePrice: price } = config)
+    price = config.resalePrice
   } catch (err) {
     throw err
   }
@@ -425,7 +420,7 @@ async function _setResaleAvailability(opts) {
  * Get the number of purchased AFSs available for resale
  * @param  {Object} opts
  * @param  {String} opts.contentDid
- * @param  {String} opts.seller
+ * @param  {String} opts.sellerDid
  * @param  {String} opts.configID
  * @throws {Error,TypeError}
  */
@@ -434,14 +429,14 @@ async function getResaleAvailability(opts) {
     throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw new TypeError('Expecting non-empty content DID.')
-  } else if ('string' !== typeof opts.seller || !opts.seller) {
+  } else if ('string' !== typeof opts.sellerDid || !opts.sellerDid) {
     throw new TypeError('Expecting non-empty seller DID.')
   } else if ('string' !== typeof opts.configID || !opts.configID) {
     throw new TypeError('Expecting non-empty resale config ID.')
   }
 
   const { contentDid } = opts
-  let { seller, configID } = opts
+  let { sellerDid, configID } = opts
 
   if (!isValidBytes32(configID)) {
     throw new TypeError(`Expected opts.configID to be bytes32. Got ${configID}. Ensure opts.configID is a valid bytes32 string`)
@@ -457,21 +452,16 @@ async function getResaleAvailability(opts) {
 
   const proxy = await getProxyAddress(contentDid)
 
-  seller = await getAddressFromDID(seller)
+  seller = await getAddressFromDID(normalize(sellerDid))
 
   let quantity
   try {
-    const { configs } = await call({
-      abi,
-      address: proxy,
-      functionName: 'purchases_',
-      arguments: [
-        sha3({ t: 'address', v: seller })
-      ]
+    const config = await getResaleConfig({
+      sellerDid,
+      contentDid,
+      configID
     })
-
-    const config = configs[configID];
-    ({ available: quantity } = config)
+    quantity = config.available
   } catch (err) {
     throw err
   }
@@ -872,7 +862,7 @@ async function setUnlimitedSupply(opts) {
 }
 
 /**
- * Gets the current supply of an AFS
+ * Gets the current supply of an AFS, -1 if unlimited
  * @param  {Object} opts
  * @param  {String} opts.contentDid
  * @throws {Error,TypeError}
@@ -899,6 +889,14 @@ async function getSupply(opts) {
       address: proxy,
       functionName: 'totalCopies_'
     })
+    if (0 === Number(quantity) && 
+      await call({
+        abi,
+        address: proxy,
+        functionName: 'unlimited_'
+      })) {
+        quantity = -1
+    }
   } catch (err) {
     throw err
   }
@@ -1107,6 +1105,61 @@ async function _toggleResale(opts) {
   } catch (err) {
     throw err
   }
+}
+
+/**
+ * Requests ownership of an AFS.
+ * @param  {Object} opts
+ * @param  {String} opts.sellerDid
+ * @param  {String} opts.contentDid
+ * @param  {String} opts.configID
+ * @throws {Error|TypeError}
+ * @return {Object}
+ */
+async function getResaleConfig(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object.')
+  } else if ('string' !== typeof opts.sellerDid || !opts.sellerDid) {
+    throw new TypeError('Expecting non-empty seller DID.')
+  } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
+    throw new TypeError('Expecting non-empty content DID.')
+  } else if (!isValidBytes32(opts.configID)) {
+    throw new TypeError(`Expected opts.configID to be bytes32. Got ${opts.configID}. Ensure opts.configID is a valid bytes32 string`)
+  }
+
+  const { configID } = opts
+  let { contentDid, sellerDid } = opts
+
+  if (!(await proxyExists(contentDid))) {
+    throw new Error('This content does not have a valid proxy contract')
+  }
+
+  const proxy = await getProxyAddress(contentDid)
+
+  const seller = await getAddressFromDID(normalize(sellerDid))
+
+  let config = {}
+  try {
+    const resaleConfig = await call({
+      abi,
+      address: proxy,
+      functionName: 'getResaleConfig',
+      arguments: [
+        sha3({ t: 'address', v: seller }),
+        configID
+      ]
+    })
+    config = {
+      minResalePrice: resaleConfig.minResalePrice,
+      maxNumResales: resaleConfig.maxNumResales,
+      resalePrice: resaleConfig.resalePrice,
+      available: resaleConfig.available,
+      quantity: resaleConfig.quantity
+    }
+  } catch (err) {
+    throw err
+  }
+  return config
 }
 
 /**
@@ -1431,7 +1484,9 @@ module.exports = {
   getMinResalePrice,
   setResaleQuantity,
   getResaleQuantity,
+  getResaleQuantity,
   requestOwnership,
+  getResaleConfig,
   setResalePrice,
   getResalePrice,
   decreaseSupply,
