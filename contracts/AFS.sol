@@ -24,7 +24,8 @@ contract AFS is Ownable {
   mapping(uint256 => uint256) public prices_; // quantity (lower bound) => price
   uint256[] public priceTiers_; // quantity tiers
 
-  int256    public totalCopies_ = -1; // scarcity quantity; -1 for unlimited copies
+  uint256   public totalCopies_; // scarcity quantity; -1 for unlimited copies
+  bool      public unlimited_ = false;
 
   uint256   public minResalePrice_;
   uint256   public maxNumResales_; // < maxNumResales_ can be resold
@@ -71,9 +72,9 @@ contract AFS is Ownable {
   event Purchased(bytes32 _purchaser, bytes32 _did, uint256 _quantity, uint256 _price, bytes32 _configID);
   event PurchasedResale(bytes32 _purchaser, address _seller, bytes32 _did, uint256 _quantity, uint256 _price, bytes32 _configID);
   event Redeemed(address _sender);
-  event IncreasedSupply(bytes32 _did, int256 _added, int256 _total);
-  event DecreasedSupply(bytes32 _did, int256 _removed, int256 _total);
-  event SupplySet(bytes32 _did, int256 _quantity);
+  event IncreasedSupply(bytes32 _did, uint256 _added, uint256 _total);
+  event DecreasedSupply(bytes32 _did, uint256 _removed, uint256 _total);
+  event SupplySet(bytes32 _did, uint256 _quantity);
   event ResaleUnlocked(bytes32 _did, address _seller, uint256 _available);
   event ResaleLocked(bytes32 _did, address _seller, uint256 _available);
   event ResaleUnlocked(bytes32 _did);
@@ -119,7 +120,7 @@ contract AFS is Ownable {
     address tokenAddr;
     address libAddr;
     bytes32 did;
-    int256 totalCopies;
+    uint256 totalCopies;
     /* solium-disable-next-line security/no-inline-assembly */
     assembly {
         btsptr := add(_data, 32)
@@ -138,6 +139,9 @@ contract AFS is Ownable {
     lib_         = Library(libAddr);
     did_         = did;
     totalCopies_ = totalCopies;
+    if (0 == totalCopies_) {
+      unlimited_ = true;
+    }
   }
 
 /**
@@ -206,35 +210,46 @@ contract AFS is Ownable {
     emit MaxNumResalesSet(did_, maxNumResales_);
   }
 
-  function setSupply(int256 _quantity) public onlyBy(owner_) {
+  function setSupply(uint256 _quantity) public onlyBy(owner_) {
     require(_quantity > 0, "Quantity must be greater than 0.");
 
     totalCopies_ = _quantity;
+    if (0 != totalCopies_) {
+      unlimited_ = false;
+    }
+
     emit SupplySet(did_, totalCopies_);
   }
 
-  function increaseSupply(int256 _quantity) public onlyBy(owner_) {
+  function increaseSupply(uint256 _quantity) public onlyBy(owner_) {
     require(_quantity > 0, "Quantity must be greater than 0.");
-    if (totalCopies_ < 0) {
-      totalCopies_ = _quantity;
-    } else {
-      totalCopies_ += _quantity;
+
+    totalCopies_ += _quantity;
+    if (0 != totalCopies_) {
+      unlimited_ = false;
     }
+
     emit IncreasedSupply(did_, _quantity, totalCopies_);
     emit SupplySet(did_, totalCopies_);
   }
 
-  function decreaseSupply(int256 _quantity) public onlyBy(owner_) {
+  function decreaseSupply(uint256 _quantity) public onlyBy(owner_) {
     require(_quantity > 0, "Cannot remove non-positive number of copies.");
     require(totalCopies_ > 0, "Cannot remove anymore copies.");
     require(totalCopies_ - _quantity >= 0, "Trying to remove more copies than already exist.");
+
     totalCopies_ -= _quantity;
+    if (0 != totalCopies_) {
+      unlimited_ = false;
+    }
+
     emit DecreasedSupply(did_, _quantity, totalCopies_);
     emit SupplySet(did_, totalCopies_);
   }
 
   function setUnlimitedSupply() public onlyBy(owner_) {
-    totalCopies_ = -1;
+    totalCopies_ = 0;
+    unlimited_ = true;
     emit SupplySet(did_, totalCopies_);
   }
 
@@ -281,8 +296,9 @@ contract AFS is Ownable {
    */
   function purchase(bytes32 _purchaser, uint256 _quantity, bytes32 _jobId, uint256 _budget) external {
     require(listed_, "AFS has not been listed for sale.");
-    require(totalCopies_ != 0, "No more copies available for purchase.");
+    require(totalCopies_ != 0 || unlimited_, "No more copies available for purchase.");
     require(_quantity > 0, "Must purchase at least 1 copy.");
+    require(totalCopies_ >= _quantity || unlimited_, "Cannot purchase more copies than are available.");
 
     uint256 allowance = token_.allowance(msg.sender, address(this));
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
@@ -309,7 +325,7 @@ contract AFS is Ownable {
     }
 
     if (totalCopies_ > 0) {
-      totalCopies_ -= int(_quantity);
+      totalCopies_ -= _quantity;
       if (totalCopies_ == 0) {
         unlist();
       }

@@ -1,5 +1,6 @@
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
+const { getLibrarySize } = require('./library')
 const { randomBytes } = require('ara-crypto')
 const { AID_PREFIX } = require('./constants')
 const token = require('./token')
@@ -8,11 +9,6 @@ const {
   proxyExists,
   getProxyAddress
 } = require('./registry')
-
-const {
-  getLibrarySize,
-  getLibraryItem
-} = require('./library')
 
 const {
   hashDID,
@@ -186,7 +182,7 @@ async function purchase(opts) {
           }
         } = log
         config = _configID
-        console.log(config, _configID)
+        console.log(config)
         if (resale) {
           const { returnValues: { _seller } } = log
           debug(`${_purchaser} purchased ${_quantity} copies of ${_did} from ${_seller} with resale config ID ${config} for ${token.constrainTokenValue(_price)} Ara`)
@@ -219,9 +215,7 @@ async function purchase(opts) {
       debug('gas used', receipt.gasUsed)
       const size = await getLibrarySize(did)
 
-      const contentId = await getLibraryItem({ requesterDid: did, index: size - 1 })
-
-      debug(contentId, `added to library (${size})`)
+      debug(contentDid, `added to library (${size})`)
     }
 
     return {

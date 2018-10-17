@@ -192,7 +192,7 @@ async function deployProxy(opts) {
     version = version.toString()
   }
 
-  const scarcity = Number(opts.scarcity) || -1
+  const scarcity = Number(opts.scarcity) || 0
 
   let did
   let ddo
@@ -212,7 +212,7 @@ async function deployProxy(opts) {
   let proxyAddress = null
   try {
     const encodedData = web3Abi.encodeParameters(
-      [ 'address', 'address', 'address', 'bytes32', 'int256' ],
+      [ 'address', 'address', 'address', 'bytes32', 'uint256' ],
       [ acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, ethify(contentDid), scarcity ]
     )
     const transaction = await tx.create({

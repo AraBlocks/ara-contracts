@@ -1073,9 +1073,9 @@ async function _toggleResale(opts) {
   }
 
   if (resale) {
-    debug(`Marking ${contentDid} available for resale...`)
+    debug(`Unlocking AFS ${contentDid} for resale...`)
   } else {
-    debug(`Marking ${contentDid} unavailable for resale...`)
+    debug(`Locking AFS ${contentDid} from resale...`)
   }
 
   if (!(await proxyExists(contentDid))) {
@@ -1094,7 +1094,7 @@ async function _toggleResale(opts) {
       to: proxy,
       data: {
         abi,
-        functionName: resale ? 'markForResale' : 'markNotForResale'
+        functionName: resale ? 'unlockResale' : 'lockResale'
       }
     })
 

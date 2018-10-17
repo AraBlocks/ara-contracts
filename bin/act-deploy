@@ -131,7 +131,7 @@ async function onproxy(argv) {
       info(`Proxy deployed at address ${address} for ${did}.`)
     } else {
       info(`Upgrading proxy for ${did} to version ${version}...`)
-      // act deploy proxy -u 4db0ac08e116413d1433f69bad49cecc13aeccead2e51942b928414fbe3fe122 2
+      // act deploy proxy -u 77cf1e66f53aefeba947d8c06df32ebe71c8c947f7aaa3c3e96714b88e04a193 10
       const upgraded = await registry.upgradeProxy(opts)
       if (upgraded) {
         info(`Proxy successfully upgraded to version ${version}.`)
@@ -157,7 +157,7 @@ async function onstandard(argv) {
 
   try {
     info(`Deploying new AFS standard version ${version}...`)
-    // act deploy standard 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 2 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/AraToken.sol -D
+    // act deploy standard 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 10 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/AraToken.sol -D
     const address = await registry.deployNewStandard({
       requesterDid: did,
       password,

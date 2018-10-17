@@ -71,11 +71,16 @@ module.exports = (async function main() {
   }
 
   const { password } = await promptForPassword()
-
-  if (seller) {
-    info(`Purchasing ${quantity} copies of ${did} from ${seller}...`)
+  let copyText
+  if (1 !== quantity) {
+    copyText = 'copies'
   } else {
-    info(`Purchasing ${quantity} copies of ${did}...`)
+    copyText = 'copy'
+  }
+  if (seller) {
+    info(`Purchasing ${quantity} ${copyText} of ${did} from ${seller}...`)
+  } else {
+    info(`Purchasing ${quantity} ${copyText} of ${did}...`)
   }
   try {
     let opts = {
@@ -90,9 +95,9 @@ module.exports = (async function main() {
       // DEBUG=* act purchase --seller 24b25a3e363dd76dac479dc9c24d91d9b85ca7c36ddf469c59df1303c46c2a05 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 9272a89f3f87d2b2b6ada9f7040794d3a8e847a0db38fc2257702beec82e4611 --quantity 5 --budget 10
       opts = Object.assign(opts, { seller, config })
     }
-    // DEBUG=* act purchase 77da0a6389fd2942d30c794c7a7dd61c97d7f7b0ee3a795100d171404f9073e0 4db0ac08e116413d1433f69bad49cecc13aeccead2e51942b928414fbe3fe122 --quantity 10 --budget 10
-    const { configID } = await purchase(opts)
-    info(`${purchaser} purchased ${quantity} copies of ${did} with resale configID ${configID}.`)
+    // DEBUG=* act purchase 77da0a6389fd2942d30c794c7a7dd61c97d7f7b0ee3a795100d171404f9073e0 77cf1e66f53aefeba947d8c06df32ebe71c8c947f7aaa3c3e96714b88e04a193 --quantity 10 --budget 10
+    const { config } = await purchase(opts)
+    info(`${purchaser} purchased ${quantity} ${copyText} of ${did} with resale configID ${config}.`)
   } catch (err) {
     onfatal(err)
   }
