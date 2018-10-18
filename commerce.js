@@ -238,7 +238,7 @@ async function setResalePrice(opts) {
  * Get the resale price for an AFS
  * @param  {Object} opts
  * @param  {String} opts.contentDid
- * @param  {String} opts.seller
+ * @param  {String} opts.sellerDid
  * @param  {String} opts.configID
  * @throws {Error,TypeError}
  */
@@ -247,14 +247,14 @@ async function getResalePrice(opts) {
     throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw new TypeError('Expecting non-empty content DID.')
-  } else if ('string' !== typeof opts.seller || !opts.seller) {
+  } else if ('string' !== typeof opts.sellerDid || !opts.sellerDid) {
     throw new TypeError('Expecting non-empty seller DID.')
   } else if ('string' !== typeof opts.configID || !opts.configID) {
     throw new TypeError('Expecting non-empty resale config ID.')
   }
 
   const { contentDid } = opts
-  let { seller, configID } = opts
+  let { sellerDid, configID } = opts
 
   if (!isValidBytes32(configID)) {
     throw new TypeError(`Expected opts.configID to be bytes32. Got ${configID}. Ensure opts.configID is a valid bytes32 string`)
@@ -270,21 +270,16 @@ async function getResalePrice(opts) {
 
   const proxy = await getProxyAddress(contentDid)
 
-  seller = await getAddressFromDID(seller)
+  seller = await getAddressFromDID(normalize(sellerDid))
 
   let price
   try {
-    const { configs } = await call({
-      abi,
-      address: proxy,
-      functionName: 'purchases_',
-      arguments: [
-        sha3({ t: 'address', v: seller })
-      ]
+    const config = await getResaleConfig({
+      sellerDid,
+      contentDid,
+      configID
     })
-
-    const config = configs[configID];
-    ({ resalePrice: price } = config)
+    price = config.resalePrice
   } catch (err) {
     throw err
   }
@@ -425,7 +420,7 @@ async function _setResaleAvailability(opts) {
  * Get the number of purchased AFSs available for resale
  * @param  {Object} opts
  * @param  {String} opts.contentDid
- * @param  {String} opts.seller
+ * @param  {String} opts.sellerDid
  * @param  {String} opts.configID
  * @throws {Error,TypeError}
  */
@@ -434,14 +429,14 @@ async function getResaleAvailability(opts) {
     throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw new TypeError('Expecting non-empty content DID.')
-  } else if ('string' !== typeof opts.seller || !opts.seller) {
+  } else if ('string' !== typeof opts.sellerDid || !opts.sellerDid) {
     throw new TypeError('Expecting non-empty seller DID.')
   } else if ('string' !== typeof opts.configID || !opts.configID) {
     throw new TypeError('Expecting non-empty resale config ID.')
   }
 
   const { contentDid } = opts
-  let { seller, configID } = opts
+  let { sellerDid, configID } = opts
 
   if (!isValidBytes32(configID)) {
     throw new TypeError(`Expected opts.configID to be bytes32. Got ${configID}. Ensure opts.configID is a valid bytes32 string`)
@@ -457,21 +452,16 @@ async function getResaleAvailability(opts) {
 
   const proxy = await getProxyAddress(contentDid)
 
-  seller = await getAddressFromDID(seller)
+  seller = await getAddressFromDID(normalize(sellerDid))
 
   let quantity
   try {
-    const { configs } = await call({
-      abi,
-      address: proxy,
-      functionName: 'purchases_',
-      arguments: [
-        sha3({ t: 'address', v: seller })
-      ]
+    const config = await getResaleConfig({
+      sellerDid,
+      contentDid,
+      configID
     })
-
-    const config = configs[configID];
-    ({ available: quantity } = config)
+    quantity = config.available
   } catch (err) {
     throw err
   }
@@ -872,7 +862,7 @@ async function setUnlimitedSupply(opts) {
 }
 
 /**
- * Gets the current supply of an AFS
+ * Gets the current supply of an AFS, -1 if unlimited
  * @param  {Object} opts
  * @param  {String} opts.contentDid
  * @throws {Error,TypeError}
@@ -899,6 +889,14 @@ async function getSupply(opts) {
       address: proxy,
       functionName: 'totalCopies_'
     })
+    if (0 === Number(quantity) && 
+      await call({
+        abi,
+        address: proxy,
+        functionName: 'unlimited_'
+      })) {
+        quantity = -1
+    }
   } catch (err) {
     throw err
   }
@@ -1112,6 +1110,61 @@ async function _toggleResale(opts) {
 /**
  * Requests ownership of an AFS.
  * @param  {Object} opts
+ * @param  {String} opts.sellerDid
+ * @param  {String} opts.contentDid
+ * @param  {String} opts.configID
+ * @throws {Error|TypeError}
+ * @return {Object}
+ */
+async function getResaleConfig(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object.')
+  } else if ('string' !== typeof opts.sellerDid || !opts.sellerDid) {
+    throw new TypeError('Expecting non-empty seller DID.')
+  } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
+    throw new TypeError('Expecting non-empty content DID.')
+  } else if (!isValidBytes32(opts.configID)) {
+    throw new TypeError(`Expected opts.configID to be bytes32. Got ${opts.configID}. Ensure opts.configID is a valid bytes32 string`)
+  }
+
+  const { configID } = opts
+  let { contentDid, sellerDid } = opts
+
+  if (!(await proxyExists(contentDid))) {
+    throw new Error('This content does not have a valid proxy contract')
+  }
+
+  const proxy = await getProxyAddress(contentDid)
+
+  const seller = await getAddressFromDID(normalize(sellerDid))
+
+  let config = {}
+  try {
+    const resaleConfig = await call({
+      abi,
+      address: proxy,
+      functionName: 'getResaleConfig',
+      arguments: [
+        sha3({ t: 'address', v: seller }),
+        configID
+      ]
+    })
+    config = {
+      minResalePrice: token.constrainTokenValue(resaleConfig.minResalePrice),
+      maxNumResales: resaleConfig.maxNumResales,
+      resalePrice: token.constrainTokenValue(resaleConfig.resalePrice),
+      available: resaleConfig.available,
+      quantity: resaleConfig.quantity
+    }
+  } catch (err) {
+    throw err
+  }
+  return config
+}
+
+/**
+ * Requests ownership of an AFS.
+ * @param  {Object} opts
  * @param  {String} opts.requesterDid
  * @param  {String} opts.contentDid
  * @param  {String} opts.password
@@ -1222,22 +1275,54 @@ async function approveOwnershipTransfer(opts) {
   return tx.sendSignedTransaction(approveTx)
 }
 
-// TODO(cckelly) remove me
-// void async function main() {
-//   const opts = {
-//     did: '4663b749add9f2fc1fe8f480e4cf1c6f285a17078eb974aacf7410fa3d7fee7f',
-//     password: 'pass',
-//     recipients: [
-//       { did: '77da0a6389fd2942d30c794c7a7dd61c97d7f7b0ee3a795100d171404f9073e0', amount: 25 },
-//       { did: 'b2dc6cc7fb4606d2fc17bb07462668b1a25994af77071e39ac60948f8b55023c', amount: 40 }
-//     ]
-//   }
-//   try {
-//     await setRoyalties(opts)
-//   } catch (err) {
-//     console.log(err.message)
-//   }
-}()
+async function getRoyalties(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object')
+  } else if (!opts.did || 'string' !== typeof opts.did) {
+    throw new TypeError('Expecting non-empty DID')
+  } else if (!opts.password || 'string' !== typeof opts.password) {
+    throw new TypeError('Expecting non-empty password')
+  }
+
+  const {
+    did,
+    password,
+    keyringOpts = {}
+  } = opts
+
+  let ownerAddress
+  let ddo
+  try {
+    ({ ddo } = await validate({
+      did,
+      password,
+      label: 'getRoyalties',
+      keyringOpts
+    }))
+    ownerAddress = await getAddressFromDID(normalize(did))
+  } catch (err) {
+    throw err
+  }
+
+  if (!(await proxyExists(did))) {
+    throw new Error('Content does not have a valid proxy contract')
+  }
+
+  const proxy = await getProxyAddress(did)
+  let owner = getDocumentOwner(ddo, true)
+  owner = `${AID_PREFIX}${owner}`
+
+  if (!isAddress(ownerAddress)) {
+    throw new Error(`opts.did did not resolve to a valid Ethereum address. 
+      Ensure ${did} is a valid Ara identity.`)
+  }
+
+  return call({
+    abi,
+    address: proxy,
+    functionName: 'getRoyalties'
+  })
+}
 
 async function setRoyalties(opts) {
   if (!opts || 'object' !== typeof opts) {
@@ -1327,21 +1412,24 @@ async function setRoyalties(opts) {
   }
 
   const deployed = await contract.get(abi, proxy)
-  deployed.events.RoyaltiesUpdated({ }, (err, { event }) => {
+  deployed.events.RoyaltiesUpdated({ }, (err, ev) => {
     if (err) {
       console.log(err)
     } else {
-      console.log(event)
+      console.log(ev)
     }
   })
 
-  deployed.events.RoyaltiesPaidOut({ }, (err, { event }) => {
+  deployed.events.RoyaltiesPaidOut({ }, (err, ev) => {
     if (err) {
       console.log(err)
     } else {
-      console.log(event)
+      console.log(ev)
     }
   })
+
+  console.log('setting addresses to', addresses)
+  console.log('setting amounts to', amounts)
 
   const acct = await account.load({ did: owner, password })
   const royaltiesTx = await tx.create({
@@ -1450,11 +1538,14 @@ module.exports = {
   getMinResalePrice,
   setResaleQuantity,
   getResaleQuantity,
+  getResaleQuantity,
   requestOwnership,
+  getResaleConfig,
   setResalePrice,
   getResalePrice,
   decreaseSupply,
   increaseSupply,
+  getRoyalties,
   setRoyalties,
   unlockResale,
   lockResale,
