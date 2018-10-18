@@ -70,7 +70,7 @@ async function ongetownerprofit(argv) {
     onfatal(err)
   }
 
-  info("Current owner profit for %s: %s", did, profit)
+  info("Current owner profit for %s: %s%", did, profit)
 }
 
 async function ongetroyalty(argv) {
@@ -93,14 +93,8 @@ async function onsetroyalties(argv) {
   const { did, secret, network, keyring } = argv
   const { password } = await promptForPassword()
 
-  let answer
-  do {
-    info("we are not done")
-  } while (({ answer }) = await promptForRoyaltyIdentity())
-  info("we are done")
+  const { answer } = await promptForAnotherRoyalty()
 }
-
-// TODO
 
 async function promptForRoyaltyIdentity() {
 
@@ -112,9 +106,9 @@ async function promptForRoyaltyAmount() {
 
 async function promptForAnotherRoyalty() {
   return inquirer.prompt({
-    type: 'boolean',
+    type: 'confirm',
     name: 'answer',
-    message: 'Shall we?'
+    message: 'Is there another identity receiving a royalty?'
   })
 }
 
