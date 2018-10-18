@@ -301,17 +301,19 @@ contract AFS is Ownable {
     royalties_.ownerProfit = royaltyMultiplier - profit;
   }
 
-  function getRoyalties() public view returns (bytes32[], uint256[], uint256) {
+  function getRoyalty(bytes32 hashedAddress) public view returns (uint256) {
     if(royalties_.hashedAddresses.length == 0) {
-      return (new bytes32[](0), new uint256[](0), 0);
+      return 0;
     } else {
-      bytes32[] memory addrs = new bytes32[](royalties_.hashedAddresses.length);
-      uint256[] memory amounts = new uint256[](royalties_.hashedAddresses.length);
-      for (uint256 i = 0; i < royalties_.hashedAddresses.length; i++) {
-        addrs[i] = royalties_.hashedAddresses[i];
-        amounts[i] = royalties_.split[royalties_.hashedAddresses[i]];
-      }
-      return (addrs, amounts, royalties_.ownerProfit);
+      return royalties_.split[hashedAddress];
+    }
+  }
+
+  function getOwnerProfit() public view returns (uint256) {
+    if(royalties_.hashedAddresses.length == 0) {
+      return royaltyMultiplier;
+    } else {
+      return royalties_.ownerProfit;
     }
   }
 

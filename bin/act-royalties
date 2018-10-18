@@ -1,0 +1,137 @@
+#!/usr/bin/env node
+
+const { createProgram } = require('../lib/program')
+const { info, error } = require('ara-console')
+const inquirer = require('inquirer')
+
+const {
+  getOwnerProfit,
+  setRoyalties,
+  getRoyalty
+} = require('../commerce')
+
+// yargs program command line interface instance
+const program = createProgram({
+  usage: `
+usage: act royalties: [-h] [--help] [options] [--] <command>
+`
+})
+
+// Parse program arguments based on yargs spec
+const { argv } = program
+  .command('get <did> <identities...>', 'Get the current royalty distribution of an AFS for an identity', () => {
+    program
+      .positional('did', {
+        type: 'string',
+        describe: 'An AFS ARA decentralized identity (did) URI'
+      })
+      .positional('identities', {
+        type: 'string',
+        describe: "The identities to get royalties for"
+      })
+  }, ongetroyalty)
+  .command('set <did>', 'Sets royalties for an AFS, clearing any previous royalties', () => {
+    program
+      .positional('did', {
+        type: 'string',
+        describe: 'An AFS ARA decentralized identity (did) URI'
+      })
+  }, onsetroyalties)
+  .command('profit <did>', 'Gets the owner of the AFS\' profit percentage per purchase', () => {
+    program
+      .positional('did', {
+        type: 'string',
+        describe: 'An AFS ARA decentralized identity (did) URI'
+      })
+  }, ongetownerprofit)
+
+// Emit program usage help
+if (0 == argv._.length && argv.help) {
+  program.showHelp()
+  process.exit(0)
+}
+
+// Main program entry
+module.exports = (async function main() {
+  if (argv.debug) {
+    require('debug').enable('ara-contracts*')
+  }
+}())
+
+async function ongetownerprofit(argv) {
+  const { did, secret, network, keyring } = argv
+  const { password } = await promptForPassword()
+  const keyringOpts = { secret, network, keyring }
+
+  let profit
+  try {
+    profit = await getOwnerProfit({ did, password })
+  } catch (err) {
+    onfatal(err)
+  }
+
+  info("Current owner profit for %s: %s", did, profit)
+}
+
+async function ongetroyalty(argv) {
+  const { did, secret, network, keyring, identities } = argv
+  const { password } = await promptForPassword()
+  const keyringOpts = { secret, network, keyring }
+
+  const [ ...recipients ] = identities
+
+  let result
+  try {
+    result = await getRoyalty({ did, password, recipients, keyringOpts })
+  } catch (err) {
+    onfatal(err)
+  }
+  info(result)
+}
+
+async function onsetroyalties(argv) {
+  const { did, secret, network, keyring } = argv
+  const { password } = await promptForPassword()
+
+  let answer
+  do {
+    info("we are not done")
+  } while (({ answer }) = await promptForRoyaltyIdentity())
+  info("we are done")
+}
+
+// TODO
+
+async function promptForRoyaltyIdentity() {
+
+}
+
+async function promptForRoyaltyAmount() {
+
+}
+
+async function promptForAnotherRoyalty() {
+  return inquirer.prompt({
+    type: 'boolean',
+    name: 'answer',
+    message: 'Shall we?'
+  })
+}
+
+async function promptForPassword() {
+  return inquirer.prompt([{
+    type: 'password',
+    name: 'password',
+    message:
+    "Please provide the passphrase for your identity. This is needed to " +
+    "complete this action.\n" +
+    "Passphrase:"
+  }])
+}
+
+function onfatal(err) {
+  if (err) {
+    error('fatal:', err.message)
+  }
+  process.exit(1)
+}
