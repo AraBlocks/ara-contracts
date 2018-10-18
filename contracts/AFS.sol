@@ -29,12 +29,13 @@ contract AFS is Ownable {
 
   uint256   public minResalePrice_;
   uint256   public maxNumResales_; // < maxNumResales_ can be resold
-  Royalties public royalties_;
 
   mapping(bytes32 => Job)                      public jobs_; // jobId => job { budget, sender }
   mapping(bytes32 => uint256)                  public rewards_;    // farmer => rewards
   mapping(bytes32 => Purchases)                public purchases_; // keccak256 hashes of buyer addresses
   mapping(uint8 => mapping (uint256 => bytes)) public metadata_;
+
+  Royalties royalties_;
 
   struct Job {
     address sender;
@@ -62,13 +63,13 @@ contract AFS is Ownable {
   }
 
   struct Royalties {
-    mapping(address => uint256) royalitySplit;
-    address[] addresses;
-    uint256 totalRoyalties;
+    mapping(bytes32 => uint256) split;
+    bytes32[] hashedAddresses;
+    uint256 ownerProfit;
   }
 
   // constants
-  uint256 public constant decimals = 2;
+  uint256 public constant royaltyMultiplier = 100 * 10^2;
 
   event Commit(bytes32 _did);
   event Unlisted(bytes32 _did);
@@ -92,6 +93,7 @@ contract AFS is Ownable {
   event ResaleUnlocked(bytes32 _did);
   event ResaleLocked(bytes32 _did);
   event RoyaltiesUpdated();
+  event RoyaltiesPaidOut(bytes32[] _hashedAddresses, uint256[] _amounts, uint256 _price, uint256[] _profits);
 
   modifier onlyBy(address _account)
   {
@@ -266,23 +268,21 @@ contract AFS is Ownable {
     emit SupplySet(did_, totalCopies_);
   }
 
-  function setRoyalties(address[] addresses, uint256[] amounts, uint256 total) public onlyBy(owner_) {
+  function setRoyalties(bytes32[] _hashedAddresses, uint256[] _amounts) public onlyBy(owner_) {
     require(priceTiers_.length > 0, "Price must be set prior to setting royalties.");
 
+    uint256 profit = 0;
     Royalties storage royalties;
-    for(uint256 i = 0; i < addresses.length; i++) {
-      royalties.royalitySplit[addresses[i]] = formatDecimals(amounts[i]);
-      royalties.addresses[i] = addresses[i];
+    for(uint256 i = 0; i < _hashedAddresses.length; i++) {
+      royalties.split[_hashedAddresses[i]] = _amounts[i];
+      royalties.hashedAddresses.push(_hashedAddresses[i]);
+      profit += _amounts[i];
     }
-    royalties.totalRoyalties = formatDecimals(total);
 
+    royalties.ownerProfit = royaltyMultiplier - profit;
     royalties_ = royalties;
 
     emit RoyaltiesUpdated();
-  }
-
-  function formatDecimals(uint256 _value) internal pure returns (uint256) {
-    return _value * 10 ** decimals;
   }
 
 /**
@@ -337,7 +337,25 @@ contract AFS is Ownable {
     uint256 totalPrice = _quantity * getPrice(_quantity);
     require(allowance >= (totalPrice) + _budget, "Proxy must be approved for purchase.");
 
-    require(token_.transferFrom(msg.sender, owner_, totalPrice), "Ara transfer failed.");
+    if(royalties_.hashedAddresses.length == 0) {
+      require(token_.transferFrom(msg.sender, owner_, totalPrice), "Ara transfer failed.");
+    } else {  
+      // TODO temporary
+      uint256[] amounts;
+      uint256[] profits;
+
+      // amounts becomes any integer less than 10,000 where 10,000 = 100%
+      for(uint256 i = 0; i < royalties_.hashedAddresses.length; i++) {
+        hashedAddress = royalties_.hashedAddresses[i];
+        uint256 amount = royalties_.split[hashedAddress];
+        amounts.push(amount);
+        uint256 profit = totalPrice * ((royaltyMultiplier / amount) + (royaltyMultiplier % amount));
+        profits.push(profit);
+        rewards_[hashedAddress] += profit;
+      }
+      emit RoyaltiesPaidOut(royalties_.hashedAddresses, amounts, totalPrice, profits);
+      // TODO pay out owner
+    }
 
     bytes32 configID = bytes32(0);
     if (resellable_) {
