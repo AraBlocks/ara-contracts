@@ -89,7 +89,7 @@ async function setResaleConfig(opts) {
   debug(`setting resale config ${config}...`)
 
   try {
-    const contents = fs.readFileSync(config)
+    const contents = await pify(fs.readFile)(config, 'utf8')
     const resaleConfig = JSON.parse(contents)
 
     let id = resaleConfig[`${CONFIG_ID}`]
@@ -173,7 +173,7 @@ async function setResaleConfig(opts) {
         const args = Object.assign(configOpts, { configID: id })
         await unlockResale(args)
       } else {
-        debug(`AFS ${contentDid} resale configuration ${id} is already unlocked`)
+        debug(`AFS ${contentDid} is already unlocked`)
       }
     }
 
@@ -219,7 +219,7 @@ async function setMinResalePrice(opts) {
   } catch (err) {
     throw err
   }
-  debug(`setting minimum resale price for ${contentDid} to ${price}`)
+  debug(`setting minimum resale price for ${contentDid} to ${price}...`)
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
@@ -347,7 +347,7 @@ async function setResalePrice(opts) {
 
   contentDid = normalize(contentDid)
 
-  debug(`setting resale price for ${contentDid} to ${price}`)
+  debug(`setting resale price for ${contentDid} to ${price}...`)
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
@@ -519,9 +519,9 @@ async function _setResaleAvailability(opts) {
   contentDid = normalize(contentDid)
 
   if (unlock) {
-    debug(`Unlocking ${contentDid} for resale for seller ${requesterDid}`)
+    debug(`Unlocking ${contentDid} for resale for seller ${requesterDid}...`)
   } else {
-    debug(`Locking ${contentDid} for resale for seller ${requesterDid}`)
+    debug(`Locking ${contentDid} for resale for seller ${requesterDid}...`)
   }
 
   if (!(await proxyExists(contentDid))) {
@@ -644,7 +644,7 @@ async function setResaleQuantity(opts) {
   } catch (err) {
     throw err
   }
-  debug(`setting maximum number of resales for ${contentDid} to ${maxResales}`)
+  debug(`setting maximum number of resales for ${contentDid} to ${maxResales}...`)
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
@@ -759,7 +759,7 @@ async function setSupply(opts) {
   } catch (err) {
     throw err
   }
-  debug(`setting supply for ${contentDid} to ${quantity}`)
+  debug(`setting supply for ${contentDid} to ${quantity}...`)
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
@@ -833,7 +833,7 @@ async function increaseSupply(opts) {
   } catch (err) {
     throw err
   }
-  debug(`adding ${quantity} copies for ${contentDid}`)
+  debug(`adding ${quantity} copies for ${contentDid}...`)
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
@@ -907,7 +907,7 @@ async function decreaseSupply(opts) {
   } catch (err) {
     throw err
   }
-  debug(`adding ${quantity} copies for ${contentDid}`)
+  debug(`adding ${quantity} copies for ${contentDid}...`)
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
@@ -973,7 +973,7 @@ async function setUnlimitedSupply(opts) {
   } catch (err) {
     throw err
   }
-  debug(`removing scarcity limitations for ${contentDid}`)
+  debug(`removing scarcity limitations for ${contentDid}...`)
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
