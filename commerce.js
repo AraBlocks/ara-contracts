@@ -1290,23 +1290,126 @@ async function approveOwnershipTransfer(opts) {
   return tx.sendSignedTransaction(approveTx)
 }
 
-// TODO(cckelly) remove me
-// void async function main() {
-//   const opts = {
-//     did: '4267af4983eff202c5a53bcf10e2d7c730a9fbac68ac98dd03522bf09f166657',
-//     password: 'pass',
-//     recipients: [
-//       { did: '77da0a6389fd2942d30c794c7a7dd61c97d7f7b0ee3a795100d171404f9073e0', amount: 20 },
-//       { did: 'b2dc6cc7fb4606d2fc17bb07462668b1a25994af77071e39ac60948f8b55023c', amount: 40 }
-//     ]
-//   }
-//   try {
-//     await setRoyalties(opts)
-//   } catch (err) {
-//     console.log(err.message)
-//   }
-//   console.log('DONE!!')
-// }()
+async function getOwnerProfit(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object')
+  } else if (!opts.did || 'string' !== typeof opts.did) {
+    throw new TypeError('Expecting non-empty DID')
+  } else if (!opts.password || 'string' !== typeof opts.password) {
+    throw new TypeError('Expecting non-empty password')
+  }
+
+  const {
+    did,
+    password,
+    keyringOpts = {}
+  } = opts
+
+  let ownerAddress
+  let ddo
+  try {
+    ({ ddo } = await validate({
+      did,
+      password,
+      label: 'getOwnerProfit',
+      keyringOpts
+    }))
+    ownerAddress = await getAddressFromDID(normalize(did))
+  } catch (err) {
+    throw err
+  }
+
+  if (!(await proxyExists(did))) {
+    throw new Error('Content does not have a valid proxy contract')
+  }
+
+  const proxy = await getProxyAddress(did)
+  let owner = getDocumentOwner(ddo, true)
+  owner = `${AID_PREFIX}${owner}`
+
+  if (!isAddress(ownerAddress)) {
+    throw new Error(`opts.did did not resolve to a valid Ethereum address. 
+      Ensure ${did} is a valid Ara identity.`)
+  }
+
+  let profit = await call({
+    abi,
+    address: proxy,
+    functionName: 'getOwnerProfit'
+  })
+
+  return parseInt(profit) / 100
+}
+
+async function getRoyalty(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object')
+  } else if (!opts.did || 'string' !== typeof opts.did) {
+    throw new TypeError('Expecting non-empty DID')
+  } else if (!opts.password || 'string' !== typeof opts.password) {
+    throw new TypeError('Expecting non-empty password')
+  } else if (!opts.recipients || !Array.isArray(opts.recipients) || 0 === opts.recipients.length) {
+    throw new TypeError('Expecting valid array for recipients')
+  }
+
+  const {
+    did,
+    password,
+    recipients,
+    keyringOpts = {}
+  } = opts
+
+  let ownerAddress
+  let ddo
+  try {
+    ({ ddo } = await validate({
+      did,
+      password,
+      label: 'getRoyalty',
+      keyringOpts
+    }))
+    ownerAddress = await getAddressFromDID(normalize(did))
+  } catch (err) {
+    throw err
+  }
+
+  if (!(await proxyExists(did))) {
+    throw new Error('Content does not have a valid proxy contract')
+  }
+
+  const proxy = await getProxyAddress(did)
+  let owner = getDocumentOwner(ddo, true)
+  owner = `${AID_PREFIX}${owner}`
+
+  if (!isAddress(ownerAddress)) {
+    throw new Error(`opts.did did not resolve to a valid Ethereum address. 
+      Ensure ${did} is a valid Ara identity.`)
+  }
+
+  const result = []
+  for (let i in recipients) {
+    const recipient = recipients[i]
+    if (!recipient.did || 'string' !== typeof recipient.did) {
+      throw new TypeError('Expecting recipient DID to be a non-empty')
+    }
+
+    let address = await getAddressFromDID(normalize(did))
+    if (!isAddress(address)) {
+      throw new Error(`recipient.did did not resolve to a valid Ethereum address. 
+        Ensure ${recipient} is a valid Ara identity.`)
+    }
+
+    const royalty = await call({
+      abi,
+      address: proxy,
+      functionName: 'getRoyalty',
+      arguments: [ recipient ]
+    })
+    result.push({ did: recipient, amount: royalty })
+  }
+
+  return result
+}
 
 async function setRoyalties(opts) {
   if (!opts || 'object' !== typeof opts) {
@@ -1353,12 +1456,6 @@ async function setRoyalties(opts) {
       Ensure ${did} is a valid Ara identity.`)
   }
 
-  const deployed = await contract.get(abi, proxy)
-  deployed.events.RoyaltiesUpdated({}, (err, ev) => {
-    if (err) console.log(err)
-    else console.log(ev)
-  })
-
   let total = 0
   let addresses = []
   let amounts = []
@@ -1371,8 +1468,9 @@ async function setRoyalties(opts) {
       throw new TypeError('Expecting amount to be positive Number')
     }
 
-    const { did, amount } = recipient
-    const address = await getAddressFromDID(normalize(did))
+    const { did } = recipient
+    let { amount } = recipient
+    let address = await getAddressFromDID(normalize(did))
     if (!isAddress(address)) {
       throw new Error(`recipient.did did not resolve to a valid Ethereum address. 
         Ensure ${did} is a valid Ara identity.`)
@@ -1382,42 +1480,59 @@ async function setRoyalties(opts) {
       throw new Error('Duplicate DIDs found in recipients.')
     }
 
+    address = sha3(address)
     addresses.push(address)
 
-    total += amount
-    if (100 < total) {
-      throw new Error('Royalty totals cannot exceed 100%.')
+    const precision = _getAmountPrecision(amount)
+    if (2 < precision) {
+      throw new Error('Royalty amount precision cannot exceed hundredths')
     }
+
+    amount = parseInt((amount * 100).toFixed(2))
+
+    total += amount
+    if (10000 < total) {
+      throw new Error('Royalty totals cannot exceed 100% of the AFS price.')
+    }
+
     amounts.push(amount)
   }
+
+  const deployed = await contract.get(abi, proxy)
+  deployed.events.RoyaltiesUpdated({ }, (err, ev) => {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log(ev)
+    }
+  })
+
+  deployed.events.RoyaltiesPaidOut({ }, (err, ev) => {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log(ev)
+    }
+  })
 
   const acct = await account.load({ did: owner, password })
   const royaltiesTx = await tx.create({
     account: acct,
     to: proxy,
-    gasLimit: 1000000,
+    gasLimit: 2000000,
     data: {
       abi,
       functionName: 'setRoyalties',
-      values: [
-        addresses,
-        amounts,
-        total
-      ]
+      values: [ addresses, amounts ]
     }
   })
 
   const receipt = await tx.sendSignedTransaction(royaltiesTx)
-  if (recipt.status) {
+  if (receipt.status) {
     debug('royalty update receipt', receipt)
   }
 
-  const royalties = await call({
-    abi,
-    address: proxy,
-    functionName: 'royalties_'
-  })
-  debug('new royalties', royalties)
+  return receipt
 }
 
 async function _updateOwnershipRequest(opts, functionName = '') {
@@ -1488,6 +1603,14 @@ async function _updateOwnershipRequest(opts, functionName = '') {
   return tx.sendSignedTransaction(requestTx)
 }
 
+function _getAmountPrecision(amount) {
+  // trims trailing insignificant zeroes
+  amount = amount.toString()
+  return amount.includes('.')
+    ? amount.split('.')[1].length
+    : 0
+}
+
 module.exports = {
   approveOwnershipTransfer,
   revokeOwnershipRequest,
@@ -1506,9 +1629,11 @@ module.exports = {
   getResalePrice,
   decreaseSupply,
   increaseSupply,
+  getOwnerProfit,
   setRoyalties,
   unlockResale,
   lockResale,
+  getRoyalty,
   setSupply,
   getSupply,
   unlistAFS,
