@@ -21,7 +21,16 @@ module.exports = {
 
   TOKEN_DECIMALS: 18,
   STANDARD_VERSION: '1',
-  BYTES32_LENGTH: 64
+  BYTES32_LENGTH: 64,
+
+  // AFS config JSON keys
+  CONFIG_ID: 'config-id',
+  TOTAL_SUPPLY: 'total-supply',
+  PRICE_TIERS: 'price-tiers',
+  MIN_RESALE_PRICE: 'min-resale-price',
+  MAX_NUM_RESALES: 'max-num-resales',
+  LIST: 'list',
+  UNLOCK: 'unlock'
 }
 
 // kTempOwnerDid: 'did:ara:cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3',
