@@ -118,37 +118,16 @@ async function getNumberCopiesOwned(opts) {
     throw new TypeError('Expecting non-empty string for purchaser DID')
   } else if (!opts.contentDid || 'string' !== typeof opts.contentDid) {
     throw new TypeError('Expecting non-empty string for content DID')
+  } else if (opts.configID && ('number' !== typeof opts.configID && !Number(opts.configID)) || 0 >= Number(opts.configID)) {
+    throw new TypeError('Expecting whole number for configID.')
   }
 
   const {
     purchaserDid,
     contentDid,
-    keyringOpts
+    keyringOpts,
+    configID
   } = opts
-
-  let { configID } = opts
-
-  if (configID) {
-    if (!isValidBytes32(configID)) {
-      throw new TypeError(`Expected opts.configID to be bytes32. Got ${configID}. Ensure opts.configID is a valid bytes32 string`)
-    }
-
-    if (BYTES32_LENGTH === configID.length) {
-      configID = ethify(configID, 'string' !== typeof configID)
-    }
-  }
-
-  if (!(await proxyExists(contentDid))) {
-    throw new Error('This content does not have a valid proxy contract')
-  }
-
-  const proxy = await getProxyAddress(contentDid)
-  const purchaser = await getAddressFromDID(purchaserDid, keyringOpts)
-
-  if (!isAddress(purchaser)) {
-    // TODO(cckelly) convert all ara-contracts errors to this style
-    throw new Error(`opts.purchaserDid did not resolve to a valid Ethereum address. Got ${purchaser}. Ensure ${purchaserDid} is a valid Ara identity.`)
-  }
 
   let quantity
   if (configID) {
@@ -159,6 +138,16 @@ async function getNumberCopiesOwned(opts) {
     })
     quantity = config.quantity
   } else {
+    if (!(await proxyExists(contentDid))) {
+      throw new Error('This content does not have a valid proxy contract')
+    }
+    const proxy = await getProxyAddress(contentDid)
+    const purchaser = await getAddressFromDID(purchaserDid, keyringOpts)
+    if (!isAddress(purchaser)) {
+      // TODO(cckelly) convert all ara-contracts errors to this style
+      throw new Error(`opts.purchaserDid did not resolve to a valid Ethereum address. Got ${purchaser}. Ensure ${purchaserDid} is a valid Ara identity.`)
+    }
+
     quantity = await call({
       abi: proxyAbi,
       address: proxy,

@@ -1,5 +1,6 @@
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
+const { getResalePrice } = require('./commerce')
 const { getLibrarySize } = require('./library')
 const { randomBytes } = require('ara-crypto')
 const { AID_PREFIX } = require('./constants')
@@ -68,12 +69,13 @@ async function purchase(opts) {
     configID
   } = opts
 
-  let { seller, budget, contentDid } = opts
+  let { seller: sellerDid, budget, contentDid } = opts
 
   let resale = false
-  if (seller) {
+  let seller
+  if (sellerDid) {
     try {
-      seller = await getAddressFromDID(seller)
+      seller = await getAddressFromDID(sellerDid)
       resale = true
     } catch (err) {
       throw err
@@ -109,17 +111,11 @@ async function purchase(opts) {
     const proxy = await getProxyAddress(contentDid)
     let price
     if (resale) {
-      const { configs } = await call({
-        abi: afsAbi,
-        address: proxy,
-        functionName: 'purchases_',
-        arguments: [
-          sha3({ t: 'address', v: seller })
-        ]
+      price = await getResalePrice({
+        contentDid,
+        sellerDid,
+        configID
       })
-
-      const config = configs[configID];
-      ({ resalePrice: price } = config)
     } else {
       price = await call({
         abi: afsAbi,
@@ -129,9 +125,10 @@ async function purchase(opts) {
           quantity
         ]
       })
+      price = Number(token.constrainTokenValue(price))
     }
 
-    price = quantity * Number(token.constrainTokenValue(price))
+    price = quantity * price
 
     let val = budget + price
     val = val.toString()
@@ -144,7 +141,7 @@ async function purchase(opts) {
     })
 
     if (receipt.status) {
-      // 45353 gas
+      // 47858 gas
       debug('gas used', receipt.gasUsed)
     }
 
