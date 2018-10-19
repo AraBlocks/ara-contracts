@@ -22,7 +22,7 @@ contract AFS is Ownable {
   bytes32   public did_;
   bool      public listed_;
   mapping(uint256 => uint256) public prices_; // quantity (lower bound) => price
-  uint256[] public priceTiers_; // quantity tiers
+  uint256[] public priceTiers_; // price tiers
 
   uint256   public currGlobalConfigID_;
   mapping(uint256 => GlobalResaleConfig)       public globalConfigs_; // configID => GlobalResaleConfig
@@ -111,7 +111,7 @@ contract AFS is Ownable {
   modifier purchaseRequired()
   {
     require(
-      purchases_[keccak256(abi.encodePacked(msg.sender))].quantity > 0,
+      purchases_[keccak256(abi.encodePacked(msg.sender))].quantity > 0 || purchases_[keccak256(abi.encodePacked(msg.sender))].configIDs.length > 0,
       "Content was never purchased."
     );
     _;
@@ -327,6 +327,11 @@ contract AFS is Ownable {
     emit ResalePriceSet(did_, msg.sender, _price);
   }
 
+  function getResaleConfig(bytes32 _owner, uint256 _id) public view returns (uint256 minResalePrice, uint256 maxNumResales, uint256 resalePrice, uint256 available, uint256 quantity) {
+    ResaleConfig storage config = purchases_[_owner].configs[_id];
+    return (globalConfigs_[_id].minResalePrice, globalConfigs_[_id].maxNumResales, config.resalePrice, config.available, config.quantity);
+  }
+
 /**
  * PURCHASE
  * ===============================================================================================
@@ -366,6 +371,8 @@ contract AFS is Ownable {
         purchases_[hashedAddress].configIDs.push(currGlobalConfigID_);
         purchases_[hashedAddress].configs[currGlobalConfigID_] = config;
       }
+      ResaleConfig storage stConfig = purchases_[hashedAddress].configs[currGlobalConfigID_];
+      stConfig.resales.length += _quantity;
     } else {
       purchases_[hashedAddress].quantity += _quantity;
     }
@@ -373,7 +380,8 @@ contract AFS is Ownable {
     if (totalCopies_ > 0) {
       totalCopies_ -= _quantity;
       if (totalCopies_ == 0) {
-        unlist();
+        listed_ = false;
+        emit Unlisted(did_);
       }
     }
 
@@ -399,7 +407,6 @@ contract AFS is Ownable {
 
     require(sellerConfig.enabled, "Please provide a valid seller resale configuration.");
     require(sellerConfig.available >= _quantity, "This quantity is not available for resale from this seller using this resale configuration.");
-    require(sellerConfig.resales[_quantity - 1] < globalConfigs_[_configID].maxNumResales, "Copy has already been sold the maximum number of times.");
 
     uint256 totalPrice = _quantity * sellerConfig.resalePrice;
     require(token_.allowance(msg.sender, address(this)) >= totalPrice + _budget, "Proxy must be approved for purchase.");
@@ -415,11 +422,11 @@ contract AFS is Ownable {
     bytes32 purchaser = keccak256(abi.encodePacked(msg.sender));
     Purchases storage purchaserPurchases = purchases_[purchaser];
 
-    if (purchaserPurchases.configs[_configID].enabled) {
-      purchaserPurchases.configs[_configID].quantity += _quantity;
-    } else {
-      _createConfig(purchaser, _configID, _quantity, sellerConfig);
+    if (!purchaserPurchases.configs[_configID].enabled) {
+      _createConfig(purchaser, _configID);
     }
+
+    _setupResaleTracker(purchaser, _configID, _quantity, sellerConfig);
 
     if (!lib_.owns(_purchaser, did_)) {
       lib_.addLibraryItem(_purchaser, did_);
@@ -436,11 +443,10 @@ contract AFS is Ownable {
     }
   }
 
-  function _createConfig(bytes32 _owner, uint256 _id, uint256 _quantity, ResaleConfig storage oldConfig) internal {
+  function _createConfig(bytes32 _owner, uint256 _id) internal {
     ResaleConfig memory newConfig;
 
     newConfig.resalePrice = globalConfigs_[_id].minResalePrice;
-    newConfig.quantity = _quantity;
     newConfig.enabled = true;
 
     Purchases storage purchases = purchases_[_owner];
@@ -448,11 +454,21 @@ contract AFS is Ownable {
     purchases.configIDIndices[_id] = purchases_[_owner].configIDs.length;
     purchases.configIDs.push(_id);
     purchases.configs[_id] = newConfig;
+  }
+
+  function _setupResaleTracker(bytes32 _owner, uint256 _id, uint256 _quantity, ResaleConfig storage oldConfig) internal {
+    Purchases storage purchases = purchases_[_owner];
 
     uint256 soldCopyIndex;
     for (uint256 i = 0; i < _quantity; i++) {
       soldCopyIndex = i + oldConfig.quantity;
-      purchases.configs[_id].resales.push(oldConfig.resales[soldCopyIndex] + 1); // update resale count for purchaser with old resale count + 1
+      uint256 resaleCount = oldConfig.resales[soldCopyIndex] + 1;
+      if (resaleCount < globalConfigs_[_id].maxNumResales) {
+        purchases.configs[_id].resales.push(resaleCount); // update resale count for purchaser with old resale count + 1
+        purchases.configs[_id].quantity++;
+      } else {
+        purchases.quantity++;
+      }
       delete oldConfig.resales[soldCopyIndex]; // delete resale count for sold copies
     }
   }
@@ -469,11 +485,6 @@ contract AFS is Ownable {
     if (sellerPurchases.configIDs.length == 0) {
       lib_.removeLibraryItem(seller, did_);
     }
-  }
-
-  function getResaleConfig(bytes32 _owner, uint256 _id) public view returns (uint256 minResalePrice, uint256 maxNumResales, uint256 resalePrice, uint256 available, uint256 quantity) {
-    ResaleConfig storage config = purchases_[_owner].configs[_id];
-    return (globalConfigs_[_id].minResalePrice, globalConfigs_[_id].maxNumResales, config.resalePrice, config.available, config.quantity);
   }
 
 /**

@@ -36,6 +36,7 @@ const {
  * @param  {String}        opts.contentDid
  * @param  {String}        opts.password
  * @param  {String|Number} opts.price
+ * @param  {Number}        opts.configID
  * @param  {Boolean}       opts.estimate
  * @param  {Object}        [opts.keyringOpts]
  * @throws {Error,TypeError}
@@ -49,11 +50,13 @@ async function setMinResalePrice(opts) {
     throw TypeError('Expecting non-empty password.')
   } else if (('number' !== typeof opts.price && !Number(opts.price)) || 0 >= Number(opts.price)) {
     throw new TypeError('Expecting whole number price.')
+  } else if (('number' !== typeof opts.configID && !Number(opts.configID)) || 0 >= Number(opts.configID)) {
+    throw new TypeError('Expecting whole number for configID.')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting opts.estimate to be a boolean.')
   }
 
-  const { password, keyringOpts, estimate } = opts
+  const { password, keyringOpts, estimate, configID } = opts
   let { contentDid, price } = opts
   let ddo
   try {
@@ -89,6 +92,7 @@ async function setMinResalePrice(opts) {
         abi,
         functionName: 'setMinResalePrice',
         values: [
+          configID,
           price
         ]
       }
@@ -108,6 +112,7 @@ async function setMinResalePrice(opts) {
  * Get the minimum resale price for an AFS
  * @param  {Object} opts
  * @param  {String} opts.contentDid
+ * @param  {Number} opts.configID
  * @throws {Error,TypeError}
  */
 async function getMinResalePrice(opts) {
@@ -115,9 +120,11 @@ async function getMinResalePrice(opts) {
     throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw new TypeError('Expecting non-empty content DID.')
+  } else if (('number' !== typeof opts.configID && !Number(opts.configID)) || 0 >= Number(opts.configID)) {
+    throw new TypeError('Expecting whole number for configID.')
   }
 
-  const { contentDid } = opts
+  const { contentDid, configID } = opts
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
@@ -127,11 +134,14 @@ async function getMinResalePrice(opts) {
 
   let price
   try {
-    price = await call({
+    ({ minResalePrice: price } = await call({
       abi,
       address: proxy,
-      functionName: 'minResalePrice_'
-    })
+      functionName: 'globalConfigs_',
+      arguments: [
+        configID
+      ]
+    }))
   } catch (err) {
     throw err
   }
@@ -161,27 +171,18 @@ async function setResalePrice(opts) {
     throw TypeError('Expecting non-empty password.')
   } else if (('number' !== typeof opts.price && !Number(opts.price)) || 0 >= Number(opts.price)) {
     throw new TypeError('Expecting whole number price.')
-  } else if ('string' !== typeof opts.configID || !opts.configID) {
-    throw new TypeError('Expecting non-empty resale config ID.')
+  } else if (('number' !== typeof opts.configID && !Number(opts.configID)) || 0 >= Number(opts.configID)) {
+    throw new TypeError('Expecting whole number for configID.')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting opts.estimate to be a boolean.')
   }
 
-  const { password, keyringOpts, estimate } = opts
+  const { password, keyringOpts, estimate, configID } = opts
   let {
     requesterDid,
     contentDid,
-    price,
-    configID
+    price
   } = opts
-
-  if (!isValidBytes32(configID)) {
-    throw new TypeError(`Expected opts.configID to be bytes32. Got ${configID}. Ensure opts.configID is a valid bytes32 string`)
-  }
-
-  if (BYTES32_LENGTH === configID.length) {
-    configID = ethify(configID, 'string' !== typeof configID)
-  }
 
   try {
     ({ did: requesterDid } = await validate({
@@ -249,20 +250,12 @@ async function getResalePrice(opts) {
     throw new TypeError('Expecting non-empty content DID.')
   } else if ('string' !== typeof opts.sellerDid || !opts.sellerDid) {
     throw new TypeError('Expecting non-empty seller DID.')
-  } else if ('string' !== typeof opts.configID || !opts.configID) {
-    throw new TypeError('Expecting non-empty resale config ID.')
+  } else if (('number' !== typeof opts.configID && !Number(opts.configID)) || 0 >= Number(opts.configID)) {
+    throw new TypeError('Expecting whole number for configID.')
   }
 
-  const { contentDid } = opts
-  let { sellerDid, configID } = opts
-
-  if (!isValidBytes32(configID)) {
-    throw new TypeError(`Expected opts.configID to be bytes32. Got ${configID}. Ensure opts.configID is a valid bytes32 string`)
-  }
-
-  if (BYTES32_LENGTH === configID.length) {
-    configID = ethify(configID, 'string' !== typeof configID)
-  }
+  const { contentDid, configID } = opts
+  let { sellerDid } = opts
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
@@ -283,7 +276,7 @@ async function getResalePrice(opts) {
   } catch (err) {
     throw err
   }
-  return token.constrainTokenValue(price)
+  return price
 }
 
 /**
@@ -344,8 +337,10 @@ async function _setResaleAvailability(opts) {
     throw TypeError('Expecting non-empty password.')
   } else if ('number' !== typeof opts.quantity || 0 >= opts.quantity) {
     throw new TypeError('Expecting positive number of resales.')
-  } else if ('string' !== typeof opts.configID || !opts.configID) {
-    throw new TypeError('Expecting non-empty resale config ID.')
+  } else if (('number' !== typeof opts.configID && !Number(opts.configID)) || 0 >= Number(opts.configID)) {
+    throw new TypeError('Expecting whole number for configID.')
+  } else if (('number' !== typeof opts.configID && !Number(opts.configID)) || 0 >= Number(opts.configID)) {
+    throw new TypeError('Expecting whole number for configID.')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting opts.estimate to be a boolean.')
   }
@@ -354,18 +349,11 @@ async function _setResaleAvailability(opts) {
     password,
     keyringOpts,
     quantity,
-    estimate
+    estimate,
+    configID
   } = opts
-  let { requesterDid, contentDid, configID } = opts
+  let { requesterDid, contentDid } = opts
   const unlock = opts.unlock || false
-
-  if (!isValidBytes32(configID)) {
-    throw new TypeError(`Expected opts.configID to be bytes32. Got ${configID}. Ensure opts.configID is a valid bytes32 string`)
-  }
-
-  if (BYTES32_LENGTH === configID.length) {
-    configID = ethify(configID, 'string' !== typeof configID)
-  }
 
   try {
     ({ did: requesterDid } = await validate({
@@ -431,20 +419,12 @@ async function getResaleAvailability(opts) {
     throw new TypeError('Expecting non-empty content DID.')
   } else if ('string' !== typeof opts.sellerDid || !opts.sellerDid) {
     throw new TypeError('Expecting non-empty seller DID.')
-  } else if ('string' !== typeof opts.configID || !opts.configID) {
-    throw new TypeError('Expecting non-empty resale config ID.')
+  } else if (('number' !== typeof opts.configID && !Number(opts.configID)) || 0 >= Number(opts.configID)) {
+    throw new TypeError('Expecting whole number for configID.')
   }
 
-  const { contentDid } = opts
-  let { sellerDid, configID } = opts
-
-  if (!isValidBytes32(configID)) {
-    throw new TypeError(`Expected opts.configID to be bytes32. Got ${configID}. Ensure opts.configID is a valid bytes32 string`)
-  }
-
-  if (BYTES32_LENGTH === configID.length) {
-    configID = ethify(configID, 'string' !== typeof configID)
-  }
+  const { contentDid, configID } = opts
+  let { sellerDid } = opts
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
@@ -474,6 +454,7 @@ async function getResaleAvailability(opts) {
  * @param  {String}  opts.contentDid
  * @param  {String}  opts.password
  * @param  {Number}  opts.maxResales
+ * @param  {Number}  opts.configID
  * @param  {Boolean} opts.estimate
  * @param  {Object}  [opts.keyringOpts]
  * @throws {Error,TypeError}
@@ -487,6 +468,8 @@ async function setResaleQuantity(opts) {
     throw TypeError('Expecting non-empty password.')
   } else if ('number' !== typeof opts.maxResales || 0 >= opts.maxResales) {
     throw new TypeError('Expecting positive number of resales.')
+  } else if (('number' !== typeof opts.configID && !Number(opts.configID)) || 0 >= Number(opts.configID)) {
+    throw new TypeError('Expecting whole number for configID.')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting opts.estimate to be a boolean.')
   }
@@ -495,7 +478,8 @@ async function setResaleQuantity(opts) {
     password,
     keyringOpts,
     estimate,
-    maxResales
+    maxResales,
+    configID
   } = opts
   let { contentDid } = opts
 
@@ -527,6 +511,7 @@ async function setResaleQuantity(opts) {
         abi,
         functionName: 'setResaleQuantity',
         values: [
+          configID,
           maxResales
         ]
       }
@@ -546,6 +531,7 @@ async function setResaleQuantity(opts) {
  * Get the number of times an AFS can be resold
  * @param  {Object} opts
  * @param  {String} opts.contentDid
+ * @param  {Number} opts.configID
  * @throws {Error,TypeError}
  */
 async function getResaleQuantity(opts) {
@@ -553,9 +539,11 @@ async function getResaleQuantity(opts) {
     throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw new TypeError('Expecting non-empty content DID.')
+  } else if (('number' !== typeof opts.configID && !Number(opts.configID)) || 0 >= Number(opts.configID)) {
+    throw new TypeError('Expecting whole number for configID.')
   }
 
-  const { contentDid } = opts
+  const { contentDid, configID } = opts
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
@@ -565,11 +553,14 @@ async function getResaleQuantity(opts) {
 
   let quantity
   try {
-    quantity = await call({
+    ({ maxNumResales: quantity } = await call({
       abi,
       address: proxy,
-      functionName: 'maxNumResales_'
-    })
+      functionName: 'globalConfigs_',
+      arguments: [
+        configID
+      ]
+    }))
   } catch (err) {
     throw err
   }
@@ -1010,6 +1001,7 @@ async function _toggleList(opts) {
  * @param  {Object}  opts
  * @param  {String}  opts.contentDid
  * @param  {String}  opts.password
+ * @param  {Number}  opts.configID
  * @param  {Boolean} opts.estimate
  * @param  {Object}  [opts.keyringOpts]
  * @throws {Error,TypeError}
@@ -1052,13 +1044,16 @@ async function _toggleResale(opts) {
     throw TypeError('Expecting non-empty password.')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting opts.estimate to be a boolean.')
+  } else if (opts.resale && (('number' !== typeof opts.configID && !Number(opts.configID)) || 0 >= Number(opts.configID))) {
+    throw new TypeError('Expecting whole number for configID.')
   }
 
   const {
     password,
     keyringOpts,
     estimate,
-    resale
+    resale,
+    configID
   } = opts
   let { contentDid } = opts
 
@@ -1072,7 +1067,7 @@ async function _toggleResale(opts) {
   }
 
   if (resale) {
-    debug(`Unlocking AFS ${contentDid} for resale...`)
+    debug(`Unlocking AFS ${contentDid} for resale with resale configuration ${configID}...`)
   } else {
     debug(`Locking AFS ${contentDid} from resale...`)
   }
@@ -1093,7 +1088,8 @@ async function _toggleResale(opts) {
       to: proxy,
       data: {
         abi,
-        functionName: resale ? 'unlockResale' : 'lockResale'
+        functionName: resale ? 'unlockResale' : 'lockResale',
+        values: resale ? [ configID ] : []
       }
     })
 
@@ -1119,12 +1115,12 @@ async function _toggleResale(opts) {
 async function getResaleConfig(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
-  } else if ('string' !== typeof opts.sellerDid || !opts.sellerDid) {
+  } else if (opts.sellerDid && 'string' !== typeof opts.sellerDid) {
     throw new TypeError('Expecting non-empty seller DID.')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw new TypeError('Expecting non-empty content DID.')
-  } else if (!isValidBytes32(opts.configID)) {
-    throw new TypeError(`Expected opts.configID to be bytes32. Got ${opts.configID}. Ensure opts.configID is a valid bytes32 string`)
+  } else if (('number' !== typeof opts.configID && !Number(opts.configID)) || 0 >= Number(opts.configID)) {
+    throw new TypeError('Expecting whole number for configID.')
   }
 
   const { configID } = opts
@@ -1136,25 +1132,44 @@ async function getResaleConfig(opts) {
 
   const proxy = await getProxyAddress(contentDid)
 
-  const seller = await getAddressFromDID(normalize(sellerDid))
+  let seller 
+  if (sellerDid) {
+    seller = await getAddressFromDID(normalize(sellerDid))
+  }
 
   let config = {}
   try {
-    const resaleConfig = await call({
-      abi,
-      address: proxy,
-      functionName: 'getResaleConfig',
-      arguments: [
-        sha3({ t: 'address', v: seller }),
-        configID
-      ]
-    })
-    config = {
-      minResalePrice: token.constrainTokenValue(resaleConfig.minResalePrice),
-      maxNumResales: resaleConfig.maxNumResales,
-      resalePrice: token.constrainTokenValue(resaleConfig.resalePrice),
-      available: resaleConfig.available,
-      quantity: resaleConfig.quantity
+    let resaleConfig
+    if (seller) {
+      resaleConfig = await call({
+        abi,
+        address: proxy,
+        functionName: 'getResaleConfig',
+        arguments: [
+          sha3({ t: 'address', v: seller }),
+          configID
+        ]
+      })
+      config = {
+        minResalePrice: token.constrainTokenValue(resaleConfig.minResalePrice),
+        maxNumResales: resaleConfig.maxNumResales,
+        resalePrice: token.constrainTokenValue(resaleConfig.resalePrice),
+        available: resaleConfig.available,
+        quantity: resaleConfig.quantity
+      }
+    } else {
+      resaleConfig = await call({
+        abi,
+        address: proxy,
+        functionName: 'globalConfigs_',
+        arguments: [
+          configID
+        ]
+      })
+      config = {
+        minResalePrice: token.constrainTokenValue(resaleConfig.minResalePrice),
+        maxNumResales: resaleConfig.maxNumResales
+      }
     }
   } catch (err) {
     throw err

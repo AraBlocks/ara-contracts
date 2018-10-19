@@ -28,11 +28,16 @@ usage: act resale: [-h] [--help] [options] [--] <command>
 })
 
 const { argv } = program
-  .command('set-price [--seller|config] <did> <price>', 'Set the (minimum) resale price of an AFS. If the seller option is not passed in, the minimum resale price will be set.', () => {
+  // act resale set-price de959a3a14a5e299d4ad360e96a92f8287088335a6aea78002f7cb0c89bd5570 1 20
+  .command('set-price [--seller] <did> <config> <price>', 'Sets the minimum resale price of an AFS. If the seller option is passed in, the seller\'s resale price will be set.', () => {
     program
       .positional('did', {
         type: 'string',
         describe: 'The AFS DID'
+      })
+      .positional('config', {
+        type: 'number',
+        describe: 'The resale config ID'
       })
       .positional('price', {
         type: 'string',
@@ -43,59 +48,54 @@ const { argv } = program
         type: 'string',
         describe: 'DID of the AFS seller (if the seller is not also the AFS owner)'
       })
-      .option('config', {
-        alias: 'c',
-        type: 'string',
-        describe: 'The seller resale config ID'
-      })
-      .implies('seller', 'config')
   }, onprice)
-  .command('set-quantity <did> <amount>', 'Set the number of times an AFS can be resold', () => {
+  // act resale set-quantity de959a3a14a5e299d4ad360e96a92f8287088335a6aea78002f7cb0c89bd5570 1 2
+  .command('set-quantity <did> <config> <amount>', 'Set the number of times an AFS can be resold', () => {
     program
       .positional('did', {
         type: 'string',
         describe: 'The AFS DID'
+      })
+      .positional('config', {
+        type: 'number',
+        describe: 'The resale config ID'
       })
       .positional('amount', {
         type: 'number',
         describe: 'The number of times the AFS can be resold'
       })
   }, onquantity)
-  .command('get-price [--seller|config] <did>', 'Get the (minimum) resale price of an AFS. If the seller option is not passed in, the minimum resale price will be returned.', () => {
+  .command('get-price [--seller] <did> <config>', 'Get the minimum resale price of an AFS. If the seller option is passed in, the seller\'s resale price will be returned.', () => {
     program
       .positional('did', {
         type: 'string',
         describe: 'The AFS DID'
+      })
+      .positional('config', {
+        type: 'number',
+        describe: 'The resale config ID'
       })
       .option('seller', {
         alias: 's',
         type: 'string',
         describe: 'DID of the AFS seller (if the seller is not also the AFS owner)'
       })
-      .option('config', {
-        alias: 'c',
-        type: 'string',
-        describe: 'The seller resale config ID'
-      })
-      .implies('seller', 'config')
   }, ongetprice)
-  .command('get-quantity [--seller|config] <did>', 'Get the number of time an AFS can be resold. If the seller option is passed in, the seller\'s available supply will be returned.', () => {
+  .command('get-quantity [--seller] <did> <config>', 'Get the number of time an AFS can be resold. If the seller option is passed in, the seller\'s available supply will be returned.', () => {
     program
       .positional('did', {
         type: 'string',
         describe: 'The AFS DID'
+      })
+      .positional('config', {
+        type: 'number',
+        describe: 'The resale config ID'
       })
       .option('seller', {
         alias: 's',
         type: 'string',
         describe: 'The seller DID (if not the AFS owner)'
       })
-      .option('config', {
-        alias: 'c',
-        type: 'string',
-        describe: 'The seller resale config ID'
-      })
-      .implies('seller', 'config')
     }, ongetquantity)
   .command('lock <did>', 'Locks an AFS from resale', () => {
     program
@@ -104,22 +104,27 @@ const { argv } = program
         describe: 'The AFS DID'
       })
   }, onlock)
-  .command('unlock <did>', 'Unlocks an AFS for resale', () => {
+  // act resale unlock de959a3a14a5e299d4ad360e96a92f8287088335a6aea78002f7cb0c89bd5570 1
+  .command('unlock <did> <config>', 'Unlocks an AFS for resale', () => {
     program
       .positional('did', {
         type: 'string',
         describe: 'The AFS DID'
       })
+      .positional('config', {
+        type: 'number',
+        describe: 'The resale config ID'
+      })
   }, onunlock)
-  .command('lock-quantity <seller> <config> <did> <quantity>', 'Locks a number of purchased AFSs from resale', () => {
+  .command('lock-quantity <seller> <did> <config> <quantity>', 'Locks a number of purchased AFSs from resale', () => {
     program
       .positional('seller', {
         type: 'string',
         describe: 'The seller DID'
       })
       .positional('config', {
-        type: 'string',
-        describe: 'The seller resale config ID'
+        type: 'number',
+        describe: 'The resale config ID'
       })
       .positional('did', {
         type: 'string',
@@ -130,15 +135,15 @@ const { argv } = program
         describe: 'The number of AFSs to lock from resale'
       })
   }, onlockquantity)
-  .command('unlock-quantity <seller> <config> <did> <quantity>', 'Unlocks a number of purchased AFSs for resale', () => {
+  .command('unlock-quantity <seller> <did> <config> <quantity>', 'Unlocks a number of purchased AFSs for resale', () => {
     program
       .positional('seller', {
         type: 'string',
         describe: 'The seller DID'
       })
       .positional('config', {
-        type: 'string',
-        describe: 'The seller resale config ID'
+        type: 'number',
+        describe: 'The resale config ID'
       })
       .positional('did', {
         type: 'string',
@@ -149,19 +154,19 @@ const { argv } = program
         describe: 'The number of AFSs to unlock for resale'
       })
   }, onunlockquantity)
-  .command('get-config <seller> <config> <did>', 'Returns a resale configuration', () => {
+  .command('get-config [--seller] <did> <config>', 'Returns a resale configuration. If the seller option is passed in, the seller\'s resale configuration will be returned.', () => {
     program
-      .positional('seller', {
-        type: 'string',
-        describe: 'The seller DID'
-      })
-      .positional('config', {
-        type: 'string',
-        describe: 'The seller resale config ID'
-      })
       .positional('did', {
         type: 'string',
         describe: 'The AFS DID'
+      })
+      .positional('config', {
+        type: 'number',
+        describe: 'The resale config ID'
+      })
+      .option('seller', {
+        type: 'string',
+        describe: 'The seller DID'
       })
   }, ongetconfig)
 
@@ -184,7 +189,7 @@ async function onprice(argv) {
   try {
     let receipt
     if (seller) {
-      info(`Setting the resale price for ${did} from seller ${seller} to ${price} Ara...`)
+      info(`Setting the resale price for ${did} from seller ${seller} for resale configuration ${config} to ${price} Ara...`)
       await setResalePrice({
         requesterDid: seller,
         contentDid: did,
@@ -192,15 +197,16 @@ async function onprice(argv) {
         configID: config,
         price
       })
-      info(`Resale price for ${did} from seller ${seller} successfully set to ${price} Ara.`)
+      info(`Resale price for ${did} from seller ${seller} for resale configuration ${config} successfully set to ${price} Ara.`)
     } else {
-      info(`Setting the minimum resale price for ${did} to ${price} Ara...`)
+      info(`Setting the minimum resale price for ${did} for resale configuration ${config} to ${price} Ara...`)
       await setMinResalePrice({
         contentDid: did,
         password,
-        price
+        price,
+        configID: config
       })
-      info(`Minimum resale price for ${did} successfully set to ${price} Ara.`)
+      info(`Minimum resale price for ${did} for resale configuration ${config} successfully set to ${price} Ara.`)
     }
   } catch (err) {
     onfatal(err)
@@ -208,7 +214,7 @@ async function onprice(argv) {
 }
 
 async function onquantity(argv) {
-  const { did, amount } = argv
+  const { did, amount, config } = argv
   const { password } = await promptForPassword()
 
   try {
@@ -216,7 +222,8 @@ async function onquantity(argv) {
     await setResaleQuantity({
       contentDid: did,
       password,
-      maxResales: amount
+      maxResales: amount,
+      configID: config
     })
     info(`Resale quantity for ${did} successfully set to ${amount}.`)
   } catch (err) {
@@ -240,7 +247,8 @@ async function ongetprice(argv) {
     } else {
       info(`Getting minimum resale price for ${did}...`)
       price = await getMinResalePrice({
-        contentDid: did
+        contentDid: did,
+        configID: config
       })
       info(`Minimum resale price for ${did} is ${price} Ara.`)
     }
@@ -265,7 +273,8 @@ async function ongetquantity(argv) {
     } else {
       info(`Getting maximum number of times ${did} can be resold...`)
       quantity = await getResaleQuantity({
-        contentDid: did
+        contentDid: did,
+        configID: config
       })
       info(`${did} can be resold ${quantity} times.`)
     }
@@ -291,16 +300,17 @@ async function onlock(argv) {
 }
 
 async function onunlock(argv) {
-  const { did } = argv
+  const { did, config } = argv
   const { password } = await promptForPassword()
 
   try {
-    info (`Unlocking AFS ${did} from resale...`)
+    info (`Unlocking AFS ${did} for resale with configuration ${config}...`)
     await unlockResale({
       contentDid: did,
-      password
+      password,
+      configID: config
     })
-    info (`AFS ${did} unlocked from resale.`)
+    info (`AFS ${did} unlocked for resale with configuration ${config}.`)
   } catch (err) {
     onfatal(err)
   }
@@ -348,21 +358,33 @@ async function ongetconfig(argv) {
   const { seller, did, config } = argv
 
   try {
-    // act resale get-config 77da0a6389fd2942d30c794c7a7dd61c97d7f7b0ee3a795100d171404f9073e0 0xde63a8f44964c2c060b346b24adc91b3065f7d9cf79b0c89d6bf5871726b65e5 196ebd2be2ecac1c7ee2593be97c3c25af7326565a8fe3835be496814dc6792f
-    info(`Getting resale config ${config} in AFS ${did} from seller ${seller}...`)
-    let resaleConfig = await getResaleConfig({
-      sellerDid: seller,
+    let opts = { 
       contentDid: did,
       configID: config
-    })
-    info(`\nResale config ${config}:\n
-    {\n\t
-      Minimum resale price: ${resaleConfig.minResalePrice} Ara\n\t
-      Maximum # of resales: ${resaleConfig.maxNumResales}\n\n\t
-      Resale Price: ${resaleConfig.resalePrice} Ara\n\t
-      # available for resale: ${resaleConfig.available}\n\t
-      # owned total: ${resaleConfig.quantity}\n
-    }`)
+    }
+    if (seller) {
+      // act resale get-config --seller 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 de959a3a14a5e299d4ad360e96a92f8287088335a6aea78002f7cb0c89bd5570 1
+      opts = Object.assign(opts, { sellerDid: seller })
+      info(`Getting resale config ${config} in AFS ${did} from seller ${seller}...`)
+      const resaleConfig = await getResaleConfig(opts)
+      info(`\nSeller ${seller} resale config ${config}:\n
+      {\n\t
+        Minimum resale price: ${resaleConfig.minResalePrice} Ara\n\t
+        Maximum # of resales: ${resaleConfig.maxNumResales}\n\n\t
+        Resale Price: ${resaleConfig.resalePrice} Ara\n\t
+        # available for resale: ${resaleConfig.available}\n\t
+        # owned total: ${resaleConfig.quantity}\n
+      }`)
+    } else {
+      // act resale get-config 196ebd2be2ecac1c7ee2593be97c3c25af7326565a8fe3835be496814dc6792f 1
+      info(`Getting resale config ${config} in AFS ${did}...`)
+      const resaleConfig = await getResaleConfig(opts)
+      info(`\nResale config ${config}:\n
+      {\n\t
+        Minimum resale price: ${resaleConfig.minResalePrice} Ara\n\t
+        Maximum # of resales: ${resaleConfig.maxNumResales}
+      }`)
+    }
   } catch (err) {
     onfatal(err)
   }
