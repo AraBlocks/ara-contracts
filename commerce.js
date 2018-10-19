@@ -1374,23 +1374,27 @@ async function getRoyalty(opts) {
   const result = []
   for (let i in recipients) {
     const recipient = recipients[i]
-    if (!recipient.did || 'string' !== typeof recipient.did) {
-      throw new TypeError('Expecting recipient DID to be a non-empty')
+    if (!recipient || 'string' !== typeof recipient) {
+      throw new TypeError('Expecting recipient DID to be non-empty')
     }
 
-    let address = await getAddressFromDID(normalize(did))
+    let address = await getAddressFromDID(normalize(recipient))
     if (!isAddress(address)) {
       throw new Error(`recipient.did did not resolve to a valid Ethereum address. 
         Ensure ${recipient} is a valid Ara identity.`)
     }
 
+    address = sha3(address)
     const royalty = await call({
       abi,
       address: proxy,
       functionName: 'getRoyalty',
-      arguments: [ recipient ]
+      arguments: [ address ]
     })
-    result.push({ did: recipient, amount: royalty })
+    result.push({
+      did: recipient,
+      amount: parseInt(royalty) / 100
+    })
   }
 
   return result
@@ -1466,6 +1470,7 @@ async function setRoyalties(opts) {
     }
 
     address = sha3(address)
+    console.log('shad address', address)
     addresses.push(address)
 
     const precision = _getAmountPrecision(amount)
@@ -1482,23 +1487,6 @@ async function setRoyalties(opts) {
 
     amounts.push(amount)
   }
-
-  const deployed = await contract.get(abi, proxy)
-  deployed.events.RoyaltiesUpdated({ }, (err, ev) => {
-    if (err) {
-      console.log(err)
-    } else {
-      console.log(ev)
-    }
-  })
-
-  deployed.events.RoyaltiesPaidOut({ }, (err, ev) => {
-    if (err) {
-      console.log(err)
-    } else {
-      console.log(ev)
-    }
-  })
 
   const acct = await account.load({ did: owner, password })
   const royaltiesTx = await tx.create({
