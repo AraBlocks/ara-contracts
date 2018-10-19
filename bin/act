@@ -105,7 +105,7 @@ void (async function main() {
 
   try { await pify(which)(canonicalCommandName) } catch (err) {
     error(
-      "'%s' is not a act command. See 'act --help'.",
+      "'%s' is not an act command. See 'act --help'.",
       shortCommandName
     )
   }

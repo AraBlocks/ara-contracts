@@ -70,7 +70,7 @@ async function ongetownerprofit(argv) {
     onfatal(err)
   }
 
-  info("Current owner profit for %s: %s", did, profit)
+  info("Current owner profit for %s: %s%", did, profit)
 }
 
 async function ongetroyalty(argv) {
@@ -86,35 +86,63 @@ async function ongetroyalty(argv) {
   } catch (err) {
     onfatal(err)
   }
-  info(result)
+
+  if(result.length == 0) {
+    info('No royalties found')
+  } else {
+    for (let i in result) {
+      const recipient = result[i]
+      info(`${recipient.did} receives ${recipient.amount}% on every purchase.`)
+    }
+  }
 }
 
 async function onsetroyalties(argv) {
   const { did, secret, network, keyring } = argv
   const { password } = await promptForPassword()
+  const keyringOpts = { secret, network, keyring }
 
-  let answer
+  let recipients = []
+  let hasAnotherRecipient
   do {
-    info("we are not done")
-  } while (({ answer }) = await promptForRoyaltyIdentity())
-  info("we are done")
+    const { recipient } = await promptForRoyaltyIdentity()
+    const { amount } = await promptForRoyaltyAmount()
+    recipients.push({ did: recipient, amount: parseInt(amount) })
+
+    const { answer } = await promptForAnotherRoyalty()
+    hasAnotherRecipient = answer
+  } while (hasAnotherRecipient)
+
+  try {
+    await setRoyalties({ did, password, recipients, keyringOpts })
+  } catch (err) {
+    onfatal(err)
+  }
+
+  info('Royalties successfully set')
 }
 
-// TODO
-
 async function promptForRoyaltyIdentity() {
-
+  return inquirer.prompt({
+    type: 'input',
+    name: 'recipient',
+    message: 'DID of the royalty recipient:'
+  })
 }
 
 async function promptForRoyaltyAmount() {
-
+  return inquirer.prompt({
+    type: 'input',
+    name: 'amount',
+    message: 'Percentage of purchase to receive:'
+  })
 }
 
 async function promptForAnotherRoyalty() {
   return inquirer.prompt({
-    type: 'boolean',
+    type: 'confirm',
     name: 'answer',
-    message: 'Shall we?'
+    message: 'Is there another identity receiving a royalty?'
   })
 }
 
