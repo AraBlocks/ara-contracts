@@ -1,6 +1,9 @@
 <a name="0.2.10"></a>
 ## [0.2.10](https://github.com/AraBlocks/ara-contracts/compare/0.2.6...0.2.10) (2018-10-22)
 
+<a name="0.2.8"></a>
+## [0.2.8](https://github.com/AraBlocks/ara-contracts/compare/0.2.6...0.2.8) (2018-10-22)
+
 
 ### Bug Fixes
 
