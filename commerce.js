@@ -2,11 +2,22 @@ const debug = require('debug')('ara-contracts:commerce')
 const { abi } = require('./build/contracts/AFS.json')
 const hasDIDMethod = require('has-did-method')
 const { isValidBytes32 } = require('./util')
+const { resolve } = require('path')
 const token = require('./token')
+const price = require('./price')
+const pify = require('pify')
+const fs = require('fs')
 
 const {
+  MIN_RESALE_PRICE,
+  MAX_NUM_RESALES,
+  BYTES32_LENGTH,
+  TOTAL_SUPPLY,
+  PRICE_TIERS,
   AID_PREFIX,
-  BYTES32_LENGTH
+  CONFIG_ID,
+  UNLOCK,
+  LIST
 } = require('./constants')
 
 const {
@@ -29,6 +40,154 @@ const {
     isAddress,
   }
 } = require('ara-util')
+
+/**
+ * As an owner, Sets the resale configuration for an AFS
+ * @param  {Object}        opts
+ * @param  {String}        opts.contentDid
+ * @param  {String}        opts.password
+ * @param  {Number}        opts.config // path to configuration JSON
+ * @param  {Boolean}       opts.estimate
+ * @param  {Object}        [opts.keyringOpts]
+ * @throws {Error,TypeError}
+ */
+async function setResaleConfig(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object.')
+  } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
+    throw new TypeError('Expecting non-empty content DID.')
+  } else if ('string' !== typeof opts.password || !opts.password) {
+    throw TypeError('Expecting non-empty password.')
+  } else if ('string' !== typeof opts.config || !opts.config) {
+    throw new TypeError('Expecting a non-empty path.')
+  } else if ('string' !== typeof opts.seller || !opts.seller) {
+    throw new TypeError('Expecting a non-empty path.')
+  } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
+    throw new TypeError('Expecting opts.estimate to be a boolean.')
+  }
+
+  let {
+    contentDid,
+    password,
+    config,
+    estimate,
+    keyringOpts
+  } = opts
+
+  try {
+    await pify(fs.access)(resolve(config))
+  } catch (err) {
+    throw new Error('Expecting a valid path')
+  }
+
+  let ddo
+  try {
+    ({ did: contentDid, ddo } = await validate({
+      did: contentDid, password, label: 'setResaleConfig', keyringOpts
+    }))
+  } catch (err) {
+    throw err
+  }
+  debug(`setting resale config ${config}...`)
+
+  try {
+    const contents = await pify(fs.readFile)(config, 'utf8')
+    const resaleConfig = JSON.parse(contents)
+
+    let id = resaleConfig[`${CONFIG_ID}`]
+    let totalSupply = resaleConfig[`${TOTAL_SUPPLY}`]
+    let priceTiers = resaleConfig[`${PRICE_TIERS}`]
+    let minResalePrice = resaleConfig[`${MIN_RESALE_PRICE}`].toString()
+    let maxNumResales = resaleConfig[`${MAX_NUM_RESALES}`]
+    let list = resaleConfig[`${LIST}`]
+    let unlock = resaleConfig[`${UNLOCK}`]
+
+    if (id && 'number' !== typeof id || 0 >= id || !Number.isInteger(id)) {
+      throw new TypeError('Expecting config-id to be a whole number.')
+    }
+
+    for (let tier in priceTiers) {
+      let currPrice = Number(await price.getPrice({
+        did: contentDid,
+        quantity: tier
+      }))
+      if (currPrice !== priceTiers[tier]) {
+        await price.setPrice({
+          did: contentDid,
+          password,
+          quantity: tier,
+          price: priceTiers[tier],
+          keyringOpts
+        })
+      } else {
+        debug(`AFS ${contentDid} already has price set to ${currPrice} for ${tier} copies`)
+      }
+    }
+
+    let configOpts = { contentDid, password, keyringOpts }
+
+    if (totalSupply) {
+      let currSupply = await getSupply({ contentDid })
+      if (Number(currSupply) !== Number(totalSupply)) {
+        const args = Object.assign(configOpts, { quantity: totalSupply })
+        await setSupply(args)
+      } else {
+        debug(`AFS ${contentDid} already has total supply of ${totalSupply}`)
+      }
+    }
+
+    if (minResalePrice) {
+      let currMinPrice = await getMinResalePrice({
+        contentDid,
+        configID: id
+      })
+      if (currMinPrice !== minResalePrice) {
+        const args = Object.assign(configOpts, { price: minResalePrice, configID: id })
+        await setMinResalePrice(args)
+      } else {
+        debug(`AFS ${contentDid} already has minimum resale price set to ${currMinPrice}`)
+      }
+    }
+
+    if (maxNumResales) {
+      let currMaxResales = await getResaleQuantity({
+        contentDid,
+        configID: id
+      })
+      if (currMaxResales !== maxNumResales) {
+        const args = Object.assign(configOpts, { maxResales: maxNumResales, configID: id })
+        await setResaleQuantity(args)
+      } else {
+        debug(`AFS ${contentDid} already has max number of resales set to ${maxNumResales}`)
+      }
+    }
+
+    if (list) {
+      if (!(await isListed(contentDid))) {
+        await listAFS(configOpts)
+      } else {
+        debug(`AFS ${contentDid} is already listed for sale`)
+      }
+    }
+
+    if (unlock) {
+      if (!(await isResellable(contentDid))) {
+        const args = Object.assign(configOpts, { configID: id })
+        await unlockResale(args)
+      } else {
+        debug(`AFS ${contentDid} is already unlocked`)
+      }
+    }
+
+     debug(`Resale config ${config} successfully set.`)
+  } catch (err) {
+    throw err
+  }
+}
+
+async function setSellerConfig(opts) {
+
+}
 
 /**
  * As an owner, set the minimum resale price for an AFS
@@ -66,7 +225,7 @@ async function setMinResalePrice(opts) {
   } catch (err) {
     throw err
   }
-  debug(`setting minimum resale price for ${contentDid} to ${price}`)
+  debug(`setting minimum resale price for ${contentDid} to ${price}...`)
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
@@ -194,7 +353,7 @@ async function setResalePrice(opts) {
 
   contentDid = normalize(contentDid)
 
-  debug(`setting resale price for ${contentDid} to ${price}`)
+  debug(`setting resale price for ${contentDid} to ${price}...`)
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
@@ -366,9 +525,9 @@ async function _setResaleAvailability(opts) {
   contentDid = normalize(contentDid)
 
   if (unlock) {
-    debug(`Unlocking ${contentDid} for resale for seller ${requesterDid}`)
+    debug(`Unlocking ${contentDid} for resale for seller ${requesterDid}...`)
   } else {
-    debug(`Locking ${contentDid} for resale for seller ${requesterDid}`)
+    debug(`Locking ${contentDid} for resale for seller ${requesterDid}...`)
   }
 
   if (!(await proxyExists(contentDid))) {
@@ -491,7 +650,7 @@ async function setResaleQuantity(opts) {
   } catch (err) {
     throw err
   }
-  debug(`setting maximum number of resales for ${contentDid} to ${maxResales}`)
+  debug(`setting maximum number of resales for ${contentDid} to ${maxResales}...`)
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
@@ -584,8 +743,8 @@ async function setSupply(opts) {
     throw new TypeError('Expecting non-empty content DID.')
   } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password.')
-  } else if ('number' !== typeof opts.quantity || 0 >= opts.quantity) {
-    throw new TypeError('Expecting positive number to increase by.')
+  } else if ('number' !== typeof opts.quantity || 0 >= opts.quantity || !Number.isInteger(opts.quantity)) {
+    throw new TypeError('Expecting positive number supply.')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting opts.estimate to be a boolean.')
   }
@@ -606,7 +765,7 @@ async function setSupply(opts) {
   } catch (err) {
     throw err
   }
-  debug(`setting supply for ${contentDid} to ${quantity}`)
+  debug(`setting supply for ${contentDid} to ${quantity}...`)
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
@@ -680,7 +839,7 @@ async function increaseSupply(opts) {
   } catch (err) {
     throw err
   }
-  debug(`adding ${quantity} copies for ${contentDid}`)
+  debug(`adding ${quantity} copies for ${contentDid}...`)
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
@@ -754,7 +913,7 @@ async function decreaseSupply(opts) {
   } catch (err) {
     throw err
   }
-  debug(`adding ${quantity} copies for ${contentDid}`)
+  debug(`adding ${quantity} copies for ${contentDid}...`)
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
@@ -820,7 +979,7 @@ async function setUnlimitedSupply(opts) {
   } catch (err) {
     throw err
   }
-  debug(`removing scarcity limitations for ${contentDid}`)
+  debug(`removing scarcity limitations for ${contentDid}...`)
 
   if (!(await proxyExists(contentDid))) {
     throw new Error('This content does not have a valid proxy contract')
@@ -892,6 +1051,28 @@ async function getSupply(opts) {
     throw err
   }
   return quantity
+}
+
+/**
+ * Checks if an AFS is currently listed for sale
+ * @param {String} contentDid
+ */
+async function isListed(contentDid) {
+  if ('string' !== typeof contentDid || !contentDid) {
+    throw new TypeError('Expecting non-empty content DID.')
+  }
+
+  if (!(await proxyExists(contentDid))) {
+    throw new Error('This content does not have a valid proxy contract')
+  }
+
+  const proxy = await getProxyAddress(contentDid)
+
+  return call({
+    abi,
+    address: proxy,
+    functionName: 'listed_'
+  })
 }
 
 /**
@@ -994,6 +1175,24 @@ async function _toggleList(opts) {
   } catch (err) {
     throw err
   }
+}
+
+async function isResellable(contentDid) {
+  if ('string' !== typeof contentDid || !contentDid) {
+    throw new TypeError('Expecting non-empty content DID.')
+  }
+
+  if (!(await proxyExists(contentDid))) {
+    throw new Error('This content does not have a valid proxy contract')
+  }
+
+  const proxy = await getProxyAddress(contentDid)
+
+  return call({
+    abi,
+    address: proxy,
+    functionName: 'resellable_'
+  })
 }
 
 /**
@@ -1611,6 +1810,7 @@ module.exports = {
   getResaleQuantity,
   getResaleQuantity,
   requestOwnership,
+  setResaleConfig,
   getResaleConfig,
   setResalePrice,
   getResalePrice,
@@ -1619,10 +1819,12 @@ module.exports = {
   getOwnerProfit,
   setRoyalties,
   unlockResale,
+  isResellable,
   lockResale,
   getRoyalty,
   setSupply,
   getSupply,
   unlistAFS,
+  isListed,
   listAFS
 }

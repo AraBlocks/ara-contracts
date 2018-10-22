@@ -163,9 +163,8 @@ async function getNumberCopiesOwned(opts) {
 
 module.exports = {
   getNumberCopiesOwned,
+  getLibraryItem: util.deprecate(() => {}, 'getLibraryItem() is deprecated. Use getLibrary() instead.'),
   getLibrarySize,
   hasPurchased,
   getLibrary
 }
-
-module.exports.getLibraryItem = util.deprecate(() => {}, 'getLibraryItem() is deprecated. Use getLibrary() instead.')

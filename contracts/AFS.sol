@@ -325,6 +325,7 @@ contract AFS is Ownable {
   function unlockResaleQuantity(uint256 _configID, uint256 _quantity) public purchaseRequired {
     require(globalConfigs_[_configID].maxNumResales > 0, "Not a valid resale configuration.");
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
+    require(purchases_[hashedAddress].configs[_configID].enabled, "This configuration is not enabled for modification.")
     require(_quantity + purchases_[hashedAddress].configs[_configID].available <= purchases_[hashedAddress].configs[_configID].quantity, "Cannot unlock more for resale than owned.");
     purchases_[hashedAddress].configs[_configID].available += _quantity;
     assert(purchases_[hashedAddress].configs[_configID].available <= purchases_[hashedAddress].configs[_configID].quantity);
@@ -334,6 +335,7 @@ contract AFS is Ownable {
   function lockResaleQuantity(uint256 _configID, uint256 _quantity) public purchaseRequired {
     require(globalConfigs_[_configID].maxNumResales > 0, "Not a valid resale configuration.");
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
+    require(purchases_[hashedAddress].configs[_configID].enabled, "This configuration is not enabled for modification.")
     require(purchases_[hashedAddress].configs[_configID].available >= _quantity, "Cannot lock more than is available for resale.");
     purchases_[hashedAddress].configs[_configID].available -= _quantity;
     assert(purchases_[hashedAddress].configs[_configID].available <= purchases_[hashedAddress].configs[_configID].quantity);
@@ -343,6 +345,7 @@ contract AFS is Ownable {
   function setResalePrice(uint256 _configID, uint256 _price) external purchaseRequired {
     require(globalConfigs_[_configID].maxNumResales > 0, "Not a valid resale configuration.");
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
+    require(purchases_[hashedAddress].configs[_configID].enabled, "This configuration is not enabled for modification.")
     require(_price >= globalConfigs_[_configID].minResalePrice, "Resale price must be at least the minimum resale price.");
     purchases_[hashedAddress].configs[_configID].resalePrice = _price;
     emit ResalePriceSet(did_, msg.sender, _price);

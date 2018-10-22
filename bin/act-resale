@@ -13,6 +13,7 @@ const {
   getMinResalePrice,
   setResaleQuantity,
   getResaleQuantity,
+  setResaleConfig,
   getResaleConfig,
   setResalePrice,
   getResalePrice,
@@ -154,6 +155,21 @@ const { argv } = program
         describe: 'The number of AFSs to unlock for resale'
       })
   }, onunlockquantity)
+  .command('set-config [--seller] <did> <path>', 'Sets the global resale config of an AFS using the provided JSON', () => {
+    program
+      .positional('did', {
+        type: 'string',
+        describe: 'The AFS DID'
+      })
+      .positional('path', {
+        type: 'string',
+        describe: 'The path to the resale config JSON file'
+      })
+      .option('seller', {
+        type: 'string',
+        describe: 'The seller DID'
+      })
+  }, onsetconfig)
   .command('get-config [--seller] <did> <config>', 'Returns a resale configuration. If the seller option is passed in, the seller\'s resale configuration will be returned.', () => {
     program
       .positional('did', {
@@ -349,6 +365,21 @@ async function onunlockquantity(argv) {
       configID: config
     })
     info(`${quantity} copies of ${did} unlocked for resale by seller ${seller}.`)
+  } catch (err) {
+    onfatal(err)
+  }
+}
+
+async function onsetconfig(argv) {
+  const { did, path } = argv
+  const { password } = await promptForPassword()
+
+  try {
+    await setResaleConfig({
+      contentDid: did,
+      password,
+      config: path
+    })
   } catch (err) {
     onfatal(err)
   }
