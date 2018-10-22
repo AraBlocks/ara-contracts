@@ -60,6 +60,8 @@ async function setResaleConfig(opts) {
     throw TypeError('Expecting non-empty password.')
   } else if ('string' !== typeof opts.config || !opts.config) {
     throw new TypeError('Expecting a non-empty path.')
+  } else if ('string' !== typeof opts.seller || !opts.seller) {
+    throw new TypeError('Expecting a non-empty path.')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting opts.estimate to be a boolean.')
   }
@@ -181,6 +183,10 @@ async function setResaleConfig(opts) {
   } catch (err) {
     throw err
   }
+}
+
+async function setSellerConfig(opts) {
+
 }
 
 /**

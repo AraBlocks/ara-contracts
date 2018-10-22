@@ -155,7 +155,7 @@ const { argv } = program
         describe: 'The number of AFSs to unlock for resale'
       })
   }, onunlockquantity)
-  .command('set-config <did> <path>', 'Sets the global resale config of an AFS using the provided JSON', () => {
+  .command('set-config [--seller] <did> <path>', 'Sets the global resale config of an AFS using the provided JSON', () => {
     program
       .positional('did', {
         type: 'string',
@@ -164,6 +164,10 @@ const { argv } = program
       .positional('path', {
         type: 'string',
         describe: 'The path to the resale config JSON file'
+      })
+      .option('seller', {
+        type: 'string',
+        describe: 'The seller DID'
       })
   }, onsetconfig)
   .command('get-config [--seller] <did> <config>', 'Returns a resale configuration. If the seller option is passed in, the seller\'s resale configuration will be returned.', () => {
