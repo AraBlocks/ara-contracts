@@ -203,7 +203,16 @@ async function purchase(opts) {
         debug(`Changed: ${log}`)
       })
       .on('error', (log) => {
-        debug(`error:  ${log}`)
+        debug(`error: ${log}`)
+      })
+
+    await proxyContract.events.RoyaltiesPaidOut({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { _price, _ownerProfit, _multiplier } } = log
+        debug('totalPrice', _price, ', owner profit', _ownerProfit, ', royaltyMultiplier', _multiplier)
+      })
+      .on('error', (log) => {
+        debug(`error: ${log}`)
       })
 
     receipt = await tx.sendSignedTransaction(purchaseTx)

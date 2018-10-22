@@ -1485,7 +1485,6 @@ async function setRoyalties(opts) {
     }
 
     address = sha3(address)
-    console.log('shad address', address)
     addresses.push(address)
 
     const precision = _getAmountPrecision(amount)

@@ -100,7 +100,7 @@ contract AFS is Ownable {
   event MarkedNotForResale(bytes32 _did);
   event ResaleUnlocked(bytes32 _did);
   event ResaleLocked(bytes32 _did);
-  event RoyaltiesPaidOut(bytes32[] _hashedAddresses, uint256[] _amounts, uint256 _price, uint256[] _profits);
+  event RoyaltiesPaidOut(uint256 _price, uint256 _ownerProfit, uint256 _multiplier);
 
   modifier onlyBy(address _account)
   {
@@ -380,21 +380,19 @@ contract AFS is Ownable {
     if(royalties_.hashedAddresses.length == 0) {
       require(token_.transferFrom(msg.sender, owner_, totalPrice), "Ara transfer failed.");
     } else {  
-      // TODO temporary
-      uint256[] amounts;
+      // pay out owner
+      uint256 ownerProfit = (totalPrice * (royalties_.ownerProfit / royaltyMultiplier)) + ((totalPrice * royalties_.ownerProfit) % royaltyMultiplier);
+      require(token_.transferFrom(msg.sender, owner_, ownerProfit), "Ara transfer failed.");
+      
       uint256[] profits;
-
-      // amounts becomes any integer less than 10,000 where 10,000 = 100%
       for(uint256 i = 0; i < royalties_.hashedAddresses.length; i++) {
-        hashedAddress = royalties_.hashedAddresses[i];
-        uint256 amount = royalties_.split[hashedAddress];
-        amounts.push(amount);
-        uint256 profit = totalPrice * ((royaltyMultiplier / amount) + (royaltyMultiplier % amount));
+        uint256 amount = royalties_.split[royalties_.hashedAddresses[i]];
+        uint256 profit = (totalPrice * (amount / royaltyMultiplier)) + ((totalPrice * amount) % royaltyMultiplier);
         profits.push(profit);
-        rewards_[hashedAddress] += profit;
+        rewards_[royalties_.hashedAddresses[i]] += profit;
       }
-      emit RoyaltiesPaidOut(royalties_.hashedAddresses, amounts, totalPrice, profits);
-      // TODO pay out owner
+      emit RoyaltiesPaidOut(totalPrice, royalties_.ownerProfit, royaltyMultiplier);
+      
     }
 
     if (resellable_) {
