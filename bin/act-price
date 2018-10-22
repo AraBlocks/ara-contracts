@@ -1,0 +1,198 @@
+#!/usr/bin/env node
+
+const debug = require('debug')('ara-contracts:cli:price')
+const { info, warn, error, log } = require('ara-console')
+const { createProgram } = require('../lib/program')
+const inquirer = require('inquirer')
+
+const {
+  estimateSetPriceGasCost,
+  setPrice,
+  getPrice,
+  removePriceTier
+} = require('./price')
+
+// yargs program command line interface instance
+const program = createProgram({
+  usage: `
+usage: act resale: [-h] [--help] [options] [--] <command>
+`
+})
+
+const { argv } = program
+  .command('set-price <did> <price> [options]', "Publish price for the given AFS", (program) => {
+      program
+        .positional('did', {
+          type: 'string',
+          describe: "An AFS ARA decentralized identity (did) URI"
+        })
+        .positional('price', {
+          type: 'number',
+          describe: "Cost associated with an AFS (in ARA)"
+        })
+        .option('quantity', {
+          type: 'number',
+          describe: "The quantity to set the price for"
+        })
+        .option('force', {
+          alias: 'f',
+          type: 'boolean',
+          describe: 'Force set price operation',
+        })
+        .option('secret', {
+          alias: 's',
+          type: 'string',
+          describe: 'Shared secret for the keyring',
+        })
+        .option('network', {
+          alias: 'n',
+          type: 'string',
+          describe: 'Network name of the key for the DID resolver in the keyring',
+        })
+        .option('keyring', {
+          alias: 'k',
+          type: 'string',
+          describe: 'Path to the keyring',
+        })
+    }, onsetprice)
+  .command('get-price <did> [--quantity]', "Return the price for a given AFS", (program) => {
+    program
+      .positional('did', {
+        type: 'string',
+        describe: "An AFS ARA decentralized identity (did) URI"
+      })
+      .option('quantity', {
+        type: 'number',
+        describe: "The quantity to get the price for"
+      })
+  }, ongetprice)
+  .command('remove-price-tier <did> <quantity> [options]', "Remove a price tier from a given AFS", (program) => {
+    program
+      .positional('did', {
+        type: 'string',
+        describe: "An AFS ARA decentralized identity (did) URI"
+      })
+      .positional('quantity', {
+        type: 'number',
+        describe: "The quantity to remove the price for"
+      })
+      .option('force', {
+        alias: 'f',
+        type: 'boolean',
+        describe: 'Force remove price tier operation',
+      })
+      .option('secret', {
+        alias: 's',
+        type: 'string',
+        describe: 'Shared secret for the keyring',
+      })
+      .option('network', {
+        alias: 'n',
+        type: 'string',
+        describe: 'Network name of the key for the DID resolver in the keyring',
+      })
+      .option('keyring', {
+        alias: 'k',
+        type: 'string',
+        describe: 'Path to the keyring',
+      })
+  }, onremoveprice)
+
+async function onsetprice(argv) {
+  let { price, did, quantity } = argv
+  price = price || 0
+  quantity = quantity || 1
+  info("setting price of AFS %s to %d for %d copies", did, price, quantity)
+  const { secret, network, keyring } = argv
+  const keyringOpts = { secret, network, keyring }
+  const { password } = await promptForPassword()
+
+  let result = argv.force
+  if (!result) {
+    try {
+      const cost = await estimateSetPriceGasCost({ did, password, quantity, price, keyringOpts })
+      const { answer } = await promptCostConfirmation(cost)
+      result = answer
+    } catch (err) {
+      onfatal(err)
+    }
+  }
+
+  if (result) {
+    await setPrice({ did, password, quantity, price, keyringOpts })
+    info(`price for ${quantity} copies of ${did} set to ${price}.`)
+  } else {
+    onfatal() // exit
+  }
+}
+
+async function ongetprice(argv) {
+  let { did, quantity } = argv
+  quantity = quantity || 1
+  info("getting price of AFS %s", did)
+
+  let price
+  try {
+    price = await getPrice({ did, quantity })
+  } catch (err) {
+    onfatal(err)
+  }
+
+  info(`price of ${quantity} copies of ${did} is ${price}.`)
+}
+
+async function onremoveprice(argv) {
+  let { did, quantity } = argv
+  info("removing price tier in AFS %s for quantity %d", did, quantity)
+  const { secret, network, keyring } = argv
+  const keyringOpts = { secret, network, keyring }
+  const { password } = await promptForPassword()
+
+  let result = argv.force
+  if (!result) {
+    try {
+      const cost = await removePriceTier({ did, password, quantity, keyringOpts, estimate: true })
+      const { answer } = await promptCostConfirmation(cost)
+      result = answer
+    } catch (err) {
+      onfatal(err)
+    }
+  }
+
+  if (result) {
+    await removePriceTier({ did, password, quantity, keyringOpts, estimate: false })
+    info(`removed price tier from AFS ${did} for quantity ${quantity}.`)
+  } else {
+    onfatal() // exit
+  }
+}
+
+async function promptCostConfirmation(cost) {
+  return await inquirer.prompt({
+    type: 'confirm',
+    name: 'answer',
+    message: 
+    `This operation will cost ${cost} ETH. Are you sure you
+    want to proceed?`
+  })
+}
+
+async function displayConfirmationPrompt({
+  name = 'answer',
+  message = 'Are you sure you want to continue?'
+} = {}) {
+  return await inquirer.prompt([{
+    name,
+    type: 'confirm',
+    message
+  }])
+}
+
+function onfatal(err) {
+  if (err) {
+    debug(err)
+    error("fatal:", err.message)
+  }
+  process.exit(1)
+}
+

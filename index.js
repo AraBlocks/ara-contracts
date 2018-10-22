@@ -4,6 +4,7 @@ const registry = require('./registry')
 const library = require('./library')
 const rewards = require('./rewards')
 const token = require('./token')
+const price = require('./price')
 
 module.exports = {
   purchase,
@@ -11,5 +12,6 @@ module.exports = {
   commerce,
   library,
   rewards,
-  token
+  token,
+  price
 }
