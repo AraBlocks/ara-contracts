@@ -18,6 +18,8 @@ contract AFS is Ownable {
   bool     public listed_;
   uint256  public price_;
 
+  uint256  public depositRequirement_ = 100 * 10 ** token_.decimals();
+
   mapping(bytes32 => Job)     public jobs_; // jobId => job { budget, sender }
   mapping(bytes32 => uint256) public rewards_;    // farmer => rewards
   mapping(bytes32 => bool)    public purchasers_; // keccak256 hashes of buyer addresses
@@ -109,7 +111,7 @@ contract AFS is Ownable {
     }
   }
 
-  function allocateRewards(bytes32 _jobId, bytes32[] _farmers, uint256[] _rewards) public budgetSubmitted(_jobId) {
+  function allocateRewards(bytes32 _jobId, address[] _farmers, uint256[] _rewards) public budgetSubmitted(_jobId) {
     require(_farmers.length == _rewards.length, "Unequal number of farmers and rewards.");
     uint256 totalRewards;
     for (uint8 i = 0; i < _rewards.length; i++) {
@@ -117,9 +119,12 @@ contract AFS is Ownable {
     }
     require(totalRewards <= jobs_[_jobId].budget, "Insufficient budget.");
     for (uint8 j = 0; j < _farmers.length; j++) {
-      assert(jobs_[_jobId].budget >= _rewards[j]);
-      rewards_[_farmers[j]] = _rewards[j];
-      jobs_[_jobId].budget -= _rewards[j];
+      if (token_.amountDeposited(_farmers[j]) >= depositRequirement_) {
+        assert(jobs_[_jobId].budget >= _rewards[j]);
+        bytes32 farmer = keccak256(abi.encodePacked(_farmers[j]));
+        rewards_[farmer] = _rewards[j];
+        jobs_[_jobId].budget -= _rewards[j];
+      }
     }
     uint256 remaining = jobs_[_jobId].budget;
     if (remaining > 0) {
@@ -131,11 +136,13 @@ contract AFS is Ownable {
   }
 
   function redeemBalance() public {
-    bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
-    require(rewards_[hashedAddress] > 0, "No balance to redeem.");
-    if (token_.transfer(msg.sender, rewards_[hashedAddress])) {
-      rewards_[hashedAddress] = 0;
-      emit Redeemed(msg.sender);
+    if (token_.amountDeposited(msg.sender) >= depositRequirement_) {
+      bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
+      require(rewards_[hashedAddress] > 0, "No balance to redeem.");
+      if (token_.transfer(msg.sender, rewards_[hashedAddress])) {
+        rewards_[hashedAddress] = 0;
+        emit Redeemed(msg.sender);
+      }
     }
   }
 
