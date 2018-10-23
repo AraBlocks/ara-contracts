@@ -1,12 +1,10 @@
-<a name="0.2.10"></a>
-## [0.2.10](https://github.com/AraBlocks/ara-contracts/compare/0.2.6...0.2.10) (2018-10-22)
-
-<a name="0.2.8"></a>
-## [0.2.8](https://github.com/AraBlocks/ara-contracts/compare/0.2.6...0.2.8) (2018-10-22)
+<a name="0.2.11"></a>
+## [0.2.11](https://github.com/AraBlocks/ara-contracts/compare/0.2.6...0.2.11) (2018-10-23)
 
 
 ### Bug Fixes
 
+* **bin/act-library:** add missing onfatal ([cd0688d](https://github.com/AraBlocks/ara-contracts/commit/cd0688d))
 * **constants.js:** Add network ids to switch ([1a3fa7f](https://github.com/AraBlocks/ara-contracts/commit/1a3fa7f))
 
 
