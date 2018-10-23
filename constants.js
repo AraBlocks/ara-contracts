@@ -6,21 +6,33 @@ module.exports = {
   },
 
   get REGISTRY_ADDRESS() {
+<<<<<<< 2655d1070bc9ab409a89e2c73ae3a3b3afc7a2ef
     const privatenet = '0x904b2811abc6fe439f9aee695ebcd7c224e3f96b'
+=======
+    const privatenet = '0x4b6edc61f9d539b722bee628ac6525ff4a7e49c1'
+>>>>>>> fix(): sol runtime error
     const testnet = '0x4c0500f568bbd95bc8eeb9915acdebd5a86f02f8'
     const mainnet = ''
     return getAddress(privatenet, testnet, mainnet)
   },
 
   get LIBRARY_ADDRESS() {
+<<<<<<< 2655d1070bc9ab409a89e2c73ae3a3b3afc7a2ef
     const privatenet = '0xd7a52f25321b1eb6e3519d71f451ae05b4bb4e4e'
+=======
+    const privatenet = '0xa85b24c223a6fec2009f5b61c98a45ee5159d24f'
+>>>>>>> fix(): sol runtime error
     const testnet = '0x4e3797d2c783dedcc6c29512a91c56c857b2eb49'
     const mainnet = ''
     return getAddress(privatenet, testnet, mainnet)
   },
 
   get ARA_TOKEN_ADDRESS() {
+<<<<<<< 2655d1070bc9ab409a89e2c73ae3a3b3afc7a2ef
     const privatenet = '0xe8cee3227158ca86d292c8076ba3498d39fa6e99'
+=======
+    const privatenet = '0x1abe444d8a8c293d7a81a600cd6d7830879189cc'
+>>>>>>> fix(): sol runtime error
     const testnet = '0x6643dd369bacecda73ff92c5fee25f6bf3823106'
     const mainnet = ''
     return getAddress(privatenet, testnet, mainnet)
