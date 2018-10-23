@@ -1,6 +1,7 @@
 const { abi: tokenAbi } = require('./build/contracts/AraToken.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:rewards')
+const { getProxyAddress } = require('./registry')
 const { info } = require('ara-console')
 const token = require('./token')
 
@@ -9,11 +10,6 @@ const {
   JOB_ID_LENGTH,
   AID_PREFIX
 } = require('./constants')
-
-const {
-  proxyExists,
-  getProxyAddress
-} = require('./registry')
 
 const {
   validate,
@@ -105,10 +101,6 @@ async function submit(opts) {
 
   let receipt
   try {
-    if (!(await proxyExists(contentDid))) {
-      throw new Error('This content does not have a valid proxy contract')
-    }
-
     const proxy = await getProxyAddress(contentDid)
 
     budget = budget.toString()
@@ -253,10 +245,6 @@ async function allocate(opts) {
   debug(did, 'allocating rewards for job:', jobId)
 
   try {
-    if (!(await proxyExists(contentDid))) {
-      throw new Error('This content does not have a valid proxy contract')
-    }
-
     const proxy = await getProxyAddress(contentDid)
     const allocateTx = await tx.create({
       account: acct,
@@ -333,10 +321,6 @@ async function redeem(opts) {
 
   let balance = 0
   try {
-    if (!(await proxyExists(contentDid))) {
-      throw new Error('This content does not have a valid proxy contract')
-    }
-
     const proxy = await getProxyAddress(contentDid)
 
     const redeemTx = await tx.create({
@@ -395,10 +379,6 @@ async function getBudget(opts) {
   contentDid = normalize(contentDid)
 
   try {
-    if (!(await proxyExists(contentDid))) {
-      throw new Error('This content does not have a valid proxy contract')
-    }
-
     const proxy = await getProxyAddress(contentDid)
     const budget = await call({
       abi: afsAbi,
@@ -451,10 +431,6 @@ async function getRewardsBalance(opts) {
   const { address } = await account.load({ did, password })
 
   try {
-    if (!(await proxyExists(contentDid))) {
-      throw new Error('This content does not have a valid proxy contract')
-    }
-
     const proxy = await getProxyAddress(contentDid)
     const balance = await call({
       abi: afsAbi,

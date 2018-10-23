@@ -1,13 +1,9 @@
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:purchase')
+const { getProxyAddress } = require('./registry')
 const { randomBytes } = require('ara-crypto')
 const { AID_PREFIX } = require('./constants')
 const token = require('./token')
-
-const {
-  proxyExists,
-  getProxyAddress
-} = require('./registry')
 
 const {
   hasPurchased,
@@ -87,11 +83,13 @@ async function purchase(opts) {
       throw new Error('Identity has already purchased this')
     }
 
-    if (!(await proxyExists(contentDid))) {
-      throw new Error('This content does not have a valid proxy contract')
+    let proxy
+    try {
+      proxy = await getProxyAddress(contentDid)
+    } catch (err) {
+      throw err
     }
-
-    const proxy = await getProxyAddress(contentDid)
+    
     let price = await call({
       abi: afsAbi,
       address: proxy,

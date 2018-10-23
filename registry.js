@@ -1,6 +1,7 @@
 const { abi } = require('./build/contracts/Registry.json')
 const debug = require('debug')('ara-contracts:registry')
 const { parse, resolve } = require('path')
+const { deprecate } = require('util')
 const solc = require('solc')
 const fs = require('fs')
 
@@ -26,15 +27,6 @@ const {
   }
 } = require('ara-util')
 
-async function proxyExists(contentDid = '') {
-  try {
-    const address = await getProxyAddress(contentDid)
-    return !/^0x0+$/.test(address)
-  } catch (err) {
-    return false
-  }
-}
-
 /**
  * Gets the proxy contract address for contentDid
  * @param  {String} contentDid //unhashed
@@ -48,8 +40,9 @@ async function getProxyAddress(contentDid = '') {
 
   contentDid = normalize(contentDid)
 
+  let address
   try {
-    return call({
+    address = await call({
       abi,
       address: REGISTRY_ADDRESS,
       functionName: 'getProxyAddress',
@@ -57,9 +50,14 @@ async function getProxyAddress(contentDid = '') {
         ethify(contentDid)
       ]
     })
+    if (!/^0x0+$/.test(address)) {
+      throw new Error('Content does not have a valid proxy.')
+    }
   } catch (err) {
     throw err
   }
+
+  return address
 }
 
 async function getProxyVersion(contentDid = '') {
@@ -430,7 +428,6 @@ async function deployNewStandard(opts) {
 }
 
 module.exports = {
-  proxyExists,
   deployProxy,
   getStandard,
   upgradeProxy,

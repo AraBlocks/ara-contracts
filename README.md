@@ -55,7 +55,6 @@ The contracts in this repository are deployed on [Ara Privatenet](https://github
 
 ### Registry
 
-* [registry.proxyExists(contentDid)](#proxyexists)
 * [registry.getProxyAddress(contentDid)](#getproxy)
 * [registry.upgradeProxy(opts)](#upgrade)
 * [registry.deployProxy(opts)](#deploy)
@@ -110,17 +109,6 @@ await purchase({
   password,
   job
 })
-```
-
-<a name="proxyexists"></a>
-### `registry.proxyExists(contentDid)`
-
-Checks if the proxy for a content `DID` exists.
-
-- `contentDid` - The `DID` of the content to check
-
-```js
-const exists = await registry.proxyExists(contentDid)
 ```
 
 <a name="getproxy"></a>

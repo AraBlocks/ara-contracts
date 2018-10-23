@@ -1,4 +1,5 @@
 const { abi } = require('./build/contracts/AFS.json')
+const { getProxyAddress } = require('./registry')
 const hasDIDMethod = require('has-did-method')
 const { AID_PREFIX } = require('./constants')
 
@@ -13,11 +14,6 @@ const {
     tx
   }
 } = require('ara-util')
-
-const {
-  getProxyAddress,
-  proxyExists
-} = require('./registry')
 
 /**
  * Requests ownership of an AFS.
@@ -103,11 +99,13 @@ async function approveOwnershipTransfer(opts) {
       Ensure ${newOwnerDid} is a valid Ara identity.`)
   }
 
-  if (!(await proxyExists(did))) {
-    throw new Error('Content does not have a valid proxy contract')
+  let proxy
+  try {
+    proxy = await getProxyAddress(did)
+  } catch (err) {
+    throw err
   }
-
-  const proxy = await getProxyAddress(did)
+  
   let owner = getDocumentOwner(ddo, true)
   owner = `${AID_PREFIX}${owner}`
 
@@ -170,11 +168,12 @@ async function _updateOwnershipRequest(opts, functionName = '') {
       Ensure ${requesterDid} is a valid Ara identity.`)
   }
 
-  if (!(await proxyExists(contentDid))) {
-    throw new Error('Content does not have a valid proxy contract')
+  let proxy
+  try {
+    proxy = await getProxyAddress(contentDid)
+  } catch (err) {
+    throw err
   }
-
-  const proxy = await getProxyAddress(contentDid)
 
   if (!hasDIDMethod(requesterDid)) {
     requesterDid = `${AID_PREFIX}${requesterDid}`
