@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 const debug = require('debug')('ara-contracts:cli:token')
-const { info, warn, error, log } = require('ara-console')
 const { createProgram } = require('../lib/program')
+const { info, error } = require('ara-console')
 const inquirer = require('inquirer')
 const token = require('../token')
 
@@ -15,21 +15,21 @@ usage: act token: [-h] [--help] [options] [--] <command>
 
 // Parse program arguments based on yargs spec
 const { argv } = program
-  .command('deposited <did>', 'Query number of Ara currently deposited by <did>', () => { 
+  .command('deposited <did>', 'Query number of Ara currently deposited by <did>', () => {
     program
       .positional('did', {
         type: 'string',
         describe: 'DID of the account to check'
       })
-    }, ondeposited)
-  .command('balance <did>', 'Query Ara balance of <did>', () => { 
+  }, ondeposited)
+  .command('balance <did>', 'Query Ara balance of <did>', () => {
     program
       .positional('did', {
         type: 'string',
         describe: 'DID of the account to check'
       })
-    }, onbalance)
-  .command('allowance <did> <spender>', 'Query number of Ara <spender> can spend on behalf of <did>', () => { 
+  }, onbalance)
+  .command('allowance <did> <spender>', 'Query number of Ara <spender> can spend on behalf of <did>', () => {
     program
       .positional('did', {
         type: 'string',
@@ -39,7 +39,7 @@ const { argv } = program
         type: 'string',
         describe: 'DID of the spender'
       })
-    }, onallowance)
+  }, onallowance)
   .command('supply', 'Query total supply of Ara', () => {}, onsupply)
 
 // Emit program usage help
@@ -56,7 +56,9 @@ module.exports = (async function main() {
 }())
 
 async function ondeposited(argv) {
-  const { did, secret, network, keyring } = argv
+  const {
+    did, secret, network, keyring
+  } = argv
   const keyringOpts = { secret, network, keyring }
   try {
     info(`Getting deposit amount for ${did}...`)
@@ -69,7 +71,7 @@ async function ondeposited(argv) {
 
 async function onsupply(argv) {
   try {
-    info(`Getting Ara total supply...`)
+    info('Getting Ara total supply...')
     const amount = await token.totalSupply()
     info(`The total supply of Ara is ${amount}.`)
   } catch (err) {
@@ -78,7 +80,9 @@ async function onsupply(argv) {
 }
 
 async function onbalance(argv) {
-  const { did, secret, network, keyring } = argv
+  const {
+    did, secret, network, keyring
+  } = argv
   const keyringOpts = { secret, network, keyring }
   try {
     info(`Getting Ara balance for ${did}...`)

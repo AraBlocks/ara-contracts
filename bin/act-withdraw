@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 const debug = require('debug')('ara-contracts:cli:withdraw')
-const { info, warn, error, log } = require('ara-console')
 const { createProgram } = require('../lib/program')
+const { info, error } = require('ara-console')
 const { modifyDeposit } = require('../token')
 const inquirer = require('inquirer')
 
@@ -15,7 +15,7 @@ usage: act withdraw: [-h] [--help] [options] [--] <did> <amount>
 
 // Parse program arguments based on yargs spec
 const { argv } = program
-  .command('$0 <did> <amount>', 'Withdraw Ara from deposit', () => { 
+  .command('$0 <did> <amount>', 'Withdraw Ara from deposit', () => {
     program
       .positional('did', {
         type: 'string',
@@ -25,10 +25,10 @@ const { argv } = program
         type: 'string',
         describe: 'The number of Ara tokens to withdraw'
       })
-    })
+  })
 
 // Emit program usage help
-if (0 == argv._.length && argv.help) {
+if (0 === argv._.length && argv.help) {
   program.showHelp()
   process.exit(0)
 }
@@ -38,12 +38,16 @@ module.exports = (async function main() {
   if (argv.debug) {
     require('debug').enable('ara-contracts*')
   }
-  const { did, amount, secret, network, keyring } = argv
+  const {
+    did, amount, secret, network, keyring
+  } = argv
   const keyringOpts = { secret, network, keyring }
   const { password } = await promptForPassword()
 
   try {
-    const opts = { did, password, val: amount, withdraw: true, keyringOpts }
+    const opts = {
+      did, password, val: amount, withdraw: true, keyringOpts
+    }
     info(`Withdrawing ${amount} Ara from deposit...`)
     const receipt = await modifyDeposit(opts)
     if (receipt.status) {
@@ -55,14 +59,14 @@ module.exports = (async function main() {
 }())
 
 async function promptForPassword() {
-  return await inquirer.prompt([{
+  return inquirer.prompt([ {
     type: 'password',
     name: 'password',
     message:
     'Please provide the passphrase for your identity. This is needed to ' +
     'complete this action.\n' +
     'Passphrase:'
-  }]) 
+  } ])
 }
 
 function onfatal(err) {

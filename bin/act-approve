@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 const debug = require('debug')('ara-contracts:cli:approve')
-const { info, warn, error, log } = require('ara-console')
 const { createProgram } = require('../lib/program')
+const { info, error } = require('ara-console')
 const inquirer = require('inquirer')
 
 const {
@@ -59,13 +59,17 @@ module.exports = (async function main() {
   if (argv.debug) {
     require('debug').enable('ara-contracts*')
   }
-  const { owner, spender, amount, increase, decrease } = argv
+  const {
+    owner, spender, amount, increase, decrease
+  } = argv
   const { secret, network, keyring } = argv
   const keyringOpts = { secret, network, keyring }
 
   const { password } = await promptForPassword()
 
-  const opts = { spender, did: owner, password, val: amount.toString(), keyringOpts }
+  const opts = {
+    spender, did: owner, password, val: amount.toString(), keyringOpts
+  }
   try {
     // act approve 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3 100 -D
     let receipt
@@ -94,14 +98,14 @@ module.exports = (async function main() {
 }())
 
 async function promptForPassword() {
-  return await inquirer.prompt([{
+  return inquirer.prompt([ {
     type: 'password',
     name: 'password',
     message:
     'Please provide the passphrase for your identity. This is needed to ' +
     'complete this action.\n' +
     'Passphrase:'
-  }]) 
+  } ])
 }
 
 function onfatal(err) {
