@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
+/* eslint no-shadow: [ "error", { "allow": ["_", "program", "argv"] }] */
+
 const debug = require('debug')('ara-contracts:cli:token')
 const { createProgram } = require('../lib/program')
 const { info, error } = require('ara-console')
-const inquirer = require('inquirer')
 const token = require('../token')
 
 // yargs program command line interface instance
@@ -15,22 +16,22 @@ usage: act token: [-h] [--help] [options] [--] <command>
 
 // Parse program arguments based on yargs spec
 const { argv } = program
-  .command('deposited <did>', 'Query number of Ara currently deposited by <did>', () => {
-    program
+  .command('deposited <did>', 'Query number of Ara currently deposited by <did>', (_) => {
+    _
       .positional('did', {
         type: 'string',
         describe: 'DID of the account to check'
       })
   }, ondeposited)
-  .command('balance <did>', 'Query Ara balance of <did>', () => {
-    program
+  .command('balance <did>', 'Query Ara balance of <did>', (_) => {
+    _
       .positional('did', {
         type: 'string',
         describe: 'DID of the account to check'
       })
   }, onbalance)
-  .command('allowance <did> <spender>', 'Query number of Ara <spender> can spend on behalf of <did>', () => {
-    program
+  .command('allowance <did> <spender>', 'Query number of Ara <spender> can spend on behalf of <did>', (_) => {
+    _
       .positional('did', {
         type: 'string',
         describe: 'DID of the owner'
@@ -69,7 +70,7 @@ async function ondeposited(argv) {
   }
 }
 
-async function onsupply(argv) {
+async function onsupply() {
   try {
     info('Getting Ara total supply...')
     const amount = await token.totalSupply()

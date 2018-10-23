@@ -1,20 +1,12 @@
 #!/usr/bin/env node
 
 const { kFromACTParentFlag, createProgram } = require('../lib/program')
-const { info, warn, error, log } = require('ara-console')
 const debug = require('debug')('ara-contracts:cli')
-const { basename, resolve } = require('path')
-const { version } = require('../package')
-const registry = require('../registry')
-const purchase = require('../purchase')
-const library = require('../library')
+const { error } = require('ara-console')
 const spawn = require('cross-spawn')
 const which = require('which')
 const pify = require('pify')
 
-const noop = () => void 0
-const toLower = (x) => String(x).toLowerCase()
-const $0 = basename(process.argv[1] || package.name)
 const kOriginalProgramArguments =
   Object.freeze(Object.seal(Object.assign([], process.argv.slice(2))))
 
@@ -29,7 +21,7 @@ usage: act: [-hDV] [--help] [--version]
 
 Below are some useful act commands:
 
-  act deploy     Deploy an ARA proxy or standard contract
+  act deploy     Deploy an Ara proxy or standard contract
   act library    Interact with the ARA library
   act purchase   Purchase an AFS in the ARA network
   act reward     Submit, allocate, and redeem rewards
@@ -64,7 +56,6 @@ const { argv } = program
 
 // Emit program version
 if (0 == argv._.length && argv.version) {
-  console.log(version)
   process.exit(0)
 }
 
@@ -138,7 +129,7 @@ void (async function main() {
 function onfatal(err) {
   if (err) {
     debug(err)
-    error("fatal:", err.message)
+    error('fatal:', err.message)
   }
   process.exit(1)
 }

@@ -40,8 +40,8 @@ const { argv } = program
         describe: 'The content DID where the balance is located'
       })
   }, onredeem)
-  .command('submit <did> <content> <budget>', 'Submit a budget for a DCDN download', () => {
-    program
+  .command('submit <did> <content> <budget>', 'Submit a budget for a DCDN download', (_) => {
+    _
       .positional('did', {
         type: 'string',
         describe: 'The DID providing the budget'
@@ -55,8 +55,8 @@ const { argv } = program
         describe: 'The amount of Ara to budget for a DCDN download'
       })
   }, onsubmit)
-  .command('budget <content> <jobId>', 'Query the budget for a <jobId>', () => {
-    program
+  .command('budget <content> <jobId>', 'Query the budget for a <jobId>', (_) => {
+    _
       .positional('content', {
         type: 'string',
         describe: 'The content DID where the budget is located'
@@ -66,8 +66,8 @@ const { argv } = program
         describe: 'The ID of the DCDN job the budget is for'
       })
   }, onbudget)
-  .command('allocate <did> <content> <jobId>', 'Allocate the budget for <jobId> between peers', () => {
-    program
+  .command('allocate <did> <content> <jobId>', 'Allocate the budget for <jobId> between peers', (_) => {
+    _
       .positional('did', {
         type: 'string',
         describe: 'The DID allocating the budget'
@@ -123,7 +123,7 @@ async function onredeem(argv) {
     const balance = await rewards.redeem({
       farmerDid: did, contentDid: content, password, keyringOpts
     })
-    info(`${did} redeemed ${balance} Ara from ${contentDid}.`)
+    info(`${did} redeemed ${balance} Ara from ${content}.`)
   } catch (err) {
     onfatal(err)
   }
@@ -164,12 +164,12 @@ async function onallocate(argv) {
   const { password } = await promptForPassword()
 
   let { farmers } = await promptForFarmers()
-  let { distrib } = await promptForDistrib()
+  const { distrib } = await promptForDistrib()
   farmers = farmers.split(',').map(farmer => farmer.trim())
-  distrib = distrib.split(',').map(distrib => distrib.trim())
+  const distribution = distrib.split(',').map(d => d.trim())
 
-  if (farmers.length !== distrib.length) {
-    onfatal(new Error(`Expected same number of farmers as distributions. Got ${farmers.length} farmers and ${distrib.length} distributions.`))
+  if (farmers.length !== distribution.length) {
+    onfatal(new Error(`Expected same number of farmers as distributions. Got ${farmers.length} farmers and ${distribution.length} distributions.`))
   }
 
   try {
@@ -182,7 +182,7 @@ async function onallocate(argv) {
       job: {
         jobId,
         farmers,
-        rewards: distrib
+        rewards: distribution
       }
     })
   } catch (err) {
