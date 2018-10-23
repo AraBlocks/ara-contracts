@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 const debug = require('debug')('ara-contracts:cli:token')
-const { info, warn, error, log } = require('ara-console')
 const { createProgram } = require('../lib/program')
+const { info, error } = require('ara-console')
 const inquirer = require('inquirer')
 const token = require('../token')
 
@@ -15,7 +15,7 @@ usage: act transfer: [-h] [--help] [options] [--] <did> <amount>
 
 // Parse program arguments based on yargs spec
 const { argv } = program
-  .command('$0 [--sender] <from> <to> <amount>', 'Send Ara between accounts', () => { 
+  .command('$0 [--sender] <from> <to> <amount>', 'Send Ara between accounts', () => {
     program
       .positional('from', {
         type: 'string',
@@ -34,7 +34,7 @@ const { argv } = program
         type: 'string',
         describe: 'DID of the sender of the transaction if it is not <from>'
       })
-    }, ontransfer)
+  }, ontransfer)
 
 // Emit program usage help
 if (0 == argv._.length && argv.help) {
@@ -50,7 +50,9 @@ module.exports = (async function main() {
 }())
 
 async function ontransfer(argv) {
-  const { from, to, amount, sender } = argv
+  const {
+    from, to, amount, sender
+  } = argv
   const { secret, network, keyring } = argv
   const keyringOpts = { secret, network, keyring }
   const { password } = await promptForPassword()
@@ -61,14 +63,18 @@ async function ontransfer(argv) {
     info(`Transferring ${amount} Ara from ${from} to ${to}...`)
     if (sender) {
       // act transfer --sender cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3 100
-      opts = { from, to, val: amount, did: sender, password, keyringOpts }
+      opts = {
+        from, to, val: amount, did: sender, password, keyringOpts
+      }
       receipt = await token.transferFrom(opts)
     } else {
       // act transfer 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 cebc55ee22134f2cabdfeb64364d4312ffbb3e887362f613290e6d06bc84bab3 100
-      opts = { to, val: amount, did: from, password, keyringOpts }
+      opts = {
+        to, val: amount, did: from, password, keyringOpts
+      }
       receipt = await token.transfer(opts)
     }
-    if (receipt.status){
+    if (receipt.status) {
       info(`${amount} Ara transferred from ${from} to ${to}`)
     }
   } catch (err) {
@@ -77,14 +83,14 @@ async function ontransfer(argv) {
 }
 
 async function promptForPassword() {
-  return await inquirer.prompt([{
+  return inquirer.prompt([ {
     type: 'password',
     name: 'password',
     message:
     'Please provide the passphrase for your identity. This is needed to ' +
     'complete this action.\n' +
     'Passphrase:'
-  }]) 
+  } ])
 }
 
 function onfatal(err) {

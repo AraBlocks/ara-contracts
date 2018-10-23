@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 
+/* eslint no-shadow: [ "error", { "allow": ["_", "program", "argv"] }] */
+
 const debug = require('debug')('ara-contracts:cli:reward')
-const { info, warn, error, log } = require('ara-console')
 const { createProgram } = require('../lib/program')
+const { info, error } = require('ara-console')
 const { randomBytes } = require('ara-crypto')
 const { ethify } = require('ara-util/web3')
 const rewards = require('../rewards')
@@ -16,8 +18,8 @@ usage: act reward: [-h] [--help] [options]
 })
 
 const { argv } = program
-  .command('balance <did> <content>', 'Query <did>\'s reward balance for <content>', () => {
-    program
+  .command('balance <did> <content>', 'Query <did>\'s reward balance for <content>', (_) => {
+    _
       .positional('did', {
         type: 'string',
         describe: 'The DID that owns the balance'
@@ -27,8 +29,8 @@ const { argv } = program
         describe: 'The content DID where the balance is located'
       })
   }, onbalance)
-  .command('redeem <did> <content>', 'Transfer balance from <content> to <did> account', () => {
-    program
+  .command('redeem <did> <content>', 'Transfer balance from <content> to <did> account', (_) => {
+    _
       .positional('did', {
         type: 'string',
         describe: 'The DID that owns the balance'
@@ -94,12 +96,16 @@ module.exports = (async function main() {
 }())
 
 async function onbalance(argv) {
-  const { content, did, secret, network, keyring } = argv
+  const {
+    content, did, secret, network, keyring
+  } = argv
   const keyringOpts = { secret, network, keyring }
   const { password } = await promptForPassword()
   try {
     info(`Getting balance for ${did} in ${content}.`)
-    const balance = await rewards.getRewardsBalance({ farmerDid: did, contentDid: content, password, keyringOpts })
+    const balance = await rewards.getRewardsBalance({
+      farmerDid: did, contentDid: content, password, keyringOpts
+    })
     info(`${did} has ${balance} Ara redeembale in ${content}.`)
   } catch (err) {
     onfatal(err)
@@ -107,12 +113,16 @@ async function onbalance(argv) {
 }
 
 async function onredeem(argv) {
-  const { content, did, secret, network, keyring } = argv
+  const {
+    content, did, secret, network, keyring
+  } = argv
   const keyringOpts = { secret, network, keyring }
   const { password } = await promptForPassword()
   try {
     info(`${did} redeeming balance...`)
-    const balance = await rewards.redeem({ farmerDid: did, contentDid: content, password, keyringOpts })
+    const balance = await rewards.redeem({
+      farmerDid: did, contentDid: content, password, keyringOpts
+    })
     info(`${did} redeemed ${balance} Ara from ${contentDid}.`)
   } catch (err) {
     onfatal(err)
@@ -120,7 +130,9 @@ async function onredeem(argv) {
 }
 
 async function onsubmit(argv) {
-  const { content, did, budget, secret, network, keyring } = argv
+  const {
+    content, did, budget, secret, network, keyring
+  } = argv
   const keyringOpts = { secret, network, keyring }
   const { password } = await promptForPassword()
   try {
@@ -145,18 +157,16 @@ async function onbudget(argv) {
 }
 
 async function onallocate(argv) {
-  const { content, did, jobId, secret, network, keyring } = argv
+  const {
+    content, did, jobId, secret, network, keyring
+  } = argv
   const keyringOpts = { secret, network, keyring }
   const { password } = await promptForPassword()
 
   let { farmers } = await promptForFarmers()
   let { distrib } = await promptForDistrib()
-  farmers = farmers.split(',').map((farmer) => {
-    return farmer.trim()
-  })
-  distrib = distrib.split(',').map((distrib) => {
-    return distrib.trim()
-  })
+  farmers = farmers.split(',').map(farmer => farmer.trim())
+  distrib = distrib.split(',').map(distrib => distrib.trim())
 
   if (farmers.length !== distrib.length) {
     onfatal(new Error(`Expected same number of farmers as distributions. Got ${farmers.length} farmers and ${distrib.length} distributions.`))
@@ -173,49 +183,50 @@ async function onallocate(argv) {
         jobId,
         farmers,
         rewards: distrib
-      }})
+      }
+    })
   } catch (err) {
     onfatal(err)
   }
 }
 
 async function promptForPassword() {
-  return await inquirer.prompt([{
+  return inquirer.prompt([ {
     type: 'password',
     name: 'password',
     message:
-    "Please provide the passphrase for your identity. This is needed to " +
-    "complete this action.\n" +
-    "Passphrase:"
-  }])
+    'Please provide the passphrase for your identity. This is needed to ' +
+    'complete this action.\n' +
+    'Passphrase:'
+  } ])
 }
 
 async function promptForFarmers() {
-  return await inquirer.prompt([{
+  return inquirer.prompt([ {
     type: 'string',
     name: 'farmers',
     message:
-    "Please provide a comma separated list of farmer DIDs. This is needed to " +
-    "complete this action.\n" +
-    "Farmers:"
-  }])
+    'Please provide a comma separated list of farmer DIDs. This is needed to ' +
+    'complete this action.\n' +
+    'Farmers:'
+  } ])
 }
 
 async function promptForDistrib() {
-  return await inquirer.prompt([{
+  return inquirer.prompt([ {
     type: 'string',
     name: 'distrib',
     message:
-    "Please provide a comma separated list of Ara distributions corresponding to the list of farmers. This is needed to " +
-    "complete this action.\n" +
-    "Distribution:"
-  }])
+    'Please provide a comma separated list of Ara distributions corresponding to the list of farmers. This is needed to ' +
+    'complete this action.\n' +
+    'Distribution:'
+  } ])
 }
 
 function onfatal(err) {
   if (err) {
     debug(err)
-    error("fatal:", err.message)
+    error('fatal:', err.message)
   }
   process.exit(1)
 }

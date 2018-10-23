@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
+/* eslint no-shadow: [ "error", { "allow": ["_", "program", "argv"] }] */
+
 const debug = require('debug')('ara-contracts:cli:deploy')
-const { info, warn, error, log } = require('ara-console')
 const { createProgram } = require('../lib/program')
+const { info, error } = require('ara-console')
 const registry = require('../registry')
 const inquirer = require('inquirer')
-
-const toLower = x => String(x).toLowerCase()
 
 // yargs program command line interface instance
 const program = createProgram({
@@ -18,8 +18,8 @@ usage: act deploy: [-h] [--help]
 
 // Parse program arguments based on yargs spec
 const { argv } = program
-  .command('proxy [options] <did> <version>', 'Deploy a proxy contract for <did>', () => {
-    program
+  .command('proxy [options] <did> <version>', 'Deploy a proxy contract for <did>', (_) => {
+    _
       .positional('did', {
         type: 'string',
         describe: 'The content DID for this proxy'
@@ -42,8 +42,8 @@ const { argv } = program
         describe: 'Password for DID'
       })
   }, onproxy)
-  .command('standard [options] <did> <version> <pathspec...>', 'Deploy a new AFS standard <version> with <did> (the registry contract owner)', () => {
-    program
+  .command('standard [options] <did> <version> <pathspec...>', 'Deploy a new AFS standard <version> with <did> (the registry contract owner)', (_) => {
+    _
       .positional('did', {
         type: 'string',
         describe: 'The registry contract owner DID'
@@ -54,7 +54,7 @@ const { argv } = program
       })
       .positional('pathspec', {
         type: 'string',
-        describe: "Paths to the solidity dependencies(s) of AFS.sol"
+        describe: 'Paths to the solidity dependencies(s) of AFS.sol'
       })
       .option('force', {
         alias: 'f',
@@ -67,7 +67,7 @@ const { argv } = program
   }, onstandard)
 
 // Emit program usage help
-if (0 == argv._.length && argv.help) {
+if (0 === argv._.length && argv.help) {
   program.showHelp()
   process.exit(0)
 }
@@ -80,7 +80,10 @@ module.exports = (async function main() {
 }())
 
 async function onproxy(argv) {
-  let { did, version, upgrade, force, password } = argv
+  const {
+    did, version, upgrade, force
+  } = argv
+  let { password } = argv
   const { secret, network, keyring } = argv
   const keyringOpts = { secret, network, keyring }
   if (force && !password) {
@@ -122,8 +125,9 @@ async function onproxy(argv) {
 }
 
 async function onstandard(argv) {
-  let { did, version, force, password } = argv
-  let [ ...paths ] = argv.pathspec
+  const { did, version, force } = argv
+  let { password } = argv
+  const [ ...paths ] = argv.pathspec
   const { secret, network, keyring } = argv
   const keyringOpts = { secret, network, keyring }
 
@@ -151,14 +155,14 @@ async function onstandard(argv) {
 }
 
 async function promptForPassword() {
-  return await inquirer.prompt([{
+  return inquirer.prompt([ {
     type: 'password',
     name: 'password',
     message:
-    "Please provide the passphrase for your identity. This is needed to " +
-    "complete this action.\n" +
-    "Passphrase:"
-  }]) 
+    'Please provide the passphrase for your identity. This is needed to ' +
+    'complete this action.\n' +
+    'Passphrase:'
+  } ])
 }
 
 async function promptCostConfirmation(cost) {
@@ -174,7 +178,7 @@ async function promptCostConfirmation(cost) {
 function onfatal(err) {
   if (err) {
     debug(err)
-    error("fatal:", err.message)
+    error('fatal:', err.message)
   }
   process.exit(1)
 }

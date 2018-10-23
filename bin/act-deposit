@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 const debug = require('debug')('ara-contracts:cli:deposit')
-const { info, warn, error, log } = require('ara-console')
 const { createProgram } = require('../lib/program')
+const { info, error } = require('ara-console')
 const { modifyDeposit } = require('../token')
 const inquirer = require('inquirer')
 
@@ -15,8 +15,8 @@ usage: act deposit: [-h] [--help] [options] [--] <did> <amount>
 
 // Parse program arguments based on yargs spec
 const { argv } = program
-  .command('$0 <did> <amount>', 'Deposit Ara to participate in rewards', () => { 
-    program
+  .command('$0 <did> <amount>', 'Deposit Ara to participate in rewards', (_) => {
+    _
       .positional('did', {
         type: 'string',
         describe: 'DID of the requester (the account that owns the tokens to be deposited)'
@@ -25,7 +25,7 @@ const { argv } = program
         type: 'string',
         describe: 'The number of Ara tokens to deposit'
       })
-    })
+  })
 
 // Emit program usage help
 if (0 == argv._.length && argv.help) {
@@ -45,7 +45,9 @@ module.exports = (async function main() {
   const { password } = await promptForPassword()
 
   try {
-    const opts = { did, password, val: amount, withdraw: false, keyringOpts }
+    const opts = {
+      did, password, val: amount, withdraw: false, keyringOpts
+    }
     info(`Depositing ${amount} Ara...`)
     const receipt = await modifyDeposit(opts)
     if (receipt.status) {
@@ -57,14 +59,14 @@ module.exports = (async function main() {
 }())
 
 async function promptForPassword() {
-  return await inquirer.prompt([{
+  return inquirer.prompt([ {
     type: 'password',
     name: 'password',
     message:
     'Please provide the passphrase for your identity. This is needed to ' +
     'complete this action.\n' +
     'Passphrase:'
-  }]) 
+  } ])
 }
 
 function onfatal(err) {

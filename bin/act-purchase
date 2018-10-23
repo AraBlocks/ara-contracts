@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 
 const debug = require('debug')('ara-contracts:cli:purchase')
-const { info, warn, error, log } = require('ara-console')
 const { createProgram } = require('../lib/program')
-const { web3: { ethify } } = require('ara-util')
-const { randomBytes } = require('ara-crypto')
+const { info, error } = require('ara-console')
 const { purchase } = require('../purchase')
 const inquirer = require('inquirer')
 
@@ -44,7 +42,7 @@ module.exports = (async function main() {
   let { purchaser, did, budget = 0 } = argv
   const { secret, network, keyring } = argv
   const keyringOpts = { secret, network, keyring }
-  let job = null
+  
   if (0 > budget) {
     throw new TypeError(`Expecting 'budget' to be a 0 or greater. Got ${budget}. Try passing in a non-negative budget.`)
   }
@@ -68,20 +66,20 @@ module.exports = (async function main() {
 }())
 
 async function promptForPassword() {
-  return await inquirer.prompt([{
+  return inquirer.prompt([ {
     type: 'password',
     name: 'password',
     message:
-    "Please provide the passphrase for your identity. This is needed to " +
-    "complete this action.\n" +
-    "Passphrase:"
-  }]) 
+    'Please provide the passphrase for your identity. This is needed to ' +
+    'complete this action.\n' +
+    'Passphrase:'
+  } ])
 }
 
 function onfatal(err) {
   if (err) {
     debug(err)
-    error("fatal:", err.message)
+    error('fatal:', err.message)
   }
   process.exit(1)
 }

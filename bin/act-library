@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 
-const debug = require('debug')('ara-contracts:cli:library')
-const { info, warn, error, log } = require('ara-console')
-const { createProgram } = require('../lib/program')
-const library = require('../library')
-const inquirer = require('inquirer')
+/* eslint no-shadow: [ "error", { "allow": ["_", "program", "argv"] }] */
 
-const toLower = x => String(x).toLowerCase()
+const debug = require('debug')('ara-contracts:cli:library')
+const { createProgram } = require('../lib/program')
+const { info, error } = require('ara-console')
+const library = require('../library')
 
 // yargs program command line interface instance
 const program = createProgram({
@@ -17,15 +16,15 @@ usage: act library: [-h] [--help]
 })
 
 const { argv } = program
-  .command('$0 <did>', 'Gets a list of content DIDs purchased by <did>', () => {
-    program
+  .command('$0 <did>', 'Gets a list of content DIDs purchased by <did>', (_) => {
+    _
       .positional('did', {
         type: 'string',
         describe: 'The library owner\'s DID'
       })
   }, onall)
-  .command('get <did> <index>', 'Gets the content DID at <index> in <did>\'s library', () => {
-    program
+  .command('get <did> <index>', 'Gets the content DID at <index> in <did>\'s library', (_) => {
+    _
       .positional('did', {
         type: 'string',
         describe: 'The library owner\'s DID'
@@ -52,7 +51,7 @@ module.exports = (async function main() {
 async function onall(argv) {
   const { did } = argv
   try {
-    info(`Getting ${did}\'s library...`)
+    info(`Getting ${did}'s library...`)
     const size = await library.getLibrarySize(did)
     const lib = await library.getLibrary(did)
     info(`${did} library (${size})\n${lib}.`)
@@ -64,7 +63,7 @@ async function onall(argv) {
 async function onget(argv) {
   const { did, index } = argv
   try {
-    info(`Getting item ${index} in ${did}\'s library...`)
+    info(`Getting item ${index} in ${did}'s library...`)
     const contentDid = await library.getLibraryItem({ requesterDid: did, index })
     info(`item ${index} has did: ${contentDid}.`)
   } catch (err) {
