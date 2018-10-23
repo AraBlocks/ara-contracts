@@ -71,3 +71,11 @@ async function onget(argv) {
     onfatal(err)
   }
 }
+
+function onfatal(err) {
+  if (err) {
+    debug(err)
+    error('fatal:', err.message)
+  }
+  process.exit(1)
+}
