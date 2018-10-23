@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+/* eslint no-shadow: [ "error", { "allow": ["_", "program", "argv"] }] */
+
 const debug = require('debug')('ara-contracts:cli:token')
 const { createProgram } = require('../lib/program')
 const { info, error } = require('ara-console')
@@ -15,8 +17,8 @@ usage: act transfer: [-h] [--help] [options] [--] <did> <amount>
 
 // Parse program arguments based on yargs spec
 const { argv } = program
-  .command('$0 [--sender] <from> <to> <amount>', 'Send Ara between accounts', () => {
-    program
+  .command('$0 [--sender] <from> <to> <amount>', 'Send Ara between accounts', (_) => {
+    _
       .positional('from', {
         type: 'string',
         describe: 'DID of the account to transfer Ara from'
