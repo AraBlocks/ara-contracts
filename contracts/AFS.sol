@@ -18,7 +18,7 @@ contract AFS is Ownable {
   bool     public listed_;
   uint256  public price_;
 
-  uint256  public depositRequirement_ = 100 * 10 ** token_.decimals();
+  uint256  public depositRequirement_ = 100;
 
   mapping(bytes32 => Job)     public jobs_; // jobId => job { budget, sender }
   mapping(bytes32 => uint256) public rewards_;    // farmer => rewards
@@ -91,6 +91,7 @@ contract AFS is Ownable {
     did_      = did;
     listed_   = true;
     price_    = 0;
+    depositRequirement_  *= 10 ** token_.decimals();
   }
 
   function setPrice(uint256 _price) external onlyBy(owner_) {
