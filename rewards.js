@@ -1,6 +1,7 @@
 const { abi: tokenAbi } = require('./build/contracts/AraToken.json')
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
 const debug = require('debug')('ara-contracts:rewards')
+const { hasPurchased } = require('./library')
 const { info } = require('ara-console')
 const token = require('./token')
 
@@ -102,6 +103,12 @@ async function submit(opts) {
   const acct = await account.load({ did, password })
 
   debug(`${did} submitting ${budget} Ara as rewards for ${jobId} in ${contentDid}`)
+
+  // make sure user hasn't already purchased
+  const purchased = await hasPurchased({ contentDid, purchaserDid: did })
+  if (!purchased) {
+    throw new TypeError(`${did} has not purchased AFS ${contentDid}, cannot submit budget.`)
+  }
 
   let receipt
   try {
