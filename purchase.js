@@ -81,6 +81,7 @@ async function purchase(opts) {
   did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
+  let receipt
   try {
     const purchased = await hasPurchased({ purchaserDid: did, contentDid })
     if (purchased) {
@@ -103,7 +104,7 @@ async function purchase(opts) {
     let val = budget + price
     val = val.toString()
 
-    let receipt = await token.increaseApproval({
+    receipt = await token.increaseApproval({
       did,
       password,
       spender: proxy,
@@ -169,6 +170,10 @@ async function purchase(opts) {
     }
   } catch (err) {
     throw err
+  }
+  return {
+    receipt,
+    jobId
   }
 }
 

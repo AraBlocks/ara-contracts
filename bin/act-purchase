@@ -53,14 +53,15 @@ module.exports = (async function main() {
 
   info(`Purchasing ${did}...`)
   try {
-    // DEBUG=* act purchase 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 2932d07bb73160c9808b02aa061dc6ee4b759dfc0bd19656214eb651469b6ceb --budget 10
-    await purchase({
+    // act purchase 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 7fc45f2eebdd98248876910d4ced1361f0395a02c4381609be793aa359fa25c7 --budget 1000 -D
+    const { jobId } = await purchase({
       requesterDid: purchaser,
       contentDid: did,
       keyringOpts,
       password,
       budget
     })
+    info(`${purchaser} purchased ${did} and submitted a budget of ${budget} for job ${jobId}`)
   } catch (err) {
     onfatal(err)
   }

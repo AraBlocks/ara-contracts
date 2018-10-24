@@ -6,21 +6,21 @@ module.exports = {
   },
 
   get REGISTRY_ADDRESS() {
-    const privatenet = '0x4b6edc61f9d539b722bee628ac6525ff4a7e49c1'
+    const privatenet = '0x46aa3e850936334c1517066c1a17a0abc9194ee7'
     const testnet = '0x4c0500f568bbd95bc8eeb9915acdebd5a86f02f8'
     const mainnet = ''
     return getAddress(privatenet, testnet, mainnet)
   },
 
   get LIBRARY_ADDRESS() {
-    const privatenet = '0xa85b24c223a6fec2009f5b61c98a45ee5159d24f'
+    const privatenet = '0x087b5ef8cb4824f1df70bb23895ad0fa73d285ca'
     const testnet = '0x4e3797d2c783dedcc6c29512a91c56c857b2eb49'
     const mainnet = ''
     return getAddress(privatenet, testnet, mainnet)
   },
 
   get ARA_TOKEN_ADDRESS() {
-    const privatenet = '0x1abe444d8a8c293d7a81a600cd6d7830879189cc'
+    const privatenet = '0xf7a9bf53b34b6385e46ec7a13bb8fd103afae320'
     const testnet = '0x6643dd369bacecda73ff92c5fee25f6bf3823106'
     const mainnet = ''
     return getAddress(privatenet, testnet, mainnet)
@@ -41,7 +41,7 @@ module.exports = {
   TEST_OWNER_ADDRESS_2: '0x1019468D3060F0b8c5d9C432f0c4Db33e28b3582',
 
   TOKEN_DECIMALS: 18,
-  STANDARD_VERSION: '1',
+  STANDARD_VERSION: '2',
   JOB_ID_LENGTH: 64
 }
 
@@ -78,24 +78,27 @@ function getAddress(privatenet, testnet, mainnet) {
 // Proxy: '0x7150c203A5A7e833BaED9c98c699eB3b96668aDd'
 
 /**
- * FARMERS:
- *  (1)     DID: did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785
- *      ADDRESS: 0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e
- *          KEY: 0xc169a154b069eabe0bb54cf1bc4abe100e34bcd74d0e32d16d87c00033292b46
- *     MNEMONIC: < offer loop foil panic hobby subway runway deny canyon impose speed ride >
- *  (2)     DID: did:ara:03e5a1ecc9e7c4639dfb3e0d90302c77b51ca083dfaecb64af1c8f15c9fc0683
- *      ADDRESS: 0x70693d8f4e1c9bA1AE0870C35128BaDfDcF28FBc
- *          KEY: 0xb6313da9a02485ad500392d4955017d98794095c666723c463c94d3cb8c6ed52
- *     MNEMONIC: < stock office soft harvest path joy tail alpha topple pen village music >
- *  (3)     DID: did:ara:067cfd3d2e56e80838b59247d1589b9180cc274a8e7c0a930c7d4f8ecf5e95f0
- *      ADDRESS: 0x19d6a7D8bB09e8A6d733a9c8D9fe7b964fD8F45e
- *          KEY: 0x69b91242b15c8f1dcd72cee1a1dbf5be08c0b0db008f819819cebea0ca24bf6e
- *     MNEMONIC: < grant wild either uncover ivory release beyond jungle believe drift topic clever >
- *  (4)     DID: did:ara:e5e6946e25d6c7e4fd0eb716f0361d42a5bcfac663e55f08ab539f4ba0a6faba
- *      ADDRESS: 0x629483C72b5191C1b522E887238a0A522b1D4F74
- *          KEY: 0x32b1acdfc044649631bb22821f661ea5e9dba65e98637f1fa2ec3c3056582acc
- *     MNEMONIC: < snap poet general square silk ranch whip lizard faculty upon cup degree >
+ * TEST IDs:
+ *  (1)     DID: did:ara:77da0a6389fd2942d30c794c7a7dd61c97d7f7b0ee3a795100d171404f9073e0
+ *      ADDRESS: 0xfe710619a6d1c5ebc64137e14274cf241f99fc65
+ *          KEY: 0x531b61453fbe1dd07ed57e6ebb0f05d0a990285ed83045040133e5cf202c6830
+ *     MNEMONIC: < naive shrimp confirm vault seed baby deny happy equal chronic where grass >
+ *
+ *  (2)     DID: did:ara:b2dc6cc7fb4606d2fc17bb07462668b1a25994af77071e39ac60948f8b55023c
+ *      ADDRESS: 0x642745c23733143b518002e02a627ad505df2826
+ *          KEY: 0x41de20fda97629a8bebe802a946e21c6ebd1a5b2f3f1698272acc60c770ba18d
+ *     MNEMONIC: < become initial climb snow eight develop exclude tooth marriage mirror champion sponsor >
+ *
+ *  (3)     DID: did:ara:5cb1634bd218d1a29053a764ef0f7945bff862477905eb5bb31cc3eb56d61ef4
+ *      ADDRESS: 0x4fc75e4957cb3acd8069c356077c9b708812ade9
+ *          KEY: 0x008d6f00bc9b66e7ecff45628f148d1d4f8c75acd6b741b18decf91e405d5d7e
+ *     MNEMONIC: < chuckle total inquiry rebuild fruit cousin excess century crush tag test fresh >
+ *
+ *  (4)     DID: did:ara:08228219008e3c7ab8b7f23a161c196be44ff33525ebea01d841b707b34b7adc
+ *      ADDRESS: 0x75111692d6b0cf3371ec243be04954d3ddec00ed
+ *          KEY: 0x0a613c9d539fbf6fe9d834b612ad010283753637d3164605416cdbb6c50340ee
+ *     MNEMONIC: < learn coach patrol senior bone april idea cheap globe baby guilt subject >
  */
 
-// 0xF9403C6DA32DB4860F1eCB1c02B9A04D37c0e36e, 0x70693d8f4e1c9bA1AE0870C35128BaDfDcF28FBc, 0x19d6a7D8bB09e8A6d733a9c8D9fe7b964fD8F45e, 0x629483C72b5191C1b522E887238a0A522b1D4F74
-// 10, 20, 30, 40
+// AFS: 7fc45f2eebdd98248876910d4ced1361f0395a02c4381609be793aa359fa25c7
+// job: 0x358451c4dd57f44ca7a1999db97821cc0817959e6d9e8f4e2c70ef0476fdd2fe
