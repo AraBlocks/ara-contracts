@@ -183,12 +183,14 @@ async function submit(opts) {
  * @param  {string|Buffer}  opts.job.jobId
  * @param  {Array}          opts.job.farmers
  * @param  {Array}          opts.job.rewards
+ * @param  {Boolean}        opts.job.returnBudget
  * @throws {Error,TypeError}
  */
 async function allocate(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
+    console.log(opts.requesterDid)
     throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
@@ -206,7 +208,11 @@ async function allocate(opts) {
   } = opts
 
   const { farmers, rewards } = job
-  let { jobId } = job
+  let { jobId, returnBudget } = job
+
+  if (returnBudget && 'boolean' !== typeof returnBudget) {
+    throw new TypeError('Expecting opts.job.returnBudget to be boolean.')
+  }
 
   const validJobId = isValidJobId(jobId)
   if (!validJobId) {
@@ -218,9 +224,10 @@ async function allocate(opts) {
 
   // Convert farmer DIDs to Addresses
   const validFarmers = await isValidArray(farmers, async (farmer, index) => {
-    const address = await getAddressFromDID(farmer, keyringOpts)
-    farmers[index] = sha3({ t: 'address', v: address })
-    return isAddress(address)
+    // const address = await getAddressFromDID(farmer, keyringOpts)
+    // farmers[index] = sha3({ t: 'address', v: address })
+    farmers[index] = await getAddressFromDID(farmer, keyringOpts)
+    return isAddress(farmers[index])
   })
   if (!validFarmers) {
     throw TypeError('Invalid farmer array.')
@@ -281,15 +288,40 @@ async function allocate(opts) {
         values: [
           jobId,
           farmers,
-          rewards
+          rewards,
+          returnBudget
         ]
       }
     })
     const proxyContract = await contract.get(afsAbi, proxy)
     await proxyContract.events.RewardsAllocated({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
-        const { returnValues: { _did, _allocated, _returned } } = log
-        info(`allocated ${token.constrainTokenValue(_allocated)} Ara as rewards between farmers for content ${_did}; returned ${_returned} Ara`)
+        const { returnValues: { _farmer, _allocated, _remaining } } = log
+        info(`allocated ${token.constrainTokenValue(_allocated)} Ara as rewards to ${_farmer} for content ${contentDid}; ${token.constrainTokenValue(_remaining)} Ara remaining`)
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
+
+    await proxyContract.events.InsufficientDeposit({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { _farmer } } = log
+        info(`Failed to allocate rewards for ${_farmer} due to insufficient deposit`)
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
+
+    await proxyContract.events.Redeemed({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { _sender, _amount } } = log
+        info(`Returned remaining budget of ${token.constrainTokenValue(_amount)} to ${_sender}`)
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)
@@ -366,8 +398,33 @@ async function redeem(opts) {
     await tokenContract.events.Transfer({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { from, to, value } } = log
-        balance = value
-        info(`${to} redeemed ${token.constrainTokenValue(value)} Ara from ${from}`)
+        balance = token.constrainTokenValue(value)
+        info(`${token.constrainTokenValue(value)} Ara transferred from ${from} to ${to}`)
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
+
+    const proxyContract = await contract.get(afsAbi, proxy)
+    await proxyContract.events.InsufficientDeposit({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { _farmer } } = log
+        info(`Failed to redeem rewards for ${_farmer} due to insufficient deposit`)
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
+
+    await proxyContract.events.Redeemed({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { _sender, _amount } } = log
+        info(`${_ender} redeemed ${token.constrainTokenValue(_amount)} Ara`)
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)
