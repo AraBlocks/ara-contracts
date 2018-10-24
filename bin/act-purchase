@@ -41,7 +41,7 @@ if (0 == argv._.length && argv.help) {
 
 // Main program entry
 module.exports = (async function main() {
-  let { purchaser, did, budget } = argv
+  let { purchaser, did, budget = 0 } = argv
   const { secret, network, keyring } = argv
   const keyringOpts = { secret, network, keyring }
   let job = null
@@ -64,6 +64,7 @@ module.exports = (async function main() {
   } catch (err) {
     onfatal(err)
   }
+  info(`Successfully purchased ${did}`)
 }())
 
 async function promptForPassword() {
