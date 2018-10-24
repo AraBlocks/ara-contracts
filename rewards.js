@@ -257,7 +257,7 @@ async function allocate(opts) {
 
   const acct = await account.load({ did, password })
 
-   // make sure user hasn't already purchased
+  // make sure user hasn't already purchased
   const purchased = await hasPurchased({ contentDid, purchaserDid: did })
   if (!purchased) {
     throw new TypeError(`${did} has not purchased AFS ${contentDid}, cannot submit budget.`)
