@@ -1,3 +1,13 @@
+<a name="0.2.12"></a>
+## [0.2.12](https://github.com/AraBlocks/ara-contracts/compare/0.2.11...0.2.12) (2018-10-24)
+
+
+### Features
+
+* **purchase.js:** return jobId from purchase ([d85956b](https://github.com/AraBlocks/ara-contracts/commit/d85956b))
+
+
+
 <a name="0.2.11"></a>
 ## [0.2.11](https://github.com/AraBlocks/ara-contracts/compare/0.2.6...0.2.11) (2018-10-23)
 
