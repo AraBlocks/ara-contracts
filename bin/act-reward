@@ -66,7 +66,7 @@ const { argv } = program
         describe: 'The ID of the DCDN job the budget is for'
       })
   }, onbudget)
-  .command('allocate <did> <content> <jobId>', 'Allocate the budget for <jobId> between peers', (_) => {
+  .command('allocate <did> <content> <jobId> [--returnBudget]', 'Allocate the budget for <jobId> between peers', (_) => {
     _
       .positional('did', {
         type: 'string',
@@ -79,6 +79,12 @@ const { argv } = program
       .positional('jobId', {
         type: 'string',
         describe: 'The ID of the DCDN job the budget is for'
+      })
+      .option('returnBudget', {
+        alias: 'r',
+        type: 'boolean',
+        default: false,
+        describe: 'Flag to indicate whether the remaining rewards budget should be returned to the budget allocator'
       })
   }, onallocate)
 
@@ -106,7 +112,7 @@ async function onbalance(argv) {
     const balance = await rewards.getRewardsBalance({
       farmerDid: did, contentDid: content, password, keyringOpts
     })
-    info(`${did} has ${balance} Ara redeembale in ${content}.`)
+    info(`${did} has ${balance} Ara redeemable in ${content}.`)
   } catch (err) {
     onfatal(err)
   }
@@ -123,7 +129,11 @@ async function onredeem(argv) {
     const balance = await rewards.redeem({
       farmerDid: did, contentDid: content, password, keyringOpts
     })
-    info(`${did} redeemed ${balance} Ara from ${content}.`)
+    if (balance) {
+      info(`${did} redeemed ${balance} Ara from ${content}.`)
+    } else {
+      info('Nothing to redeem')
+    }
   } catch (err) {
     onfatal(err)
   }
@@ -164,7 +174,7 @@ async function onbudget(argv) {
 
 async function onallocate(argv) {
   const {
-    content, did, jobId, secret, network, keyring
+    content, did, jobId, secret, network, keyring, returnBudget
   } = argv
   const keyringOpts = { secret, network, keyring }
   const { password } = await promptForPassword()
@@ -179,6 +189,7 @@ async function onallocate(argv) {
   }
 
   try {
+    // act reward allocate 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 7fc45f2eebdd98248876910d4ced1361f0395a02c4381609be793aa359fa25c7 0x351e5a82c677df5b4fdeafb1da93a6163f2740613e4a90c6d18b7af826918dc8
     info(`Allocating rewards for job ${jobId} in ${content}...`)
     await rewards.allocate({
       contentDid: content,
@@ -188,9 +199,11 @@ async function onallocate(argv) {
       job: {
         jobId,
         farmers,
-        rewards: distribution
+        rewards: distribution,
+        returnBudget
       }
     })
+    info('All eligible rewards allocated')
   } catch (err) {
     onfatal(err)
   }
