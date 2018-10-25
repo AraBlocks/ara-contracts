@@ -132,7 +132,7 @@ async function onredeem(argv) {
     if (balance) {
       info(`${did} redeemed ${balance} Ara from ${content}.`)
     } else {
-      info(`Nothing to redeem`)
+      info('Nothing to redeem')
     }
   } catch (err) {
     onfatal(err)
@@ -201,8 +201,9 @@ async function onallocate(argv) {
         farmers,
         rewards: distribution,
         returnBudget
-      }})
-    info(`All eligible rewards allocated`)
+      }
+    })
+    info('All eligible rewards allocated')
   } catch (err) {
     onfatal(err)
   }
