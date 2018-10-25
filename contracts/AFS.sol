@@ -18,6 +18,8 @@ contract AFS is Ownable {
   bool     public listed_;
   uint256  public price_;
 
+  uint256  public depositRequirement_;
+
   mapping(bytes32 => Job)     public jobs_; // jobId => job { budget, sender }
   mapping(bytes32 => uint256) public rewards_;    // farmer => rewards
   mapping(bytes32 => bool)    public purchasers_; // keccak256 hashes of buyer addresses
@@ -32,9 +34,10 @@ contract AFS is Ownable {
   event Unlisted(bytes32 _did);
   event PriceSet(bytes32 _did, uint256 _price);
   event BudgetSubmitted(bytes32 _did, bytes32 _jobId, uint256 _budget);
-  event RewardsAllocated(bytes32 _did, uint256 _allocated, uint256 _returned);
+  event RewardsAllocated(address _farmer, uint256 _allocated, uint256 _remaining);
+  event InsufficientDeposit(address _farmer);
   event Purchased(bytes32 _purchaser, bytes32 _did, uint256 _price);
-  event Redeemed(address _sender);
+  event Redeemed(address _sender, uint256 _amount);
 
   uint8 constant mtBufferSize_ = 40;
   uint8 constant msBufferSize_ = 64;
@@ -89,6 +92,7 @@ contract AFS is Ownable {
     did_      = did;
     listed_   = true;
     price_    = 0;
+    depositRequirement_  = 100 * 10 ** token_.decimals();
   }
 
   function setPrice(uint256 _price) external onlyBy(owner_) {
@@ -109,7 +113,7 @@ contract AFS is Ownable {
     }
   }
 
-  function allocateRewards(bytes32 _jobId, bytes32[] _farmers, uint256[] _rewards) public budgetSubmitted(_jobId) {
+  function allocateRewards(bytes32 _jobId, address[] _farmers, uint256[] _rewards, bool _return) public budgetSubmitted(_jobId) {
     require(_farmers.length == _rewards.length, "Unequal number of farmers and rewards.");
     uint256 totalRewards;
     for (uint8 i = 0; i < _rewards.length; i++) {
@@ -117,25 +121,36 @@ contract AFS is Ownable {
     }
     require(totalRewards <= jobs_[_jobId].budget, "Insufficient budget.");
     for (uint8 j = 0; j < _farmers.length; j++) {
-      assert(jobs_[_jobId].budget >= _rewards[j]);
-      rewards_[_farmers[j]] = _rewards[j];
-      jobs_[_jobId].budget -= _rewards[j];
+      if (token_.amountDeposited(_farmers[j]) >= depositRequirement_) {
+        assert(jobs_[_jobId].budget >= _rewards[j]);
+        bytes32 farmer = keccak256(abi.encodePacked(_farmers[j]));
+        rewards_[farmer] += _rewards[j];
+        jobs_[_jobId].budget -= _rewards[j];
+        emit RewardsAllocated(_farmers[j], _rewards[j], jobs_[_jobId].budget);
+      } else {
+        emit InsufficientDeposit(_farmers[j]);
+      }
     }
-    uint256 remaining = jobs_[_jobId].budget;
-    if (remaining > 0) {
-      rewards_[keccak256(abi.encodePacked(msg.sender))] = remaining;
-      jobs_[_jobId].budget = 0;
-      redeemBalance();
+    if (_return) {
+      uint256 remaining = jobs_[_jobId].budget;
+      if (remaining > 0) {
+        rewards_[keccak256(abi.encodePacked(msg.sender))] += remaining;
+        jobs_[_jobId].budget = 0;
+        redeemBalance();
+      }
     }
-    emit RewardsAllocated(did_, totalRewards, remaining);
   }
 
   function redeemBalance() public {
-    bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
-    require(rewards_[hashedAddress] > 0, "No balance to redeem.");
-    if (token_.transfer(msg.sender, rewards_[hashedAddress])) {
-      rewards_[hashedAddress] = 0;
-      emit Redeemed(msg.sender);
+    if (msg.sender == owner_ || token_.amountDeposited(msg.sender) >= depositRequirement_) {
+      bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
+      require(rewards_[hashedAddress] > 0, "No balance to redeem.");
+      if (token_.transfer(msg.sender, rewards_[hashedAddress])) {
+        emit Redeemed(msg.sender, rewards_[hashedAddress]);
+        rewards_[hashedAddress] = 0;
+      }
+    } else {
+      emit InsufficientDeposit(msg.sender);
     }
   }
 
