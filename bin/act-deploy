@@ -95,7 +95,12 @@ async function onproxy(argv) {
   }
 
   try {
-    const opts = { contentDid: did, password, version, keyringOpts }
+    const opts = {
+      contentDid: did,
+      keyringOpts,
+      password,
+      version
+    }
     const estimateOpts = Object.assign({}, opts, { estimate: true })
     if (!upgrade) {
       info(`Deploying new proxy for ${did} at version ${version}...`)
@@ -118,7 +123,6 @@ async function onproxy(argv) {
         }
       }
     }
-
   } catch (err) {
     onfatal(err)
   }

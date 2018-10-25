@@ -39,8 +39,15 @@ if (0 == argv._.length && argv.help) {
 
 // Main program entry
 module.exports = (async function main() {
-  let { purchaser, did, budget = 0 } = argv
-  const { secret, network, keyring } = argv
+  const {
+    budget = 0,
+    purchaser,
+    keyring,
+    network,
+    secret,
+    did
+  } = argv
+
   const keyringOpts = { secret, network, keyring }
 
   if (0 > budget) {
