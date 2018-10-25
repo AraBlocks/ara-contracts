@@ -119,7 +119,11 @@ async function onredeem(argv) {
   try {
     info(`${did} redeeming balance...`)
     const balance = await rewards.redeem({ farmerDid: did, contentDid: content, password, keyringOpts })
-    info(`${did} redeemed ${balance} Ara from ${content}.`)
+    if (balance) {
+      info(`${did} redeemed ${balance} Ara from ${content}.`)
+    } else {
+      info(`Nothing to redeem`)
+    }
   } catch (err) {
     onfatal(err)
   }

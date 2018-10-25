@@ -411,7 +411,7 @@ async function redeem(opts) {
     await proxyContract.events.Redeemed({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { _sender, _amount } } = log
-        info(`${_ender} redeemed ${token.constrainTokenValue(_amount)} Ara`)
+        info(`${_sender} redeemed ${token.constrainTokenValue(_amount)} Ara`)
       })
       .on('changed', (log) => {
         debug(`Changed: ${log}`)
