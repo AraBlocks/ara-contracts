@@ -134,7 +134,6 @@ async function onsubmit(argv) {
   const keyringOpts = { secret, network, keyring }
   const { password } = await promptForPassword()
   try {
-    // console.log(content, did, budget)
     const jobId = ethify(randomBytes(32), true)
     info(`Submitting ${budget} Ara for job ${jobId} in ${content}...`)
     await rewards.submit({ requesterDid: did, contentDid: content, password, job: { jobId, budget }, keyringOpts })
