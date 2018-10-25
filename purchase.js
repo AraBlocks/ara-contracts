@@ -171,15 +171,21 @@ async function purchase(opts) {
   } catch (err) {
     throw err
   }
+<<<<<<< HEAD
 <<<<<<< 104639ff783965c18dc39d9ddf915e5cb59073fb
 
   return { jobId }
 =======
+=======
+>>>>>>> 57a9f11ce51e40564a827c9c6eb5f4bfc12ff885
   return {
     receipt,
     jobId
   }
+<<<<<<< HEAD
 >>>>>>> feat(): deposit enforcement working
+=======
+>>>>>>> 57a9f11ce51e40564a827c9c6eb5f4bfc12ff885
 }
 
 module.exports = {
