@@ -171,7 +171,7 @@ async function purchase(opts) {
   } catch (err) {
     throw err
   }
-  
+
   return {
     receipt,
     jobId

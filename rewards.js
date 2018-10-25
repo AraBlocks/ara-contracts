@@ -22,7 +22,6 @@ const {
   web3: {
     tx,
     call,
-    sha3,
     ethify,
     account,
     contract,
@@ -183,7 +182,6 @@ async function allocate(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
-    console.log(opts.requesterDid)
     throw TypeError('Expecting non-empty requester DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
@@ -200,8 +198,8 @@ async function allocate(opts) {
     job
   } = opts
 
-  const { farmers, rewards } = job
-  let { jobId, returnBudget } = job
+  const { farmers, rewards, returnBudget } = job
+  let { jobId } = job
 
   if (returnBudget && 'boolean' !== typeof returnBudget) {
     throw new TypeError('Expecting opts.job.returnBudget to be boolean.')
@@ -217,8 +215,6 @@ async function allocate(opts) {
 
   // Convert farmer DIDs to Addresses
   const validFarmers = await isValidArray(farmers, async (farmer, index) => {
-    // const address = await getAddressFromDID(farmer, keyringOpts)
-    // farmers[index] = sha3({ t: 'address', v: address })
     farmers[index] = await getAddressFromDID(farmer, keyringOpts)
     return isAddress(farmers[index])
   })
