@@ -211,6 +211,8 @@ async function allocate(opts) {
     throw new TypeError('Expecting opts.job.returnBudget to be boolean.')
   }
 
+  returnBudget = returnBudget || false
+
   const validJobId = isValidJobId(jobId)
   if (!validJobId) {
     throw TypeError('Invalid job Id.')
