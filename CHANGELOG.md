@@ -1,3 +1,13 @@
+<a name="0.2.13"></a>
+## [0.2.13](https://github.com/AraBlocks/ara-contracts/compare/0.2.12...0.2.13) (2018-10-25)
+
+
+### Features
+
+* estimate deploy and upgrade proxy ([5adeceb](https://github.com/AraBlocks/ara-contracts/commit/5adeceb))
+
+
+
 <a name="0.2.12"></a>
 ## [0.2.12](https://github.com/AraBlocks/ara-contracts/compare/0.2.11...0.2.12) (2018-10-24)
 
