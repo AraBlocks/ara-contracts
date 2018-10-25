@@ -204,8 +204,8 @@ async function allocate(opts) {
     job
   } = opts
 
-  const { farmers, rewards, returnBudget } = job
-  let { jobId } = job
+  const { farmers, rewards } = job
+  let { jobId, returnBudget } = job
 
   if (returnBudget && 'boolean' !== typeof returnBudget) {
     throw new TypeError('Expecting opts.job.returnBudget to be boolean.')
