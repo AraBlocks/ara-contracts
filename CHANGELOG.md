@@ -1,3 +1,8 @@
+<a name="0.2.16"></a>
+## [0.2.16](https://github.com/AraBlocks/ara-contracts/compare/0.2.15...0.2.16) (2018-10-25)
+
+
+
 <a name="0.2.15"></a>
 ## [0.2.15](https://github.com/AraBlocks/ara-contracts/compare/0.2.14...0.2.15) (2018-10-25)
 
