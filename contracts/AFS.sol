@@ -124,7 +124,7 @@ contract AFS is Ownable {
       if (token_.amountDeposited(_farmers[j]) >= depositRequirement_) {
         assert(jobs_[_jobId].budget >= _rewards[j]);
         bytes32 farmer = keccak256(abi.encodePacked(_farmers[j]));
-        rewards_[farmer] = _rewards[j];
+        rewards_[farmer] += _rewards[j];
         jobs_[_jobId].budget -= _rewards[j];
         emit RewardsAllocated(_farmers[j], _rewards[j], jobs_[_jobId].budget);
       } else {
@@ -134,7 +134,7 @@ contract AFS is Ownable {
     if (_return) {
       uint256 remaining = jobs_[_jobId].budget;
       if (remaining > 0) {
-        rewards_[keccak256(abi.encodePacked(msg.sender))] = remaining;
+        rewards_[keccak256(abi.encodePacked(msg.sender))] += remaining;
         jobs_[_jobId].budget = 0;
         redeemBalance();
       }
