@@ -1,3 +1,13 @@
+<a name="0.3.0"></a>
+# [0.3.0](https://github.com/AraBlocks/ara-contracts/compare/0.2.15...0.3.0) (2018-10-25)
+
+
+### Features
+
+* enforce deposits ([ea64a01](https://github.com/AraBlocks/ara-contracts/commit/ea64a01))
+
+
+
 <a name="0.2.15"></a>
 ## [0.2.15](https://github.com/AraBlocks/ara-contracts/compare/0.2.14...0.2.15) (2018-10-25)
 
