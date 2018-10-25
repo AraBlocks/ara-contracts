@@ -1,3 +1,25 @@
+<a name="0.2.14"></a>
+## [0.2.14](https://github.com/AraBlocks/ara-contracts/compare/0.2.13...0.2.14) (2018-10-25)
+
+
+### Bug Fixes
+
+* check if purchased on rewards allocation ([1ff0b58](https://github.com/AraBlocks/ara-contracts/commit/1ff0b58))
+* ensure purchase prior to submitting budget ([67f5e1f](https://github.com/AraBlocks/ara-contracts/commit/67f5e1f))
+* revert farmerDid to requesterDid for rewards redeem, submit ([24814a9](https://github.com/AraBlocks/ara-contracts/commit/24814a9))
+
+
+
+<a name="0.2.13"></a>
+## [0.2.13](https://github.com/AraBlocks/ara-contracts/compare/0.2.12...0.2.13) (2018-10-25)
+
+
+### Features
+
+* estimate deploy and upgrade proxy ([5adeceb](https://github.com/AraBlocks/ara-contracts/commit/5adeceb))
+
+
+
 <a name="0.2.12"></a>
 ## [0.2.12](https://github.com/AraBlocks/ara-contracts/compare/0.2.11...0.2.12) (2018-10-24)
 

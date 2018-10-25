@@ -93,19 +93,29 @@ async function onproxy(argv) {
 
   try {
     const opts = { contentDid: did, password, version, keyringOpts }
+    const estimateOpts = Object.assign({}, opts, { estimate: true })
     if (!upgrade) {
       info(`Deploying new proxy for ${did} at version ${version}...`)
-      // act deploy proxy 7278cc43820a31d6907b8ed358b05bcc03c6a9bf6bbaefdcb1d7baeff33de0a6 2 -s test-node -n resolver -k /Users/ericjiang/.ara/keyrings/aws-test.pub -D
-      const address = await registry.deployProxy(opts)
-      info(`Proxy deployed at address ${address} for ${did}.`)
+      // act deploy proxy 6684a1af92dea872c2a0b2e53fa0d610c806895c75a234bcdf92efcf86ee9a 1
+      const cost = await registry.deployProxy(estimateOpts)
+      const { answer } = await promptCostConfirmation(cost)
+      if (answer) {
+        const address = await registry.deployProxy(opts)
+        info(`Proxy deployed at address ${address} for ${did}.`)
+      }
     } else {
       info(`Upgrading proxy for ${did} to version ${version}...`)
-      // act deploy proxy -u d2f1f829606d8d0be375826fd571a3f504d34353e9d2ba81f105140c80d9f8be 2 -s test-node -n resolver -k /Users/ericjiang/.ara/keyrings/aws-test.pub -D
-      const upgraded = await registry.upgradeProxy(opts)
-      if (upgraded) {
-        info(`Proxy successfully upgraded to version ${version}.`)
+      // act deploy proxy -u f5153d78579dcc7d4ed57acd3cc789a69fe3780314432443a471d1e2dea577b8
+      const cost = await registry.upgradeProxy(estimateOpts)
+      const { answer } = await promptCostConfirmation(cost)
+      if (answer) {
+        const upgraded = await registry.upgradeProxy(opts)
+        if (upgraded) {
+          info(`Proxy successfully upgraded to version ${version}.`)
+        }
       }
     }
+
   } catch (err) {
     onfatal(err)
   }
@@ -149,6 +159,16 @@ async function promptForPassword() {
     "complete this action.\n" +
     "Passphrase:"
   }]) 
+}
+
+async function promptCostConfirmation(cost) {
+  return inquirer.prompt({
+    type: 'confirm',
+    name: 'answer',
+    message:
+    `This operation will cost ${cost} ETH. Are you sure you
+    want to proceed?`
+  })
 }
 
 function onfatal(err) {
