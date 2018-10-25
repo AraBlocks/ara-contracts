@@ -1,3 +1,15 @@
+<a name="0.2.17"></a>
+## [0.2.17](https://github.com/AraBlocks/ara-contracts/compare/0.2.16...0.2.17) (2018-10-25)
+
+
+### Bug Fixes
+
+* better ([0f9a6f5](https://github.com/AraBlocks/ara-contracts/commit/0f9a6f5))
+* lint ([5b1406f](https://github.com/AraBlocks/ara-contracts/commit/5b1406f))
+* should actually default ([65f1a93](https://github.com/AraBlocks/ara-contracts/commit/65f1a93))
+
+
+
 <a name="0.2.16"></a>
 ## [0.2.16](https://github.com/AraBlocks/ara-contracts/compare/0.2.15...0.2.16) (2018-10-25)
 
