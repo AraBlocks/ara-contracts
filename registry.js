@@ -96,15 +96,18 @@ async function upgradeProxy(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
-    throw TypeError('Expecting non-empty content DID')
+    throw new TypeError('Expecting non-empty content DID')
   } else if (null == opts.password || 'string' !== typeof opts.password || !opts.password) {
-    throw TypeError('Expecting non-empty password')
+    throw new TypeError('Expecting non-empty password')
   } else if (('string' !== typeof opts.version && 'number' !== typeof opts.version) || !opts.version) {
-    throw TypeError('Expecting non-empty version string or number')
+    throw new TypeError('Expecting non-empty version string or number')
+  } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
+    throw new TypeError('Expecting estimate to be of type boolean')
   }
 
   let { version } = opts
   const { contentDid, password, keyringOpts } = opts
+  const estimate = opts.estimate || false
 
   if ('number' === typeof version) {
     version = version.toString()
@@ -139,6 +142,10 @@ async function upgradeProxy(opts) {
         ]
       }
     })
+
+    if (estimate) {
+      return tx.estimateCost(transaction)
+    }
 
     const registry = await contract.get(abi, REGISTRY_ADDRESS)
     // listen to ProxyUpgraded event for proxy address
@@ -179,12 +186,15 @@ async function deployProxy(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
   } else if (null == opts.contentDid || 'string' !== typeof opts.contentDid || !opts.contentDid) {
-    throw TypeError('Expecting non-empty content DID')
+    throw new TypeError('Expecting non-empty content DID')
   } else if (null == opts.password || 'string' !== typeof opts.password || !opts.password) {
-    throw TypeError('Expecting non-empty password')
+    throw new TypeError('Expecting non-empty password')
+  } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
+    throw new TypeError('Expecting estimate to be of type boolean')
   }
 
   const { password, contentDid, keyringOpts } = opts
+  const estimate = opts.estimate || false
 
   let version = opts.version || STANDARD_VERSION
   if ('number' === typeof version) {
@@ -226,6 +236,10 @@ async function deployProxy(opts) {
         ]
       }
     })
+
+    if (estimate) {
+      return tx.estimateCost(transaction)
+    }
 
     // listen to ProxyDeployed event for proxy address
     const registry = await contract.get(abi, REGISTRY_ADDRESS)
