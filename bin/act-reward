@@ -6,9 +6,14 @@ const debug = require('debug')('ara-contracts:cli:reward')
 const { createProgram } = require('../lib/program')
 const { info, error } = require('ara-console')
 const { randomBytes } = require('ara-crypto')
-const { ethify } = require('ara-util/web3')
 const rewards = require('../rewards')
 const inquirer = require('inquirer')
+
+const {
+  transform: {
+    toHexString
+  }
+} = require('ara-util')
 
 // yargs program command line interface instance
 const program = createProgram({
@@ -146,7 +151,7 @@ async function onsubmit(argv) {
   const keyringOpts = { secret, network, keyring }
   const { password } = await promptForPassword()
   try {
-    const jobId = ethify(randomBytes(32), true)
+    const jobId = toHexString(randomBytes(32), { encoding: 'utf8', ethify: true })
     info(`Submitting ${budget} Ara for job ${jobId} in ${content}...`)
     await rewards.submit({
       job: { jobId, budget },
