@@ -6,33 +6,34 @@ module.exports = {
   },
 
   get REGISTRY_ADDRESS() {
-    const privatenet = '0x544aafc11f974d346cef7cb722090a930e9bf6f9'
+    const privatenet = '0xdded335a205b7c8b070f5d8069507c56be69dd1e'
     const testnet = '0x4c0500f568bbd95bc8eeb9915acdebd5a86f02f8'
     const mainnet = ''
     return getAddress(privatenet, testnet, mainnet)
   },
 
   get LIBRARY_ADDRESS() {
-    const privatenet = '0x0119e2c389b05310e98212eadfdce8ce90c69490'
+    const privatenet = '0x9be154ebda6be13802a6832275e12d40e2975338'
     const testnet = '0x4e3797d2c783dedcc6c29512a91c56c857b2eb49'
     const mainnet = ''
     return getAddress(privatenet, testnet, mainnet)
   },
 
   get ARA_TOKEN_ADDRESS() {
-    const privatenet = '0xa5eca1323654fd2295c435193d48461aa982173a'
+    const privatenet = '0x637e48a166455c28a07f947839fc9d35a1507e58'
     const testnet = '0x6643dd369bacecda73ff92c5fee25f6bf3823106'
     const mainnet = ''
     return getAddress(privatenet, testnet, mainnet)
   },
 
+  ARA_MULTISIG: '0x9e499c0500e5242e4a13ad37ed11212fb1575483',
   TEMP_OWNER_DID: 'did:ara:8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67',
   OWNER_PASSWORD: 'pass',
   OWNER_MNEMONIC: 'leg notable ostrich found gym honey leg arrive spend cabbage genuine light',
   // private key: 0x8662c06fab466f44e0b7937812671d07b4e298a609c7d9654e27c1d0d2653f20
   DEFAULT_ADDRESS: '0x105C83b79E9170d7969Ce9806fE0B527b5f879dE',
 
-  TEST_OWNER_ADDRESS: '0x105C83b79E9170d7969Ce9806fE0B527b5f879dE',
+  TEST_OWNER_ADDRESS: '0x255cf541864db6d9e8654551f8bc789648ba6e20',
   // 0x for ganache, no prefix for geth
   TEST_OWNER_PK: '0x8662c06fab466f44e0b7937812671d07b4e298a609c7d9654e27c1d0d2653f20',
   TEST_OWNER_PASSWORD: 'pass',

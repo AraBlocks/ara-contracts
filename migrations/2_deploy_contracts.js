@@ -30,9 +30,9 @@ module.exports = (deployer, network) => {
     }
 
     // deploy
-    await deployer.deploy(Registry, { from })
-    await deployer.deploy(Library, Registry.address, { from })
-    await deployer.deploy(AraToken, { from })
+    // await deployer.deploy(Registry, { from })
+    // await deployer.deploy(Library, Registry.address, { from })
+    await deployer.deploy(AraToken, constants.ARA_MULTISIG, { from })
     await ondeploycomplete()
   })
 }
@@ -41,8 +41,8 @@ async function ondeploycomplete() {
   const constantsPath = path.resolve(__dirname, '../constants.js')
   const options = {
     files: constantsPath,
-    from: [ constants.REGISTRY_ADDRESS, constants.LIBRARY_ADDRESS, constants.ARA_TOKEN_ADDRESS ],
-    to: [ Registry.address, Library.address, AraToken.address ]
+    from: [ constants.ARA_TOKEN_ADDRESS ],
+    to: [ AraToken.address ]
   }
   await replace(options)
 }
