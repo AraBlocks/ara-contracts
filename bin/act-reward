@@ -111,11 +111,11 @@ async function onbalance(argv) {
     content, did, secret, network, keyring
   } = argv
   const keyringOpts = { secret, network, keyring }
-  const { password } = await promptForPassword()
+
   try {
     info(`Getting balance for ${did} in ${content}.`)
     const balance = await rewards.getRewardsBalance({
-      farmerDid: did, contentDid: content, password, keyringOpts
+      farmerDid: did, contentDid: content, keyringOpts
     })
     info(`${did} has ${balance} Ara redeemable in ${content}.`)
   } catch (err) {

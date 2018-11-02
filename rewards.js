@@ -497,25 +497,15 @@ async function getRewardsBalance(opts) {
     throw TypeError('Expecting non-empty farmer DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
-  } else if ('string' !== typeof opts.password || !opts.password) {
-    throw TypeError('Expecting non-empty password')
   }
 
-  const { farmerDid, password, keyringOpts } = opts
+  const { farmerDid, keyringOpts } = opts
   let { contentDid } = opts
-  let did
-  try {
-    ({ did } = await validate({
-      did: farmerDid, password, label: 'rewards', keyringOpts
-    }))
-  } catch (err) {
-    throw err
-  }
+  const did = getIdentifier(farmerDid)
 
   contentDid = getIdentifier(contentDid)
 
-  did = `${AID_PREFIX}${did}`
-  const { address } = await account.load({ did, password })
+  const address = await getAddressFromDID(did, keyringOpts)
 
   try {
     if (!(await proxyExists(contentDid))) {
