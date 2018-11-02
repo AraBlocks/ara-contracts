@@ -5,7 +5,7 @@ const { AID_PREFIX } = require('./constants')
 const {
   getAddressFromDID,
   getDocumentOwner,
-  normalize,
+  getIdentifier,
   validate,
   web3: {
     isAddress,
@@ -87,8 +87,8 @@ async function approveOwnershipTransfer(opts) {
       label: 'approveOwnershipTransfer',
       keyringOpts
     }))
-    ownerAddress = await getAddressFromDID(normalize(did))
-    newOwnerAddress = await getAddressFromDID(normalize(newOwnerDid))
+    ownerAddress = await getAddressFromDID(getIdentifier(did))
+    newOwnerAddress = await getAddressFromDID(getIdentifier(newOwnerDid))
   } catch (err) {
     throw err
   }
@@ -160,7 +160,7 @@ async function _updateOwnershipRequest(opts, functionName = '') {
       keyringOpts,
       password
     })
-    requesterAddress = await getAddressFromDID(normalize(requesterDid))
+    requesterAddress = await getAddressFromDID(getIdentifier(requesterDid))
   } catch (err) {
     throw err
   }

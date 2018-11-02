@@ -5,7 +5,7 @@ const { web3 } = require('ara-context')()
 
 const {
   validate,
-  normalize,
+  getIdentifier,
   getAddressFromDID,
 } = require('ara-util')
 
@@ -32,7 +32,7 @@ const {
 async function balanceOf(did, keyringOpts) {
   let address
   try {
-    did = normalize(did)
+    did = getIdentifier(did)
     address = await getAddressFromDID(did, keyringOpts)
   } catch (err) {
     throw err
@@ -522,7 +522,7 @@ async function modifyDeposit(opts = {}) {
 async function getAmountDeposited(did, keyringOpts) {
   let address
   try {
-    did = normalize(did)
+    did = getIdentifier(did)
     address = await getAddressFromDID(did, keyringOpts)
   } catch (err) {
     throw err
@@ -564,7 +564,7 @@ function _validateApprovalOpts(opts) {
 async function _normalizeIDInput(id) {
   try {
     if (!isAddress(id)) {
-      id = normalize(id)
+      id = getIdentifier(id)
       id = await getAddressFromDID(id)
     }
   } catch (err) {
