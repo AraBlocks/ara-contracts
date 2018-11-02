@@ -33,6 +33,7 @@ contract AraToken is StandardToken {
     require(_value <= balanceOf(msg.sender));
 
     deposits_[msg.sender] = deposits_[msg.sender].add(_value);
+    balances_[msg.sender] = balances_[msg.sender].sub(_value);
     emit Deposit(msg.sender, _value, deposits_[msg.sender]);
     return true;
   }
@@ -41,6 +42,7 @@ contract AraToken is StandardToken {
     require(_value <= deposits_[msg.sender]);
 
     deposits_[msg.sender] = deposits_[msg.sender].sub(_value);
+    balances_[msg.sender] = balances_[msg.sender].add(_value);
     emit Withdraw(msg.sender, _value, deposits_[msg.sender]);
     return true;
   }

@@ -18,7 +18,7 @@ import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 contract StandardToken is ERC20 {
   using SafeMath for uint256;
 
-  mapping (address => uint256) private balances_;
+  mapping (address => uint256) internal balances_;
 
   mapping (address => mapping (address => uint256)) private allowed_;
 

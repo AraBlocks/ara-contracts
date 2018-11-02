@@ -1,5 +1,6 @@
 const HDWalletProvider = require("truffle-hdwallet-provider");
 const mnemonic = 'obscure devote melt spy identify average auction stereo palm penalty online cable'
+
 module.exports = {
   networks: {
     local: {
@@ -24,9 +25,10 @@ module.exports = {
     },
     ropsten: {
       provider: function() {
-        return new HDWalletProvider(mnemonic, "https://ropsten.infura.io/v3/4c11d1f5ccb84780939bc78edaeef7ce")
+        return new HDWalletProvider(mnemonic, "https://ropsten.infura.io/v3/4c11d1f5ccb84780939bc78edaeef7ce", 1)
       },
-      network_id: 3
+      network_id: 3,
+      gas: 2000000
     }
   }
 }
