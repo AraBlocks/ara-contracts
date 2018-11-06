@@ -33,6 +33,7 @@ const { argv } = program
         type: 'string',
         describe: 'The content DID where the balance is located'
       })
+      .help('h')
   }, onbalance)
   .command('redeem <did> <content>', 'Transfer balance from <content> to <did> account', (_) => {
     _
@@ -44,6 +45,7 @@ const { argv } = program
         type: 'string',
         describe: 'The content DID where the balance is located'
       })
+      .help('h')
   }, onredeem)
   .command('submit <did> <content> <budget>', 'Submit a budget for a DCDN download', (_) => {
     _
@@ -59,6 +61,7 @@ const { argv } = program
         type: 'string',
         describe: 'The amount of Ara to budget for a DCDN download'
       })
+      .help('h')
   }, onsubmit)
   .command('budget <content> <jobId>', 'Query the budget for a <jobId>', (_) => {
     _
@@ -70,6 +73,7 @@ const { argv } = program
         type: 'string',
         describe: 'The ID of the DCDN job the budget is for'
       })
+      .help('h')
   }, onbudget)
   .command('allocate <did> <content> <jobId> [--returnBudget]', 'Allocate the budget for <jobId> between peers', (_) => {
     _
@@ -91,13 +95,9 @@ const { argv } = program
         default: false,
         describe: 'Flag to indicate whether the remaining rewards budget should be returned to the budget allocator'
       })
+      .help('h')
   }, onallocate)
-
-// Emit program usage help
-if (0 == argv._.length && argv.help) {
-  program.showHelp()
-  process.exit(0)
-}
+  .help('h')
 
 // Main program entry
 module.exports = (async function main() {

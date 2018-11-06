@@ -41,6 +41,7 @@ const { argv } = program
         alias: 'p',
         describe: 'Password for DID'
       })
+      .help('h')
   }, onproxy)
   .command('standard [options] <did> <version> <pathspec...>', 'Deploy a new AFS standard <version> with <did> (the registry contract owner)', (_) => {
     _
@@ -64,13 +65,9 @@ const { argv } = program
         alias: 'p',
         describe: 'Password for DID'
       })
+      .help('h')
   }, onstandard)
-
-// Emit program usage help
-if (0 === argv._.length && argv.help) {
-  program.showHelp()
-  process.exit(0)
-}
+  .help('h')
 
 // Main program entry
 module.exports = (async function main() {

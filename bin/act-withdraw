@@ -25,13 +25,9 @@ const { argv } = program
         type: 'string',
         describe: 'The number of Ara tokens to withdraw'
       })
+      .help('h')
   })
-
-// Emit program usage help
-if (0 === argv._.length && argv.help) {
-  program.showHelp()
-  process.exit(0)
-}
+  .help('h')
 
 // Main program entry
 module.exports = (async function main() {

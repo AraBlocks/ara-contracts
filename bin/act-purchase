@@ -29,13 +29,9 @@ const { argv } = program
         type: 'number',
         describe: 'The amount of Ara to budget for downloading the AFS'
       })
+      .help('h')
   })
-
-// Emit program usage help
-if (0 == argv._.length && argv.help) {
-  program.showHelp()
-  process.exit(0)
-}
+  .help('h')
 
 // Main program entry
 module.exports = (async function main() {
