@@ -47,12 +47,7 @@ const { argv } = program
       .conflicts('i', 'd')
       .conflicts('d', 'i')
   })
-
-// Emit program usage help
-if (0 == argv._.length && argv.help) {
-  program.showHelp()
-  process.exit(0)
-}
+  .help('h')
 
 // Main program entry
 module.exports = (async function main() {

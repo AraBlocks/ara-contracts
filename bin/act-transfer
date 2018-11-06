@@ -36,13 +36,9 @@ const { argv } = program
         type: 'string',
         describe: 'DID of the sender of the transaction if it is not <from>'
       })
+      .help('h')
   }, ontransfer)
-
-// Emit program usage help
-if (0 == argv._.length && argv.help) {
-  program.showHelp()
-  process.exit(0)
-}
+  .help('h')
 
 // Main program entry
 module.exports = (async function main() {

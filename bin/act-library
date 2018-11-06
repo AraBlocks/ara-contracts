@@ -22,6 +22,7 @@ const { argv } = program
         type: 'string',
         describe: 'The library owner\'s DID'
       })
+      .help('h')
   }, onall)
   .command('get <did> <index>', 'Gets the content DID at <index> in <did>\'s library', (_) => {
     _
@@ -33,13 +34,9 @@ const { argv } = program
         type: 'number',
         describe: 'The position in the library'
       })
+      .help('h')
   }, onget)
-
-// Emit program usage help
-if (0 == argv._.length && argv.help) {
-  program.showHelp()
-  process.exit(0)
-}
+  .help('h')
 
 // Main program entry
 module.exports = (async function main() {
