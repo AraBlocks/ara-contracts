@@ -14,15 +14,17 @@ const {
 
 const {
   validate,
-  normalize,
+  getIdentifier,
   getDocumentOwner,
   web3: {
     tx,
     call,
-    ethify,
     account,
     contract,
     abi: web3Abi,
+  },
+  transform: {
+    toHexString
   }
 } = require('ara-util')
 
@@ -46,7 +48,7 @@ async function getProxyAddress(contentDid = '') {
     throw TypeError('Expecting non-empty content DID')
   }
 
-  contentDid = normalize(contentDid)
+  contentDid = getIdentifier(contentDid)
 
   try {
     return call({
@@ -54,7 +56,7 @@ async function getProxyAddress(contentDid = '') {
       address: REGISTRY_ADDRESS,
       functionName: 'getProxyAddress',
       arguments: [
-        ethify(contentDid)
+        toHexString(contentDid, { encoding: 'hex', ethify: true })
       ]
     })
   } catch (err) {
@@ -67,7 +69,7 @@ async function getProxyVersion(contentDid = '') {
     throw TypeError('Expecting non-empty content DID')
   }
 
-  contentDid = normalize(contentDid)
+  contentDid = getIdentifier(contentDid)
 
   try {
     return call({
@@ -75,7 +77,7 @@ async function getProxyVersion(contentDid = '') {
       address: REGISTRY_ADDRESS,
       functionName: 'getProxyVersion',
       arguments: [
-        ethify(contentDid)
+        toHexString(contentDid, { encoding: 'hex', ethify: true })
       ]
     })
   } catch (err) {
@@ -137,7 +139,7 @@ async function upgradeProxy(opts) {
         abi,
         functionName: 'upgradeProxy',
         values: [
-          ethify(contentDid),
+          toHexString(contentDid, { encoding: 'hex', ethify: true }),
           version
         ]
       }
@@ -152,7 +154,7 @@ async function upgradeProxy(opts) {
     await registry.events.ProxyUpgraded({ fromBlock: 'latest', function(error) { console.log(error) } })
       .on('data', (log) => {
         const { returnValues: { _contentId, _version } } = log
-        if (_contentId === ethify(did)) {
+        if (_contentId === toHexString(did, { encoding: 'hex', ethify: true })) {
           upgraded = true
           debug('proxy upgraded to version', _version)
         }
@@ -220,7 +222,7 @@ async function deployProxy(opts) {
   try {
     const encodedData = web3Abi.encodeParameters(
       [ 'address', 'address', 'address', 'bytes32' ],
-      [ acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, ethify(contentDid) ]
+      [ acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, toHexString(contentDid, { encoding: 'hex', ethify: true }) ]
     )
     const transaction = await tx.create({
       account: acct,
@@ -230,7 +232,7 @@ async function deployProxy(opts) {
         abi,
         functionName: 'createAFS',
         values: [
-          ethify(did),
+          toHexString(did, { encoding: 'hex', ethify: true }),
           version,
           encodedData
         ]
@@ -246,7 +248,7 @@ async function deployProxy(opts) {
     registry.events.ProxyDeployed({ fromBlock: 'latest', function(error) { console.log(error) } })
       .on('data', (log) => {
         const { returnValues: { _contentId, _address } } = log
-        if (_contentId === ethify(contentDid)) {
+        if (_contentId === toHexString(contentDid, { encoding: 'hex', ethify: true })) {
           proxyAddress = _address
           debug('proxy deployed at', proxyAddress)
         }
@@ -397,7 +399,7 @@ async function deployNewStandard(opts) {
     const { contract: afs, gasLimit } = await contract.deploy({
       account: acct,
       abi: afsAbi,
-      bytecode: ethify(bytecode)
+      bytecode: toHexString(bytecode, { encoding: 'hex', ethify: true })
     })
 
     const transaction = await tx.create({
@@ -417,7 +419,6 @@ async function deployNewStandard(opts) {
     const registry = await contract.get(abi, REGISTRY_ADDRESS)
     registry.events.StandardAdded({ fromBlock: 'latest', function(error) { console.log(error) } })
       .on('data', (log) => {
-        // debug('STANDARD ADDED', log)
         const { returnValues: { _version, _address } } = log
         if (_version === version) {
           address = _address

@@ -1,4 +1,12 @@
-<a name="0.3.0"></a>
+## [0.3.1](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.3.1) (2018-11-02)
+
+
+### Bug Fixes
+
+* issue [#85](https://github.com/AraBlocks/ara-contracts/issues/85) ([614ec5d](https://github.com/AraBlocks/ara-contracts/commit/614ec5d))
+
+
+
 # [0.3.0](https://github.com/AraBlocks/ara-contracts/compare/0.2.15...0.3.0) (2018-10-25)
 
 
@@ -8,12 +16,10 @@
 
 
 
-<a name="0.2.15"></a>
 ## [0.2.15](https://github.com/AraBlocks/ara-contracts/compare/0.2.14...0.2.15) (2018-10-25)
 
 
 
-<a name="0.2.14"></a>
 ## [0.2.14](https://github.com/AraBlocks/ara-contracts/compare/0.2.13...0.2.14) (2018-10-25)
 
 
@@ -25,7 +31,6 @@
 
 
 
-<a name="0.2.13"></a>
 ## [0.2.13](https://github.com/AraBlocks/ara-contracts/compare/0.2.12...0.2.13) (2018-10-25)
 
 
@@ -35,7 +40,6 @@
 
 
 
-<a name="0.2.12"></a>
 ## [0.2.12](https://github.com/AraBlocks/ara-contracts/compare/0.2.11...0.2.12) (2018-10-24)
 
 
@@ -45,7 +49,6 @@
 
 
 
-<a name="0.2.11"></a>
 ## [0.2.11](https://github.com/AraBlocks/ara-contracts/compare/0.2.6...0.2.11) (2018-10-23)
 
 
@@ -62,7 +65,6 @@
 
 
 
-<a name="0.2.6"></a>
 ## [0.2.6](https://github.com/AraBlocks/ara-contracts/compare/0.2.5...0.2.6) (2018-10-09)
 
 
@@ -92,7 +94,6 @@
 
 
 
-<a name="0.2.5"></a>
 ## [0.2.5](https://github.com/AraBlocks/ara-contracts/compare/0.2.4...0.2.5) (2018-09-21)
 
 
@@ -104,12 +105,10 @@
 
 
 
-<a name="0.2.4"></a>
 ## [0.2.4](https://github.com/AraBlocks/ara-contracts/compare/0.2.3...0.2.4) (2018-09-19)
 
 
 
-<a name="0.2.3"></a>
 ## [0.2.3](https://github.com/AraBlocks/ara-contracts/compare/0.2.2...0.2.3) (2018-09-19)
 
 
@@ -119,7 +118,6 @@
 
 
 
-<a name="0.2.2"></a>
 ## [0.2.2](https://github.com/AraBlocks/ara-contracts/compare/0.2.1...0.2.2) (2018-09-19)
 
 
@@ -129,7 +127,6 @@
 
 
 
-<a name="0.2.1"></a>
 ## [0.2.1](https://github.com/AraBlocks/ara-contracts/compare/0.2.0...0.2.1) (2018-09-18)
 
 
@@ -145,7 +142,6 @@
 
 
 
-<a name="0.2.0"></a>
 # [0.2.0](https://github.com/AraBlocks/ara-contracts/compare/0.1.0...0.2.0) (2018-09-13)
 
 
@@ -156,7 +152,6 @@
 
 
 
-<a name="0.1.0"></a>
 # [0.1.0](https://github.com/AraBlocks/ara-contracts/compare/213ae89...0.1.0) (2018-09-12)
 
 

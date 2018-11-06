@@ -18,13 +18,15 @@ const {
 const {
   hashDID,
   validate,
-  normalize,
+  getIdentifier,
   web3: {
     tx,
     call,
-    ethify,
     account,
     contract
+  },
+  transform: {
+    toHexString
   }
 } = require('ara-util')
 
@@ -61,7 +63,7 @@ async function purchase(opts) {
 
   let { budget, contentDid } = opts
 
-  const jobId = ethify(randomBytes(32), true)
+  const jobId = toHexString(randomBytes(32), { encoding: 'utf8', ethify: true })
   budget = budget || 0
 
   let did
@@ -73,7 +75,7 @@ async function purchase(opts) {
     throw err
   }
 
-  contentDid = normalize(contentDid)
+  contentDid = getIdentifier(contentDid)
 
   debug(did, 'purchasing', contentDid)
 
@@ -126,7 +128,7 @@ async function purchase(opts) {
         abi: afsAbi,
         functionName: 'purchase',
         values: [
-          ethify(hIdentity),
+          toHexString(hIdentity, { encoding: 'hex', ethify: true }),
           jobId,
           budget
         ]

@@ -121,7 +121,7 @@ contract AFS is Ownable {
     }
     require(totalRewards <= jobs_[_jobId].budget, "Insufficient budget.");
     for (uint8 j = 0; j < _farmers.length; j++) {
-      if (token_.amountDeposited(_farmers[j]) >= depositRequirement_) {
+      if (token_.amountDeposited(_farmers[j]) >= depositRequirement_ || purchasers_[keccak256(abi.encodePacked(msg.sender))]) {
         assert(jobs_[_jobId].budget >= _rewards[j]);
         bytes32 farmer = keccak256(abi.encodePacked(_farmers[j]));
         rewards_[farmer] += _rewards[j];
@@ -142,7 +142,7 @@ contract AFS is Ownable {
   }
 
   function redeemBalance() public {
-    if (msg.sender == owner_ || token_.amountDeposited(msg.sender) >= depositRequirement_) {
+    if (msg.sender == owner_ || token_.amountDeposited(msg.sender) >= depositRequirement_ || purchasers_[keccak256(abi.encodePacked(msg.sender))]) {
       bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
       require(rewards_[hashedAddress] > 0, "No balance to redeem.");
       if (token_.transfer(msg.sender, rewards_[hashedAddress])) {

@@ -17,15 +17,17 @@ const {
 
 const {
   validate,
-  normalize,
+  getIdentifier,
   getAddressFromDID,
   web3: {
     tx,
     call,
-    ethify,
     account,
     contract,
     isAddress
+  },
+  transform: {
+    toHexString
   }
 } = require('ara-util')
 
@@ -82,7 +84,7 @@ async function submit(opts) {
   }
 
   if (JOB_ID_LENGTH === jobId.length) {
-    jobId = ethify(jobId, 'string' !== typeof jobId)
+    jobId = toHexString(jobId, { encoding: 'string' !== typeof jobId ? 'utf8' : 'hex', ethify: true })
   }
 
   let { contentDid } = opts
@@ -95,7 +97,7 @@ async function submit(opts) {
     throw err
   }
 
-  contentDid = normalize(contentDid)
+  contentDid = getIdentifier(contentDid)
 
   did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
@@ -216,7 +218,7 @@ async function allocate(opts) {
     throw TypeError('Invalid job Id.')
   }
   if (JOB_ID_LENGTH === jobId.length) {
-    jobId = ethify(jobId, 'string' !== typeof jobId)
+    jobId = toHexString(jobId, { encoding: 'string' !== typeof jobId ? 'utf8' : 'hex', ethify: true })
   }
 
   // Convert farmer DIDs to Addresses
@@ -245,7 +247,7 @@ async function allocate(opts) {
   }
 
   let { contentDid } = opts
-  contentDid = normalize(contentDid)
+  contentDid = getIdentifier(contentDid)
 
   let did
   try {
@@ -365,7 +367,7 @@ async function redeem(opts) {
     throw err
   }
 
-  contentDid = normalize(contentDid)
+  contentDid = getIdentifier(contentDid)
 
   debug(did, 'redeeming balance from', contentDid)
   did = `${AID_PREFIX}${did}`
@@ -457,7 +459,7 @@ async function getBudget(opts) {
 
   const { jobId } = opts
   let { contentDid } = opts
-  contentDid = normalize(contentDid)
+  contentDid = getIdentifier(contentDid)
 
   try {
     if (!(await proxyExists(contentDid))) {
@@ -495,25 +497,15 @@ async function getRewardsBalance(opts) {
     throw TypeError('Expecting non-empty farmer DID')
   } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
     throw TypeError('Expecting non-empty content DID')
-  } else if ('string' !== typeof opts.password || !opts.password) {
-    throw TypeError('Expecting non-empty password')
   }
 
-  const { farmerDid, password, keyringOpts } = opts
+  const { farmerDid, keyringOpts } = opts
   let { contentDid } = opts
-  let did
-  try {
-    ({ did } = await validate({
-      did: farmerDid, password, label: 'rewards', keyringOpts
-    }))
-  } catch (err) {
-    throw err
-  }
+  const did = getIdentifier(farmerDid)
 
-  contentDid = normalize(contentDid)
+  contentDid = getIdentifier(contentDid)
 
-  did = `${AID_PREFIX}${did}`
-  const { address } = await account.load({ did, password })
+  const address = await getAddressFromDID(did, keyringOpts)
 
   try {
     if (!(await proxyExists(contentDid))) {

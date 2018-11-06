@@ -11,12 +11,14 @@ const {
 
 const {
   hashDID,
-  normalize,
+  getIdentifier,
   web3: {
     sha3,
     call,
-    ethify,
     isAddress
+  },
+  transform: {
+    toHexString
   },
   getAddressFromDID
 } = require('ara-util')
@@ -32,7 +34,7 @@ async function getLibrary(requesterDid = '') {
     throw TypeError('Expecting non-empty requester DID')
   }
 
-  requesterDid = normalize(requesterDid)
+  requesterDid = getIdentifier(requesterDid)
 
   const libSize = await getLibrarySize(requesterDid)
   const lib = []
@@ -61,7 +63,7 @@ async function getLibrarySize(requesterDid = '') {
     address: LIBRARY_ADDRESS,
     functionName: 'getLibrarySize',
     arguments: [
-      ethify(hIdentity)
+      toHexString(hIdentity, { encoding: 'hex', ethify: true })
     ]
   })
 }
@@ -95,7 +97,7 @@ async function getLibraryItem(opts) {
     address: LIBRARY_ADDRESS,
     functionName: 'getLibraryItem',
     arguments: [
-      ethify(hIdentity),
+      toHexString(hIdentity, { encoding: 'hex', ethify: true }),
       index
     ]
   })
