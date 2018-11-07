@@ -6,9 +6,11 @@ async function read(opts) {
     throw new TypeError('Expecting opts to be of type object')
   } else if (!opts.address || 'string' !== typeof opts.address || !isAddress(opts.address)) {
     throw new TypeError('Expecting opts.address to be valid Ethereum address')
-  } else if (!opts.fileIndex || 'number' !== typeof opts.fileIndex) {
+  } else if (!Object.prototype.hasOwnProperty.call(opts, 'fileIndex')
+      || 'number' !== typeof opts.fileIndex) {
     throw new TypeError('Expecting opts.fileIndex to be of type number')
-  } else if (!opts.offset || 'number' !== typeof opts.offset) {
+  } else if (!Object.prototype.hasOwnProperty.call(opts, 'offset')
+      || 'number' !== typeof opts.offset) {
     throw new TypeError('Expecting opts.offset to be of type number')
   }
 
