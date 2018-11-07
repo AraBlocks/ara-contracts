@@ -1,9 +1,10 @@
-# [0.4.0](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.4.0) (2018-11-07)
+## [0.4.1](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.4.1) (2018-11-07)
 
 
 ### Bug Fixes
 
 * issue [#85](https://github.com/AraBlocks/ara-contracts/issues/85) ([614ec5d](https://github.com/AraBlocks/ara-contracts/commit/614ec5d))
+* **storage.js:** remove storage falsy checks ([8bd3ced](https://github.com/AraBlocks/ara-contracts/commit/8bd3ced))
 
 
 ### Features
