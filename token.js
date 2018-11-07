@@ -1,7 +1,7 @@
 const { abi: tokenAbi } = require('./build/contracts/AraToken.json')
 const debug = require('debug')('ara-contracts:token')
 const BigNumber = require('bignumber.js')
-const { web3 } = require('ara-context')()
+const createContext = require('ara-context')
 
 const {
   validate,
@@ -429,6 +429,7 @@ function expandTokenValue(val) {
     return '0'
   }
   const input = `${val}e${TOKEN_DECIMALS}`
+  const { web3 } = createContext({ loadProvider: false })
   return web3.utils.toBN(BigNumber(input)).toString()
 }
 
