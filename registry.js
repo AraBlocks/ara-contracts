@@ -356,7 +356,7 @@ async function deployNewStandard(opts) {
   let did
   try {
     ({ did } = await validate({
-      owner: requesterDid, password, label: 'registry', keyringOpts
+      did: requesterDid, password, label: 'registry', keyringOpts
     }))
   } catch (err) {
     throw err

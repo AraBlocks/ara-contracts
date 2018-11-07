@@ -98,7 +98,7 @@ async function onallowance(argv) {
   const { did, spender } = argv
   try {
     info(`Getting allowance for ${spender} from ${did}...`)
-    const amount = await token.allowance({ owner: did, spender })
+    const amount = await token.allowance({ did, spender })
     info(`${spender} has an allowance of ${amount} Ara to spend on behalf of ${did}.`)
   } catch (err) {
     onfatal(err)
