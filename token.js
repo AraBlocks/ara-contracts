@@ -147,7 +147,7 @@ async function transfer(opts = {}) {
 
   try {
     ({ did } = await validate({
-      owner: did, password, label: 'transfer', keyringOpts
+      did, password, label: 'transfer', keyringOpts
     }))
     to = await _normalizeIDInput(to)
   } catch (err) {
@@ -199,7 +199,7 @@ async function approve(opts = {}) {
 
   try {
     ({ did } = await validate({
-      owner: did, password, label: 'transfer', keyringOpts
+      did, password, label: 'transfer', keyringOpts
     }))
     spender = await _normalizeIDInput(spender)
   } catch (err) {
@@ -270,7 +270,7 @@ async function transferFrom(opts = {}) {
 
   try {
     ({ did } = await validate({
-      owner: did, password, label: 'transferFrom', keyringOpts
+      did, password, label: 'transferFrom', keyringOpts
     }))
     to = await _normalizeIDInput(to)
     from = await _normalizeIDInput(from)
@@ -327,7 +327,7 @@ async function increaseApproval(opts = {}) {
 
   try {
     ({ did } = await validate({
-      owner: did, password, label: 'transfer', keyringOpts
+      did, password, label: 'transfer', keyringOpts
     }))
     spender = await _normalizeIDInput(spender)
   } catch (err) {
@@ -380,7 +380,7 @@ async function decreaseApproval(opts = {}) {
 
   try {
     ({ did } = await validate({
-      owner: did, password, label: 'transfer', keyringOpts
+      did, password, label: 'transfer', keyringOpts
     }))
     spender = await _normalizeIDInput(spender)
   } catch (err) {
@@ -479,7 +479,7 @@ async function modifyDeposit(opts = {}) {
 
   try {
     ({ did } = await validate({
-      owner: did, password, label: wd ? 'withdraw' : 'deposit', keyringOpts
+      did, password, label: wd ? 'withdraw' : 'deposit', keyringOpts
     }))
   } catch (err) {
     throw err
