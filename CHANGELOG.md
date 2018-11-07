@@ -1,9 +1,14 @@
-## [0.3.1](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.3.1) (2018-11-02)
+# [0.4.0](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.4.0) (2018-11-07)
 
 
 ### Bug Fixes
 
 * issue [#85](https://github.com/AraBlocks/ara-contracts/issues/85) ([614ec5d](https://github.com/AraBlocks/ara-contracts/commit/614ec5d))
+
+
+### Features
+
+* contracts storage interface ([123a701](https://github.com/AraBlocks/ara-contracts/commit/123a701))
 
 
 
