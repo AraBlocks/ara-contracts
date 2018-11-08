@@ -154,27 +154,21 @@ async function upgradeProxy(opts) {
     }
 
     const { contract: registry, ctx: ctx2 } = await contract.get(abi, REGISTRY_ADDRESS)
-    // listen to ProxyUpgraded event for proxy address
-    await registry.events.ProxyUpgraded({ fromBlock: 'latest', function(error) { console.log(error) } })
-      .on('data', (log) => {
-        const { returnValues: { _contentId, _version } } = log
-        if (_contentId === toHexString(did, { encoding: 'hex', ethify: true })) {
-          upgraded = true
-          debug('proxy upgraded to version', _version)
-          ctx2.close()
-        }
-      })
-      .on('changed', (log) => {
-        console.log(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        console.log(`error:  ${log}`)
-      })
-    const receipt = await tx.sendSignedTransaction(transaction)
+    upgraded = await new Promise((resolve, reject) => {
+      tx.sendSignedTransaction(transaction)
+      // listen to ProxyUpgraded event for proxy address
+      registry.events.ProxyUpgraded({ fromBlock: 'latest' })
+        .on('data', (log) => {
+          const { returnValues: { _contentId } } = log
+          if (_contentId === toHexString(did, { encoding: 'hex', ethify: true })) {
+            resolve(true)
+          }
+          reject(new Error('Content DIDs do not match'))
+        })
+        .on('error', log => reject(log))
+    })
+    ctx2.close()
     ctx1.close()
-    if (receipt.status) {
-      debug('gas used', receipt.gasUsed)
-    }
   } catch (err) {
     throw err
   }
@@ -226,10 +220,12 @@ async function deployProxy(opts) {
 
   let proxyAddress = null
   try {
+    debug('before encode')
     const encodedData = web3Abi.encodeParameters(
       [ 'address', 'address', 'address', 'bytes32' ],
       [ acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, toHexString(contentDid, { encoding: 'hex', ethify: true }) ]
     )
+    debug('encoded tx')
     const { tx: transaction, ctx: ctx1 } = await tx.create({
       account: acct,
       to: REGISTRY_ADDRESS,
@@ -244,6 +240,7 @@ async function deployProxy(opts) {
         ]
       }
     })
+    debug('created tx')
     if (estimate) {
       const cost = tx.estimateCost(transaction)
       ctx1.close()
@@ -272,6 +269,23 @@ async function deployProxy(opts) {
     if (receipt.status) {
       debug('gas used', receipt.gasUsed)
     }
+    const { contract: registry, ctx: ctx2 } = await contract.get(abi, REGISTRY_ADDRESS)
+    proxyAddress = await new Promise((resolve, reject) => {
+      tx.sendSignedTransaction(transaction)
+      // listen to ProxyDeployed event for proxy address
+      registry.events.ProxyDeployed({ fromBlock: 'latest' })
+        .on('data', (log) => {
+          const { returnValues: { _contentId, _address } } = log
+          if (_contentId === toHexString(contentDid, { encoding: 'hex', ethify: true })) {
+            resolve(_address)
+          }
+          reject(new Error('Content DIDs do not match'))
+        })
+        .on('error', log => reject(log))
+    })
+    ctx2.close()
+    ctx1.close()
+    debug('proxy deployed at', proxyAddress)
   } catch (err) {
     throw err
   }
@@ -370,12 +384,15 @@ async function deployNewStandard(opts) {
   }
 
   const prefixedDid = `${AID_PREFIX}${did}`
+  debug('load account')
   const acct = await account.load({ did: prefixedDid, password })
+  debug('get reg owner')
   const registryOwner = await call({
     abi,
     address: REGISTRY_ADDRESS,
     functionName: 'owner_'
   })
+  debug('got reg owner')
   if (acct.address != registryOwner) {
     throw new Error('Only the owner of the Registry contract may deploy a new standard.')
   }
@@ -401,11 +418,13 @@ async function deployNewStandard(opts) {
 
   let address = null
   try {
-    const { contract: afs, gasLimit } = await contract.deploy({
+    debug('deploying contract')
+    const { contractAddress } = await contract.deploy({
       account: acct,
       abi: afsAbi,
       bytecode: toHexString(bytecode, { encoding: 'hex', ethify: true })
     })
+    debug('creating tx')
     const { tx: transaction, ctx: ctx1 } = await tx.create({
       account: acct,
       to: REGISTRY_ADDRESS,
@@ -419,31 +438,24 @@ async function deployNewStandard(opts) {
         ]
       }
     })
+    debug('created tx')
     // listen to ProxyDeployed event for proxy address
     const { contract: registry, ctx: ctx2 } = await contract.get(abi, REGISTRY_ADDRESS)
-    registry.events.StandardAdded({ fromBlock: 'latest', function(error) { console.log(error) } })
-      .on('data', (log) => {
-        const { returnValues: { _version, _address } } = log
-        if (_version === version) {
-          address = _address
-          debug('version', _version, 'deployed at', _address)
-          ctx2.close()
-        }
-      })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
-
-    const receipt = await tx.sendSignedTransaction(transaction)
+    address = await new Promise((resolve, reject) => {
+      tx.sendSignedTransaction(transaction)
+      registry.events.StandardAdded({ fromBlock: 'latest' })
+        .on('data', (log) => {
+          const { returnValues: { _version, _address } } = log
+          if (_version === version) {
+            resolve(_address)
+          }
+          reject(new Error('Standard version mismatch'))
+        })
+        .on('error', log => reject(log))
+    })
+    address = address || contractAddress
+    ctx2.close()
     ctx1.close()
-
-    if (receipt.status) {
-      debug('gas used', receipt.gasUsed + gasLimit)
-      address = address || afs._address
-    }
   } catch (err) {
     throw err
   }
