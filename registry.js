@@ -220,10 +220,13 @@ async function deployProxy(opts) {
 
   let proxyAddress = null
   try {
+    debug('before encode')
     const encodedData = web3Abi.encodeParameters(
       [ 'address', 'address', 'address', 'bytes32' ],
       [ acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, toHexString(contentDid, { encoding: 'hex', ethify: true }) ]
     )
+
+    debug('encoded tx')
     const { tx: transaction, ctx: ctx1 } = await tx.create({
       account: acct,
       to: REGISTRY_ADDRESS,
@@ -238,12 +241,12 @@ async function deployProxy(opts) {
         ]
       }
     })
+    debug('created tx')
     if (estimate) {
       const cost = tx.estimateCost(transaction)
       ctx1.close()
       return cost
     }
-
     const { contract: registry, ctx: ctx2 } = await contract.get(abi, REGISTRY_ADDRESS)
     proxyAddress = await new Promise((resolve, reject) => {
       tx.sendSignedTransaction(transaction)
@@ -359,12 +362,15 @@ async function deployNewStandard(opts) {
   }
 
   const prefixedDid = `${AID_PREFIX}${did}`
+  debug('load account')
   const acct = await account.load({ did: prefixedDid, password })
+  debug('get reg owner')
   const registryOwner = await call({
     abi,
     address: REGISTRY_ADDRESS,
     functionName: 'owner_'
   })
+  debug('got reg owner')
   if (acct.address != registryOwner) {
     throw new Error('Only the owner of the Registry contract may deploy a new standard.')
   }
@@ -390,11 +396,13 @@ async function deployNewStandard(opts) {
 
   let address = null
   try {
+    debug('deploying contract')
     const { contractAddress } = await contract.deploy({
       account: acct,
       abi: afsAbi,
       bytecode: toHexString(bytecode, { encoding: 'hex', ethify: true })
     })
+    debug('creating tx')
     const { tx: transaction, ctx: ctx1 } = await tx.create({
       account: acct,
       to: REGISTRY_ADDRESS,
@@ -408,6 +416,7 @@ async function deployNewStandard(opts) {
         ]
       }
     })
+    debug('created tx')
     // listen to ProxyDeployed event for proxy address
     const { contract: registry, ctx: ctx2 } = await contract.get(abi, REGISTRY_ADDRESS)
     address = await new Promise((resolve, reject) => {
