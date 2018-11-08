@@ -269,6 +269,7 @@ async function deployProxy(opts) {
     if (receipt.status) {
       debug('gas used', receipt.gasUsed)
     }
+    debug('after estimate')
     const { contract: registry, ctx: ctx2 } = await contract.get(abi, REGISTRY_ADDRESS)
     proxyAddress = await new Promise((resolve, reject) => {
       tx.sendSignedTransaction(transaction)
