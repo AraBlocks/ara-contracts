@@ -247,6 +247,7 @@ async function deployProxy(opts) {
       ctx1.close()
       return cost
     }
+    debug('after estimate')
     const { contract: registry, ctx: ctx2 } = await contract.get(abi, REGISTRY_ADDRESS)
     proxyAddress = await new Promise((resolve, reject) => {
       tx.sendSignedTransaction(transaction)
