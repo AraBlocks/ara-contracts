@@ -399,50 +399,37 @@ async function redeem(opts) {
       return tx.estimateCost(redeemTx)
     }
 
-    const tokenContract = await contract.get(tokenAbi, ARA_TOKEN_ADDRESS)
-    await tokenContract.events.Transfer({ fromBlock: 'latest', function(error) { debug(error) } })
-      .on('data', (log) => {
-        const { returnValues: { from, to, value } } = log
-        balance = token.constrainTokenValue(value)
-        debug(`${balance} Ara transferred from ${from} to ${to}`)
-      })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
-
     const proxyContract = await contract.get(afsAbi, proxy)
-    await proxyContract.events.InsufficientDeposit({ fromBlock: 'latest', function(error) { debug(error) } })
+    proxyContract.events.InsufficientDeposit({ fromBlock: 'latest' })
       .on('data', (log) => {
         const { returnValues: { _farmer } } = log
         debug(`Failed to redeem rewards for ${_farmer} due to insufficient deposit`)
       })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
       .on('error', (log) => {
         debug(`error:  ${log}`)
       })
 
-    await proxyContract.events.Redeemed({ fromBlock: 'latest', function(error) { debug(error) } })
+    proxyContract.events.Redeemed({ fromBlock: 'latest' })
       .on('data', (log) => {
         const { returnValues: { _sender, _amount } } = log
         debug(`${_sender} redeemed ${token.constrainTokenValue(_amount)} Ara`)
       })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
       .on('error', (log) => {
         debug(`error:  ${log}`)
       })
 
-    const receipt = await tx.sendSignedTransaction(redeemTx)
+    const tokenContract = await contract.get(tokenAbi, ARA_TOKEN_ADDRESS)
+    balance = await new Promise((resolve, reject) => {
+      tx.sendSignedTransaction(redeemTx)
+      tokenContract.events.Transfer({ fromBlock: 'latest' })
+        .on('data', (log) => {
+          const { returnValues: { from, to, value } } = log
+          debug(`${balance} Ara transferred from ${from} to ${to}`)
+          resolve(token.constrainTokenValue(value))
+        })
+        .on('error', (log) => reject(log))
+    })
 
-    if (receipt.status) {
-      debug('gas used', receipt.gasUsed)
-    }
   } catch (err) {
     throw err
   }
