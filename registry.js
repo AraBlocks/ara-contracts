@@ -384,7 +384,7 @@ async function deployNewStandard(opts) {
 
   let address = null
   try {
-    const { contract: afs, gasLimit } = await contract.deploy({
+    const { contractAddress } = await contract.deploy({
       account: acct,
       abi: afsAbi,
       bytecode: toHexString(bytecode, { encoding: 'hex', ethify: true })
@@ -399,7 +399,7 @@ async function deployNewStandard(opts) {
         functionName: 'addStandardVersion',
         values: [
           version,
-          afs._address
+          contractAddress
         ]
       }
     })
@@ -418,7 +418,7 @@ async function deployNewStandard(opts) {
         })
         .on('error', (log) => reject(log))
     })
-    address = address || afs._address
+    address = address || contractAddress
   } catch (err) {
     throw err
   }
