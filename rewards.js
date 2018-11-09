@@ -427,9 +427,8 @@ async function redeem(opts) {
           debug(`${balance} Ara transferred from ${from} to ${to}`)
           resolve(token.constrainTokenValue(value))
         })
-        .on('error', (log) => reject(log))
+        .on('error', log => reject(log))
     })
-
   } catch (err) {
     throw err
   }

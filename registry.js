@@ -1,3 +1,5 @@
+/* eslint-disable no-shadow */
+
 const { abi } = require('./build/contracts/Registry.json')
 const debug = require('debug')('ara-contracts:registry')
 const { parse, resolve } = require('path')
@@ -155,13 +157,13 @@ async function upgradeProxy(opts) {
       // listen to ProxyUpgraded event for proxy address
       registry.events.ProxyUpgraded({ fromBlock: 'latest' })
         .on('data', (log) => {
-          const { returnValues: { _contentId, _version } } = log
+          const { returnValues: { _contentId } } = log
           if (_contentId === toHexString(did, { encoding: 'hex', ethify: true })) {
             resolve(true)
           }
           reject(new Error('Content DIDs do not match'))
         })
-        .on('error', (log) => reject(log))
+        .on('error', log => reject(log))
     })
   } catch (err) {
     throw err
@@ -249,7 +251,7 @@ async function deployProxy(opts) {
           }
           reject(new Error('Content DIDs do not match'))
         })
-        .on('error', (log) => reject(log))
+        .on('error', log => reject(log))
     })
 
     debug('proxy deployed at', proxyAddress)
@@ -403,7 +405,7 @@ async function deployNewStandard(opts) {
         ]
       }
     })
-    
+
     // listen to ProxyDeployed event for proxy address
     const registry = await contract.get(abi, REGISTRY_ADDRESS)
     address = await new Promise((resolve, reject) => {
@@ -416,7 +418,7 @@ async function deployNewStandard(opts) {
           }
           reject(new Error('Standard version mismatch'))
         })
-        .on('error', (log) => reject(log))
+        .on('error', log => reject(log))
     })
     address = address || contractAddress
   } catch (err) {
