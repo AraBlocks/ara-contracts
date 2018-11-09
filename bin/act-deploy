@@ -101,7 +101,7 @@ async function onproxy(argv) {
     const estimateOpts = Object.assign({}, opts, { estimate: true })
     if (!upgrade) {
       info(`Deploying new proxy for ${did} at version ${version}...`)
-      // act deploy proxy 6684a1af92dea872c2a0b2e53fa0d610c806895c75a234bcdf92efcf86ee9a 1
+      // act deploy proxy 227f19eb18199fec8bc6631bfbdd84ea1a3affdd291ca18fd92756b859dc96d1 1
       const cost = await registry.deployProxy(estimateOpts)
       const { answer } = await promptCostConfirmation(cost)
       if (answer) {
@@ -141,7 +141,7 @@ async function onstandard(argv) {
 
   try {
     info(`Deploying new AFS standard version ${version}...`)
-    // DEBUG=ara* act deploy standard 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 2 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/AraToken.sol -D
+    // DEBUG=ara* act deploy standard 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 1 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/AraToken.sol -D
     const address = await registry.deployNewStandard({
       requesterDid: did,
       password,
