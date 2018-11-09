@@ -146,7 +146,9 @@ async function upgradeProxy(opts) {
     })
 
     if (estimate) {
-      return tx.estimateCost(transaction)
+      const cost = tx.estimateCost(transaction)
+      ctx1.close()
+      return cost
     }
 
     const { contract: registry, ctx: ctx2 } = await contract.get(abi, REGISTRY_ADDRESS)
@@ -222,12 +224,10 @@ async function deployProxy(opts) {
 
   let proxyAddress = null
   try {
-    debug('before encode')
     const encodedData = web3Abi.encodeParameters(
       [ 'address', 'address', 'address', 'bytes32' ],
       [ acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, toHexString(contentDid, { encoding: 'hex', ethify: true }) ]
     )
-    debug('encoded tx')
     const { tx: transaction, ctx: ctx1 } = await tx.create({
       account: acct,
       to: REGISTRY_ADDRESS,
@@ -242,14 +242,13 @@ async function deployProxy(opts) {
         ]
       }
     })
-    debug('created tx')
     if (estimate) {
-      return tx.estimateCost(transaction)
+      const cost = tx.estimateCost(transaction)
+      ctx1.close()
+      return cost
     }
-    debug('after estimate')
     // listen to ProxyDeployed event for proxy address
     const { contract: registry, ctx: ctx2 } = await contract.get(abi, REGISTRY_ADDRESS)
-    debug('after get contract')
     registry.events.ProxyDeployed({ fromBlock: 'latest', function(error) { console.log(error) } })
       .on('data', (log) => {
         const { returnValues: { _contentId, _address } } = log
@@ -268,7 +267,6 @@ async function deployProxy(opts) {
 
     const receipt = await tx.sendSignedTransaction(transaction)
     ctx1.close()
-    debug('after send tx')
     if (receipt.status) {
       debug('gas used', receipt.gasUsed)
     }
@@ -370,15 +368,12 @@ async function deployNewStandard(opts) {
   }
 
   const prefixedDid = `${AID_PREFIX}${did}`
-  debug('load account')
   const acct = await account.load({ did: prefixedDid, password })
-  debug('get reg owner')
   const registryOwner = await call({
     abi,
     address: REGISTRY_ADDRESS,
     functionName: 'owner_'
   })
-  debug('got reg owner')
   if (acct.address != registryOwner) {
     throw new Error('Only the owner of the Registry contract may deploy a new standard.')
   }
@@ -404,13 +399,11 @@ async function deployNewStandard(opts) {
 
   let address = null
   try {
-    debug('deploying contract')
     const { contract: afs, gasLimit } = await contract.deploy({
       account: acct,
       abi: afsAbi,
       bytecode: toHexString(bytecode, { encoding: 'hex', ethify: true })
     })
-    debug('creating tx')
     const { tx: transaction, ctx: ctx1 } = await tx.create({
       account: acct,
       to: REGISTRY_ADDRESS,
@@ -424,7 +417,6 @@ async function deployNewStandard(opts) {
         ]
       }
     })
-    debug('created tx')
     // listen to ProxyDeployed event for proxy address
     const { contract: registry, ctx: ctx2 } = await contract.get(abi, REGISTRY_ADDRESS)
     registry.events.StandardAdded({ fromBlock: 'latest', function(error) { console.log(error) } })
