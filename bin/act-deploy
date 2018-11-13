@@ -101,7 +101,7 @@ async function onproxy(argv) {
     const estimateOpts = Object.assign({}, opts, { estimate: true })
     if (!upgrade) {
       info(`Deploying new proxy for ${did} at version ${version}...`)
-      // act deploy proxy 227f19eb18199fec8bc6631bfbdd84ea1a3affdd291ca18fd92756b859dc96d1 1
+      // act deploy proxy a5805b7acc9cb27c75a7852dff6555dc2cc0b8ff000dd287ccc05d4c4edf33e6 1
       const cost = await registry.deployProxy(estimateOpts)
       const { answer } = await promptCostConfirmation(cost)
       if (answer) {
