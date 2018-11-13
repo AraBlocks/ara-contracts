@@ -292,6 +292,52 @@ async function allocate(opts) {
         ]
       }
     })
+    let count
+    const { contract: proxyContract, ctx: ctx2 } = await contract.get(afsAbi, proxy)
+    await proxyContract.events.RewardsAllocated({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { _farmer, _allocated, _remaining } } = log
+        debug(`allocated ${token.constrainTokenValue(_allocated)} Ara as rewards to ${_farmer} for content ${contentDid}; ${token.constrainTokenValue(_remaining)} Ara remaining`)
+        count++
+        if (count === farmers.length && !returnBudget) {
+          ctx2.close()
+        }
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
+
+    await proxyContract.events.InsufficientDeposit({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { _farmer } } = log
+        debug(`Failed to allocate rewards for ${_farmer} due to insufficient deposit`)
+        count++
+        if (count === farmers.length && !returnBudget) {
+          ctx2.close()
+        }
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
+
+    await proxyContract.events.Redeemed({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { _sender, _amount } } = log
+        debug(`Returned remaining budget of ${token.constrainTokenValue(_amount)} to ${_sender}`)
+        ctx2.close()
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
 
     const receipt = await tx.sendSignedTransaction(allocateTx)
     ctx1.close()
@@ -377,11 +423,39 @@ async function redeem(opts) {
         debug(`error:  ${log}`)
       })
 
-    const receipt = await tx.sendSignedTransaction(redeemTx)
+    const { contract: proxyContract, ctx: ctx3 } = await contract.get(afsAbi, proxy)
+    await proxyContract.events.InsufficientDeposit({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { _farmer } } = log
+        debug(`Failed to redeem rewards for ${_farmer} due to insufficient deposit`)
+        ctx3.close()
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
+
+    proxyContract.events.Redeemed({ fromBlock: 'latest' })
+      .on('data', (log) => {
+        const { returnValues: { _sender, _amount } } = log
+        debug(`${_sender} redeemed ${token.constrainTokenValue(_amount)} Ara`)
+        ctx3.close()
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
+
+    const tokenContract = await contract.get(tokenAbi, ARA_TOKEN_ADDRESS)
+    balance = await new Promise((resolve, reject) => {
+      tx.sendSignedTransaction(redeemTx)
+      tokenContract.events.Transfer({ fromBlock: 'latest' })
+        .on('data', (log) => {
+          const { returnValues: { from, to, value } } = log
+          debug(`${balance} Ara transferred from ${from} to ${to}`)
+          resolve(token.constrainTokenValue(value))
+        })
+        .on('error', log => reject(log))
+    })
     ctx1.close()
-    if (receipt.status) {
-      debug('gas used', receipt.gasUsed)
-    }
   } catch (err) {
     throw err
   }
