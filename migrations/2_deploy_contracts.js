@@ -10,12 +10,19 @@ const Library = artifacts.require('./Library.sol')
 const AraToken = artifacts.require('./AraToken.sol')
 const Registry = artifacts.require('./Registry.sol')
 
-module.exports = (deployer, network) => {
+module.exports = (deployer, network, defaultAccounts) => {
   deployer.then(async () => {
     const { DEFAULT_ADDRESS, TEST_OWNER_ADDRESS } = constants
-    const from = 'privatenet' === network
-      ? DEFAULT_ADDRESS
-      : TEST_OWNER_ADDRESS
+
+    let from
+    if ('privatenet' === network) {
+      from = DEFAULT_ADDRESS
+    } else if ('develop' === network) {
+      const index = 0
+      from = defaultAccounts[index]
+    } else {
+      from = TEST_OWNER_ADDRESS
+    }
 
     // this account needs to match DID to be used with testing
     // so needs to be unlocked on local ganache node
