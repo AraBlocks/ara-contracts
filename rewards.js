@@ -362,26 +362,11 @@ async function redeem(opts) {
       }
     })
 
-    const { contract: proxyContract, ctx: ctx3 } = await contract.get(afsAbi, proxy)
-    await proxyContract.events.InsufficientDeposit({ fromBlock: 'latest', function(error) { debug(error) } })
-      .on('data', (log) => {
-        const { returnValues: { _farmer } } = log
-        debug(`Failed to redeem rewards for ${_farmer} due to insufficient deposit`)
-        ctx3.close()
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
-
-    proxyContract.events.Redeemed({ fromBlock: 'latest' })
-      .on('data', (log) => {
-        const { returnValues: { _sender, _amount } } = log
-        debug(`${_sender} redeemed ${token.constrainTokenValue(_amount)} Ara`)
-        ctx3.close()
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
+    if (estimate) {
+      const cost = tx.estimateCost(redeemTx)
+      ctx1.close()
+      return cost
+    }
 
     const { contract: tokenContract, ctx: ctx2 } = await contract.get(tokenAbi, ARA_TOKEN_ADDRESS)
     balance = await new Promise((resolve, reject) => {
