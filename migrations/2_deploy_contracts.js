@@ -13,12 +13,13 @@ const Registry = artifacts.require('./Registry.sol')
 module.exports = (deployer, network, defaultAccounts) => {
   deployer.then(async () => {
     const { DEFAULT_ADDRESS, TEST_OWNER_ADDRESS } = constants
-    
+
     let from
     if ('privatenet' === network) {
       from = DEFAULT_ADDRESS
     } else if ('develop' === network) {
-      from = defaultAccounts[0]
+      const index = 0
+      from = defaultAccounts[index]
     } else {
       from = TEST_OWNER_ADDRESS
     }
