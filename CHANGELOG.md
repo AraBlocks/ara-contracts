@@ -1,4 +1,4 @@
-## [0.4.3](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.4.3) (2018-11-07)
+## [0.4.4](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.4.4) (2018-11-13)
 
 
 ### Bug Fixes
@@ -12,6 +12,7 @@
 ### Features
 
 * contracts storage interface ([123a701](https://github.com/AraBlocks/ara-contracts/commit/123a701))
+* **rewards.js:** estimaate option for redeem rewards balance ([63ef04a](https://github.com/AraBlocks/ara-contracts/commit/63ef04a))
 
 
 
