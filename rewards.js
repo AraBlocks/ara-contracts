@@ -362,14 +362,23 @@ async function redeem(opts) {
       }
     })
 
-    if (estimate) {
-      const cost = tx.estimateCost(redeemTx)
-      ctx1.close()
-      return cost
-    }
+    const { contract: tokenContract, ctx: ctx2 } = await contract.get(tokenAbi, ARA_TOKEN_ADDRESS)
+    await tokenContract.events.Transfer({ fromBlock: 'latest', function(error) { debug(error) } })
+      .on('data', (log) => {
+        const { returnValues: { from, to, value } } = log
+        balance = token.constrainTokenValue(value)
+        debug(`${balance} Ara transferred from ${from} to ${to}`)
+        ctx2.close()
+      })
+      .on('changed', (log) => {
+        debug(`Changed: ${log}`)
+      })
+      .on('error', (log) => {
+        debug(`error:  ${log}`)
+      })
 
-    const proxyContract = await contract.get(afsAbi, proxy)
-    proxyContract.events.InsufficientDeposit({ fromBlock: 'latest' })
+    const { contract: proxyContract, ctx: ctx3 } = await contract.get(afsAbi, proxy)
+    await proxyContract.events.InsufficientDeposit({ fromBlock: 'latest', function(error) { debug(error) } })
       .on('data', (log) => {
         const { returnValues: { _farmer } } = log
         debug(`Failed to redeem rewards for ${_farmer} due to insufficient deposit`)
@@ -400,7 +409,10 @@ async function redeem(opts) {
         })
         .on('error', log => reject(log))
     })
+<<<<<<< 64a7e558ab0309ebcd2d0dfd7eab7fe31bec16f4
     ctx2.close()
+=======
+>>>>>>> fix(): close contexts from txs
     ctx1.close()
   } catch (err) {
     throw err
