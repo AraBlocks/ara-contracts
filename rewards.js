@@ -354,6 +354,8 @@ async function redeem(opts) {
     throw TypeError('Expecting non-empty content DID')
   } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password')
+  } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
+    throw TypeError('Expecting opts.estimate to be of type boolean')
   }
 
   const { farmerDid, password, keyringOpts } = opts
@@ -373,6 +375,8 @@ async function redeem(opts) {
   did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
+  const estimate = opts.estimate || false
+
   let balance = 0
   try {
     if (!(await proxyExists(contentDid))) {
@@ -390,6 +394,10 @@ async function redeem(opts) {
         functionName: 'redeemBalance'
       }
     })
+
+    if (estimate) {
+      return tx.estimateCost(redeemTx)
+    }
 
     const tokenContract = await contract.get(tokenAbi, ARA_TOKEN_ADDRESS)
     await tokenContract.events.Transfer({ fromBlock: 'latest', function(error) { debug(error) } })
