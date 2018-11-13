@@ -6,21 +6,21 @@ module.exports = {
   },
 
   get REGISTRY_ADDRESS() {
-    const privatenet = '0x75bd4ff331f58654bef531d0c7612647f0ace9d9'
+    const privatenet = '0x9f534635f81e5c3bdf2561f127ced2175693fdec'
     const testnet = '0x4c0500f568bbd95bc8eeb9915acdebd5a86f02f8'
     const mainnet = ''
     return getAddress(privatenet, testnet, mainnet)
   },
 
   get LIBRARY_ADDRESS() {
-    const privatenet = '0x6a87ea5e699c26ea7e412d0882c0a4c5d3448460'
+    const privatenet = '0x7cf988987cf1630952081fae25274c949deffe64'
     const testnet = '0x4e3797d2c783dedcc6c29512a91c56c857b2eb49'
     const mainnet = ''
     return getAddress(privatenet, testnet, mainnet)
   },
 
   get ARA_TOKEN_ADDRESS() {
-    const privatenet = '0x4fb8cb48d3d686ba9adbc94deaefdc84886d7aae'
+    const privatenet = '0x4cd0300974c6b6cdf97fa2e6d4cafa5c89f07a2c'
     const testnet = '0x6643dd369bacecda73ff92c5fee25f6bf3823106'
     const mainnet = ''
     return getAddress(privatenet, testnet, mainnet)
