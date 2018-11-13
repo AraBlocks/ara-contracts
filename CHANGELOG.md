@@ -1,4 +1,4 @@
-## [0.4.4](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.4.4) (2018-11-13)
+## [0.4.5](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.4.5) (2018-11-13)
 
 
 ### Bug Fixes
@@ -7,6 +7,7 @@
 * **storage.js:** remove storage falsy checks ([8bd3ced](https://github.com/AraBlocks/ara-contracts/commit/8bd3ced))
 * pass in owner still for allowance, bump ara-identity to 0.30.x ([b152283](https://github.com/AraBlocks/ara-contracts/commit/b152283))
 * remove owner being passed into ara-util.validate ([7cd9aad](https://github.com/AraBlocks/ara-contracts/commit/7cd9aad))
+* wrap bc events in promises ([510d235](https://github.com/AraBlocks/ara-contracts/commit/510d235))
 
 
 ### Features
