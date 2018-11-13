@@ -120,7 +120,7 @@ async function purchase(opts) {
 
     budget = token.expandTokenValue(budget.toString())
 
-    const purchaseTx = await tx.create({
+    const { tx: purchaseTx, ctx: ctx1 } = await tx.create({
       account: acct,
       to: proxy,
       gasLimit: 1000000,
@@ -135,32 +135,8 @@ async function purchase(opts) {
       }
     })
 
-    const proxyContract = await contract.get(afsAbi, proxy)
-    await proxyContract.events.Purchased({ fromBlock: 'latest', function(error) { debug(error) } })
-      .on('data', (log) => {
-        const { returnValues: { _purchaser, _did } } = log
-        debug(_purchaser, 'purchased', _did)
-      })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
-
-    await proxyContract.events.BudgetSubmitted({ fromBlock: 'latest', function(error) { debug(error) } })
-      .on('data', (log) => {
-        const { returnValues: { _did, _jobId, _budget } } = log
-        debug('job', _jobId, 'submitted in', _did, 'with budget', token.constrainTokenValue(_budget))
-      })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
-
     receipt = await tx.sendSignedTransaction(purchaseTx)
+    ctx1.close()
     if (receipt.status) {
       // 211296 gas
       debug('gas used', receipt.gasUsed)
