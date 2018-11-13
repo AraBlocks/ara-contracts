@@ -390,7 +390,6 @@ async function deployNewStandard(opts) {
 
   let address = null
   try {
-    debug('deploying contract')
     const { contractAddress } = await contract.deploy({
       account: acct,
       abi: afsAbi,
