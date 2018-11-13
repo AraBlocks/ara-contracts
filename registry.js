@@ -224,7 +224,6 @@ async function deployProxy(opts) {
       [ 'address', 'address', 'address', 'bytes32' ],
       [ acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, toHexString(contentDid, { encoding: 'hex', ethify: true }) ]
     )
-    debug('encoded tx')
     const { tx: transaction, ctx: ctx1 } = await tx.create({
       account: acct,
       to: REGISTRY_ADDRESS,
@@ -244,7 +243,10 @@ async function deployProxy(opts) {
       ctx1.close()
       return cost
     }
+<<<<<<< HEAD
     debug('after estimate')
+=======
+>>>>>>> 22bc1f77d33be87b767aace5bbba17264933d2ca
     const { contract: registry, ctx: ctx2 } = await contract.get(abi, REGISTRY_ADDRESS)
     proxyAddress = await new Promise((resolve, reject) => {
       tx.sendSignedTransaction(transaction)
