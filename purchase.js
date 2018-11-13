@@ -22,8 +22,7 @@ const {
   web3: {
     tx,
     call,
-    account,
-    contract
+    account
   },
   transform: {
     toHexString

@@ -362,6 +362,12 @@ async function redeem(opts) {
       }
     })
 
+    if (estimate) {
+      const cost = tx.estimateCost(redeemTx)
+      ctx1.close()
+      return cost
+    }
+
     const { contract: tokenContract, ctx: ctx2 } = await contract.get(tokenAbi, ARA_TOKEN_ADDRESS)
     balance = await new Promise((resolve, reject) => {
       tx.sendSignedTransaction(redeemTx)
