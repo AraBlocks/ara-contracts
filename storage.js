@@ -50,7 +50,9 @@ async function write(opts, estimate = true, append = false) {
   })
 
   if (estimate) {
-    return tx.estimateCost(transaction)
+    const cost = tx.estimateCost(transaction)
+    ctx.close()
+    return cost
   }
 
   const receipt = await tx.sendSignedTransaction(transaction)
