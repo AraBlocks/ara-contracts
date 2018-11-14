@@ -434,7 +434,7 @@ function expandTokenValue(val) {
     return '0'
   }
   const input = `${val}e${TOKEN_DECIMALS}`
-  const { web3 } = createContext({ loadProvider: false })
+  const { web3 } = createContext({ provider: false })
   return web3.utils.toBN(BigNumber(input)).toString()
 }
 
