@@ -119,7 +119,7 @@ async function purchase(opts) {
 
     budget = token.expandTokenValue(budget.toString())
 
-    const { tx: purchaseTx, ctx: ctx1 } = await tx.create({
+    const { tx: purchaseTx, ctx } = await tx.create({
       account: acct,
       to: proxy,
       gasLimit: 1000000,
@@ -135,7 +135,7 @@ async function purchase(opts) {
     })
 
     receipt = await tx.sendSignedTransaction(purchaseTx)
-    ctx1.close()
+    ctx.close()
     if (receipt.status) {
       // 211296 gas
       debug('gas used', receipt.gasUsed)

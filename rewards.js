@@ -368,7 +368,8 @@ async function redeem(opts) {
       return cost
     }
 
-    const { contract: tokenContract, ctx: ctx2 } = await contract.get(tokenAbi, ARA_TOKEN_ADDRESS)
+    const { contract: proxyContract, ctx: ctx2 } = await contract.get(afsAbi, proxy)
+    const { contract: tokenContract, ctx: ctx3 } = await contract.get(tokenAbi, ARA_TOKEN_ADDRESS)
     balance = await new Promise((resolve, reject) => {
       tx.sendSignedTransaction(redeemTx)
       tokenContract.events.Transfer({ fromBlock: 'latest' })
@@ -378,7 +379,16 @@ async function redeem(opts) {
           resolve(token.constrainTokenValue(value))
         })
         .on('error', log => reject(log))
+
+      proxyContract.events.InsufficientDeposit({ fromBlock: 'latest' })
+        .on('data', (log) => {
+          const { returnValues: { _farmer } } = log
+          debug(`Failed to redeem rewards for ${_farmer} due to insufficient deposit`)
+          reject(new Error('Insufficent Deposit'))
+        })
+        .on('error', (log) => reject(log))
     })
+    ctx3.close()
     ctx2.close()
     ctx1.close()
   } catch (err) {
