@@ -386,7 +386,7 @@ async function redeem(opts) {
           debug(`Failed to redeem rewards for ${_farmer} due to insufficient deposit`)
           reject(new Error('Insufficent Deposit'))
         })
-        .on('error', (log) => reject(log))
+        .on('error', log => reject(log))
     })
     ctx3.close()
     ctx2.close()
