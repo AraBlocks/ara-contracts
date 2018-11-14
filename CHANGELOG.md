@@ -1,18 +1,20 @@
-## [0.4.5](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.4.5) (2018-11-13)
+## [0.4.6](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.4.6) (2018-11-14)
 
 
 ### Bug Fixes
 
 * issue [#85](https://github.com/AraBlocks/ara-contracts/issues/85) ([614ec5d](https://github.com/AraBlocks/ara-contracts/commit/614ec5d))
-* **storage.js:** remove storage falsy checks ([8bd3ced](https://github.com/AraBlocks/ara-contracts/commit/8bd3ced))
 * pass in owner still for allowance, bump ara-identity to 0.30.x ([b152283](https://github.com/AraBlocks/ara-contracts/commit/b152283))
 * remove owner being passed into ara-util.validate ([7cd9aad](https://github.com/AraBlocks/ara-contracts/commit/7cd9aad))
 * wrap bc events in promises ([510d235](https://github.com/AraBlocks/ara-contracts/commit/510d235))
+* **migrations/2_deploy_contracts.js:** allow local truffle deployments ([0835298](https://github.com/AraBlocks/ara-contracts/commit/0835298))
+* **storage.js:** remove storage falsy checks ([8bd3ced](https://github.com/AraBlocks/ara-contracts/commit/8bd3ced))
 
 
 ### Features
 
 * contracts storage interface ([123a701](https://github.com/AraBlocks/ara-contracts/commit/123a701))
+* **package.json:** added shipright cmd to version hook ([21b3cc3](https://github.com/AraBlocks/ara-contracts/commit/21b3cc3))
 * **rewards.js:** estimaate option for redeem rewards balance ([63ef04a](https://github.com/AraBlocks/ara-contracts/commit/63ef04a))
 
 
