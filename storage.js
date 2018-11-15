@@ -33,7 +33,7 @@ async function write(opts, estimate = true, append = false) {
   const { offsets: msOffsets, buffer: msBuffer } = opts.msData
   const { account, to } = opts
 
-  const transaction = await tx.create({
+  const { tx: transaction, ctx } = await tx.create({
     gasLimit: 4000000,
     account,
     to,
@@ -50,10 +50,14 @@ async function write(opts, estimate = true, append = false) {
   })
 
   if (estimate) {
-    return tx.estimateCost(transaction)
+    const cost = tx.estimateCost(transaction)
+    ctx.close()
+    return cost
   }
 
-  return tx.sendSignedTransaction(transaction)
+  const receipt = await tx.sendSignedTransaction(transaction)
+  ctx.close()
+  return receipt
 }
 
 async function hasBuffer(opts) {

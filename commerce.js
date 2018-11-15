@@ -112,7 +112,7 @@ async function approveOwnershipTransfer(opts) {
   owner = `${AID_PREFIX}${owner}`
 
   const acct = await account.load({ did: owner, password })
-  const approveTx = await tx.create({
+  const { tx: approveTx, ctx } = await tx.create({
     account: acct,
     to: proxy,
     gasLimit: 1000000,
@@ -126,10 +126,14 @@ async function approveOwnershipTransfer(opts) {
   const estimate = opts.estimate || false
 
   if (estimate) {
-    return tx.estimateCost(approveTx)
+    const cost = tx.estimateCost(approveTx)
+    ctx.close()
+    return cost
   }
 
-  return tx.sendSignedTransaction(approveTx)
+  const receipt = await tx.sendSignedTransaction(approveTx)
+  ctx.close()
+  return receipt
 }
 
 async function _updateOwnershipRequest(opts, functionName = '') {
@@ -181,7 +185,7 @@ async function _updateOwnershipRequest(opts, functionName = '') {
   }
 
   const acct = await account.load({ did: requesterDid, password })
-  const requestTx = await tx.create({
+  const { tx: requestTx, ctx } = await tx.create({
     account: acct,
     to: proxy,
     gasLimit: 1000000,
@@ -194,10 +198,14 @@ async function _updateOwnershipRequest(opts, functionName = '') {
   const estimate = opts.estimate || false
 
   if (estimate) {
-    return tx.estimateCost(requestTx)
+    const cost = tx.estimateCost(requestTx)
+    ctx.close()
+    return cost
   }
 
-  return tx.sendSignedTransaction(requestTx)
+  const receipt = await tx.sendSignedTransaction(requestTx)
+  ctx.close()
+  return receipt
 }
 
 module.exports = {

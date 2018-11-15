@@ -1,7 +1,7 @@
 const { abi: tokenAbi } = require('./build/contracts/AraToken.json')
 const debug = require('debug')('ara-contracts:token')
 const BigNumber = require('bignumber.js')
-const { web3 } = require('ara-context')()
+const createContext = require('ara-context')
 
 const {
   validate,
@@ -164,7 +164,7 @@ async function transfer(opts = {}) {
   val = expandTokenValue(val)
   let receipt
   try {
-    const transferTx = await tx.create({
+    const { tx: transferTx, ctx } = await tx.create({
       account: acct,
       to: ARA_TOKEN_ADDRESS,
       data: {
@@ -174,6 +174,7 @@ async function transfer(opts = {}) {
       }
     })
     receipt = await tx.sendSignedTransaction(transferTx)
+    ctx.close()
   } catch (err) {
     throw err
   }
@@ -217,7 +218,7 @@ async function approve(opts = {}) {
 
   let receipt
   try {
-    const approveTx = await tx.create({
+    const { tx: approveTx, ctx } = await tx.create({
       account: acct,
       to: ARA_TOKEN_ADDRESS,
       data: {
@@ -227,6 +228,7 @@ async function approve(opts = {}) {
       }
     })
     receipt = await tx.sendSignedTransaction(approveTx)
+    ctx.close()
   } catch (err) {
     throw err
   }
@@ -292,7 +294,7 @@ async function transferFrom(opts = {}) {
 
   let receipt
   try {
-    const transferFromTx = await tx.create({
+    const { tx: transferFromTx, ctx } = await tx.create({
       account: acct,
       to: ARA_TOKEN_ADDRESS,
       data: {
@@ -302,6 +304,7 @@ async function transferFrom(opts = {}) {
       }
     })
     receipt = await tx.sendSignedTransaction(transferFromTx)
+    ctx.close()
   } catch (err) {
     throw err
   }
@@ -345,7 +348,7 @@ async function increaseApproval(opts = {}) {
 
   let receipt
   try {
-    const increaseApprovalTx = await tx.create({
+    const { tx: increaseApprovalTx, ctx } = await tx.create({
       account: acct,
       to: ARA_TOKEN_ADDRESS,
       data: {
@@ -355,6 +358,7 @@ async function increaseApproval(opts = {}) {
       }
     })
     receipt = await tx.sendSignedTransaction(increaseApprovalTx)
+    ctx.close()
   } catch (err) {
     throw err
   }
@@ -399,7 +403,7 @@ async function decreaseApproval(opts = {}) {
 
   let receipt
   try {
-    const decreaseApprovalTx = await tx.create({
+    const { tx: decreaseApprovalTx, ctx } = await tx.create({
       account: acct,
       to: ARA_TOKEN_ADDRESS,
       data: {
@@ -409,6 +413,7 @@ async function decreaseApproval(opts = {}) {
       }
     })
     receipt = await tx.sendSignedTransaction(decreaseApprovalTx)
+    ctx.close()
   } catch (err) {
     throw err
   }
@@ -429,6 +434,7 @@ function expandTokenValue(val) {
     return '0'
   }
   const input = `${val}e${TOKEN_DECIMALS}`
+  const { web3 } = createContext({ provider: false })
   return web3.utils.toBN(BigNumber(input)).toString()
 }
 
@@ -493,7 +499,7 @@ async function modifyDeposit(opts = {}) {
 
   let receipt
   try {
-    const depositTx = await tx.create({
+    const { tx: depositTx, ctx } = await tx.create({
       account: acct,
       to: ARA_TOKEN_ADDRESS,
       data: {
@@ -503,6 +509,7 @@ async function modifyDeposit(opts = {}) {
       }
     })
     receipt = await tx.sendSignedTransaction(depositTx)
+    ctx.close()
     if (receipt.status) {
       debug(wd ? 'withdrew' : 'deposited', constrainTokenValue(val), 'tokens')
     }

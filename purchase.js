@@ -22,8 +22,7 @@ const {
   web3: {
     tx,
     call,
-    account,
-    contract
+    account
   },
   transform: {
     toHexString
@@ -104,23 +103,25 @@ async function purchase(opts) {
     price = Number(token.constrainTokenValue(price))
 
     let val = budget + price
-    val = val.toString()
+    if (val) {
+      val = val.toString()
 
-    receipt = await token.increaseApproval({
-      did,
-      password,
-      spender: proxy,
-      val
-    })
+      receipt = await token.increaseApproval({
+        did,
+        password,
+        spender: proxy,
+        val
+      })
 
-    if (receipt.status) {
-      // 45353 gas
-      debug('gas used', receipt.gasUsed)
+      if (receipt.status) {
+        // 45353 gas
+        debug('gas used', receipt.gasUsed)
+      }
     }
 
     budget = token.expandTokenValue(budget.toString())
 
-    const purchaseTx = await tx.create({
+    const { tx: purchaseTx, ctx } = await tx.create({
       account: acct,
       to: proxy,
       gasLimit: 1000000,
@@ -135,32 +136,8 @@ async function purchase(opts) {
       }
     })
 
-    const proxyContract = await contract.get(afsAbi, proxy)
-    await proxyContract.events.Purchased({ fromBlock: 'latest', function(error) { debug(error) } })
-      .on('data', (log) => {
-        const { returnValues: { _purchaser, _did } } = log
-        debug(_purchaser, 'purchased', _did)
-      })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
-
-    await proxyContract.events.BudgetSubmitted({ fromBlock: 'latest', function(error) { debug(error) } })
-      .on('data', (log) => {
-        const { returnValues: { _did, _jobId, _budget } } = log
-        debug('job', _jobId, 'submitted in', _did, 'with budget', token.constrainTokenValue(_budget))
-      })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
-
     receipt = await tx.sendSignedTransaction(purchaseTx)
+    ctx.close()
     if (receipt.status) {
       // 211296 gas
       debug('gas used', receipt.gasUsed)

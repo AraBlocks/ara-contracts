@@ -133,7 +133,7 @@ async function upgradeProxy(opts) {
 
   let upgraded = false
   try {
-    const transaction = await tx.create({
+    const { tx: transaction, ctx: ctx1 } = await tx.create({
       account: acct,
       to: REGISTRY_ADDRESS,
       gasLimit: 1000000,
@@ -148,10 +148,12 @@ async function upgradeProxy(opts) {
     })
 
     if (estimate) {
-      return tx.estimateCost(transaction)
+      const cost = tx.estimateCost(transaction)
+      ctx1.close()
+      return cost
     }
 
-    const registry = await contract.get(abi, REGISTRY_ADDRESS)
+    const { contract: registry, ctx: ctx2 } = await contract.get(abi, REGISTRY_ADDRESS)
     upgraded = await new Promise((resolve, reject) => {
       tx.sendSignedTransaction(transaction)
       // listen to ProxyUpgraded event for proxy address
@@ -165,6 +167,8 @@ async function upgradeProxy(opts) {
         })
         .on('error', log => reject(log))
     })
+    ctx2.close()
+    ctx1.close()
   } catch (err) {
     throw err
   }
@@ -220,7 +224,7 @@ async function deployProxy(opts) {
       [ 'address', 'address', 'address', 'bytes32' ],
       [ acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, toHexString(contentDid, { encoding: 'hex', ethify: true }) ]
     )
-    const transaction = await tx.create({
+    const { tx: transaction, ctx: ctx1 } = await tx.create({
       account: acct,
       to: REGISTRY_ADDRESS,
       gasLimit: 3000000,
@@ -234,12 +238,12 @@ async function deployProxy(opts) {
         ]
       }
     })
-
     if (estimate) {
-      return tx.estimateCost(transaction)
+      const cost = tx.estimateCost(transaction)
+      ctx1.close()
+      return cost
     }
-
-    const registry = await contract.get(abi, REGISTRY_ADDRESS)
+    const { contract: registry, ctx: ctx2 } = await contract.get(abi, REGISTRY_ADDRESS)
     proxyAddress = await new Promise((resolve, reject) => {
       tx.sendSignedTransaction(transaction)
       // listen to ProxyDeployed event for proxy address
@@ -253,7 +257,8 @@ async function deployProxy(opts) {
         })
         .on('error', log => reject(log))
     })
-
+    ctx2.close()
+    ctx1.close()
     debug('proxy deployed at', proxyAddress)
   } catch (err) {
     throw err
@@ -354,13 +359,11 @@ async function deployNewStandard(opts) {
 
   const prefixedDid = `${AID_PREFIX}${did}`
   const acct = await account.load({ did: prefixedDid, password })
-
   const registryOwner = await call({
     abi,
     address: REGISTRY_ADDRESS,
     functionName: 'owner_'
   })
-
   if (acct.address != registryOwner) {
     throw new Error('Only the owner of the Registry contract may deploy a new standard.')
   }
@@ -391,8 +394,7 @@ async function deployNewStandard(opts) {
       abi: afsAbi,
       bytecode: toHexString(bytecode, { encoding: 'hex', ethify: true })
     })
-
-    const transaction = await tx.create({
+    const { tx: transaction, ctx: ctx1 } = await tx.create({
       account: acct,
       to: REGISTRY_ADDRESS,
       gasLimit: 8000000,
@@ -405,9 +407,8 @@ async function deployNewStandard(opts) {
         ]
       }
     })
-
     // listen to ProxyDeployed event for proxy address
-    const registry = await contract.get(abi, REGISTRY_ADDRESS)
+    const { contract: registry, ctx: ctx2 } = await contract.get(abi, REGISTRY_ADDRESS)
     address = await new Promise((resolve, reject) => {
       tx.sendSignedTransaction(transaction)
       registry.events.StandardAdded({ fromBlock: 'latest' })
@@ -421,6 +422,8 @@ async function deployNewStandard(opts) {
         .on('error', log => reject(log))
     })
     address = address || contractAddress
+    ctx2.close()
+    ctx1.close()
   } catch (err) {
     throw err
   }

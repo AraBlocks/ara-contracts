@@ -134,7 +134,7 @@ async function submit(opts) {
 
     const val = token.expandTokenValue(budget)
 
-    const submitTx = await tx.create({
+    const { tx: submitTx, ctx: ctx1 } = await tx.create({
       account: acct,
       to: proxy,
       gasLimit: 1000000,
@@ -148,20 +148,19 @@ async function submit(opts) {
       }
     })
 
-    const proxyContract = await contract.get(afsAbi, proxy)
-    await proxyContract.events.BudgetSubmitted({ fromBlock: 'latest', function(error) { debug(error) } })
-      .on('data', (log) => {
-        const { returnValues: { _did, _jobId, _budget } } = log
-        debug(`budgetted ${token.constrainTokenValue(_budget)} Ara for job ${_jobId} in ${_did}`)
-      })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
-
-    receipt = await tx.sendSignedTransaction(submitTx)
+    const { contract: proxyContract, ctx: ctx2 } = await contract.get(afsAbi, proxy)
+    receipt = await new Promise(async (resolve, reject) => {
+      const r = await tx.sendSignedTransaction(submitTx)
+      proxyContract.events.BudgetSubmitted({ fromBlock: 'latest' })
+        .on('data', (log) => {
+          const { returnValues: { _did, _jobId, _budget } } = log
+          debug(`budgetted ${token.constrainTokenValue(_budget)} Ara for job ${_jobId} in ${_did}`)
+          resolve(r)
+        })
+        .on('error', log => reject(log))
+    })
+    ctx2.close()
+    ctx1.close()
     if (receipt.status) {
       // 54073 gas
       debug('gas used', receipt.gasUsed)
@@ -275,7 +274,7 @@ async function allocate(opts) {
     }
 
     const proxy = await getProxyAddress(contentDid)
-    const allocateTx = await tx.create({
+    const { tx: allocateTx, ctx: ctx1 } = await tx.create({
       account: acct,
       to: proxy,
       gasLimit: 4000000,
@@ -290,44 +289,9 @@ async function allocate(opts) {
         ]
       }
     })
-    const proxyContract = await contract.get(afsAbi, proxy)
-    await proxyContract.events.RewardsAllocated({ fromBlock: 'latest', function(error) { debug(error) } })
-      .on('data', (log) => {
-        const { returnValues: { _farmer, _allocated, _remaining } } = log
-        debug(`allocated ${token.constrainTokenValue(_allocated)} Ara as rewards to ${_farmer} for content ${contentDid}; ${token.constrainTokenValue(_remaining)} Ara remaining`)
-      })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
-
-    await proxyContract.events.InsufficientDeposit({ fromBlock: 'latest', function(error) { debug(error) } })
-      .on('data', (log) => {
-        const { returnValues: { _farmer } } = log
-        debug(`Failed to allocate rewards for ${_farmer} due to insufficient deposit`)
-      })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
-
-    await proxyContract.events.Redeemed({ fromBlock: 'latest', function(error) { debug(error) } })
-      .on('data', (log) => {
-        const { returnValues: { _sender, _amount } } = log
-        debug(`Returned remaining budget of ${token.constrainTokenValue(_amount)} to ${_sender}`)
-      })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
 
     const receipt = await tx.sendSignedTransaction(allocateTx)
+    ctx1.close()
     if (receipt.status) {
       debug('gas used', receipt.gasUsed)
     }
@@ -385,7 +349,7 @@ async function redeem(opts) {
 
     const proxy = await getProxyAddress(contentDid)
 
-    const redeemTx = await tx.create({
+    const { tx: redeemTx, ctx: ctx1 } = await tx.create({
       account: acct,
       to: proxy,
       gasLimit: 1000000,
@@ -396,29 +360,13 @@ async function redeem(opts) {
     })
 
     if (estimate) {
-      return tx.estimateCost(redeemTx)
+      const cost = tx.estimateCost(redeemTx)
+      ctx1.close()
+      return cost
     }
 
-    const proxyContract = await contract.get(afsAbi, proxy)
-    proxyContract.events.InsufficientDeposit({ fromBlock: 'latest' })
-      .on('data', (log) => {
-        const { returnValues: { _farmer } } = log
-        debug(`Failed to redeem rewards for ${_farmer} due to insufficient deposit`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
-
-    proxyContract.events.Redeemed({ fromBlock: 'latest' })
-      .on('data', (log) => {
-        const { returnValues: { _sender, _amount } } = log
-        debug(`${_sender} redeemed ${token.constrainTokenValue(_amount)} Ara`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
-
-    const tokenContract = await contract.get(tokenAbi, ARA_TOKEN_ADDRESS)
+    const { contract: proxyContract, ctx: ctx2 } = await contract.get(afsAbi, proxy)
+    const { contract: tokenContract, ctx: ctx3 } = await contract.get(tokenAbi, ARA_TOKEN_ADDRESS)
     balance = await new Promise((resolve, reject) => {
       tx.sendSignedTransaction(redeemTx)
       tokenContract.events.Transfer({ fromBlock: 'latest' })
@@ -428,7 +376,18 @@ async function redeem(opts) {
           resolve(token.constrainTokenValue(value))
         })
         .on('error', log => reject(log))
+
+      proxyContract.events.InsufficientDeposit({ fromBlock: 'latest' })
+        .on('data', (log) => {
+          const { returnValues: { _farmer } } = log
+          debug(`Failed to redeem rewards for ${_farmer} due to insufficient deposit`)
+          reject(new Error('Insufficent Deposit'))
+        })
+        .on('error', log => reject(log))
     })
+    ctx3.close()
+    ctx2.close()
+    ctx1.close()
   } catch (err) {
     throw err
   }

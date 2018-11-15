@@ -3,7 +3,7 @@
 
 const replace = require('replace-in-file')
 const constants = require('../constants')
-const { web3 } = require('ara-context')()
+const createContext = require('ara-context')
 const path = require('path')
 
 const Library = artifacts.require('./Library.sol')
@@ -27,6 +27,9 @@ module.exports = (deployer, network, defaultAccounts) => {
     // this account needs to match DID to be used with testing
     // so needs to be unlocked on local ganache node
     if ('local' === network) {
+      const ctx = createContext()
+      await ctx.ready()
+      const { web3 } = ctx
       const accounts = await web3.eth.getAccounts()
       if (!accounts.includes(constants.TEST_OWNER_ADDRESS)) {
         await web3.eth.personal.importRawKey(constants.TEST_OWNER_PK, constants.PASSWORD)
@@ -40,6 +43,7 @@ module.exports = (deployer, network, defaultAccounts) => {
     await deployer.deploy(Registry, { from })
     await deployer.deploy(Library, Registry.address, { from })
     await deployer.deploy(AraToken, { from })
+    ctx.close()
     await ondeploycomplete()
   })
 }
