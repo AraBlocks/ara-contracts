@@ -224,7 +224,6 @@ async function deployProxy(opts) {
       [ 'address', 'address', 'address', 'bytes32' ],
       [ acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, toHexString(contentDid, { encoding: 'hex', ethify: true }) ]
     )
-    debug('encoded tx')
     const { tx: transaction, ctx: ctx1 } = await tx.create({
       account: acct,
       to: REGISTRY_ADDRESS,
