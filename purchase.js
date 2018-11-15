@@ -103,18 +103,21 @@ async function purchase(opts) {
     price = Number(token.constrainTokenValue(price))
 
     let val = budget + price
-    val = val.toString()
+    if (val) {
+      val = val.toString()
 
-    receipt = await token.increaseApproval({
-      did,
-      password,
-      spender: proxy,
-      val
-    })
+      console.log(val)
+      receipt = await token.increaseApproval({
+        did,
+        password,
+        spender: proxy,
+        val
+      })
 
-    if (receipt.status) {
-      // 45353 gas
-      debug('gas used', receipt.gasUsed)
+      if (receipt.status) {
+        // 45353 gas
+        debug('gas used', receipt.gasUsed)
+      }
     }
 
     budget = token.expandTokenValue(budget.toString())
