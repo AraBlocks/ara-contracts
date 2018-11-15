@@ -149,7 +149,6 @@ async function submit(opts) {
     })
 
     const { contract: proxyContract, ctx: ctx2 } = await contract.get(afsAbi, proxy)
-    console.log('before send tx')
     receipt = await new Promise((resolve, reject) => {
       const r = tx.sendSignedTransaction(submitTx)
       proxyContract.events.BudgetSubmitted({ fromBlock: 'latest' })
@@ -160,7 +159,6 @@ async function submit(opts) {
         })
         .on('error', log => reject(log))
     })
-    console.log('after send tx')
     ctx2.close()
     ctx1.close()
     if (receipt.status) {
