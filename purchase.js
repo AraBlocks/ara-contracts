@@ -106,7 +106,6 @@ async function purchase(opts) {
     if (val) {
       val = val.toString()
 
-      console.log(val)
       receipt = await token.increaseApproval({
         did,
         password,
