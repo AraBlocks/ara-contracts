@@ -43,6 +43,7 @@ module.exports = (deployer, network, defaultAccounts) => {
     await deployer.deploy(Registry, { from })
     await deployer.deploy(Library, Registry.address, { from })
     await deployer.deploy(AraToken, { from })
+    ctx.close()
     await ondeploycomplete()
   })
 }
