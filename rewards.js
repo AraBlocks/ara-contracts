@@ -149,20 +149,17 @@ async function submit(opts) {
     })
 
     const { contract: proxyContract, ctx: ctx2 } = await contract.get(afsAbi, proxy)
-    await proxyContract.events.BudgetSubmitted({ fromBlock: 'latest', function(error) { debug(error) } })
-      .on('data', (log) => {
-        const { returnValues: { _did, _jobId, _budget } } = log
-        debug(`budgetted ${token.constrainTokenValue(_budget)} Ara for job ${_jobId} in ${_did}`)
-        ctx2.close()
-      })
-      .on('changed', (log) => {
-        debug(`Changed: ${log}`)
-      })
-      .on('error', (log) => {
-        debug(`error:  ${log}`)
-      })
-
-    receipt = await tx.sendSignedTransaction(submitTx)
+    const receipt = await new Promise((resolve, reject) => {
+      const r = await tx.sendSignedTransaction(submitTx)
+      proxyContract.events.BudgetSubmitted({ fromBlock: 'latest' })
+        .on('data', (log) => {
+          const { returnValues: { _did, _jobId, _budget } } = log
+          debug(`budgetted ${token.constrainTokenValue(_budget)} Ara for job ${_jobId} in ${_did}`)
+          resolve(r)
+        })
+        .on('error', log => reject(log))
+    })
+    ctx2.close()
     ctx1.close()
     if (receipt.status) {
       // 54073 gas
