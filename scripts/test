@@ -1,17 +1,34 @@
 #!/bin/bash
 
+safeRunCommand() {
+  typeset cmnd="$*"
+  typeset ret_code
+
+  echo cmnd=$cmnd
+  eval $cmnd
+
+  ret_code=$?
+  if [ $ret_code != 0 ]; then
+    printf "Error : [%d] when executing command: '$cmndE'" $ret_code
+    exit $ret_code
+  fi
+}
+
 # installation
 npm install -g ganache-cli truffle
 
 # run local ganache node
 ganache-cli &
 sleep 5
-truffle migrate --reset --network local
+
+command="truffle migrate --reset --network local"
+safeRunCommand "$command"
 
 # truffle test
 
 # ava tests
-ava test/* --verbose
+command="ava test --verbose"
+safeRunCommand "$command"
 
 # cleanup
 pkill -f ganache 
