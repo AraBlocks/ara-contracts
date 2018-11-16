@@ -35,8 +35,8 @@ module.exports = (deployer, network, defaultAccounts) => {
         await web3.eth.personal.importRawKey(constants.TEST_OWNER_PK, constants.PASSWORD)
       }
       await web3.eth.personal.unlockAccount(constants.TEST_OWNER_ADDRESS, constants.PASSWORD, 0)
-      await web3.eth.sendTransaction({ from: accounts[0], to: constants.TEST_OWNER_ADDRESS, value: 10000000000000000000 })
-      await web3.eth.sendTransaction({ from: accounts[0], to: constants.TEST_OWNER_ADDRESS_2, value: 10000000000000000000 })
+      await web3.eth.sendTransaction({ from: accounts[0], to: constants.TEST_OWNER_ADDRESS, value: web3.utils.toWei('1', 'ether') })
+      await web3.eth.sendTransaction({ from: accounts[0], to: constants.TEST_OWNER_ADDRESS_2, value: web3.utils.toWei('1', 'ether') })
       ctx.close()
     }
 

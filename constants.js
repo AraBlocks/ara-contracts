@@ -6,24 +6,27 @@ module.exports = {
   },
 
   get REGISTRY_ADDRESS() {
-    const privatenet = '0x899cb766f5bd33dac2e6805bcb46456265096ca5'
+    const local = '0xaee569f44f6d0bd42343887fa622666e66ac1458'
+    const privatenet = '0x59b89d6b6e4f4ae5d0946c9c5d139ae65f747150'
     const testnet = '0x4c0500f568bbd95bc8eeb9915acdebd5a86f02f8'
     const mainnet = ''
-    return getAddress(privatenet, testnet, mainnet)
+    return getAddress(local, privatenet, testnet, mainnet)
   },
 
   get LIBRARY_ADDRESS() {
-    const privatenet = '0x11af1540b442a3d05754ae403eed2a9227628f86'
+    const local = '0xdfef8725487ffc1b4d2adf7b29b500d06ff96a5c'
+    const privatenet = '0xf54ea4b0023d1711228af40fda5170e547917763'
     const testnet = '0x4e3797d2c783dedcc6c29512a91c56c857b2eb49'
     const mainnet = ''
-    return getAddress(privatenet, testnet, mainnet)
+    return getAddress(local, privatenet, testnet, mainnet)
   },
 
   get ARA_TOKEN_ADDRESS() {
-    const privatenet = '0xe882fbca0dfb8a9b7c712bdcc28936d98e0734f9'
+    const local = '0xa6af09a9c3caac172ab508ccef807dc179ec1904'
+    const privatenet = '0x4d9efc2c705db592c73139e1c7249f62df4d0eab'
     const testnet = '0x6643dd369bacecda73ff92c5fee25f6bf3823106'
     const mainnet = ''
-    return getAddress(privatenet, testnet, mainnet)
+    return getAddress(local, privatenet, testnet, mainnet)
   },
 
   TEMP_OWNER_DID: 'did:ara:8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67',
@@ -47,23 +50,26 @@ module.exports = {
 
 const rc = require('ara-runtime-configuration')()
 
-function getAddress(privatenet, testnet, mainnet) {
-  let address = privatenet
+function getAddress(local, privatenet, testnet, mainnet) {
+  let address
   switch (module.exports.WEB3_NETWORK) {
-  case 'privatenet':
-  case '1337':
-    address = privatenet
-    break
-  case '3':
-  case 'testnet':
-    address = testnet
-    break
-  case 'mainnet':
-  case '1':
-    address = mainnet
-    break
-  default:
-    address = privatenet
+    case 'local':
+      address = local
+      break
+    case 'privatenet':
+    case '1337':
+      address = privatenet
+      break
+    case '3':
+    case 'testnet':
+      address = testnet
+      break
+    case 'mainnet':
+    case '1':
+      address = mainnet
+      break
+    default:
+      address = privatenet
   }
   return address
 }
