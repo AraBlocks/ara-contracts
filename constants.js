@@ -53,20 +53,20 @@ const rc = require('ara-runtime-configuration')()
 function getAddress(local, privatenet, testnet, mainnet) {
   let address
   switch (module.exports.WEB3_NETWORK) {
-    case 'local':
-      address = local
-      break
-    case 'privatenet':
-      address = privatenet
-      break
-    case 'testnet':
-      address = testnet
-      break
-    case 'mainnet':
-      address = mainnet
-      break
-    default:
-      address = privatenet
+  case 'local':
+    address = local
+    break
+  case 'privatenet':
+    address = privatenet
+    break
+  case 'testnet':
+    address = testnet
+    break
+  case 'mainnet':
+    address = mainnet
+    break
+  default:
+    address = privatenet
   }
   return address
 }
