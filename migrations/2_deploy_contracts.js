@@ -37,13 +37,13 @@ module.exports = (deployer, network, defaultAccounts) => {
       await web3.eth.personal.unlockAccount(constants.TEST_OWNER_ADDRESS, constants.PASSWORD, 0)
       await web3.eth.sendTransaction({ from: accounts[0], to: constants.TEST_OWNER_ADDRESS, value: 10000000000000000000 })
       await web3.eth.sendTransaction({ from: accounts[0], to: constants.TEST_OWNER_ADDRESS_2, value: 10000000000000000000 })
+      ctx.close()
     }
 
     // deploy
     await deployer.deploy(Registry, { from })
     await deployer.deploy(Library, Registry.address, { from })
     await deployer.deploy(AraToken, { from })
-    ctx.close()
     await ondeploycomplete()
   })
 }
