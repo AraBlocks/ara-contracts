@@ -57,15 +57,12 @@ function getAddress(local, privatenet, testnet, mainnet) {
       address = local
       break
     case 'privatenet':
-    case '1337':
       address = privatenet
       break
-    case '3':
     case 'testnet':
       address = testnet
       break
     case 'mainnet':
-    case '1':
       address = mainnet
       break
     default:
