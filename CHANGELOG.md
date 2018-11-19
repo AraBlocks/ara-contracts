@@ -1,17 +1,20 @@
-## [0.4.9](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.4.9) (2018-11-16)
+## [0.4.10](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.4.10) (2018-11-19)
 
 
 ### Bug Fixes
 
-* issue [#85](https://github.com/AraBlocks/ara-contracts/issues/85) ([614ec5d](https://github.com/AraBlocks/ara-contracts/commit/614ec5d))
-* pass in owner still for allowance, bump ara-identity to 0.30.x ([b152283](https://github.com/AraBlocks/ara-contracts/commit/b152283))
 * **migrations/2_deploy_contracts.js:** allow local truffle deployments ([0835298](https://github.com/AraBlocks/ara-contracts/commit/0835298))
+* issue [#85](https://github.com/AraBlocks/ara-contracts/issues/85) ([614ec5d](https://github.com/AraBlocks/ara-contracts/commit/614ec5d))
+* **constants.js:** lint it up ([4a82e22](https://github.com/AraBlocks/ara-contracts/commit/4a82e22))
+* **constants.js:** remove chainIds from address switch ([187517d](https://github.com/AraBlocks/ara-contracts/commit/187517d))
+* **migrations/2_deploy_contracts.js:** fix undefined ctx in deploy ([13378e1](https://github.com/AraBlocks/ara-contracts/commit/13378e1))
+* **storage.js:** remove storage falsy checks ([8bd3ced](https://github.com/AraBlocks/ara-contracts/commit/8bd3ced))
+* local network support in constants ([21ca66d](https://github.com/AraBlocks/ara-contracts/commit/21ca66d))
+* pass in owner still for allowance, bump ara-identity to 0.30.x ([b152283](https://github.com/AraBlocks/ara-contracts/commit/b152283))
 * remove async in promise ([733d17f](https://github.com/AraBlocks/ara-contracts/commit/733d17f))
 * remove logs ([f23c4ed](https://github.com/AraBlocks/ara-contracts/commit/f23c4ed))
 * remove owner being passed into ara-util.validate ([7cd9aad](https://github.com/AraBlocks/ara-contracts/commit/7cd9aad))
 * wrap bc events in promises ([510d235](https://github.com/AraBlocks/ara-contracts/commit/510d235))
-* **migrations/2_deploy_contracts.js:** fix undefined ctx in deploy ([b6c52f3](https://github.com/AraBlocks/ara-contracts/commit/b6c52f3))
-* **storage.js:** remove storage falsy checks ([8bd3ced](https://github.com/AraBlocks/ara-contracts/commit/8bd3ced))
 
 
 ### Features
