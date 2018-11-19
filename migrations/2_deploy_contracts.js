@@ -4,6 +4,7 @@
 const replace = require('replace-in-file')
 const constants = require('../constants')
 const createContext = require('ara-context')
+const { deployNewStandard } = require('../registry')
 const path = require('path')
 
 const Library = artifacts.require('./Library.sol')
@@ -56,4 +57,10 @@ async function ondeploycomplete() {
     to: [ Registry.address, Library.address, AraToken.address ]
   }
   await replace(options)
+  await deployNewStandard({
+    requesterDid: constants.TEMP_OWNER_DID,
+    password: constants.OWNER_PASSWORD,
+    version: constants.STANDARD_VERSION,
+    paths: constants.STANDARD_DEPS_PATHS
+  })
 }
