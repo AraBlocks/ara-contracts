@@ -46,7 +46,7 @@ module.exports = {
   TOKEN_DECIMALS: 18,
   STANDARD_VERSION: '1',
   JOB_ID_LENGTH: 64,
-  STANDARD_DEPS_PATHS: './contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/AraToken.sol'
+  STANDARD_DEPS_PATHS: ['./contracts/AFS.sol', './contracts/Library.sol', './contracts/Registry.sol', './contracts/Proxy.sol', './contracts/AraToken.sol']
 }
 
 const rc = require('ara-runtime-configuration')()
