@@ -22,7 +22,6 @@ const { argv } = program
         type: 'string',
         describe: 'DID of the account to check'
       })
-      .help('h')
   }, ondeposited)
   .command('balance <did>', 'Query Ara balance of <did>', (_) => {
     _
@@ -30,7 +29,6 @@ const { argv } = program
         type: 'string',
         describe: 'DID of the account to check'
       })
-      .help('h')
   }, onbalance)
   .command('allowance <did> <spender>', 'Query number of Ara <spender> can spend on behalf of <did>', (_) => {
     _
@@ -42,7 +40,6 @@ const { argv } = program
         type: 'string',
         describe: 'DID of the spender'
       })
-      .help('h')
   }, onallowance)
   .command('supply', 'Query total supply of Ara', () => {}, onsupply)
   .help('h')

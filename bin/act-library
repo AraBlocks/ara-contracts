@@ -22,7 +22,6 @@ const { argv } = program
         type: 'string',
         describe: 'The library owner\'s DID'
       })
-      .help('h')
   }, onall)
   .command('get <did> <index>', 'Gets the content DID at <index> in <did>\'s library', (_) => {
     _
@@ -34,7 +33,6 @@ const { argv } = program
         type: 'number',
         describe: 'The position in the library'
       })
-      .help('h')
   }, onget)
   .help('h')
   .recommendCommands()

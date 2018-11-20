@@ -41,7 +41,6 @@ const { argv } = program
         alias: 'p',
         describe: 'Password for DID'
       })
-      .help('h')
   }, onproxy)
   .command('standard [options] <did> <version> <pathspec...>', 'Deploy a new AFS standard <version> with <did> (the registry contract owner)', (_) => {
     _
@@ -65,7 +64,6 @@ const { argv } = program
         alias: 'p',
         describe: 'Password for DID'
       })
-      .help('h')
   }, onstandard)
   .help('h')
   .recommendCommands()
