@@ -10,9 +10,9 @@ contract Registry {
   mapping (address => string) public proxyImpls_; // proxy => version
   string public latestVersion_;
 
-  event ProxyDeployed(bytes32 _contentId, address _address);
-  event ProxyUpgraded(bytes32 _contentId, string _version);
-  event StandardAdded(string _version, address _address);
+  event ProxyDeployed(bytes32 indexed _contentId, address _address);
+  event ProxyUpgraded(bytes32 indexed _contentId, string _version);
+  event StandardAdded(string indexed _version, address _address);
 
   constructor() public {
     owner_ = msg.sender;
