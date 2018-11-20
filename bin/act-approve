@@ -48,6 +48,8 @@ const { argv } = program
       .conflicts('d', 'i')
   })
   .help('h')
+  .recommendCommands()
+  .strict()
 
 // Main program entry
 module.exports = (async function main() {

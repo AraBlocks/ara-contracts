@@ -46,6 +46,8 @@ const { argv } = program
   }, onallowance)
   .command('supply', 'Query total supply of Ara', () => {}, onsupply)
   .help('h')
+  .recommendCommands()
+  .strict()
 
 // Emit program usage help
 if (0 == argv._.length && argv.help) {
