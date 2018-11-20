@@ -57,22 +57,26 @@ async function ondeploycomplete() {
     to: [ Registry.address, Library.address, AraToken.address ]
   }
   await replace(options)
+  try {
   console.log('Deploying AFS Standard...')
   const address = await new Promise((resolve, reject) => {
-    setTimeout(async () => {
-      console.log('...deploying')
-      try {
-        const a = await deployNewStandard({
-          requesterDid: constants.TEMP_OWNER_DID,
-          password: constants.OWNER_PASSWORD,
-          version: constants.STANDARD_VERSION,
-          paths: constants.STANDARD_DEPS_PATHS
-        })
-        resolve(a)
-      } catch (err) {
-        throw err
-      }
-    }, 5000)
-  })
-  console.log(`Standard deployed at ${address}.`)
+      setTimeout(async () => {
+        console.log('...deploying')
+        try {
+          const a = await deployNewStandard({
+            requesterDid: constants.TEMP_OWNER_DID,
+            password: constants.OWNER_PASSWORD,
+            version: constants.STANDARD_VERSION,
+            paths: constants.STANDARD_DEPS_PATHS
+          })
+          resolve(a)
+        } catch (err) {
+          reject(err)
+        }
+      }, 5000)
+    })
+    console.log(`Standard deployed at ${address}.`)
+  } catch (err) {
+    throw err
+  }
 }
