@@ -12,7 +12,7 @@ contract Library {
     mapping (uint16 => bytes32) content; // index => contentId (unhashed)
   }
 
-  event AddedToLib(bytes32 _contentId);
+  event AddedToLib(bytes32 indexed _contentId);
 
   constructor(address _registry) public {
     owner_ = msg.sender;
