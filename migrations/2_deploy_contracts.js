@@ -57,10 +57,12 @@ async function ondeploycomplete() {
     to: [ Registry.address, Library.address, AraToken.address ]
   }
   await replace(options)
-  await deployNewStandard({
+  setTimeout(async function(){
+    await deployNewStandard({
     requesterDid: constants.TEMP_OWNER_DID,
     password: constants.OWNER_PASSWORD,
     version: constants.STANDARD_VERSION,
     paths: constants.STANDARD_DEPS_PATHS
   })
+}, 5000)
 }
