@@ -1,4 +1,4 @@
-## [0.4.13](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.4.13) (2018-11-20)
+## [0.4.14](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.4.14) (2018-11-20)
 
 
 ### Bug Fixes
@@ -23,7 +23,7 @@
 * contracts storage interface ([123a701](https://github.com/AraBlocks/ara-contracts/commit/123a701))
 * **package.json:** added shipright cmd to version hook ([ca12fd3](https://github.com/AraBlocks/ara-contracts/commit/ca12fd3))
 * **rewards.js:** estimaate option for redeem rewards balance ([63ef04a](https://github.com/AraBlocks/ara-contracts/commit/63ef04a))
-* show help if command provided is not valid ([d76e23f](https://github.com/AraBlocks/ara-contracts/commit/d76e23f))
+* show help if command provided is not valid ([c9eea56](https://github.com/AraBlocks/ara-contracts/commit/c9eea56))
 
 
 
