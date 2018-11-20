@@ -1,5 +1,4 @@
 #!/bin/bash
-
 safeRunCommand() {
   typeset cmnd="$*"
   typeset ret_code
@@ -13,6 +12,14 @@ safeRunCommand() {
     exit $ret_code
   fi
 }
+
+# ara node_modules/.bin to PATH
+PATH=$(npm bin):$PATH
+
+# move deploy identity to home dir
+mkdir -p ~/.ara/identities/
+chmod +r ~/.ara/identities/
+cp -a test/fixtures/identities/. ~/.ara/identities/
 
 # installation
 npm install -g ganache-cli truffle

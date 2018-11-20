@@ -397,7 +397,7 @@ async function deployNewStandard(opts) {
     const { tx: transaction, ctx: ctx1 } = await tx.create({
       account: acct,
       to: REGISTRY_ADDRESS,
-      gasLimit: 8000000,
+      gasLimit: 5000000,
       data: {
         abi,
         functionName: 'addStandardVersion',
