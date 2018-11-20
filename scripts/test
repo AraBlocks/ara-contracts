@@ -25,7 +25,7 @@ cp -a test/fixtures/identities/. ~/.ara/identities/
 npm install -g ganache-cli truffle
 
 # run local ganache node
-ganache-cli &
+ganache-cli -l 0x7A1200 &
 sleep 5
 
 command="truffle migrate --reset --network local"
