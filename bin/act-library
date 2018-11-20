@@ -37,6 +37,8 @@ const { argv } = program
       .help('h')
   }, onget)
   .help('h')
+  .recommendCommands()
+  .strict()
 
 // Main program entry
 module.exports = (async function main() {
