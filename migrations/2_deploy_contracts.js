@@ -1,7 +1,6 @@
 /* eslint no-undef: "off" */
 /* eslint indent: "off" */
 
-const { deployNewStandard } = require('../registry')
 const createContext = require('ara-context')
 const replace = require('replace-in-file')
 const constants = require('../constants')

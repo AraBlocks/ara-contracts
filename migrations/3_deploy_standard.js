@@ -1,12 +1,11 @@
 const { deployNewStandard } = require('../registry')
-const clearModule = require('clear-module')
 const constants = require('../constants')
 
-module.exports = (deployer, network, defaultAccounts) => {
+module.exports = (deployer) => {
   deployer.then(async () => {
     try {
-    console.log('Deploying AFS Standard...')
-    const address = await new Promise((resolve, reject) => {
+      console.log('Deploying AFS Standard...')
+      const address = await new Promise((resolve, reject) => {
         setTimeout(async () => {
           console.log('after', constants.REGISTRY_ADDRESS)
           console.log('...deploying')
