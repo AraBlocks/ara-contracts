@@ -73,7 +73,7 @@ async function ondeploycomplete() {
         } catch (err) {
           reject(err)
         }
-      }, 5000)
+      }, 15000)
     })
     console.log(`Standard deployed at ${address}.`)
   } catch (err) {
