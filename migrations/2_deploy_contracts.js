@@ -1,10 +1,10 @@
 /* eslint no-undef: "off" */
 /* eslint indent: "off" */
 
+const { deployNewStandard } = require('../registry')
+const createContext = require('ara-context')
 const replace = require('replace-in-file')
 const constants = require('../constants')
-const createContext = require('ara-context')
-const { deployNewStandard } = require('../registry')
 const path = require('path')
 
 const Library = artifacts.require('./Library.sol')
@@ -57,26 +57,4 @@ async function ondeploycomplete() {
     to: [ Registry.address, Library.address, AraToken.address ]
   }
   await replace(options)
-  try {
-  console.log('Deploying AFS Standard...')
-  const address = await new Promise((resolve, reject) => {
-      setTimeout(async () => {
-        console.log('...deploying')
-        try {
-          const a = await deployNewStandard({
-            requesterDid: constants.TEMP_OWNER_DID,
-            password: constants.OWNER_PASSWORD,
-            version: constants.STANDARD_VERSION,
-            paths: constants.STANDARD_DEPS_PATHS
-          })
-          resolve(a)
-        } catch (err) {
-          reject(err)
-        }
-      }, 15000)
-    })
-    console.log(`Standard deployed at ${address}.`)
-  } catch (err) {
-    throw err
-  }
 }
