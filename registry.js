@@ -2,6 +2,7 @@
 
 const { abi } = require('./build/contracts/Registry.json')
 const debug = require('debug')('ara-contracts:registry')
+const clearModule = require('clear-module')
 const { parse, resolve } = require('path')
 const solc = require('solc')
 const fs = require('fs')
@@ -322,6 +323,8 @@ async function getStandard(version) {
  * @throws {Error,TypeError}
  */
 async function deployNewStandard(opts) {
+  clearModule('./constants')
+  const constants = require('./constants')
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
@@ -357,11 +360,11 @@ async function deployNewStandard(opts) {
     throw err
   }
 
-  const prefixedDid = `${AID_PREFIX}${did}`
+  const prefixedDid = `${constants.AID_PREFIX}${did}`
   const acct = await account.load({ did: prefixedDid, password })
   const registryOwner = await call({
     abi,
-    address: REGISTRY_ADDRESS,
+    address: constants.REGISTRY_ADDRESS,
     functionName: 'owner_'
   })
   if (acct.address != registryOwner) {
@@ -396,7 +399,7 @@ async function deployNewStandard(opts) {
     })
     const { tx: transaction, ctx: ctx1 } = await tx.create({
       account: acct,
-      to: REGISTRY_ADDRESS,
+      to: constants.REGISTRY_ADDRESS,
       gasLimit: 7000000,
       data: {
         abi,
@@ -408,7 +411,7 @@ async function deployNewStandard(opts) {
       }
     })
     // listen to ProxyDeployed event for proxy address
-    const { contract: registry, ctx: ctx2 } = await contract.get(abi, REGISTRY_ADDRESS)
+    const { contract: registry, ctx: ctx2 } = await contract.get(abi, constants.REGISTRY_ADDRESS)
     address = await new Promise((resolve, reject) => {
       tx.sendSignedTransaction(transaction)
       registry.events.StandardAdded({ fromBlock: 'latest' })
