@@ -7,7 +7,6 @@ module.exports = (deployer) => {
       console.log('Deploying AFS Standard...')
       const address = await new Promise((resolve, reject) => {
         setTimeout(async () => {
-          console.log('after', constants.REGISTRY_ADDRESS)
           console.log('...deploying')
           try {
             const a = await deployNewStandard({

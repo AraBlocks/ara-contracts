@@ -323,8 +323,10 @@ async function getStandard(version) {
  * @throws {Error,TypeError}
  */
 async function deployNewStandard(opts) {
+  // ensures compatability with truffle migrate step
   clearModule('./constants')
   const constants = require('./constants')
+
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
