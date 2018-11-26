@@ -46,7 +46,6 @@ The contracts in this repository are currently deployed on [Ara Privatenet](http
 
 ## API
 
-> All functions are asynchronous.
 > Any value inputted into token functions must be strings to avoid precision errors
 
 ### Purchase
