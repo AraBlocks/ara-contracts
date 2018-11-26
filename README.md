@@ -18,14 +18,12 @@ In addition to these globally-used contracts, Ara deploys a proxy contract for e
 
 This repository also provides programmatic (see the API section) and command-line interfaces (see the Usage section) for interacting with the contracts.
 
-## Status
-
-This project is in active development.
-
 ## Stability
 
 > [Stability][stability-index]: 2 - Stable. 
 > Compatibility with the npm ecosystem is a high priority.
+
+Although the API is stable, this project is still in alpha development and is not yet ready to be used in a production environment.
 
 ## Dependencies
 
@@ -44,7 +42,7 @@ TODO CLI commands
 
 ### Ara Privatenet
 
-The contracts in this repository are deployed on [Ara Privatenet](https://github.com/AraBlocks/ara-privatenet). You **must** be connected in order to be on the same network as the rest of the Ara team during development and to use the addresses in `constants.js`.
+The contracts in this repository are currently deployed on [Ara Privatenet](https://github.com/AraBlocks/ara-privatenet) and [Ethereum Ropsten Testnet](https://github.com/AraBlocks/ara-privatenet/blob/master/TESTNET.md). You **must** be connected to one of these networks in order to be on the same network as the rest of the Ara team during development and to use the addresses in `constants.js`. You may run a local [Ganache](https://truffleframework.com/ganache) instance for local development.
 
 ## API
 
@@ -59,6 +57,7 @@ The contracts in this repository are deployed on [Ara Privatenet](https://github
 * [registry.getProxyAddress(contentDid)](#getproxy)
 * [registry.upgradeProxy(opts)](#upgrade)
 * [registry.deployProxy(opts)](#deploy)
+* [registry.getProxyVersion(contentDid)](#proxyversion)
 * [registry.getLatestStandard()](#lateststandard)
 * [registry.getStandard(version)](#getstandard)
 * [registry.deployNewStandard(opts)](#newstandard)
@@ -74,11 +73,12 @@ The contracts in this repository are deployed on [Ara Privatenet](https://github
 * [rewards.allocate(opts)](#allocate)
 * [rewards.redeem(opts)](#redeem)
 * [rewards.getBudget(opts)](#budget)
+* [rewards.getJobOwner(opts)](#jobowner)
 * [rewards.getRewardsBalance(opts)](#balance)
 
 ### Token
 
-* [token.balanceOf(did)](#balanceof)
+* [token.balanceOf(did, keyringOpts)](#balanceof)
 * [token.totalSupply()](#totalsupply)
 * [token.allowance(opts)](#allowance)
 * [token.transfer(opts)](#transfer)
@@ -87,7 +87,9 @@ The contracts in this repository are deployed on [Ara Privatenet](https://github
 * [token.increaseApproval(opts)](#increaseapproval)
 * [token.decreaseApproval(opts)](#decreaseapproval)
 * [token.modifyDeposit(opts)](#modifydeposit)
-* [token.getAmountDeposited(did)](#getamountdeposited)
+* [token.getAmountDeposited(did, keyringOpts)](#getamountdeposited)
+* [token.constrainTokenValue(val)](#constrain)
+* [token.expandTokenValue(val)](#expand)
 
 <a name="purchase"></a>
 ### `purchase(opts)`
@@ -98,17 +100,22 @@ Purchases an `AFS` and adds it to the requester's library.
   - `requesterDid` - The `DID` of the person making the purchase
   - `contentDid` - The `DID` of the content being purchased
   - `password` - The requester's password
-  - `job` - optional job ID to use for the initial download
+  - `budget` - The budget in Ara to allocate for the initial download job
+  - `keyringOpts` - optional Keyring options
+
+Returns `object`:
+  - `receipt` - Transaction receipt
+  - `jobId` - The job ID generated for the initial download
 
 ```js
 const requesterDid = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const contentDid = 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
-const job = '0x7dc039cfb220029c371d0f4aabf4a956ed0062d66c447df7b4595d7e11187271'
-await purchase({
+const budget = 100
+const { receipt, jobId } = await purchase({
   requesterDid,
   contentDid,
   password,
-  job
+  budget
 })
 ```
 
@@ -118,6 +125,8 @@ await purchase({
 Checks if the proxy for a content `DID` exists.
 
 - `contentDid` - The `DID` of the content to check
+
+Returns a `boolean` indicating whether a proxy contract exists for a `contentDid`.
 
 ```js
 const exists = await registry.proxyExists(contentDid)
@@ -143,6 +152,9 @@ Upgrades a proxy to another `AFS` standard.
   - `contentDid` - The `DID` of the content
   - `password` - The password of the owner of the proxy
   - `version` - The `AFS` standard version to upgrade to
+  - `keyringOpts` - optional Keyring options
+
+Returns a `boolean` indicating whether the proxy was successfully upgraded.
 
 ```js
 const upgraded = await registry.upgradeProxy({ contentDid, password, version: '1' })
@@ -157,9 +169,24 @@ Deploys a proxy to an `AFS` standard.
   - `contentDid` - The `DID` of the content to deploy a proxy for
   - `password` - The password of the owner of the `AFS`
   - `version` - The version to use with this proxy
+  - `estimate` - optional Flag to check cost of `deployProxy`
+  - `keyringOpts` - optional Keyring options
+
+Returns the address at which the proxy was deployed.
 
 ```js
 const address = await registry.deployProxy({ contentDid, password, version: '1' })
+```
+
+<a name="proxyversion"></a>
+### `registry.getProxyVersion(contentDid)`
+
+Gets the `AFS` Standard version a proxy is using.
+
+- `contentDid` - The `DID` of the content
+
+```js
+const version = await registry.getProxyVersion(contentDid)
 ```
 
 <a name="lateststandard"></a>
@@ -174,7 +201,7 @@ const address = await registry.getLatestStandard()
 <a name="getstandard"></a>
 ### `registry.getStandard(version)`
 
-Gets an `AFS` contract standard.
+Gets the address of an `AFS` contract standard.
 
 - `version` - The version of the `AFS` contract standard
 
@@ -192,6 +219,9 @@ Compiles and deploys a new `AFS` standard.
   - `password` - The password of the person deploying the standard
   - `version` - The version of the standard
   - `paths` - The solidity dependencies of the standard
+  - `keyringOpts` - optional Keyring options
+
+Returns the address at which the standard was deployed.
 
 ```js
 const version = '1'
@@ -250,6 +280,7 @@ const contentDid = await library.getLibraryItem({ requesterDid, index: 1 })
 - `opts`
   - `contentDid` - `DID` of the content to check the purchase of
   - `purchaserDid` - `DID` of purchaser
+  - `keyringOpts` - optional Keyring options
 
 ```js
 const purchased = await token.hasPurchased({
@@ -267,14 +298,17 @@ Submits new DCDN job.
   - `requesterDid` - The `DID` of the person submitting the job
   - `contentDid` - The `DID` of the content this job is for
   - `password` - The password of the person submitting the job
+  - `keyringOpts` - optional Keyring options
   - `job`
     - `jobId` - The `jobId` of the job being submitted
     - `budget` - The budget to allocate for the job
 
+Returns transaction `receipt` object.
+
 ```js
 const jobId = '0x7dc039cfb220029c371d0f4aabf4a956ed0062d66c447df7b4595d7e11187271'
 const budget = 10
-await rewards.submit({ 
+const receipt = await rewards.submit({ 
   requesterDid,
   contentDid,
   password,
@@ -294,10 +328,12 @@ Allocates `rewards` amongst `farmers` for `jobId`.
   - `requesterDid` - The `DID` of the person who submitted the job
   - `contentDid` - The `DID` of the content the job is for
   - `password` - The password of the person who submitted the job
+  - `keyringOpts` - optional Keyring options
   - `job`
     - `jobId` - The `jobId` of the job to allocate for
     - `farmers` - The Ethereum addresses of the farmers to reward
     - `rewards` - The reward amounts in Ara tokens to split amongst `farmers`, respectively
+    - `returnBudget` - `boolean` flag to indicate whether any remaining budget should be returned job owner
 
 ```js
 const jobId = '0x7dc039cfb220029c371d0f4aabf4a956ed0062d66c447df7b4595d7e11187271'
@@ -313,7 +349,8 @@ await rewards.allocate({
   job: {
     jobId,
     farmers,
-    rewards: distribution
+    rewards: distribution,
+    returnBudget: true
   }
 })
 ```
@@ -327,6 +364,9 @@ Redeem Ara tokens (resulting from allocation return or from rewards) from `AFS` 
   - `farmerDid` - The `DID` of the person redeeming tokens
   - `contentDid` - The `DID` of the content to redeem from
   - `password` - The password of the person redeeming tokens
+  - `keyringOpts` - optional Keyring options
+
+Returns the number of Ara tokens redeemed.
 
 ```js
 const balance = await rewards.redeem({
@@ -352,6 +392,22 @@ const budget = await rewards.getBudget({
 })
 ```
 
+<a name="jobowner"></a>
+### `rewards.getJobOwner(opts)`
+
+Gets the address of the owner of a `jobId`.
+
+- `opts`
+  - `contentDid` - The `DID` of the content that has `jobId`
+  - `jobId` - The `jobId` of the job to get the owner for
+
+```js
+const owner = await rewards.getJobOwner({
+  contentDid,
+  jobId
+})
+```
+
 <a name="balance"></a>
 ### `rewards.getRewardsBalance(opts)`
 
@@ -361,6 +417,7 @@ Gets the balance (resulting from allocation return or from rewards) of `farmerDi
   - `farmerDid` - The `DID` of the person to check the balance of
   - `contentDid` - The `DID` of the content where the balance is stored
   - `password` - The password of the person to check the balance of
+  - `keyringOpts` - optional Keyring options
 
 ```js
 const balance = await rewards.getRewardsBalance({
@@ -371,11 +428,12 @@ const balance = await rewards.getRewardsBalance({
 ```
 
 <a name="balanceof"></a>
-### `token.balanceOf(did)`
+### `token.balanceOf(did, keyringOpts)`
 
 Queries for the balance in Ara of an identity.
 
 - `did` - The `DID` of the account to get the balance for
+- `keyringOpts` - optional Keyring options
 
 ```js
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
@@ -411,15 +469,19 @@ const allowance = await token.allowance({ owner, spender })
 Transfers Ara from one account to another.
 
 - `opts`
-  - `did` - URI of the account that is sending the Ara
+  - `did` - `DID` of the account that is sending the Ara
   - `password` - Password of the account sending Ara
   - `to` - `DID` of the account to receive the tokens
   - `val` - Amount to transfer
+  - `keyringOpts` - optional Keyring options
+
+Returns transaction `receipt` object.
 
 ```js
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
 const recipient = 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
+
 const receipt = await token.transfer({
   did,
   password,
@@ -434,15 +496,19 @@ const receipt = await token.transfer({
 Sets the approved token amount to be spent on an owner's behalf. This will overwrite any previous approvals.
 
 - `opts`
-  - `did` - URI of the account that owns the Ara
+  - `did` - `DID` of the account that owns the Ara
   - `password` - Password of the owning account
   - `spender` - `DID` of the account that will be spending the tokens
   - `val` - Amount to approve
+  - `keyringOpts` - optional Keyring options
+
+Returns transaction `receipt` object.
   
 ```js
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
 const recipient = 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
+
 const receipt = await token.approve({
   did,
   password,
@@ -457,20 +523,27 @@ const receipt = await token.approve({
 Transfers Ara from one address to another. This differs from `transfer` by requiring the tokens to be first approved to be spent.
 
 - `opts`
-  - `did` - URI of the account that owns the Ara
-  - `password` - Password of the owning account
-  - `to` - `DID` if the account that will be receiving the tokens
-  - `val` - Amount to transfer
+  - `from` - The `DID` of the origin account of the Ara tokens to transfer (this account must approve `did` to perform the transfer beforehand)
+  - `to` - `DID` of the account that will be receiving the tokens
+  - `val` - Amount of Ara to transfer
+  - `did` - `DID` of the account initiating the transfer on behalf of `from`
+  - `password` - Password of the account initiating the transfer
+  - `keyringOpts` - optional Keyring options
+
+Returns transaction `receipt` object.
 
 ```js
+const origin = 'did:ara:08228219008e3c7ab8b7f23a161c196be44ff33525ebea01d841b707b34b7adc'
+const recipient = 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
-const recipient = 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
+
 const receipt = await token.transferFrom({
+  from: origin,
+  to: recipient,
+  val: '500',
   did,
   password,
-  to: recipient,
-  val: '500'
 })
 ```
 
@@ -480,19 +553,23 @@ const receipt = await token.transferFrom({
 Increases the approved amount that a `spender` can spend on behalf of an `owner`. This will not overwrite any existing approved amount, just increase it.
 
 - `opts`
-  - `did` - URI of the account that owns the Ara
+  - `spender` - `DID` of the spender
+  - `did` - `DID` of the account that owns the Ara
   - `password` - Password of the owning account
-  - `to` - `DID` of the spender
   - `val` - Amount to increase the approval by
+  - `keyringOpts` - optional Keyring options
+
+Returns transaction `receipt` object.
 
 ```js
+const spender = 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
-const spender = 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
+
 const receipt = await token.increaseApproval({
+  spender,
   did,
   password,
-  spender,
   val: '10'
 })
 ```
@@ -503,19 +580,23 @@ const receipt = await token.increaseApproval({
 Decreases the approved amount that a `spender` can spend on behalf of an `owner`. This will not overwrite any existing approved amount, just decrease it.
 
 - `opts`
-  - `did` - URI of the account that owns the Ara
+  - `spender` - `DID` of the spender
+  - `did` - `DID` of the account that owns the Ara
   - `password` - Password of the owning account
-  - `to` - `DID` of the spender
   - `val` - Amount to decrease the approval by
+  - `keyringOpts` - optional Keyring options
+
+Returns transaction `receipt` object.
 
 ```js
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
 const spender = 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85'
+
 const receipt = await token.decreaseApproval({
+  spender,
   did,
   password,
-  spender,
   val: '10'
 })
 ```
@@ -526,29 +607,34 @@ const receipt = await token.decreaseApproval({
 Modifies the current amount deposited for rewards for a particular account.
 
 - `opts`
-  - `did` - URI of the account to update the deposit for
+  - `did` - `DID` of the account to update the deposit for
   - `password` - password of the account
   - `val` - value as `string` to deposit/withdraw
   - `withdraw` - `boolean` whether this should be a deposit or withdraw (defaults to `false` if not given)
+  - `keyringOpts` - optional Keyring options
+
+Returns transaction `receipt` object.
 
 ```js
+// deposits 50 Ara
+const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
+const password = 'password'
+
+const receipt = await token.modifyDeposit({
+  did,
+  password,
+  val: '50'
+})
+
 // withdraws 50 Ara from deposit
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
+
 const receipt = await token.modifyDeposit({
   did,
   password,
   val: '50',
   withdraw: true
-})
-
-// deposits 50 Ara
-const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
-const password = 'password'
-const receipt = await token.modifyDeposit({
-  did,
-  password,
-  val: '50'
 })
 ```
 
@@ -557,11 +643,36 @@ const receipt = await token.modifyDeposit({
 
 Gets the current amount deposited by an account to be used for redeeming rewards.
 
-- `did` - URI of the account to get the deposit balance for
+- `did` - `DID` of the account to get the deposit balance for
+- `keyringOpts` - optional Keyring options
 
 ```js
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const amount = await token.getAmountDeposited(did) // '100'
+```
+
+<a name="constrain"></a>
+### `token.constrainTokenValue(val)`
+
+Constrains token amount used in the EVM to its nominal value (Ara supports 18 decimals).
+
+- `val` - The unconstrained token value as a `String`
+
+```js
+const expandedValue = '1000000000000000000' // 1 Ara Token
+const constrainedValue = token.constrainTokenValue(expandedValue) // constrainedValue === '1'
+```
+
+<a name="expand"></a>
+### `token.expandTokenValue(val)`
+
+Expands nominal token value to its expanded form used in the EVM (Ara supports 18 decimals).
+
+- `val` - The expanded token value as a `String`
+
+```js
+const constrainedValue = '1'
+const expandedValue = token.expandTokenValue(constrainedValue) // expandedValue === '1000000000000000000'
 ```
 
 ## Contributing

@@ -181,6 +181,7 @@ async function upgradeProxy(opts) {
  * @param  {String} opts.contentDid // unhashed
  * @param  {String} opts.password
  * @param  {String|number} opts.version
+ * @param  {Boolean} opts.estimate
  * @param  {Object} [opts.keyringOpts]
  * @return {string}
  * @throws {Error,TypeError}
