@@ -49,50 +49,59 @@ The contracts in this repository are currently deployed on [Ara Privatenet](http
 > All functions are asynchronous.
 > Any value inputted into token functions must be strings to avoid precision errors
 
+### Purchase
+
 * [purchase(opts)](#purchase)
 
 ### Registry
 
-* [registry.proxyExists(contentDid)](#proxyexists)
-* [registry.getProxyAddress(contentDid)](#getproxy)
-* [registry.upgradeProxy(opts)](#upgrade)
-* [registry.deployProxy(opts)](#deploy)
-* [registry.getProxyVersion(contentDid)](#proxyversion)
-* [registry.getLatestStandard()](#lateststandard)
-* [registry.getStandard(version)](#getstandard)
-* [registry.deployNewStandard(opts)](#newstandard)
+* [async registry.proxyExists(contentDid)](#proxyexists)
+* [async registry.getProxyAddress(contentDid)](#getproxy)
+* [async registry.upgradeProxy(opts)](#upgrade)
+* [async registry.deployProxy(opts)](#deploy)
+* [async registry.getProxyVersion(contentDid)](#proxyversion)
+* [async registry.getLatestStandard()](#lateststandard)
+* [async registry.getStandard(version)](#getstandard)
+* [async registry.deployNewStandard(opts)](#newstandard)
 
 ### Library
-* [library.getLibrary(requesterDid)](#getlibrary)
-* [library.getLibrarySize(requesterDid)](#librarysize)
-* [library.getLibraryItem(opts)](#libraryitem)
-* [library.hasPurchased(opts)](#haspurchased)
+* [async library.getLibrary(requesterDid)](#getlibrary)
+* [async library.getLibrarySize(requesterDid)](#librarysize)
+* [async library.getLibraryItem(opts)](#libraryitem)
+* [async library.hasPurchased(opts)](#haspurchased)
 
 ### Rewards
-* [rewards.submit(opts)](#submit)
-* [rewards.allocate(opts)](#allocate)
-* [rewards.redeem(opts)](#redeem)
-* [rewards.getBudget(opts)](#budget)
-* [rewards.getJobOwner(opts)](#jobowner)
-* [rewards.getRewardsBalance(opts)](#balance)
+* [async rewards.submit(opts)](#submit)
+* [async rewards.allocate(opts)](#allocate)
+* [async rewards.redeem(opts)](#redeem)
+* [async rewards.getBudget(opts)](#budget)
+* [async rewards.getJobOwner(opts)](#jobowner)
+* [async rewards.getRewardsBalance(opts)](#balance)
 
 ### Token
 
-* [token.balanceOf(did, keyringOpts)](#balanceof)
-* [token.totalSupply()](#totalsupply)
-* [token.allowance(opts)](#allowance)
-* [token.transfer(opts)](#transfer)
-* [token.approve(opts)](#approve)
-* [token.transferFrom(opts)](#transferfrom)
-* [token.increaseApproval(opts)](#increaseapproval)
-* [token.decreaseApproval(opts)](#decreaseapproval)
-* [token.modifyDeposit(opts)](#modifydeposit)
-* [token.getAmountDeposited(did, keyringOpts)](#getamountdeposited)
+* [async token.balanceOf(did, keyringOpts)](#balanceof)
+* [async token.totalSupply()](#totalsupply)
+* [async token.allowance(opts)](#allowance)
+* [async token.transfer(opts)](#transfer)
+* [async token.approve(opts)](#approve)
+* [async token.transferFrom(opts)](#transferfrom)
+* [async token.increaseApproval(opts)](#increaseapproval)
+* [async token.decreaseApproval(opts)](#decreaseapproval)
+* [async token.modifyDeposit(opts)](#modifydeposit)
+* [async token.getAmountDeposited(did, keyringOpts)](#getamountdeposited)
 * [token.constrainTokenValue(val)](#constrain)
 * [token.expandTokenValue(val)](#expand)
 
+### Commerce
+
+* [async commerce.approveOwnershipTransfer(opts)](#approveownership)
+* [async commerce.revokeOwnershipRequest(opts)](#revokeownership)
+* [async commerce.requestOwnership(opts)](#requestownership)
+
+
 <a name="purchase"></a>
-### `purchase(opts)`
+### `async purchase(opts)`
 
 Purchases an `AFS` and adds it to the requester's library.
 
@@ -120,7 +129,7 @@ const { receipt, jobId } = await purchase({
 ```
 
 <a name="proxyexists"></a>
-### `registry.proxyExists(contentDid)`
+### `async registry.proxyExists(contentDid)`
 
 Checks if the proxy for a content `DID` exists.
 
@@ -133,7 +142,7 @@ const exists = await registry.proxyExists(contentDid)
 ```
 
 <a name="getproxy"></a>
-### `registry.getProxyAddress(contentDid)`
+### `async registry.getProxyAddress(contentDid)`
 
 Gets the address of a proxy given a content `DID`
 
@@ -144,7 +153,7 @@ const address = await registry.getProxyAddress(contentDid)
 ```
 
 <a name="upgrade"></a>
-### `registry.upgradeProxy(opts)`
+### `async registry.upgradeProxy(opts)`
 
 Upgrades a proxy to another `AFS` standard.
 
@@ -161,7 +170,7 @@ const upgraded = await registry.upgradeProxy({ contentDid, password, version: '1
 ```
 
 <a name="deploy"></a>
-### `registry.deployProxy(opts)`
+### `async registry.deployProxy(opts)`
 
 Deploys a proxy to an `AFS` standard.
 
@@ -179,7 +188,7 @@ const address = await registry.deployProxy({ contentDid, password, version: '1' 
 ```
 
 <a name="proxyversion"></a>
-### `registry.getProxyVersion(contentDid)`
+### `async registry.getProxyVersion(contentDid)`
 
 Gets the `AFS` Standard version a proxy is using.
 
@@ -190,7 +199,7 @@ const version = await registry.getProxyVersion(contentDid)
 ```
 
 <a name="lateststandard"></a>
-### `registry.getLatestStandard()`
+### `async registry.getLatestStandard()`
 
 Gets the latest `AFS` contract standard.
 
@@ -199,7 +208,7 @@ const address = await registry.getLatestStandard()
 ```
 
 <a name="getstandard"></a>
-### `registry.getStandard(version)`
+### `async registry.getStandard(version)`
 
 Gets the address of an `AFS` contract standard.
 
@@ -210,7 +219,7 @@ const address = await registry.getStandard('1')
 ```
 
 <a name="newstandard"></a>
-### `registry.deployNewStandard(opts)`
+### `async registry.deployNewStandard(opts)`
 
 Compiles and deploys a new `AFS` standard.
 
@@ -240,7 +249,7 @@ const address = await registry.deployNewStandard({
 ```
 
 <a name="getlibrary"></a>
-### `library.getLibrary(requesterDid)`
+### `async library.getLibrary(requesterDid)`
 
 Gets the content `DID`s purchased by the `requesterDID`.
 
@@ -251,7 +260,7 @@ const lib = await library.getLibrary(did)
 ```
 
 <a name="librarysize"></a>
-### `library.getLibrarySize(requesterDid)`
+### `async library.getLibrarySize(requesterDid)`
 
 Gets the size of `requesterDid`'s library.
 
@@ -262,7 +271,7 @@ const size = await library.getLibrarySize(did)
 ```
 
 <a name="libraryitem"></a>
-### `library.getLibraryItem(opts)`
+### `async library.getLibraryItem(opts)`
 
 Gets the `DID` of the item at the provided `index` in `requesterDid`'s library.
 
@@ -275,7 +284,7 @@ const contentDid = await library.getLibraryItem({ requesterDid, index: 1 })
 ```
 
 <a name="haspurchased"></a>
-### `library.hasPurchased(opts)`
+### `async library.hasPurchased(opts)`
 
 - `opts`
   - `contentDid` - `DID` of the content to check the purchase of
@@ -290,7 +299,7 @@ const purchased = await token.hasPurchased({
 ```
 
 <a name="submit"></a>
-### `rewards.submit(opts)`
+### `async rewards.submit(opts)`
 
 Submits new DCDN job.
 
@@ -320,7 +329,7 @@ const receipt = await rewards.submit({
 ```
 
 <a name="allocate"></a>
-### `rewards.allocate(opts)`
+### `async rewards.allocate(opts)`
 
 Allocates `rewards` amongst `farmers` for `jobId`.
 
@@ -356,7 +365,7 @@ await rewards.allocate({
 ```
 
 <a name="redeem"></a>
-### `rewards.redeem(opts)`
+### `async rewards.redeem(opts)`
 
 Redeem Ara tokens (resulting from allocation return or from rewards) from `AFS` contract.
 
@@ -377,7 +386,7 @@ const balance = await rewards.redeem({
 ```
 
 <a name="budget"><a/>
-### `rewards.getBudget(opts)`
+### `async rewards.getBudget(opts)`
 
 Gets the budget for `jobId`.
 
@@ -393,7 +402,7 @@ const budget = await rewards.getBudget({
 ```
 
 <a name="jobowner"></a>
-### `rewards.getJobOwner(opts)`
+### `async rewards.getJobOwner(opts)`
 
 Gets the address of the owner of a `jobId`.
 
@@ -409,7 +418,7 @@ const owner = await rewards.getJobOwner({
 ```
 
 <a name="balance"></a>
-### `rewards.getRewardsBalance(opts)`
+### `async rewards.getRewardsBalance(opts)`
 
 Gets the balance (resulting from allocation return or from rewards) of `farmerDid` stored in `contentDid`.
 
@@ -428,7 +437,7 @@ const balance = await rewards.getRewardsBalance({
 ```
 
 <a name="balanceof"></a>
-### `token.balanceOf(did, keyringOpts)`
+### `async token.balanceOf(did, keyringOpts)`
 
 Queries for the balance in Ara of an identity.
 
@@ -441,7 +450,7 @@ const balance = await token.balanceOf(did) // 100.5
 ```
 
 <a name="totalsupply"></a>
-### `token.totalSupply()`
+### `async token.totalSupply()`
 
 Gets the total circulating supply of Ara tokens.
 
@@ -450,7 +459,7 @@ const supply = await token.totalSupply() // 1000000000
 ```
 
 <a name="allowance"></a>
-### `token.allowance(opts)`
+### `async token.allowance(opts)`
 
 Gets the amount in Ara that a `spender` is allowed to spend of an `owner`.
 
@@ -464,7 +473,7 @@ const allowance = await token.allowance({ owner, spender })
 ```
 
 <a name="transfer"></a>
-### `token.transfer(opts)`
+### `async token.transfer(opts)`
 
 Transfers Ara from one account to another.
 
@@ -491,7 +500,7 @@ const receipt = await token.transfer({
 ```
 
 <a name="approve"></a>
-### `token.approve(opts)`
+### `async token.approve(opts)`
 
 Sets the approved token amount to be spent on an owner's behalf. This will overwrite any previous approvals.
 
@@ -518,7 +527,7 @@ const receipt = await token.approve({
 ```
 
 <a name="transferfrom"></a>
-### `token.transferFrom(opts)`
+### `async token.transferFrom(opts)`
 
 Transfers Ara from one address to another. This differs from `transfer` by requiring the tokens to be first approved to be spent.
 
@@ -548,7 +557,7 @@ const receipt = await token.transferFrom({
 ```
 
 <a name="increaseapproval"></a>
-### `token.increaseApproval(opts)`
+### `async token.increaseApproval(opts)`
 
 Increases the approved amount that a `spender` can spend on behalf of an `owner`. This will not overwrite any existing approved amount, just increase it.
 
@@ -575,7 +584,7 @@ const receipt = await token.increaseApproval({
 ```
 
 <a name="decreaseapproval"></a>
-### `token.decreaseApproval(opts)`
+### `async token.decreaseApproval(opts)`
 
 Decreases the approved amount that a `spender` can spend on behalf of an `owner`. This will not overwrite any existing approved amount, just decrease it.
 
@@ -602,7 +611,7 @@ const receipt = await token.decreaseApproval({
 ```
 
 <a name="modifydeposit"></a>
-### `token.modifyDeposit(opts)`
+### `async token.modifyDeposit(opts)`
 
 Modifies the current amount deposited for rewards for a particular account.
 
@@ -639,7 +648,7 @@ const receipt = await token.modifyDeposit({
 ```
 
 <a name="getamountdeposited"></a>
-### `token.getAmountDeposited(did)`
+### `async token.getAmountDeposited(did)`
 
 Gets the current amount deposited by an account to be used for redeeming rewards.
 
@@ -673,6 +682,69 @@ Expands nominal token value to its expanded form used in the EVM (Ara supports 1
 ```js
 const constrainedValue = '1'
 const expandedValue = token.expandTokenValue(constrainedValue) // expandedValue === '1000000000000000000'
+```
+
+<a name="approveownership"></a>
+### `async commerce.approveOwnershipTransfer(opts)`
+
+Approves an AFS ownership transfer request.
+
+- `opts`
+  - `contentDid` - The `DID` of the content to transfer ownership
+  - `password` - The password of the current owner
+  - `newOwnerDid` - The `DID` of the account to transfer ownership to
+  - `estimate` - optional Flag to check cost of `approveOwnershipTransfer`
+
+Returns transaction `receipt` object.
+
+```js
+const receipt = await commerce.approveOwnershipTransfer({
+  contentDid,
+  password,
+  newOwnerDid
+})
+```
+
+<a name="revokeownership"></a>
+### `async commerce.revokeOwnershipRequest(opts)`
+
+Revokes an outstanding ownership request of an AFS.
+
+- `opts`
+  - `requesterDid` - The `DID` of the account requesting ownership
+  - `contentDid` - The `DID` of the content to transfer ownership
+  - `password` - The password of the account requesting ownership
+  - `estimate` - optional Flag to check cost of `revokeOwnershipRequest`
+
+Returns transaction `receipt` object.
+
+```js
+const receipt = await commerce.revokeOwnershipRequest({
+  requesterDid,
+  contentDid,
+  password
+})
+```
+
+<a name="requestownership"></a>
+### `async commerce.requestOwnership(opts)`
+
+Requests ownership of an AFS.
+
+- `opts`
+  - `requesterDid` - The `DID` of the account requesting ownership
+  - `contentDid` - The `DID` of the content to transfer ownership
+  - `password` - The password of the account requesting ownership
+  - `estimate` - optional Flag to check cost of `requestOwnership`
+
+Returns transaction `receipt` object.
+
+```js
+const receipt = await commerce.requestOwnership({
+  requesterDid,
+  contentDid,
+  password
+})
 ```
 
 ## Contributing

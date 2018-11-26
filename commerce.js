@@ -34,7 +34,7 @@ async function requestOwnership(opts) {
 }
 
 /**
- * Revokes a previous ownership request of an AFS.
+ * Revokes an outstanding ownership request of an AFS.
  * @param  {Object} opts
  * @param  {String} opts.requesterDid
  * @param  {String} opts.contentDid
@@ -51,7 +51,8 @@ async function revokeOwnershipRequest(opts) {
  * Approves an ownership transfer request.
  * This officially transfers ownership for the given AFS.
  * @param  {Object}  opts
- * @param  {String}  opts.did
+ * @param  {String}  opts.contentDid
+ * @param  {String}  opts.newOwnerDid
  * @param  {String}  opts.password
  * @param  {Boolean} opts.estimate
  * @throws {Error|TypeError}
@@ -60,7 +61,7 @@ async function revokeOwnershipRequest(opts) {
 async function approveOwnershipTransfer(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object')
-  } else if (!opts.did || 'string' !== typeof opts.did) {
+  } else if (!opts.contentDid || 'string' !== typeof opts.contentDid) {
     throw new TypeError('Expecting non-empty content DID')
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError('Expecting non-empty password')
@@ -71,7 +72,7 @@ async function approveOwnershipTransfer(opts) {
   }
 
   const {
-    did,
+    contentDid,
     password,
     newOwnerDid,
     keyringOpts
@@ -82,12 +83,12 @@ async function approveOwnershipTransfer(opts) {
   let ddo
   try {
     ({ ddo } = await validate({
-      did,
+      did: contentDid,
       password,
       label: 'approveOwnershipTransfer',
       keyringOpts
     }))
-    ownerAddress = await getAddressFromDID(getIdentifier(did))
+    ownerAddress = await getAddressFromDID(getIdentifier(contentDid))
     newOwnerAddress = await getAddressFromDID(getIdentifier(newOwnerDid))
   } catch (err) {
     throw err
@@ -103,11 +104,11 @@ async function approveOwnershipTransfer(opts) {
       Ensure ${newOwnerDid} is a valid Ara identity.`)
   }
 
-  if (!(await proxyExists(did))) {
+  if (!(await proxyExists(contentDid))) {
     throw new Error('Content does not have a valid proxy contract')
   }
 
-  const proxy = await getProxyAddress(did)
+  const proxy = await getProxyAddress(contentDid)
   let owner = getDocumentOwner(ddo, true)
   owner = `${AID_PREFIX}${owner}`
 
