@@ -266,6 +266,11 @@ async function allocate(opts) {
     throw new TypeError(`${did} has not purchased AFS ${contentDid}, cannot submit budget.`)
   }
 
+  const jobOwner = await getJobOwner({ contentDid, jobId })
+  if (jobOwner !== acct.address) {
+    throw new Error(`requester address ${acct.address} did not match job owner ${jobOwner}.`)
+  }
+
   debug(did, 'allocating rewards for job:', jobId)
 
   try {
@@ -480,10 +485,48 @@ async function getRewardsBalance(opts) {
   }
 }
 
+async function getJobOwner(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object.')
+  } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
+    throw TypeError('Expecting non-empty content DID')
+  } else if (!isValidJobId(opts.jobId)) {
+    throw TypeError('Invalid job Id.')
+  }
+
+  let { contentDid, jobId } = opts
+
+  contentDid = getIdentifier(contentDid)
+
+  if (JOB_ID_LENGTH === jobId.length) {
+    jobId = toHexString(jobId, { encoding: 'string' !== typeof jobId ? 'utf8' : 'hex', ethify: true })
+  }
+
+  try {
+    if (!(await proxyExists(contentDid))) {
+      throw new Error('This content does not have a valid proxy contract')
+    }
+
+    const proxy = await getProxyAddress(contentDid)
+    const { sender } = await call({
+      abi: afsAbi,
+      address: proxy,
+      functionName: 'jobs_',
+      arguments: [
+        jobId
+      ]
+    })
+    return sender
+  } catch (err) {
+    throw err
+  }
+}
+
 module.exports = {
   submit,
   redeem,
   allocate,
   getBudget,
+  getJobOwner,
   getRewardsBalance
 }
