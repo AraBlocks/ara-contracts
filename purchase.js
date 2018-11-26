@@ -48,8 +48,6 @@ async function purchase(opts) {
     throw TypeError('Expecting non-empty content DID.')
   } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password.')
-  } else if (opts.job && 'object' !== typeof opts.job) {
-    throw TypeError('Expecting job object.')
   } else if ('number' !== typeof opts.budget || 0 > opts.budget) {
     throw TypeError('Expecting budget to be 0 or greater.')
   }

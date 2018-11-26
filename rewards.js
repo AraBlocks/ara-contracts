@@ -168,7 +168,7 @@ async function submit(opts) {
   } catch (err) {
     throw err
   }
-  return { jobId, receipt }
+  return receipt
 }
 
 /**
@@ -488,6 +488,13 @@ async function getRewardsBalance(opts) {
   }
 }
 
+/**
+ * Get owner of job
+ * @param  {Object}         opts
+ * @param  {String}         opts.contentDid
+ * @param  {string|Buffer}  opts.jobId
+ * @throws {Error,TypeError}
+ */
 async function getJobOwner(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
