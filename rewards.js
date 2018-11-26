@@ -415,9 +415,12 @@ async function getBudget(opts) {
     throw TypeError('Expecting valid jobId.')
   }
 
-  const { jobId } = opts
-  let { contentDid } = opts
+  let { contentDid, jobId } = opts
   contentDid = getIdentifier(contentDid)
+
+  if (JOB_ID_LENGTH === jobId.length) {
+    jobId = toHexString(jobId, { encoding: 'string' !== typeof jobId ? 'utf8' : 'hex', ethify: true })
+  }
 
   try {
     if (!(await proxyExists(contentDid))) {
