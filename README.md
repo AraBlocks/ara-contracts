@@ -38,7 +38,7 @@ $ npm install arablocks/ara-contracts --save
 
 ## Usage
 
-TODO CLI commands
+See CLI Usage docs [here](https://github.com/AraBlocks/ara-contracts/blob/master/docs/CLI-README.md).
 
 ### Ara Privatenet
 
