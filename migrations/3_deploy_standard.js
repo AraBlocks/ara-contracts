@@ -4,10 +4,10 @@ const constants = require('../constants')
 module.exports = (deployer) => {
   deployer.then(async () => {
     try {
-      console.log('Deploying AFS Standard...')
+      console.log('\tDeploying AFS Standard...')
       const address = await new Promise((resolve, reject) => {
         setTimeout(async () => {
-          console.log('...deploying')
+          console.log('\t...deploying')
           try {
             const a = await deployNewStandard({
               requesterDid: constants.TEMP_OWNER_DID,
@@ -21,7 +21,7 @@ module.exports = (deployer) => {
           }
         }, 15000)
       })
-      console.log(`Standard deployed at ${address}.`)
+      console.log(`\tStandard deployed at ${address}.`)
     } catch (err) {
       throw err
     }
