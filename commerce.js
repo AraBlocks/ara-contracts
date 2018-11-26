@@ -96,7 +96,7 @@ async function approveOwnershipTransfer(opts) {
 
   if (!isAddress(ownerAddress)) {
     throw new Error(`opts.did did not resolve to a valid Ethereum address. 
-      Ensure ${did} is a valid Ara identity.`)
+      Ensure ${contentDid} is a valid Ara identity.`)
   }
 
   if (!isAddress(newOwnerAddress)) {
