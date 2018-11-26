@@ -341,7 +341,7 @@ Allocates `rewards` amongst `farmers` for `jobId`.
     - `jobId` - The `jobId` of the job to allocate for
     - `farmers` - The Ethereum addresses of the farmers to reward
     - `rewards` - The reward amounts in Ara tokens to split amongst `farmers`, respectively
-    - `returnBudget` - `boolean` flag to indicate whether any remaining budget should be returned job owner
+    - `returnBudget` - `boolean` flag to indicate whether any remaining budget should be returned to the job owner
 
 ```js
 const jobId = '0x7dc039cfb220029c371d0f4aabf4a956ed0062d66c447df7b4595d7e11187271'
