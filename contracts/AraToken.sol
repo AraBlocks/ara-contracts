@@ -13,8 +13,8 @@ contract AraToken is StandardToken {
 
   mapping (address => uint256) private deposits_;
 
-  event Deposit(address indexed from, uint256 value, uint256 total);
-  event Withdraw(address indexed to, uint256 value, uint256 total);
+  event Deposit(address from, uint256 value, uint256 total);
+  event Withdraw(address to, uint256 value, uint256 total);
 
   // constructor
   constructor() public {

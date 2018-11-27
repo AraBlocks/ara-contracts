@@ -6,7 +6,7 @@ module.exports = {
   },
 
   get REGISTRY_ADDRESS() {
-    const local = '0x29d2222d93354b19ee283eefc6ef8d580b5b0579'
+    const local = '0xeef133fc006c8227c3061379949829d6c254a75d'
     const privatenet = '0x899cb766f5bd33dac2e6805bcb46456265096ca5'
     const testnet = '0x4c0500f568bbd95bc8eeb9915acdebd5a86f02f8'
     const mainnet = ''
@@ -14,7 +14,7 @@ module.exports = {
   },
 
   get LIBRARY_ADDRESS() {
-    const local = '0xc3c4582aac23d1c7904491c52720d65d1854f1e9'
+    const local = '0xf9a6ae460bdb3b1c390b9ed39b7d5a18b666c051'
     const privatenet = '0x11af1540b442a3d05754ae403eed2a9227628f86'
     const testnet = '0x4e3797d2c783dedcc6c29512a91c56c857b2eb49'
     const mainnet = ''
@@ -22,7 +22,7 @@ module.exports = {
   },
 
   get ARA_TOKEN_ADDRESS() {
-    const local = '0xcc7d163f7093a16541957e444ff984db718a5eee'
+    const local = '0xbaf1505e9cd36bd6bb2498e49f64f4c2db303527'
     const privatenet = '0xe882fbca0dfb8a9b7c712bdcc28936d98e0734f9'
     const testnet = '0x6643dd369bacecda73ff92c5fee25f6bf3823106'
     const mainnet = ''

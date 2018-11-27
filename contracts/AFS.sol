@@ -30,14 +30,14 @@ contract AFS is Ownable {
     uint256 budget;
   }
 
-  event Commit(bytes32 indexed _did);
-  event Unlisted(bytes32 indexed _did);
-  event PriceSet(bytes32 indexed _did, uint256 _price);
-  event BudgetSubmitted(bytes32 indexed _did, bytes32 indexed _jobId, uint256 _budget);
-  event RewardsAllocated(address indexed _farmer, uint256 _allocated, uint256 _remaining);
-  event InsufficientDeposit(address indexed _farmer);
-  event Purchased(bytes32 indexed _purchaser, bytes32 indexed _did, uint256 _price);
-  event Redeemed(address indexed _sender, uint256 _amount);
+  event Commit(bytes32 _did);
+  event Unlisted(bytes32 _did);
+  event PriceSet(bytes32 _did, uint256 _price);
+  event BudgetSubmitted(bytes32 _did, bytes32 _jobId, uint256 _budget);
+  event RewardsAllocated(address _farmer, uint256 _allocated, uint256 _remaining);
+  event InsufficientDeposit(address _farmer);
+  event Purchased(bytes32 _purchaser, bytes32 _did, uint256 _price);
+  event Redeemed(address _sender, uint256 _amount);
 
   uint8 constant mtBufferSize_ = 40;
   uint8 constant msBufferSize_ = 64;
