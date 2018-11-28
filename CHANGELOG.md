@@ -1,11 +1,11 @@
-## [0.6.1](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.6.1) (2018-11-27)
+## [0.6.2](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.6.2) (2018-11-28)
 
 
 ### Bug Fixes
 
 * add jobID tohex ([f9ec4e2](https://github.com/AraBlocks/ara-contracts/commit/f9ec4e2))
 * **constants.js:** revert privatenet addresses ([8e9ff24](https://github.com/AraBlocks/ara-contracts/commit/8e9ff24))
-* constants ([3ca7793](https://github.com/AraBlocks/ara-contracts/commit/3ca7793))
+* constants ([a26bed8](https://github.com/AraBlocks/ara-contracts/commit/a26bed8))
 * deploy standard during migration ([acefd34](https://github.com/AraBlocks/ara-contracts/commit/acefd34))
 * increase timeout ([b09e898](https://github.com/AraBlocks/ara-contracts/commit/b09e898))
 * **constants.js:** remove chainIds from address switch ([1a44cc3](https://github.com/AraBlocks/ara-contracts/commit/1a44cc3))
