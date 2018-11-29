@@ -10,7 +10,7 @@ contract Registry {
   mapping (address => string) public proxyImpls_; // proxy => version
   string public latestVersion_;
 
-  event ProxyDeployed(bytes32 indexed _contentId, address _address);
+  event ProxyDeployed(address indexed _owner, bytes32 indexed _contentId, address _address);
   event ProxyUpgraded(bytes32 indexed _contentId, string _version);
   event StandardAdded(string _version, address _address);
 
@@ -63,7 +63,7 @@ contract Registry {
     proxies_[_contentId] = proxy;
     proxyOwners_[_contentId] = msg.sender;
     upgradeProxyAndCall(_contentId, _version, _data);
-    emit ProxyDeployed(_contentId, address(proxy));
+    emit ProxyDeployed(msg.sender, _contentId, address(proxy));
   }
 
   /**
