@@ -30,13 +30,13 @@ contract AFS is Ownable {
     uint256 budget;
   }
 
-  event Commit(bytes32 indexed _did);
-  event Unlisted(bytes32 indexed _did);
-  event PriceSet(bytes32 indexed _did, uint256 _price);
-  event BudgetSubmitted(bytes32 indexed _did, bytes32 indexed _jobId, uint256 _budget);
-  event RewardsAllocated(address indexed _farmer, uint256 _allocated, uint256 _remaining);
+  event Commit();
+  event Unlisted();
+  event PriceSet(uint256 _price);
+  event BudgetSubmitted(address indexed _sender, bytes32 indexed _jobId, uint256 _budget);
+  event RewardsAllocated(address indexed _farmer, bytes32 indexed _jobId, uint256 _allocated, uint256 _remaining);
   event InsufficientDeposit(address indexed _farmer);
-  event Purchased(bytes32 indexed _purchaser, bytes32 indexed _did, uint256 _price);
+  event Purchased(bytes32 indexed _purchaser, uint256 _price);
   event Redeemed(address indexed _sender, uint256 _amount);
 
   uint8 constant mtBufferSize_ = 40;
@@ -97,7 +97,7 @@ contract AFS is Ownable {
 
   function setPrice(uint256 _price) external onlyBy(owner_) {
     price_ = _price;
-    emit PriceSet(did_, price_);
+    emit PriceSet(price_);
   }
 
   function submitBudget(bytes32 _jobId, uint256 _budget) public purchaseRequired {
@@ -109,7 +109,7 @@ contract AFS is Ownable {
       jobs_[_jobId].budget += _budget;
       jobs_[_jobId].sender = msg.sender;
       assert(jobs_[_jobId].budget <= token_.balanceOf(address(this)));
-      emit BudgetSubmitted(did_, _jobId, _budget);
+      emit BudgetSubmitted(msg.sender, _jobId, _budget);
     }
   }
 
@@ -126,7 +126,7 @@ contract AFS is Ownable {
         bytes32 farmer = keccak256(abi.encodePacked(_farmers[j]));
         rewards_[farmer] += _rewards[j];
         jobs_[_jobId].budget -= _rewards[j];
-        emit RewardsAllocated(_farmers[j], _rewards[j], jobs_[_jobId].budget);
+        emit RewardsAllocated(_farmers[j], _jobId, _rewards[j], jobs_[_jobId].budget);
       } else {
         emit InsufficientDeposit(_farmers[j]);
       }
@@ -171,6 +171,7 @@ contract AFS is Ownable {
    * @param _budget The reward budget for jobId, or 0 if N/A
    */
   function purchase(bytes32 _purchaser, bytes32 _jobId, uint256 _budget) external {
+    require(listed_, "Content is not listed for purchase.");
     uint256 allowance = token_.allowance(msg.sender, address(this));
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
     require (!purchasers_[hashedAddress] && allowance >= price_ + _budget, "Unable to purchase.");
@@ -178,7 +179,7 @@ contract AFS is Ownable {
     if (token_.transferFrom(msg.sender, owner_, price_)) {
       purchasers_[hashedAddress] = true;
       lib_.addLibraryItem(_purchaser, did_);
-      emit Purchased(_purchaser, did_, price_);
+      emit Purchased(_purchaser, price_);
 
       if (_jobId != bytes32(0) && _budget > 0) {
         submitBudget(_jobId, _budget);
@@ -207,7 +208,7 @@ contract AFS is Ownable {
       }
     }
 
-    emit Commit(did_);
+    emit Commit();
   }
 
   function write(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
@@ -235,7 +236,7 @@ contract AFS is Ownable {
       }
     }
 
-    emit Commit(did_);
+    emit Commit();
   }
 
   function read(uint8 _file, uint256 _offset) public view returns (bytes buffer) {
@@ -251,7 +252,7 @@ contract AFS is Ownable {
 
   function unlist() public onlyBy(owner_) returns (bool success) {
     listed_ = false;
-    emit Unlisted(did_);
+    emit Unlisted();
     return true;
   }
 }
