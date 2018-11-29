@@ -7,7 +7,7 @@ Blockchain interactions in Ara modules.
 
 ## Overview
 
-This repository contains all contracts deployed by Ara. There are four contracts used throughout the entire network: 
+This repository contains all contracts deployed by Ara. There are four contracts used throughout the entire network:
 
 1. `AraToken.sol` - The Ara ERC20 token contract
 2. `AFS.sol` - The `AFS` standard contract which defines the logic for `AFS` configurations and behavior on the blockchain (see the accompanying [RFC](https://github.com/AraBlocks/RFCs/blob/master/text/0004-afs-contract-standard.md))
@@ -20,7 +20,7 @@ This repository also provides programmatic (see the API section) and command-lin
 
 ## Stability
 
-> [Stability][stability-index]: 2 - Stable. 
+> [Stability][stability-index]: 2 - Stable.
 > Compatibility with the npm ecosystem is a high priority.
 
 Although the API is stable, this project is still in alpha development and is not yet ready to be used in a production environment.
@@ -291,7 +291,7 @@ const contentDid = await library.getLibraryItem({ requesterDid, index: 1 })
   - `keyringOpts` - optional Keyring options
 
 ```js
-const purchased = await token.hasPurchased({
+const purchased = await library.hasPurchased({
   contentDid: 'did:ara:114045f3883a21735188bb02de024a4e1451cb96c5dcc80bdfa1b801ecf81b85',
   purchaserDid: 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 })
@@ -316,7 +316,7 @@ Returns transaction `receipt` object.
 ```js
 const jobId = '0x7dc039cfb220029c371d0f4aabf4a956ed0062d66c447df7b4595d7e11187271'
 const budget = 10
-const receipt = await rewards.submit({ 
+const receipt = await rewards.submit({
   requesterDid,
   contentDid,
   password,
@@ -511,7 +511,7 @@ Sets the approved token amount to be spent on an owner's behalf. This will overw
   - `keyringOpts` - optional Keyring options
 
 Returns transaction `receipt` object.
-  
+
 ```js
 const did = 'did:ara:a51aa651c5a28a7c0a8de007843a00dcd24f3cc893522d3fb093c2bb7a323785'
 const password = 'password'
