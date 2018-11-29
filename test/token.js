@@ -34,7 +34,7 @@ test('balanceOf(address) invalid address', async (t) => {
   await t.throwsAsync(token.balanceOf({ }), TypeError)
   await t.throwsAsync(token.balanceOf(1234), TypeError)
   await t.throwsAsync(token.balanceOf([]), TypeError)
-  await t.throwsAsync(token.balanceOf(TEST_OWNER_ADDRESS), TypeError)
+  await t.throwsAsync(token.balanceOf(TEST_OWNER_ADDRESS), Error)
   await t.throwsAsync(token.balanceOf('did:ara:1234'), Error)
 })
 
@@ -213,7 +213,7 @@ test('getAmountDeposited(did) invalid did', async (t) => {
   await t.throwsAsync(token.getAmountDeposited({ }), TypeError)
   await t.throwsAsync(token.getAmountDeposited(1234), TypeError)
   await t.throwsAsync(token.getAmountDeposited([]), TypeError)
-  await t.throwsAsync(token.getAmountDeposited(TEST_OWNER_ADDRESS), TypeError)
+  await t.throwsAsync(token.getAmountDeposited(TEST_OWNER_ADDRESS), Error)
   await t.throwsAsync(token.getAmountDeposited('did:ara:1234'), Error)
 })
 
