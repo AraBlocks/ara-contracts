@@ -363,6 +363,15 @@ async function deployNewStandard(opts) {
     throw err
   }
 
+  try {
+    const address = await getStandard(version)
+    if (!/^0x0+$/.test(address)) {
+      throw new Error(`AFS Standard version ${version} already exists. Please try again with a different version name.`)
+    }
+  } catch (err) {
+    throw err
+  }
+
   const prefixedDid = `${constants.AID_PREFIX}${did}`
   const acct = await account.load({ did: prefixedDid, password })
   const registryOwner = await call({
