@@ -1,4 +1,4 @@
-## [0.7.1](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.7.1) (2018-11-30)
+# [0.8.0](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.8.0) (2018-12-03)
 
 
 ### Bug Fixes
