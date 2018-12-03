@@ -8,7 +8,7 @@ module.exports = {
   get REGISTRY_ADDRESS() {
     const local = '0x29d2222d93354b19ee283eefc6ef8d580b5b0579'
     const privatenet = '0xc29aec5d9babd49e4752127051e58eaceed321af'
-    const testnet = '0x4c0500f568bbd95bc8eeb9915acdebd5a86f02f8'
+    const testnet = '0xf7909332314a2b587176f14d7005ab0157a72340'
     const mainnet = ''
     return getAddress(local, privatenet, testnet, mainnet)
   },
@@ -16,7 +16,7 @@ module.exports = {
   get LIBRARY_ADDRESS() {
     const local = '0xc3c4582aac23d1c7904491c52720d65d1854f1e9'
     const privatenet = '0x820ebc66462bc7096d635284cacbb2d427ed0f6a'
-    const testnet = '0x4e3797d2c783dedcc6c29512a91c56c857b2eb49'
+    const testnet = '0x257f0c1ac57cbecbc6565b6f543031f55bcedf15'
     const mainnet = ''
     return getAddress(local, privatenet, testnet, mainnet)
   },
@@ -24,16 +24,17 @@ module.exports = {
   get ARA_TOKEN_ADDRESS() {
     const local = '0xcc7d163f7093a16541957e444ff984db718a5eee'
     const privatenet = '0x75c220c6eb173d96d909c51c1bcde51eadece641'
-    const testnet = '0x6643dd369bacecda73ff92c5fee25f6bf3823106'
+    const testnet = '0x1ca4db2d6ec8c1d7b4e39e5d60e80337ea385ae5'
     const mainnet = ''
     return getAddress(local, privatenet, testnet, mainnet)
   },
 
   TEMP_OWNER_DID: 'did:ara:8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67',
   OWNER_PASSWORD: 'pass',
-  OWNER_MNEMONIC: 'leg notable ostrich found gym honey leg arrive spend cabbage genuine light',
   // private key: 0x8662c06fab466f44e0b7937812671d07b4e298a609c7d9654e27c1d0d2653f20
   DEFAULT_ADDRESS: '0x105C83b79E9170d7969Ce9806fE0B527b5f879dE',
+
+  ROPSTEN_DEPLOY_ADDRESS: '0x91287ec5e2eff90bdb1750abe9359d7576f744d3',
 
   TEST_OWNER_ADDRESS: '0x105C83b79E9170d7969Ce9806fE0B527b5f879dE',
   // 0x for ganache, no prefix for geth
