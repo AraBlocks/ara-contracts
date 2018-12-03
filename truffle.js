@@ -9,9 +9,7 @@ module.exports = {
       gas: 4000000
     },
     testnet: {
-      provider: () => {
-        return new HDWalletProvider(process.env.TESTNET_MNEMONIC, `https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}`)
-      },
+      provider: () => new HDWalletProvider(process.env.TESTNET_MNEMONIC, `https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}`),
       network_id: 3,
       gas: 4000000
     },
