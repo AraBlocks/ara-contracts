@@ -1,7 +1,7 @@
 const { abi: afsAbi } = require('./build/contracts/AFS.json')
+const { AID_PREFIX, ZERO_BYTES32 } = require('./constants')
 const debug = require('debug')('ara-contracts:purchase')
 const { randomBytes } = require('ara-crypto')
-const { AID_PREFIX } = require('./constants')
 const token = require('./token')
 
 const {
@@ -64,8 +64,14 @@ async function purchase(opts) {
   let { budget, contentDid } = opts
   const estimate = opts.estimate || false
 
-  const jobId = toHexString(randomBytes(32), { encoding: 'utf8', ethify: true })
   budget = budget || 0
+
+  let jobId
+  if (budget) {
+    jobId = toHexString(randomBytes(32), { encoding: 'utf8', ethify: true })
+  } else {
+    jobId = ZERO_BYTES32
+  }
 
   let did
   try {

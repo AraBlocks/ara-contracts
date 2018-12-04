@@ -5,7 +5,7 @@ const test = require('ava')
 
 const {
   TEST_OWNER_DID_NO_METHOD,
-  TEST_AFS_DID,
+  TEST_AFS_DID1,
   PASSWORD: password
 } = require('./_constants')
 
@@ -26,11 +26,11 @@ const getAfsDid = (t) => {
 
 test.before(async (t) => {
   t.context.defaultAccount = await mirrorIdentity(TEST_OWNER_DID_NO_METHOD)
-  t.context.afsAccount = await mirrorIdentity(TEST_AFS_DID)
+  t.context.afsAccount = await mirrorIdentity(TEST_AFS_DID1)
 })
 
 test.after(async (t) => {
-  await cleanup(t)
+  await cleanup(t.context.afsAccount)
 })
 
 test.serial('deployNewStandard()', async (t) => {
