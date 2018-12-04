@@ -5,7 +5,7 @@ const test = require('ava')
 
 const {
   TEST_OWNER_DID_NO_METHOD,
-  TEST_DID: contentDid,
+  TEST_AFS_DID1,
   PASSWORD: password
 } = require('./_constants')
 
