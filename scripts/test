@@ -40,10 +40,13 @@ safeRunCommand "$command"
 command="ava test/token.js --verbose"
 safeRunCommand "$command"
 
-command="ava test/ownership.js --verbose"
+command="ava test/registry.js --verbose"
 safeRunCommand "$command"
 
-command="ava test/registry.js --verbose"
+command="ava test/purchase.js --verbose"
+safeRunCommand "$command"
+
+command="ava test/ownership.js --verbose"
 safeRunCommand "$command"
 
 # cleanup
