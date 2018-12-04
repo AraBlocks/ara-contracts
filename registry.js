@@ -221,6 +221,15 @@ async function deployProxy(opts) {
     throw err
   }
 
+  try {
+    const address = await getProxyAddress(did)
+    if (!/^0x0+$/.test(address)) {
+      throw new Error(`Proxy for ${did} already exists. No need to deploy proxy.`)
+    }
+  } catch (err) {
+    throw err
+  }
+
   debug('creating tx to deploy proxy for', did)
   let owner = getDocumentOwner(ddo, true)
   owner = `${AID_PREFIX}${owner}`

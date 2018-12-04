@@ -56,7 +56,12 @@ test.serial('purchase(opts) no budget', async (t) => {
   const requesterDid = getDid(t)
   const hashedRequesterDid = toHexString(hashDID(requesterDid), { encoding: 'hex', ethify: true })
 
-  const proxyAddress = await registry.deployProxy({ contentDid, password, version: '1' })
+  let proxyAddress
+  try {
+    proxyAddress = await registry.deployProxy({ contentDid, password, version: '1' })
+  } catch (err) {
+    proxyAddress = await registry.getProxyAddress(contentDid)
+  }
 
   const { contract: proxy, ctx } = await contract.get(abi, proxyAddress)
   proxy.events.Purchased({ fromBlock: 'latest' })
