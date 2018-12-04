@@ -12,7 +12,8 @@ const {
   LIBRARY_ADDRESS,
   REGISTRY_ADDRESS,
   ARA_TOKEN_ADDRESS,
-  STANDARD_VERSION
+  STANDARD_VERSION,
+  ZERO_ADDRESS
 } = require('./constants')
 
 const {
@@ -127,6 +128,11 @@ async function upgradeProxy(opts) {
   } catch (err) {
     throw err
   }
+
+  if (ZERO_ADDRESS === await getStandard(version)) {
+    throw new Error(`AFS Standard version ${version} does not exist. Please try again with an existing version.`)
+  }
+
   let owner = getDocumentOwner(ddo, true)
   owner = `${AID_PREFIX}${owner}`
 
@@ -293,8 +299,12 @@ async function getLatestStandard() {
  * @throws {Error}
  */
 async function getStandard(version) {
-  if ('string' !== typeof version || !version) {
-    throw TypeError('Expecting non-empty version string.')
+  if (null == version || 'string' !== typeof version || !version) {
+    if ('number' === typeof version) {
+      version = version.toString()
+    } else {
+      throw TypeError('Expecting non-empty standard version')
+    }
   }
 
   try {
