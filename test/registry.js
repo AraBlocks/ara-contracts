@@ -139,6 +139,16 @@ test.serial('deployProxy()', async (t) => {
   t.is(gotAddress, deployedAddress)
 })
 
+test.serial('deployProxy() already exists', async (t) => {
+  const did = getAfsDid(t)
+
+  await t.throwsAsync(registry.deployProxy({
+    contentDid: did,
+    password,
+    version: 2
+  }), Error)
+})
+
 test.serial('upgradeProxy()', async (t) => {
   const did = getAfsDid(t)
 
@@ -236,9 +246,26 @@ test.serial('deployProxy() invalid opts', async (t) => {
   await t.throwsAsync(registry.deployProxy({ contentDid: 'did:ara:invalid', password, version: '1' }))
   await t.throwsAsync(registry.deployProxy({ contentDid, password: 'invalid', version: '1' }))
 
-  await t.throwsAsync(registry.deployProxy({ contentDid, password, version: '1', estimate: 1 }), TypeError)
-  await t.throwsAsync(registry.deployProxy({ contentDid, password, version: '1', estimate: 'invalid' }), TypeError)
-  await t.throwsAsync(registry.deployProxy({ contentDid, password, version: '1', estimate: { } }), TypeError)
+  await t.throwsAsync(registry.deployProxy({
+    contentDid,
+    password,
+    version: '1',
+    estimate: 1
+  }), TypeError)
+
+  await t.throwsAsync(registry.deployProxy({
+    contentDid,
+    password,
+    version: '1',
+    estimate: 'invalid'
+  }), TypeError)
+
+  await t.throwsAsync(registry.deployProxy({
+    contentDid,
+    password,
+    version: '1',
+    estimate: { }
+  }), TypeError)
 })
 
 test.serial('upgradeProxy() invalid opts', async (t) => {
@@ -261,7 +288,24 @@ test.serial('upgradeProxy() invalid opts', async (t) => {
   await t.throwsAsync(registry.upgradeProxy({ contentDid, password: 'invalid', version: '1' }))
   await t.throwsAsync(registry.upgradeProxy({ contentDid, password, version: '10000' }))
 
-  await t.throwsAsync(registry.upgradeProxy({ contentDid, password, version: '2', estimate: 1 }), TypeError)
-  await t.throwsAsync(registry.upgradeProxy({ contentDid, password, version: '2', estimate: 'invalid' }), TypeError)
-  await t.throwsAsync(registry.upgradeProxy({ contentDid, password, version: '2', estimate: { } }), TypeError)
+  await t.throwsAsync(registry.upgradeProxy({
+    contentDid,
+    password,
+    version: '2',
+    estimate: 1
+  }), TypeError)
+
+  await t.throwsAsync(registry.upgradeProxy({
+    contentDid,
+    password,
+    version: '2',
+    estimate: 'invalid'
+  }), TypeError)
+
+  await t.throwsAsync(registry.upgradeProxy({
+    contentDid,
+    password,
+    version: '2',
+    estimate: { }
+  }), TypeError)
 })
