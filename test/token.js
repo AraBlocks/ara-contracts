@@ -16,12 +16,15 @@ const {
   TEST_DID
 } = require('./_constants')
 
-const funcMap = [
+const funcMap1 = [
   token.transfer,
+  token.transferFrom
+]
+
+const funcMap2 = [
   token.increaseApproval,
   token.decreaseApproval,
   token.approve,
-  token.transferFrom
 ]
 
 test.before(async (t) => {
@@ -290,16 +293,17 @@ test('modifyDeposit(opts) invalid opts', async (t) => {
   }), TypeError)
 })
 
-test('invalid generic opts', async (t) => {
+test('invalid generic opts group 1', async (t) => {
   const { did } = t.context.defaultAccount
   const { did: testDID } = t.context.testAccount
 
-  for (const func of funcMap) {
+  for (const func of funcMap1) {
     await t.throwsAsync(func(), TypeError)
     await t.throwsAsync(func({ }), TypeError)
     await t.throwsAsync(func({ to: '' }), TypeError)
     await t.throwsAsync(func({ to: 1234 }), TypeError)
     await t.throwsAsync(func({ to: testDID, val: 1000 }), TypeError)
+    await t.throwsAsync(func({ to: testDID, val: -1000 }), TypeError)
     await t.throwsAsync(func({ to: testDID, val: '10.00' }), TypeError)
     await t.throwsAsync(func({ to: testDID, val: '1000', did: null }), TypeError)
     await t.throwsAsync(func({ to: testDID, val: '1000', did: '' }), TypeError)
@@ -311,6 +315,32 @@ test('invalid generic opts', async (t) => {
     }), TypeError)
     await t.throwsAsync(func({
       to: testDID, val: '1000', did, password: 123
+    }), TypeError)
+  }
+})
+
+test('invalid generic opts group 2', async (t) => {
+  const { did } = t.context.defaultAccount
+  const { did: testDID } = t.context.testAccount
+
+  for (const func of funcMap2) {
+    await t.throwsAsync(func(), TypeError)
+    await t.throwsAsync(func({ }), TypeError)
+    await t.throwsAsync(func({ spender: '' }), TypeError)
+    await t.throwsAsync(func({ spender: 1234 }), TypeError)
+    await t.throwsAsync(func({ spender: testDID, val: 1000 }), TypeError)
+    await t.throwsAsync(func({ spender: testDID, val: -1000 }), TypeError)
+    await t.throwsAsync(func({ spender: testDID, val: '10.00' }), TypeError)
+    await t.throwsAsync(func({ spender: testDID, val: '1000', did: null }), TypeError)
+    await t.throwsAsync(func({ spender: testDID, val: '1000', did: '' }), TypeError)
+    await t.throwsAsync(func({ spender: testDID, val: '1000', did: 1234 }), TypeError)
+    await t.throwsAsync(func({ spender: testDID, val: '1000', did: 1234 }), TypeError)
+
+    await t.throwsAsync(func({
+      spender: testDID, val: '1000', did, password: null
+    }), TypeError)
+    await t.throwsAsync(func({
+      spender: testDID, val: '1000', did, password: 123
     }), TypeError)
   }
 })

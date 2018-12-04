@@ -563,9 +563,7 @@ async function getAmountDeposited(did, keyringOpts) {
 }
 
 function _validateApprovalOpts(opts) {
-  if (!opts || 'object' !== typeof opts) {
-    throw new TypeError(`Expected 'opts' to be an object. Got ${opts}. Try passing in 'opts.spender', 'opts.val', 'opts.did', and 'opts.password'.`)
-  } else if (!opts.spender || 'string' !== typeof opts.spender) {
+  if (!opts.spender || 'string' !== typeof opts.spender) {
     throw new TypeError(`Expected 'opts.spender' to be non-empty Ara DID string. Got ${opts.spender}. Ensure ${opts.spender} is a valid Ara identity.`)
   } else if (!opts.val || 0 >= Number(opts.val)) {
     throw new TypeError(`Expected 'opts.val' to be greater than 0. Got ${opts.val}. Ensure ${opts.val} is a positive number.`)
