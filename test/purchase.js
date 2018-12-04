@@ -135,12 +135,14 @@ test('purchase(opts) invalid opts', async (t) => {
   await t.throwsAsync(purchase(true), TypeError)
   await t.throwsAsync(purchase(123), TypeError)
 
+  await t.throwsAsync(purchase({ requesterDid }), TypeError)
   await t.throwsAsync(purchase({ requesterDid: '' }), Error)
   await t.throwsAsync(purchase({ requesterDid: 'did:ara:invalid' }), Error)
   await t.throwsAsync(purchase({ requesterDid: { } }), TypeError)
   await t.throwsAsync(purchase({ requesterDid: 123 }), TypeError)
   await t.throwsAsync(purchase({ requesterDid: true }), TypeError)
 
+  await t.throwsAsync(purchase({ requesterDid, contentDid }), TypeError)
   await t.throwsAsync(purchase({ requesterDid, contentDid: '' }), Error)
   await t.throwsAsync(purchase({ requesterDid, contentDid: 'did:ara:invalid' }), Error)
   await t.throwsAsync(purchase({ requesterDid, contentDid: { } }), TypeError)

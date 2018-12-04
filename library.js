@@ -48,7 +48,7 @@ async function getLibrary(requesterDid = '') {
 /**
  * Gets the size of requesterDid's library
  * @param  {String} unhashd requesterDid
- * @return {int}
+ * @return {String} // web3 coerces return type uint16 to a string for some reason
  * @throws {TypeError}
  */
 async function getLibrarySize(requesterDid = '') {
@@ -58,14 +58,18 @@ async function getLibrarySize(requesterDid = '') {
 
   const hIdentity = hashDID(requesterDid)
 
-  return call({
-    abi: libAbi,
-    address: LIBRARY_ADDRESS,
-    functionName: 'getLibrarySize',
-    arguments: [
-      toHexString(hIdentity, { encoding: 'hex', ethify: true })
-    ]
-  })
+  try {
+    return call({
+      abi: libAbi,
+      address: LIBRARY_ADDRESS,
+      functionName: 'getLibrarySize',
+      arguments: [
+        toHexString(hIdentity, { encoding: 'hex', ethify: true })
+      ]
+    })
+  } catch (err) {
+    throw err
+  }
 }
 
 /**
@@ -92,15 +96,19 @@ async function getLibraryItem(opts) {
     throw Error('Invalid index')
   }
 
-  return call({
-    abi: libAbi,
-    address: LIBRARY_ADDRESS,
-    functionName: 'getLibraryItem',
-    arguments: [
-      toHexString(hIdentity, { encoding: 'hex', ethify: true }),
-      index
-    ]
-  })
+  try {
+    return call({
+      abi: libAbi,
+      address: LIBRARY_ADDRESS,
+      functionName: 'getLibraryItem',
+      arguments: [
+        toHexString(hIdentity, { encoding: 'hex', ethify: true }),
+        index
+      ]
+    })
+  } catch (err) {
+    throw err
+  }
 }
 
 /**
@@ -135,12 +143,16 @@ async function hasPurchased(opts) {
 
   purchaser = sha3(purchaser)
 
-  return call({
-    abi: proxyAbi,
-    address: proxy,
-    functionName: 'purchasers_',
-    arguments: [ purchaser ]
-  })
+  try {
+    return call({
+      abi: proxyAbi,
+      address: proxy,
+      functionName: 'purchasers_',
+      arguments: [ purchaser ]
+    })
+  } catch (err) {
+    throw err
+  }
 }
 
 module.exports = {

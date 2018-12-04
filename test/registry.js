@@ -237,6 +237,7 @@ test.serial('deployProxy() invalid opts', async (t) => {
   await t.throwsAsync(registry.deployProxy({ contentDid: '' }), Error)
   await t.throwsAsync(registry.deployProxy({ contentDid: 'did:ara:invalid' }), Error)
 
+  await t.throwsAsync(registry.deployProxy({ contentDid, password }), Error)
   await t.throwsAsync(registry.deployProxy({ contentDid, password: '' }), TypeError)
   await t.throwsAsync(registry.deployProxy({ contentDid, password: 18 }), TypeError)
   await t.throwsAsync(registry.deployProxy({ contentDid, password: 'notright' }), Error)
