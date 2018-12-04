@@ -2,17 +2,15 @@ const { isAddress } = require('ara-util/web3')
 const { registry } = require('../')
 const { resolve } = require('path')
 const test = require('ava')
-const fs = require('fs')
 
 const {
   TEST_OWNER_DID_NO_METHOD,
-  TEST_DID: contentDid,
+  TEST_AFS_DID,
   PASSWORD: password
 } = require('./_constants')
 
 const {
   mirrorIdentity,
-  createAFS,
   cleanup
 } = require('./_util')
 
@@ -21,11 +19,17 @@ const getDid = (t) => {
   return did
 }
 
+const getAfsDid = (t) => {
+  const { did } = t.context.afsAccount
+  return did
+}
+
 test.before(async (t) => {
   t.context.defaultAccount = await mirrorIdentity(TEST_OWNER_DID_NO_METHOD)
+  t.context.afsAccount = await mirrorIdentity(TEST_AFS_DID)
 })
 
-test.afterEach(async (t) => {
+test.after(async (t) => {
   await cleanup(t)
 })
 
@@ -73,133 +77,124 @@ test.serial('deployNewStandard() standard version exists', async (t) => {
 test.serial('proxyExists() does not exist', async (t) => {
   let exists = await registry.proxyExists('')
   t.false(exists)
-  exists = await registry.proxyExists(contentDid)
+  exists = await registry.proxyExists(TEST_OWNER_DID_NO_METHOD)
   t.false(exists)
 })
 
-// test.serial('deployProxy()', async (t) => {
-//   const { afs } = await createAFS(t)
-//   const { did } = afs
+test.serial('deployProxy()', async (t) => {
+  const did = getAfsDid(t)
 
-//   const deployedAddress = await registry.deployProxy({
-//     contentDid: did,
-//     password,
-//     version: '2'
-//   })
-//   const exists = await registry.proxyExists(did)
-//   t.true(exists)
-//   const gotAddress = await registry.getProxyAddress(did)
-//   t.is(gotAddress, deployedAddress)
-// })
+  const deployedAddress = await registry.deployProxy({
+    contentDid: did,
+    password,
+    version: '2'
+  })
+  const exists = await registry.proxyExists(did)
+  t.true(exists)
+  const gotAddress = await registry.getProxyAddress(did)
+  t.is(gotAddress, deployedAddress)
+})
 
-// test.serial('upgradeProxy()', async (t) => {
-//   const { afs } = await createAFS(t)
-//   const { did } = afs
+test.serial('upgradeProxy()', async (t) => {
+  const did = getAfsDid(t)
 
-//   await registry.deployProxy({
-//     contentDid: did,
-//     password,
-//     version: '1'
-//   })
-//   const upgraded = await registry.upgradeProxy({
-//     contentDid: did,
-//     password,
-//     version: '2'
-//   })
-//   t.true(upgraded)
-//   const version = await registry.getProxyVersion(did)
-//   t.is(version, '2')
-// })
+  const upgraded = await registry.upgradeProxy({
+    contentDid: did,
+    password,
+    version: '2'
+  })
+  t.true(upgraded)
+  const version = await registry.getProxyVersion(did)
+  t.is(version, '2')
+})
 
-// test.serial('deployNewStandard() invalid opts', async (t) => {
-//   const owner = getDid(t)
+test.serial('deployNewStandard() invalid opts', async (t) => {
+  const owner = getDid(t)
 
-//   await t.throwsAsync(registry.deployNewStandard(), TypeError)
-//   await t.throwsAsync(registry.deployNewStandard('opts'), TypeError)
-//   await t.throwsAsync(registry.deployNewStandard({ }), TypeError)
+  await t.throwsAsync(registry.deployNewStandard(), TypeError)
+  await t.throwsAsync(registry.deployNewStandard('opts'), TypeError)
+  await t.throwsAsync(registry.deployNewStandard({ }), TypeError)
 
-//   await t.throwsAsync(registry.deployNewStandard({ requesterDid: '' }), Error)
-//   await t.throwsAsync(registry.deployNewStandard({ requesterDid: 'did:ara:invalid' }), Error)
+  await t.throwsAsync(registry.deployNewStandard({ requesterDid: '' }), Error)
+  await t.throwsAsync(registry.deployNewStandard({ requesterDid: 'did:ara:invalid' }), Error)
 
-//   await t.throwsAsync(registry.deployNewStandard({ requesterDid: owner, password: '' }), TypeError)
-//   await t.throwsAsync(registry.deployNewStandard({ requesterDid: owner, password: 18 }), TypeError)
-//   await t.throwsAsync(registry.deployNewStandard({ requesterDid: owner, password: 'notright' }), TypeError)
-//   await t.throwsAsync(registry.deployNewStandard({ requesterDid: owner, password }), TypeError)
+  await t.throwsAsync(registry.deployNewStandard({ requesterDid: owner, password: '' }), TypeError)
+  await t.throwsAsync(registry.deployNewStandard({ requesterDid: owner, password: 18 }), TypeError)
+  await t.throwsAsync(registry.deployNewStandard({ requesterDid: owner, password: 'notright' }), TypeError)
+  await t.throwsAsync(registry.deployNewStandard({ requesterDid: owner, password }), TypeError)
 
-//   await t.throwsAsync(registry.deployNewStandard({ requesterDid: owner, password, paths: [] }), TypeError)
-//   await t.throwsAsync(registry.deployNewStandard({ requesterDid: owner, password, paths: [ './path' ] }), TypeError)
+  await t.throwsAsync(registry.deployNewStandard({ requesterDid: owner, password, paths: [] }), TypeError)
+  await t.throwsAsync(registry.deployNewStandard({ requesterDid: owner, password, paths: [ './path' ] }), TypeError)
 
-//   await t.throwsAsync(registry.deployNewStandard({
-//     requesterDid: owner,
-//     password,
-//     paths: [ './path' ],
-//     version: null
-//   }), TypeError)
-//   await t.throwsAsync(registry.deployNewStandard({
-//     requesterDid: owner,
-//     password,
-//     paths: [ './path' ],
-//     version: false
-//   }), TypeError)
-//   await t.throwsAsync(registry.deployNewStandard({
-//     requesterDid: 'did:ara:invalid',
-//     password,
-//     paths: [ './path' ],
-//     version: '1'
-//   }), Error)
-//   await t.throwsAsync(registry.deployNewStandard({
-//     requesterDid: owner,
-//     password: '',
-//     paths: [ './path' ],
-//     version: '1'
-//   }), TypeError)
-//   await t.throwsAsync(registry.deployNewStandard({
-//     requesterDid: owner,
-//     password: '',
-//     paths: [ ],
-//     version: '1'
-//   }), TypeError)
-// })
+  await t.throwsAsync(registry.deployNewStandard({
+    requesterDid: owner,
+    password,
+    paths: [ './path' ],
+    version: null
+  }), TypeError)
+  await t.throwsAsync(registry.deployNewStandard({
+    requesterDid: owner,
+    password,
+    paths: [ './path' ],
+    version: false
+  }), TypeError)
+  await t.throwsAsync(registry.deployNewStandard({
+    requesterDid: 'did:ara:invalid',
+    password,
+    paths: [ './path' ],
+    version: '1'
+  }), Error)
+  await t.throwsAsync(registry.deployNewStandard({
+    requesterDid: owner,
+    password: '',
+    paths: [ './path' ],
+    version: '1'
+  }), TypeError)
+  await t.throwsAsync(registry.deployNewStandard({
+    requesterDid: owner,
+    password: '',
+    paths: [ ],
+    version: '1'
+  }), TypeError)
+})
 
-// test.serial('deployProxy() invalid opts', async (t) => {
-//   const { afs } = await createAFS(t)
-//   const { did } = afs
+test.serial('deployProxy() invalid opts', async (t) => {
+  const did = getAfsDid(t)
 
-//   await t.throwsAsync(registry.deployProxy(), TypeError)
-//   await t.throwsAsync(registry.deployProxy('opts'), TypeError)
-//   await t.throwsAsync(registry.deployProxy({ }), TypeError)
+  await t.throwsAsync(registry.deployProxy(), TypeError)
+  await t.throwsAsync(registry.deployProxy('opts'), TypeError)
+  await t.throwsAsync(registry.deployProxy({ }), TypeError)
 
-//   await t.throwsAsync(registry.deployProxy({ did: '' }), Error)
-//   await t.throwsAsync(registry.deployProxy({ did: 'did:ara:invalid' }), Error)
+  await t.throwsAsync(registry.deployProxy({ did: '' }), Error)
+  await t.throwsAsync(registry.deployProxy({ did: 'did:ara:invalid' }), Error)
 
-//   await t.throwsAsync(registry.deployProxy({ did, password: '' }), TypeError)
-//   await t.throwsAsync(registry.deployProxy({ did, password: 18 }), TypeError)
-//   await t.throwsAsync(registry.deployProxy({ did, password: 'notright' }), Error)
+  await t.throwsAsync(registry.deployProxy({ did, password: '' }), TypeError)
+  await t.throwsAsync(registry.deployProxy({ did, password: 18 }), TypeError)
+  await t.throwsAsync(registry.deployProxy({ did, password: 'notright' }), Error)
 
-//   await t.throwsAsync(registry.deployProxy({ did, password, version: true }), Error)
-//   await t.throwsAsync(registry.deployProxy({ did, password, version: { } }), Error)
-//   await t.throwsAsync(registry.deployProxy({ did: 'did:ara:invalid', password, version: '1' }))
-//   await t.throwsAsync(registry.deployProxy({ did, password: 'invalid', version: '1' }))
-// })
+  await t.throwsAsync(registry.deployProxy({ did, password, version: true }), Error)
+  await t.throwsAsync(registry.deployProxy({ did, password, version: { } }), Error)
+  await t.throwsAsync(registry.deployProxy({ did: 'did:ara:invalid', password, version: '1' }))
+  await t.throwsAsync(registry.deployProxy({ did, password: 'invalid', version: '1' }))
+})
 
-// test.serial('upgradeProxy() invalid opts', async (t) => {
-//   await t.throwsAsync(registry.upgradeProxy(), TypeError)
-//   await t.throwsAsync(registry.upgradeProxy('opts'), TypeError)
-//   await t.throwsAsync(registry.upgradeProxy({ }), TypeError)
+test.serial('upgradeProxy() invalid opts', async (t) => {
+  await t.throwsAsync(registry.upgradeProxy(), TypeError)
+  await t.throwsAsync(registry.upgradeProxy('opts'), TypeError)
+  await t.throwsAsync(registry.upgradeProxy({ }), TypeError)
 
-//   await t.throwsAsync(registry.upgradeProxy({ did: '' }), Error)
-//   await t.throwsAsync(registry.upgradeProxy({ did: 'did:ara:invalid' }), Error)
+  await t.throwsAsync(registry.upgradeProxy({ did: '' }), Error)
+  await t.throwsAsync(registry.upgradeProxy({ did: 'did:ara:invalid' }), Error)
 
-//   const { afs } = await createAFS(t)
-//   const { did } = afs
+  const did = getAfsDid(t)
 
-//   await t.throwsAsync(registry.upgradeProxy({ did, password: '' }), TypeError)
-//   await t.throwsAsync(registry.upgradeProxy({ did, password: 18 }), TypeError)
-//   await t.throwsAsync(registry.upgradeProxy({ did, password: 'notright' }), Error)
+  await t.throwsAsync(registry.upgradeProxy({ did, password: '' }), TypeError)
+  await t.throwsAsync(registry.upgradeProxy({ did, password: 18 }), TypeError)
+  await t.throwsAsync(registry.upgradeProxy({ did, password: 'notright' }), Error)
 
-//   await t.throwsAsync(registry.upgradeProxy({ did, password, version: true }), Error)
-//   await t.throwsAsync(registry.upgradeProxy({ did, password, version: { } }), Error)
-//   await t.throwsAsync(registry.upgradeProxy({ did: 'did:ara:invalid', password, version: '1' }))
-//   await t.throwsAsync(registry.upgradeProxy({ did, password: 'invalid', version: '1' }))
-//   await t.throwsAsync(registry.upgradeProxy({ did, password, version: '10000' }))
-// })
+  await t.throwsAsync(registry.upgradeProxy({ did, password, version: true }), Error)
+  await t.throwsAsync(registry.upgradeProxy({ did, password, version: { } }), Error)
+  await t.throwsAsync(registry.upgradeProxy({ did: 'did:ara:invalid', password, version: '1' }))
+  await t.throwsAsync(registry.upgradeProxy({ did, password: 'invalid', version: '1' }))
+  await t.throwsAsync(registry.upgradeProxy({ did, password, version: '10000' }))
+})
