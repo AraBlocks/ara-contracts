@@ -8,20 +8,20 @@ const {
   TEST_AFS_DID2
 } = require('./_constants')
 
-// const {
-//   mirrorIdentity,
-//   cleanup
-// } = require('./_util')
+const {
+  mirrorIdentity,
+  cleanup
+} = require('./_util')
 
-// const getDid = (t) => {
-//   const { did } = t.context.defaultAccount
-//   return did
-// }
+const getDid = (t) => {
+  const { did } = t.context.defaultAccount
+  return did
+}
 
-// const getAfsDid = (t) => {
-//   const { did } = t.context.afsAccount
-//   return did
-// }
+const getAfsDid = (t) => {
+  const { did } = t.context.afsAccount
+  return did
+}
 
 test.before(async (t) => {
   t.context.defaultAccount = await mirrorIdentity(TEST_OWNER_DID_NO_METHOD)
