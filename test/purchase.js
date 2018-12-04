@@ -6,6 +6,7 @@ const {
   TEST_OWNER_DID_NO_METHOD,
   TEST_AFS_DID1,
   TEST_AFS_DID2,
+  TEST_DID,
   PASSWORD: password,
   ZERO_BYTES32
 } = require('./_constants')
@@ -89,10 +90,9 @@ test.serial('purchase(opts) already purchased', async (t) => {
 })
 
 test.serial('purchase(opts) no proxy', async (t) => {
-  const contentDid = getAfsDid2(t)
   const requesterDid = getDid(t)
 
-  await t.throwsAsync(purchase({ requesterDid, contentDid, password }), Error)
+  await t.throwsAsync(purchase({ requesterDid, contentDid: TEST_DID, password }), Error)
 })
 
 test.serial('purchase(opts) budget', async (t) => {

@@ -84,6 +84,13 @@ test.serial('getLibraryItem(opts)', async (t) => {
   t.is(await library.getLibraryItem({ requesterDid, index: 1 }), toHexString(TEST_AFS_DID2, { encoding: 'hex', ethify: true }))
 })
 
+test.serial('getLibraryItem(opts) invalid index', async (t) => {
+  const requesterDid = getDid(t)
+
+  await t.throwsAsync(library.getLibraryItem({ requesterDid, index: 2 }), Error)
+  await t.throwsAsync(library.getLibraryItem({ requesterDid, index: 3 }), Error)
+})
+
 test.serial('getLibraryItem(opts) invalid opts', async (t) => {
   const requesterDid = getDid(t)
 
