@@ -56,11 +56,7 @@ test.serial('purchase(opts) no budget', async (t) => {
   const requesterDid = getDid(t)
   const hashedRequesterDid = toHexString(hashDID(requesterDid), { encoding: 'hex', ethify: true })
 
-  const proxyAddress = await registry.deployProxy({
-    contentDid,
-    password,
-    version: '1'
-  })
+  const proxyAddress = await registry.deployProxy({ contentDid, password, version: '1' })
 
   const { contract: proxy, ctx } = await contract.get(abi, proxyAddress)
   proxy.events.Purchased({ fromBlock: 'latest' })
@@ -74,14 +70,24 @@ test.serial('purchase(opts) no budget', async (t) => {
       ctx.close()
     })
 
-  const { jobId, receipt } = await purchase({
-    requesterDid,
-    contentDid,
-    password
-  })
+  const { jobId, receipt } = await purchase({ requesterDid, contentDid, password })
 
   t.is(jobId, ZERO_BYTES32)
   t.true(receipt && 'object' === typeof receipt)
+})
+
+test.serial('purchase(opts) already purchased', async (t) => {
+  const contentDid = getAfsDid1(t)
+  const requesterDid = getDid(t)
+
+  await t.throwsAsync(purchase({ requesterDid, contentDid, password }), Error)
+})
+
+test.serial('purchase(opts) no proxy', async (t) => {
+  const contentDid = getAfsDid2(t)
+  const requesterDid = getDid(t)
+
+  await t.throwsAsync(purchase({ requesterDid, contentDid, password }), Error)
 })
 
 test.serial('purchase(opts) budget', async (t) => {
@@ -89,11 +95,7 @@ test.serial('purchase(opts) budget', async (t) => {
   const requesterDid = getDid(t)
   const hashedRequesterDid = toHexString(hashDID(requesterDid), { encoding: 'hex', ethify: true })
 
-  const proxyAddress = await registry.deployProxy({
-    contentDid,
-    password,
-    version: '1'
-  })
+  const proxyAddress = await registry.deployProxy({ contentDid, password, version: '1' })
 
   const { contract: proxy, ctx } = await contract.get(abi, proxyAddress)
   proxy.events.Purchased({ fromBlock: 'latest' })
