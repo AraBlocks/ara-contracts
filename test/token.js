@@ -49,7 +49,7 @@ test.serial('balanceOf(address)', async (t) => {
   t.is(newAccountBalance, '0')
 })
 
-test('totalSupply()', async (t) => {
+test.serial('totalSupply()', async (t) => {
   const supply = await token.totalSupply()
   t.true(0 < Number(supply))
 })
