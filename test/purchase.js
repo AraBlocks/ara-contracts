@@ -78,7 +78,7 @@ test.serial('purchase(opts) no budget', async (t) => {
 
   const { jobId, receipt } = await purchase({ requesterDid, contentDid, password })
 
-  t.is(jobId, ZERO_BYTES32)
+  t.not(jobId, ZERO_BYTES32)
   t.true(receipt && 'object' === typeof receipt)
 })
 
@@ -136,20 +136,20 @@ test('purchase(opts) invalid opts', async (t) => {
   await t.throwsAsync(purchase(123), TypeError)
 
   await t.throwsAsync(purchase({ requesterDid }), TypeError)
-  await t.throwsAsync(purchase({ requesterDid: '' }), Error)
+  await t.throwsAsync(purchase({ requesterDid: '' }), TypeError)
   await t.throwsAsync(purchase({ requesterDid: 'did:ara:invalid' }), Error)
   await t.throwsAsync(purchase({ requesterDid: { } }), TypeError)
   await t.throwsAsync(purchase({ requesterDid: 123 }), TypeError)
   await t.throwsAsync(purchase({ requesterDid: true }), TypeError)
 
   await t.throwsAsync(purchase({ requesterDid, contentDid }), TypeError)
-  await t.throwsAsync(purchase({ requesterDid, contentDid: '' }), Error)
+  await t.throwsAsync(purchase({ requesterDid, contentDid: '' }), TypeError)
   await t.throwsAsync(purchase({ requesterDid, contentDid: 'did:ara:invalid' }), Error)
   await t.throwsAsync(purchase({ requesterDid, contentDid: { } }), TypeError)
   await t.throwsAsync(purchase({ requesterDid, contentDid: 123 }), TypeError)
   await t.throwsAsync(purchase({ requesterDid, contentDid: true }), TypeError)
 
-  await t.throwsAsync(purchase({ requesterDid, contentDid, password: '' }), Error)
+  await t.throwsAsync(purchase({ requesterDid, contentDid, password: '' }), TypeError)
   await t.throwsAsync(purchase({ requesterDid, contentDid, password: 'wrong' }), Error)
   await t.throwsAsync(purchase({ requesterDid, contentDid, password: 123 }), TypeError)
   await t.throwsAsync(purchase({ requesterDid, contentDid, password: { } }), TypeError)
