@@ -8,7 +8,8 @@ const {
   TEST_OWNER_DID_NO_METHOD,
   TEST_AFS_DID3,
   PASSWORD: password,
-  VALID_JOBID
+  VALID_JOBID,
+  TEST_OWNER_ADDRESS
 } = require('./_constants')
 
 const {
@@ -21,6 +22,11 @@ const {
   mirrorIdentity,
   cleanup
 } = require('./_util')
+
+const funcMap = [
+  rewards.getBudget,
+  rewards.getJobOwner
+]
 
 const getDid = (t) => {
   const { did } = t.context.defaultAccount
@@ -59,10 +65,12 @@ test.serial('submit(opts) no proxy', async (t) => {
   }), Error)
 })
 
-test.serial('getBudget(opts) no proxy', async (t) => {
+test.serial('getBudget(opts) and getJobOwner(opts) no proxy', async (t) => {
   const contentDid = getAfsDid(t)
 
-  await t.throwsAsync(rewards.getBudget({ contentDid, jobId: VALID_JOBID }), Error)
+  for (const func of funcMap) {
+    await t.throwsAsync(func({ contentDid, jobId: VALID_JOBID }), Error)
+  }
 })
 
 test.serial('submit(opts) has not purchased', async (t) => {
@@ -93,7 +101,6 @@ test.serial('submit(opts)', async (t) => {
   })
 
   jobId = prefixedJobId.slice(2)
-  console.log('JOB ID IS', jobId)
 
   const { contract: proxy, ctx } = await contract.get(abi, proxyAddress)
   proxy.events.BudgetSubmitted({ fromBlock: 'latest' })
@@ -185,29 +192,37 @@ test.serial('getBudget(opts)', async (t) => {
   t.is(budget, '100')
 })
 
-test.serial('getBudget(opts) invalid opts', async (t) => {
+test.serial('getJobOwner(opts)', async (t) => {
+  const contentDid = getAfsDid(t)
+  const jobOwner = await rewards.getJobOwner({ contentDid, jobId })
+  t.is(jobOwner, TEST_OWNER_ADDRESS)
+})
+
+test.serial('getBudget(opts) and getJobOwner(opts) invalid opts', async (t) => {
   const contentDid = getAfsDid(t)
 
-  await t.throwsAsync(rewards.getBudget(), TypeError)
-  await t.throwsAsync(rewards.getBudget({ }), TypeError)
-  await t.throwsAsync(rewards.getBudget(''), TypeError)
-  await t.throwsAsync(rewards.getBudget('opts'), TypeError)
-  await t.throwsAsync(rewards.getBudget(true), TypeError)
-  await t.throwsAsync(rewards.getBudget(123), TypeError)
+  for (const func of funcMap) {
+    await t.throwsAsync(func(), TypeError)
+    await t.throwsAsync(func({ }), TypeError)
+    await t.throwsAsync(func(''), TypeError)
+    await t.throwsAsync(func('opts'), TypeError)
+    await t.throwsAsync(func(true), TypeError)
+    await t.throwsAsync(func(123), TypeError)
 
-  await t.throwsAsync(rewards.getBudget({ contentDid }), TypeError)
-  await t.throwsAsync(rewards.getBudget({ contentDid: '' }), TypeError)
-  await t.throwsAsync(rewards.getBudget({ contentDid: 'did:ara:invalid' }), Error)
-  await t.throwsAsync(rewards.getBudget({ contentDid: { } }), TypeError)
-  await t.throwsAsync(rewards.getBudget({ contentDid: 123 }), TypeError)
-  await t.throwsAsync(rewards.getBudget({ contentDid: true }), TypeError)
+    await t.throwsAsync(func({ contentDid }), TypeError)
+    await t.throwsAsync(func({ contentDid: '' }), TypeError)
+    await t.throwsAsync(func({ contentDid: 'did:ara:invalid' }), Error)
+    await t.throwsAsync(func({ contentDid: { } }), TypeError)
+    await t.throwsAsync(func({ contentDid: 123 }), TypeError)
+    await t.throwsAsync(func({ contentDid: true }), TypeError)
 
-  await t.throwsAsync(rewards.getBudget({ contentDid, jobId: null }), TypeError)
-  await t.throwsAsync(rewards.getBudget({ contentDid, jobId: '' }), TypeError)
-  await t.throwsAsync(rewards.getBudget({ contentDid, jobId: 'invalid' }), TypeError)
-  await t.throwsAsync(rewards.getBudget({ contentDid, jobId: 123 }), TypeError)
-  await t.throwsAsync(rewards.getBudget({ contentDid, jobId: true }), TypeError)
-  await t.throwsAsync(rewards.getBudget({ contentDid, jobId: { } }), TypeError)
-  await t.throwsAsync(rewards.getBudget({ contentDid, jobId: '0x0' }), TypeError)
-  await t.throwsAsync(rewards.getBudget({ contentDid, jobId: `${VALID_JOBID}morechars` }), TypeError)
+    await t.throwsAsync(func({ contentDid, jobId: null }), TypeError)
+    await t.throwsAsync(func({ contentDid, jobId: '' }), TypeError)
+    await t.throwsAsync(func({ contentDid, jobId: 'invalid' }), TypeError)
+    await t.throwsAsync(func({ contentDid, jobId: 123 }), TypeError)
+    await t.throwsAsync(func({ contentDid, jobId: true }), TypeError)
+    await t.throwsAsync(func({ contentDid, jobId: { } }), TypeError)
+    await t.throwsAsync(func({ contentDid, jobId: '0x0' }), TypeError)
+    await t.throwsAsync(func({ contentDid, jobId: `${VALID_JOBID}morechars` }), TypeError)
+  }
 })
