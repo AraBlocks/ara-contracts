@@ -8,6 +8,7 @@ const {
   TEST_OWNER_DID_NO_METHOD,
   TEST_AFS_DID3,
   PASSWORD: password,
+  TEST_DID,
   VALID_JOBID
 } = require('./_constants')
 
@@ -41,23 +42,66 @@ test.after(async (t) => {
   await cleanup(t.context.afsAccount)
 })
 
+let proxyAddress
+let jobId
+
+test.serial('submit(opts) no proxy', async (t) => {
+  const contentDid = getAfsDid(t)
+  const requesterDid = getDid(t)
+
+  await t.throwsAsync(rewards.submit({
+    requesterDid,
+    contentDid,
+    password,
+    job: {
+      jobId: VALID_JOBID,
+      budget: 100
+    }
+  }), Error)
+})
+
+test.serial('getBudget(opts) no proxy', async (t) => {
+  const contentDid = getAfsDid(t)
+  const requesterDid = getDid(t)
+
+  await t.throwsAsync(rewards.getBudget({ contentDid, jobId: VALID_JOBID }), Error)
+})
+
+test.serial('submit(opts) has not purchased', async (t) => {
+  const contentDid = getAfsDid(t)
+  const requesterDid = getDid(t)
+
+  proxyAddress = await registry.deployProxy({ contentDid, password, version: '1' })
+
+  await t.throwsAsync(rewards.submit({
+    requesterDid,
+    contentDid,
+    password,
+    job: {
+      jobId: VALID_JOBID,
+      budget: 100
+    }
+  }), Error)
+})
+
 test.serial('submit(opts)', async (t) => {
   const contentDid = getAfsDid(t)
   const requesterDid = getDid(t)
 
-  const proxyAddress = await registry.deployProxy({ contentDid, password, version: '1' })
-
-  const { jobId } = await purchase({
+  const { jobId: prefixedJobId } = await purchase({
     requesterDid,
     contentDid,
     password
   })
 
+  jobId = prefixedJobId.slice(2)
+  console.log('JOB ID IS', jobId)
+
   const { contract: proxy, ctx } = await contract.get(abi, proxyAddress)
   proxy.events.BudgetSubmitted({ fromBlock: 'latest' })
     .on('data', (log) => {
       const { returnValues: { _jobId } } = log
-      if (_jobId === jobId) {
+      if (_jobId === prefixedJobId) {
         t.pass()
       } else {
         t.fail()
@@ -132,4 +176,41 @@ test.serial('submit(opts) invalid opts', async (t) => {
   await t.throwsAsync(rewards.submit({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, budget: 'notanumber' } }), TypeError)
   await t.throwsAsync(rewards.submit({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, budget: true } }), TypeError)
   await t.throwsAsync(rewards.submit({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, budget: { } } }), TypeError)
+
+  await t.throwsAsync(rewards.submit({ requesterDid, contentDid, password: 'wrong', job: { jobId: VALID_JOBID, budget: 10 } }), Error)
+})
+
+test.serial('getBudget(opts)', async (t) => {
+  const contentDid = getAfsDid(t)
+  const requesterDid = getDid(t)
+
+  const budget = await rewards.getBudget({ contentDid, jobId })
+  t.is(budget, '100')
+})
+
+test.serial('getBudget(opts) invalid opts', async (t) => {
+  const contentDid = getAfsDid(t)
+
+  await t.throwsAsync(rewards.getBudget(), TypeError)
+  await t.throwsAsync(rewards.getBudget({ }), TypeError)
+  await t.throwsAsync(rewards.getBudget(''), TypeError)
+  await t.throwsAsync(rewards.getBudget('opts'), TypeError)
+  await t.throwsAsync(rewards.getBudget(true), TypeError)
+  await t.throwsAsync(rewards.getBudget(123), TypeError)
+
+  await t.throwsAsync(rewards.getBudget({ contentDid }), TypeError)
+  await t.throwsAsync(rewards.getBudget({ contentDid: '' }), TypeError)
+  await t.throwsAsync(rewards.getBudget({ contentDid: 'did:ara:invalid' }), Error)
+  await t.throwsAsync(rewards.getBudget({ contentDid: { } }), TypeError)
+  await t.throwsAsync(rewards.getBudget({ contentDid: 123 }), TypeError)
+  await t.throwsAsync(rewards.getBudget({ contentDid: true }), TypeError)
+
+  await t.throwsAsync(rewards.getBudget({ contentDid, jobId: null }), TypeError)
+  await t.throwsAsync(rewards.getBudget({ contentDid, jobId: '' }), TypeError)
+  await t.throwsAsync(rewards.getBudget({ contentDid, jobId: 'invalid' }), TypeError)
+  await t.throwsAsync(rewards.getBudget({ contentDid, jobId: 123 }), TypeError)
+  await t.throwsAsync(rewards.getBudget({ contentDid, jobId: true }), TypeError)
+  await t.throwsAsync(rewards.getBudget({ contentDid, jobId: { } }), TypeError)
+  await t.throwsAsync(rewards.getBudget({ contentDid, jobId: '0x0' }), TypeError)
+  await t.throwsAsync(rewards.getBudget({ contentDid, jobId: `${VALID_JOBID}morechars` }), TypeError)
 })
