@@ -8,7 +8,6 @@ const {
   TEST_OWNER_DID_NO_METHOD,
   TEST_AFS_DID3,
   PASSWORD: password,
-  TEST_DID,
   VALID_JOBID
 } = require('./_constants')
 
@@ -62,7 +61,6 @@ test.serial('submit(opts) no proxy', async (t) => {
 
 test.serial('getBudget(opts) no proxy', async (t) => {
   const contentDid = getAfsDid(t)
-  const requesterDid = getDid(t)
 
   await t.throwsAsync(rewards.getBudget({ contentDid, jobId: VALID_JOBID }), Error)
 })
@@ -182,7 +180,6 @@ test.serial('submit(opts) invalid opts', async (t) => {
 
 test.serial('getBudget(opts)', async (t) => {
   const contentDid = getAfsDid(t)
-  const requesterDid = getDid(t)
 
   const budget = await rewards.getBudget({ contentDid, jobId })
   t.is(budget, '100')
