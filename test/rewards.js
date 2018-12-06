@@ -98,6 +98,13 @@ test.serial('getRewardsBalance(opts) no proxy', async (t) => {
   await t.throwsAsync(rewards.getRewardsBalance({ farmerDid, contentDid }), Error)
 })
 
+test.serial('redeem(opts) no proxy', async (t) => {
+  const farmerDid = TEST_FARMER_DID1
+  const contentDid = getAfsDid(t)
+
+  await t.throwsAsync(rewards.redeem({ farmerDid, contentDid, password }))
+})
+
 test.serial('submit(opts) has not purchased', async (t) => {
   const contentDid = getAfsDid(t)
   const requesterDid = getDid(t)
@@ -259,6 +266,87 @@ test.serial('getRewardsBalance(opts)', async (t) => {
   t.is(farmer3Balance, '50')
 })
 
+test.serial('redeem(opts) insufficient deposit', async (t) => {
+  const contentDid = getAfsDid(t)
+  await token.modifyDeposit({
+    did: TEST_FARMER_DID2,
+    password,
+    val: '100',
+    withdraw: true
+  })
+
+  await t.throwsAsync(rewards.redeem({ farmerDid: TEST_FARMER_DID2, contentDid, password }), Error)
+})
+
+test.serial('redeem(opts)', async (t) => {
+  const contentDid = getAfsDid(t)
+
+  await token.modifyDeposit({
+    did: TEST_FARMER_DID2,
+    password,
+    val: '100'
+  })
+
+  const cost = await rewards.redeem({
+    farmerDid: TEST_FARMER_DID1,
+    contentDid,
+    password,
+    estimate: true
+  })
+  t.true(cost > 0)
+
+  let farmer1Balance = await rewards.redeem({ farmerDid: TEST_FARMER_DID1, contentDid, password })
+  t.is(farmer1Balance, '20')
+  farmer1Balance = await rewards.getRewardsBalance({ farmerDid: TEST_FARMER_DID1, contentDid })
+  t.is(farmer1Balance, '0')
+
+  let farmer2Balance = await rewards.redeem({ farmerDid: TEST_FARMER_DID2, contentDid, password })
+  t.is(farmer2Balance, '30')
+  farmer2Balance = await rewards.getRewardsBalance({ farmerDid: TEST_FARMER_DID2, contentDid })
+  t.is(farmer2Balance, '0')
+
+  let farmer3Balance = await rewards.redeem({ farmerDid: TEST_FARMER_DID3, contentDid, password })
+  t.is(farmer3Balance, '50')
+  farmer3Balance = await rewards.getRewardsBalance({ farmerDid: TEST_FARMER_DID3, contentDid })
+  t.is(farmer3Balance, '0')
+})
+
+test.serial('redeem(opts) invalid opts', async (t) => {
+  const farmerDid = TEST_FARMER_DID1
+  const contentDid = getAfsDid(t)
+
+  await t.throwsAsync(rewards.redeem(), TypeError)
+  await t.throwsAsync(rewards.redeem({ }), TypeError)
+  await t.throwsAsync(rewards.redeem(''), TypeError)
+  await t.throwsAsync(rewards.redeem('opts'), TypeError)
+  await t.throwsAsync(rewards.redeem(true), TypeError)
+  await t.throwsAsync(rewards.redeem(123), TypeError)
+
+  await t.throwsAsync(rewards.redeem({ farmerDid }), TypeError)
+  await t.throwsAsync(rewards.redeem({ farmerDid: '' }), TypeError)
+  await t.throwsAsync(rewards.redeem({ farmerDid: 'did:ara:invalid' }), Error)
+  await t.throwsAsync(rewards.redeem({ farmerDid: { } }), TypeError)
+  await t.throwsAsync(rewards.redeem({ farmerDid: 123 }), TypeError)
+  await t.throwsAsync(rewards.redeem({ farmerDid: true }), TypeError)
+
+  await t.throwsAsync(rewards.redeem({ farmerDid, contentDid }), TypeError)
+  await t.throwsAsync(rewards.redeem({ farmerDid, contentDid: '' }), TypeError)
+  await t.throwsAsync(rewards.redeem({ farmerDid, contentDid: 'did:ara:invalid' }), TypeError)
+  await t.throwsAsync(rewards.redeem({ farmerDid, contentDid: { } }), TypeError)
+  await t.throwsAsync(rewards.redeem({ farmerDid, contentDid: 123 }), TypeError)
+  await t.throwsAsync(rewards.redeem({ farmerDid, contentDid: true }), TypeError)
+
+  await t.throwsAsync(rewards.redeem({ farmerDid, contentDid, password: '' }), TypeError)
+  await t.throwsAsync(rewards.redeem({ farmerDid, contentDid, password: 'wrong' }), Error)
+  await t.throwsAsync(rewards.redeem({ farmerDid, contentDid, password: 123 }), TypeError)
+  await t.throwsAsync(rewards.redeem({ farmerDid, contentDid, password: { } }), TypeError)
+  await t.throwsAsync(rewards.redeem({ farmerDid, contentDid, password: true }), TypeError)
+
+  await t.throwsAsync(rewards.redeem({ farmerDid, contentDid, password, estimate: { } }), TypeError)
+  await t.throwsAsync(rewards.redeem({ farmerDid, contentDid, password, estimate: 'notaboolean' }), TypeError)
+  await t.throwsAsync(rewards.redeem({ farmerDid, contentDid, password, estimate: 123 }), TypeError)
+})
+
 test.serial('getRewardsBalance(opts) invalid opts', async (t) => {
   const farmerDid = TEST_FARMER_DID1
 
@@ -333,21 +421,27 @@ test.serial('allocate(opts) invalid opts', async (t) => {
   await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: `${VALID_JOBID}morechars` } }), TypeError)
 })
 
-test.serial('allocate(opts) invalid farmers and rewards', async (t) => {
+test.serial('allocate(opts) invalid job object', async (t) => {
   const contentDid = getAfsDid(t)
   const requesterDid = getDid(t)
 
   const validFarmers4 = [ TEST_FARMER_DID1, TEST_FARMER_DID2, TEST_FARMER_DID3, TEST_OWNER_DID ]
   const validRewards3 = [ 20, 30, 50 ]
+  const validRewards4 = [ 20, 30, 50, 100 ]
   const invalidFarmers = [ '0x0', '123', 123, 'did:ara:invalid' ]
   const invalidRewards = [ -1, 'h', true ]
 
-  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4, rewards: validRewards3 } }), Error)
-  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4 } }), TypeError)
-  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: invalidFarmers } }), Error)
+  // slice arrays to pass by value
+  await t.throwsAsync(rewards.allocate({ flag: 'mismatch lengths', requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4.slice(0), rewards: validRewards3.slice(0) } }), Error)
+  await t.throwsAsync(rewards.allocate({ flag: 'invalid rewards', requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4.slice(0) } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ flag: 'invalid farmers', requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: invalidFarmers.slice(0) } }), TypeError)
 
-  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4, rewards: invalidRewards } }), Error)
-  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: invalidFarmers, rewards: validRewards3 } }), Error)
+  await t.throwsAsync(rewards.allocate({ flag: 'invalid rewards', requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4.slice(0), rewards: invalidRewards.slice(0) } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ flag: 'invalid farmers', requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: invalidFarmers.slice(0), rewards: validRewards3.slice(0) } }), TypeError)
+
+  await t.throwsAsync(rewards.allocate({ flag: 'return budget obj', requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4.slice(0), rewards: validRewards4.slice(0), returnBudget: { } } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ flag: 'return budget string', requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4.slice(0), rewards: validRewards4.slice(0), returnBudget: 'notaboolean' } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ flag: 'return budget number', requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4.slice(0), rewards: validRewards4.slice(0), returnBudget: 123 } }), TypeError)
 })
 
 test.serial('submit(opts) invalid opts', async (t) => {

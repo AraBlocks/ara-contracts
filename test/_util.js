@@ -54,11 +54,7 @@ module.exports = {
     await ctx.ready()
     const { web3 } = ctx
     const address = await getAddressFromDID(testDID)
-<<<<<<< 6cb14ffaeed19f76d5d8646f79e383fddf50373a
     await web3.eth.sendTransaction({ from: TEST_OWNER_ADDRESS, to: address, value: 2000000000000000000 })
-=======
-    await web3.eth.sendTransaction({ from: TEST_OWNER_ADDRESS, to: address, value: 1000000000000000000 })
->>>>>>> test(): allocate test
     ctx.close()
 
     await modifyDeposit({

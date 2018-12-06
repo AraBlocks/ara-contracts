@@ -35,7 +35,7 @@ contract AFS is Ownable {
   event PriceSet(uint256 _price);
   event BudgetSubmitted(address indexed _sender, bytes32 indexed _jobId, uint256 _budget);
   event RewardsAllocated(address indexed _farmer, bytes32 indexed _jobId, uint256 _allocated, uint256 _remaining);
-  event InsufficientDeposit(address indexed _farmer);
+  event InsufficientDeposit(address _farmer);
   event Purchased(bytes32 indexed _purchaser, uint256 _price);
   event Redeemed(address indexed _sender, uint256 _amount);
 
