@@ -221,17 +221,25 @@ async function allocate(opts) {
 
   // Convert farmer DIDs to Addresses
   const validFarmers = await isValidArray(farmers, async (farmer, index) => {
-    farmers[index] = await getAddressFromDID(farmer, keyringOpts)
+    try {
+      farmers[index] = await getAddressFromDID(farmer, keyringOpts)
+    } catch (err) {
+      return false
+    }
     return isAddress(farmers[index])
   })
   if (!validFarmers) {
-    throw TypeError('Invalid farmer array.')
+    throw new TypeError('Invalid farmer array.')
   }
 
   // Expand token values
   const validRewards = await isValidArray(rewards, async (reward, index) => {
     if (reward > 0) {
-      rewards[index] = token.expandTokenValue(reward.toString())
+      try {
+        rewards[index] = token.expandTokenValue(reward.toString())
+      } catch (err) {
+        return false
+      }
       return true
     }
     return false
@@ -241,7 +249,7 @@ async function allocate(opts) {
   }
 
   if (farmers.length !== rewards.length) {
-    throw TypeError('Farmers and rewards array length mismatch.')
+    throw Error('Farmers and rewards array length mismatch.')
   }
 
   let { contentDid } = opts
