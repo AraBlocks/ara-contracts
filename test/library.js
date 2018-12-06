@@ -5,7 +5,8 @@ const test = require('ava')
 const {
   TEST_OWNER_DID_NO_METHOD,
   TEST_AFS_DID1,
-  TEST_AFS_DID2
+  TEST_AFS_DID2,
+  AID_PREFIX
 } = require('./_constants')
 
 const {
@@ -79,9 +80,8 @@ test.serial('getLibrarySize(requesterDid) invalid opts', async (t) => {
 
 test.serial('getLibraryItem(opts)', async (t) => {
   const requesterDid = getDid(t)
-
-  t.is(await library.getLibraryItem({ requesterDid, index: 0 }), toHexString(TEST_AFS_DID1, { encoding: 'hex', ethify: true }))
-  t.is(await library.getLibraryItem({ requesterDid, index: 1 }), toHexString(TEST_AFS_DID2, { encoding: 'hex', ethify: true }))
+  t.is(await library.getLibraryItem({ requesterDid, index: 0 }), toHexString(TEST_AFS_DID1.slice(AID_PREFIX.length), { encoding: 'hex', ethify: true }))
+  t.is(await library.getLibraryItem({ requesterDid, index: 1 }), toHexString(TEST_AFS_DID2.slice(AID_PREFIX.length), { encoding: 'hex', ethify: true }))
 })
 
 test.serial('getLibraryItem(opts) invalid index', async (t) => {
@@ -115,8 +115,8 @@ test.serial('getLibrary(requesterDid)', async (t) => {
   const lib = await library.getLibrary(requesterDid)
 
   t.is(lib.length, 2)
-  t.is(lib[0], toHexString(TEST_AFS_DID1, { encoding: 'hex', ethify: true }))
-  t.is(lib[1], toHexString(TEST_AFS_DID2, { encoding: 'hex', ethify: true }))
+  t.is(lib[0], toHexString(TEST_AFS_DID1.slice(AID_PREFIX.length), { encoding: 'hex', ethify: true }))
+  t.is(lib[1], toHexString(TEST_AFS_DID2.slice(AID_PREFIX.length), { encoding: 'hex', ethify: true }))
 })
 
 test.serial('getLibrary(requesterDid) invalid opts', async (t) => {
