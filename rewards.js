@@ -262,7 +262,7 @@ async function allocate(opts) {
   // make sure user hasn't already purchased
   const purchased = await hasPurchased({ contentDid, purchaserDid: did })
   if (!purchased) {
-    throw new TypeError(`${did} has not purchased AFS ${contentDid}, cannot submit budget.`)
+    throw new Error(`${did} has not purchased AFS ${contentDid}, cannot submit budget.`)
   }
 
   const jobOwner = await getJobOwner({ contentDid, jobId })
@@ -273,10 +273,6 @@ async function allocate(opts) {
   debug(did, 'allocating rewards for job:', jobId)
 
   try {
-    if (!(await proxyExists(contentDid))) {
-      throw new Error('This content does not have a valid proxy contract')
-    }
-
     const proxy = await getProxyAddress(contentDid)
     const { tx: allocateTx, ctx: ctx1 } = await tx.create({
       account: acct,

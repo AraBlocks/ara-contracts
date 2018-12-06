@@ -158,6 +158,48 @@ test.serial('getJobOwner(opts)', async (t) => {
   t.is(jobOwner, TEST_OWNER_ADDRESS)
 })
 
+test.serial('allocate(opts) not purchased', async (t) => {
+  const contentDid = getAfsDid(t)
+  const requesterDid = TEST_FARMER_DID1
+  const farmers = [ TEST_FARMER_DID1, TEST_FARMER_DID2, TEST_FARMER_DID3 ]
+  const allocation = [ '20', '30', '50' ]
+
+  await t.throwsAsync(rewards.allocate({
+    requesterDid,
+    contentDid,
+    password,
+    job: {
+      jobId,
+      farmers,
+      rewards: allocation
+    }
+  }), Error)
+})
+
+test.serial('allocate(opts) not job owner', async (t) => {
+  const contentDid = getAfsDid(t)
+  const requesterDid = TEST_FARMER_DID1
+  const farmers = [ TEST_FARMER_DID1, TEST_FARMER_DID2, TEST_FARMER_DID3 ]
+  const allocation = [ '20', '30', '50' ]
+
+  await purchase({
+    requesterDid,
+    contentDid,
+    password
+  })
+
+  await t.throwsAsync(rewards.allocate({
+    requesterDid,
+    contentDid,
+    password,
+    job: {
+      jobId,
+      farmers,
+      rewards: allocation
+    }
+  }), Error)
+})
+
 test.serial('allocate(opts) farmers with deposits', async (t) => {
   const contentDid = getAfsDid(t)
   const requesterDid = getDid(t)
