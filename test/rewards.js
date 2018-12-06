@@ -91,6 +91,13 @@ test.serial('getBudget(opts) and getJobOwner(opts) no proxy', async (t) => {
   }
 })
 
+test.serial('getRewardsBalance(opts) no proxy', async (t) => {
+  const farmerDid = TEST_FARMER_DID1
+  const contentDid = getAfsDid(t)
+
+  await t.throwsAsync(rewards.getRewardsBalance({ farmerDid, contentDid }), Error)
+})
+
 test.serial('submit(opts) has not purchased', async (t) => {
   const contentDid = getAfsDid(t)
   const requesterDid = getDid(t)
@@ -237,6 +244,44 @@ test.serial('allocate(opts) farmers with deposits', async (t) => {
       })
   })
   t.is(allocated, 100)
+})
+
+test.serial('getRewardsBalance(opts)', async (t) => {
+  const contentDid = getAfsDid(t)
+
+  const farmer1Balance = await rewards.getRewardsBalance({ farmerDid: TEST_FARMER_DID1, contentDid })
+  t.is(farmer1Balance, '20')
+
+  const farmer2Balance = await rewards.getRewardsBalance({ farmerDid: TEST_FARMER_DID2, contentDid })
+  t.is(farmer2Balance, '30')
+
+  const farmer3Balance = await rewards.getRewardsBalance({ farmerDid: TEST_FARMER_DID3, contentDid })
+  t.is(farmer3Balance, '50')
+})
+
+test.serial('getRewardsBalance(opts) invalid opts', async (t) => {
+  const farmerDid = TEST_FARMER_DID1
+  const contentDid = getAfsDid(t)
+
+  await t.throwsAsync(rewards.getRewardsBalance(), TypeError)
+  await t.throwsAsync(rewards.getRewardsBalance({ }), TypeError)
+  await t.throwsAsync(rewards.getRewardsBalance(''), TypeError)
+  await t.throwsAsync(rewards.getRewardsBalance('opts'), TypeError)
+  await t.throwsAsync(rewards.getRewardsBalance(true), TypeError)
+  await t.throwsAsync(rewards.getRewardsBalance(123), TypeError)
+
+  await t.throwsAsync(rewards.getRewardsBalance({ farmerDid }), TypeError)
+  await t.throwsAsync(rewards.getRewardsBalance({ farmerDid: '' }), TypeError)
+  await t.throwsAsync(rewards.getRewardsBalance({ farmerDid: 'did:ara:invalid' }), Error)
+  await t.throwsAsync(rewards.getRewardsBalance({ farmerDid: { } }), TypeError)
+  await t.throwsAsync(rewards.getRewardsBalance({ farmerDid: 123 }), TypeError)
+  await t.throwsAsync(rewards.getRewardsBalance({ farmerDid: true }), TypeError)
+
+  await t.throwsAsync(rewards.getRewardsBalance({ farmerDid, contentDid: '' }), TypeError)
+  await t.throwsAsync(rewards.getRewardsBalance({ farmerDid, contentDid: 'did:ara:invalid' }), Error)
+  await t.throwsAsync(rewards.getRewardsBalance({ farmerDid, contentDid: { } }), TypeError)
+  await t.throwsAsync(rewards.getRewardsBalance({ farmerDid, contentDid: 123 }), TypeError)
+  await t.throwsAsync(rewards.getRewardsBalance({ farmerDid, contentDid: true }), TypeError)
 })
 
 test.serial('allocate(opts) invalid opts', async (t) => {
