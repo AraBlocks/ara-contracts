@@ -122,7 +122,7 @@ async function allowance(opts = {}) {
  * Transfers Ara from the sender account to a specified address.
  * @param  {Object} opts
  * @param  {String} opts.to
- * @param  {Number} opts.val
+ * @param  {String} opts.val
  * @param  {String} opts.did
  * @param  {String} opts.password
  * @param  {Object} [opts.keyringOpts]
@@ -469,7 +469,7 @@ function constrainTokenValue(val) {
  * @param  {Object}   opts
  * @param  {String}   opts.did
  * @param  {String}   opts.password
- * @param  {Number}   opts.val
+ * @param  {String}   opts.val
  * @param  {?Boolean} opts.withdraw
  * @param  {Object} [opts.keyringOpts]
  * @return {Object}

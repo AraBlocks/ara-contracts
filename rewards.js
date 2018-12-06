@@ -46,6 +46,7 @@ const {
  * @param  {Object}         opts.job
  * @param  {string|Buffer}  opts.job.jobId
  * @param  {number}         opts.job.budget
+ * @returns {Object}
  * @throws {Error,TypeError}
  */
 async function submit(opts) {
@@ -107,15 +108,12 @@ async function submit(opts) {
   // make sure user hasn't already purchased
   const purchased = await hasPurchased({ contentDid, purchaserDid: did })
   if (!purchased) {
-    throw new TypeError(`${did} has not purchased AFS ${contentDid}, cannot submit budget.`)
+    throw new Error(`${did} has not purchased AFS ${contentDid}, cannot submit budget.`)
   }
 
   let receipt
   try {
-    if (!(await proxyExists(contentDid))) {
-      throw new Error('This content does not have a valid proxy contract')
-    }
-
+    // proxyExists is checked in hasPurchased
     const proxy = await getProxyAddress(contentDid)
 
     budget = budget.toString()
@@ -183,6 +181,7 @@ async function submit(opts) {
  * @param  {Array}          opts.job.farmers
  * @param  {Array}          opts.job.rewards
  * @param  {Boolean}        opts.job.returnBudget
+ * @returns {Object}
  * @throws {Error,TypeError}
  */
 async function allocate(opts) {
@@ -300,6 +299,7 @@ async function allocate(opts) {
     if (receipt.status) {
       debug('gas used', receipt.gasUsed)
     }
+    return receipt
   } catch (err) {
     throw err
   }
