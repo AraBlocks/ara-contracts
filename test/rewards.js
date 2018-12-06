@@ -243,11 +243,6 @@ test.serial('allocate(opts) invalid opts', async (t) => {
   const contentDid = getAfsDid(t)
   const requesterDid = getDid(t)
 
-  const validFarmers4 = [ TEST_FARMER_DID1, TEST_FARMER_DID2, TEST_FARMER_DID3, TEST_OWNER_DID ]
-  const validRewards3 = [ 20, 30, 50 ]
-  const invalidFarmers = [ '0x0', '123', 123, 'did:ara:invalid' ]
-  const invalidRewards = [ -1, 'h', true ]
-
   await t.throwsAsync(rewards.allocate(), TypeError)
   await t.throwsAsync(rewards.allocate({ }), TypeError)
   await t.throwsAsync(rewards.allocate(''), TypeError)
