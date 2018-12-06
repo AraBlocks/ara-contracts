@@ -315,6 +315,7 @@ async function allocate(opts) {
  * @param  {String}         opts.farmerDid
  * @param  {String}         opts.contentDid
  * @param  {String}         opts.password
+ * @param  {Boolean}        [opts.estimate]
  * @param  {Object}         [opts.keyringOpts]
  * @throws {Error,TypeError}
  */
@@ -381,8 +382,9 @@ async function redeem(opts) {
       tokenContract.events.Transfer({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { from, to, value } } = log
+          balance = token.constrainTokenValue(value)
           debug(`${balance} Ara transferred from ${from} to ${to}`)
-          resolve(token.constrainTokenValue(value))
+          resolve(balance)
         })
         .on('error', log => reject(log))
 
