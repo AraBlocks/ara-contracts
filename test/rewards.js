@@ -1,11 +1,18 @@
 /* eslint-disable object-curly-newline */
+/* eslint-disable no-await-in-loop */
 
+const { rewards, purchase, registry, token } = require('../')
 const { abi } = require('../build/contracts/AFS.json')
-const { rewards, purchase, registry } = require('../')
 const test = require('ava')
 
 const {
   TEST_OWNER_DID_NO_METHOD,
+  TEST_FARMER_DID1,
+  TEST_FARMER_DID2,
+  TEST_FARMER_DID3,
+  TEST_FARMER_ADDRESS1,
+  TEST_FARMER_ADDRESS2,
+  TEST_FARMER_ADDRESS3,
   TEST_AFS_DID3,
   PASSWORD: password,
   VALID_JOBID,
@@ -19,6 +26,7 @@ const {
 } = require('ara-util')
 
 const {
+  sendEthAraAndDeposit,
   mirrorIdentity,
   cleanup
 } = require('./_util')
@@ -41,10 +49,20 @@ const getAfsDid = (t) => {
 test.before(async (t) => {
   t.context.defaultAccount = await mirrorIdentity(TEST_OWNER_DID_NO_METHOD)
   t.context.afsAccount = await mirrorIdentity(TEST_AFS_DID3)
+  t.context.farmerAccount1 = await mirrorIdentity(TEST_FARMER_DID1)
+  t.context.farmerAccount2 = await mirrorIdentity(TEST_FARMER_DID2)
+  t.context.farmerAccount3 = await mirrorIdentity(TEST_FARMER_DID3)
+
+  await sendEthAraAndDeposit(TEST_FARMER_DID1)
+  await sendEthAraAndDeposit(TEST_FARMER_DID2)
+  await sendEthAraAndDeposit(TEST_FARMER_DID3)
 })
 
 test.after(async (t) => {
   await cleanup(t.context.afsAccount)
+  await cleanup(t.context.farmerAccount1)
+  await cleanup(t.context.farmerAccount2)
+  await cleanup(t.context.farmerAccount3)
 })
 
 let proxyAddress
@@ -127,6 +145,56 @@ test.serial('submit(opts)', async (t) => {
   t.true('object' === typeof receipt)
 })
 
+test.serial('getBudget(opts)', async (t) => {
+  const contentDid = getAfsDid(t)
+
+  const budget = await rewards.getBudget({ contentDid, jobId })
+  t.is(budget, '100')
+})
+
+test.serial('getJobOwner(opts)', async (t) => {
+  const contentDid = getAfsDid(t)
+  const jobOwner = await rewards.getJobOwner({ contentDid, jobId })
+  t.is(jobOwner, TEST_OWNER_ADDRESS)
+})
+
+test.serial('allocate(opts) farmers with deposits', async (t) => {
+  const contentDid = getAfsDid(t)
+  const requesterDid = getDid(t)
+  const farmers = [ TEST_FARMER_DID1, TEST_FARMER_DID2, TEST_FARMER_DID3 ]
+  const farmerAddresses = [ TEST_FARMER_ADDRESS1, TEST_FARMER_ADDRESS2, TEST_FARMER_ADDRESS3 ]
+  const allocation = [ '20', '30', '50' ]
+
+  let count = 0
+  let allocated = 0
+  const { contract: proxy, ctx } = await contract.get(abi, proxyAddress)
+  await new Promise((resolve, reject) => {
+    rewards.allocate({
+      requesterDid,
+      contentDid,
+      password,
+      job: {
+        jobId,
+        farmers,
+        rewards: allocation
+      }
+    })
+    proxy.events.RewardsAllocated({ fromBlock: 'latest' })
+      .on('data', (log) => {
+        const { returnValues: { _farmer, _allocated } } = log
+        if (farmerAddresses.includes(_farmer) && allocation.indexOf(_allocated) === farmerAddresses.indexOf(_farmer)) {
+          count ++
+          allocated += parseInt(token.constrainTokenValue(_allocated))
+          if (3 === count) {
+            ctx.close()
+            resolve()
+          }
+        }
+      })
+  })
+  t.is(allocated, 100)
+})
+
 test.serial('submit(opts) invalid opts', async (t) => {
   const contentDid = getAfsDid(t)
   const requesterDid = getDid(t)
@@ -183,19 +251,6 @@ test.serial('submit(opts) invalid opts', async (t) => {
   await t.throwsAsync(rewards.submit({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, budget: { } } }), TypeError)
 
   await t.throwsAsync(rewards.submit({ requesterDid, contentDid, password: 'wrong', job: { jobId: VALID_JOBID, budget: 10 } }), Error)
-})
-
-test.serial('getBudget(opts)', async (t) => {
-  const contentDid = getAfsDid(t)
-
-  const budget = await rewards.getBudget({ contentDid, jobId })
-  t.is(budget, '100')
-})
-
-test.serial('getJobOwner(opts)', async (t) => {
-  const contentDid = getAfsDid(t)
-  const jobOwner = await rewards.getJobOwner({ contentDid, jobId })
-  t.is(jobOwner, TEST_OWNER_ADDRESS)
 })
 
 test.serial('getBudget(opts) and getJobOwner(opts) invalid opts', async (t) => {

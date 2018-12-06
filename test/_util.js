@@ -24,7 +24,6 @@ module.exports = {
 
   async mirrorIdentity(testDID) {
     testDID = getIdentifier(testDID)
-
     const publicKey = Buffer.from(testDID, 'hex')
     const hash = blake2b(publicKey).toString('hex')
     const path = `${__dirname}/fixtures/identities`
