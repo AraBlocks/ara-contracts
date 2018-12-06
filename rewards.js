@@ -451,7 +451,6 @@ async function getBudget(opts) {
  * @param  {Object} opts
  * @param  {String} opts.farmerDid
  * @param  {String} opts.contentDid
- * @param  {String} opts.password
  * @param  {Object} [opts.keyringOpts]
  * @throws {Error,TypeError}
  */
