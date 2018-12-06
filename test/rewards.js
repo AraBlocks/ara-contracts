@@ -261,7 +261,6 @@ test.serial('getRewardsBalance(opts)', async (t) => {
 
 test.serial('getRewardsBalance(opts) invalid opts', async (t) => {
   const farmerDid = TEST_FARMER_DID1
-  const contentDid = getAfsDid(t)
 
   await t.throwsAsync(rewards.getRewardsBalance(), TypeError)
   await t.throwsAsync(rewards.getRewardsBalance({ }), TypeError)
