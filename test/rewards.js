@@ -6,7 +6,7 @@ const { abi } = require('../build/contracts/AFS.json')
 const test = require('ava')
 
 const {
-  TEST_OWNER_DID_NO_METHOD,
+  TEST_OWNER_DID,
   TEST_FARMER_DID1,
   TEST_FARMER_DID2,
   TEST_FARMER_DID3,
@@ -47,7 +47,7 @@ const getAfsDid = (t) => {
 }
 
 test.before(async (t) => {
-  t.context.defaultAccount = await mirrorIdentity(TEST_OWNER_DID_NO_METHOD)
+  t.context.defaultAccount = await mirrorIdentity(TEST_OWNER_DID)
   t.context.afsAccount = await mirrorIdentity(TEST_AFS_DID3)
   t.context.farmerAccount1 = await mirrorIdentity(TEST_FARMER_DID1)
   t.context.farmerAccount2 = await mirrorIdentity(TEST_FARMER_DID2)
@@ -237,6 +237,78 @@ test.serial('allocate(opts) farmers with deposits', async (t) => {
       })
   })
   t.is(allocated, 100)
+})
+
+test.serial('allocate(opts) invalid opts', async (t) => {
+  const contentDid = getAfsDid(t)
+  const requesterDid = getDid(t)
+
+  const validFarmers4 = [ TEST_FARMER_DID1, TEST_FARMER_DID2, TEST_FARMER_DID3, TEST_OWNER_DID ]
+  const validRewards3 = [ 20, 30, 50 ]
+  const invalidFarmers = [ '0x0', '123', 123, 'did:ara:invalid' ]
+  const invalidRewards = [ -1, 'h', true ]
+
+  await t.throwsAsync(rewards.allocate(), TypeError)
+  await t.throwsAsync(rewards.allocate({ }), TypeError)
+  await t.throwsAsync(rewards.allocate(''), TypeError)
+  await t.throwsAsync(rewards.allocate('opts'), TypeError)
+  await t.throwsAsync(rewards.allocate(true), TypeError)
+  await t.throwsAsync(rewards.allocate(123), TypeError)
+
+  await t.throwsAsync(rewards.allocate({ requesterDid }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid: '' }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid: 'did:ara:invalid' }), Error)
+  await t.throwsAsync(rewards.allocate({ requesterDid: { } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid: 123 }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid: true }), TypeError)
+
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid: '' }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid: 'did:ara:invalid' }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid: { } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid: 123 }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid: true }), TypeError)
+
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password: '' }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password: 'wrong' }), Error)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password: 123 }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password: { } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password: true }), TypeError)
+
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: null }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: '' }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: 'string' }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: 123 }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: true }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { } }), TypeError)
+
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: null } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: '' } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: 'invalid' } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: 123 } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: true } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: { } } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: '0x0' } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: `${VALID_JOBID}morechars` } }), TypeError)
+})
+
+test.serial('allocate(opts) invalid farmers and rewards', async (t) => {
+  const contentDid = getAfsDid(t)
+  const requesterDid = getDid(t)
+
+  const validFarmers4 = [ TEST_FARMER_DID1, TEST_FARMER_DID2, TEST_FARMER_DID3, TEST_OWNER_DID ]
+  const validRewards3 = [ 20, 30, 50 ]
+  const invalidFarmers = [ '0x0', '123', 123, 'did:ara:invalid' ]
+  const invalidRewards = [ -1, 'h', true ]
+
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4, rewards: validRewards3 } }), Error)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4 } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: invalidFarmers } }), Error)
+
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4, rewards: invalidRewards } }), Error)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: invalidFarmers, rewards: validRewards3 } }), Error)
 })
 
 test.serial('submit(opts) invalid opts', async (t) => {
