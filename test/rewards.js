@@ -168,7 +168,7 @@ test.serial('allocate(opts) farmers with deposits', async (t) => {
   let count = 0
   let allocated = 0
   const { contract: proxy, ctx } = await contract.get(abi, proxyAddress)
-  await new Promise((resolve, reject) => {
+  await new Promise((resolve) => {
     rewards.allocate({
       requesterDid,
       contentDid,
@@ -183,12 +183,14 @@ test.serial('allocate(opts) farmers with deposits', async (t) => {
       .on('data', (log) => {
         const { returnValues: { _farmer, _allocated } } = log
         if (farmerAddresses.includes(_farmer) && allocation.indexOf(_allocated) === farmerAddresses.indexOf(_farmer)) {
-          count ++
-          allocated += parseInt(token.constrainTokenValue(_allocated))
+          count++
+          allocated += parseInt(token.constrainTokenValue(_allocated), 10)
           if (3 === count) {
             ctx.close()
             resolve()
           }
+        } else {
+          t.fail()
         }
       })
   })
