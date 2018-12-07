@@ -10,7 +10,6 @@ const rimraf = require('rimraf')
 const pify = require('pify')
 
 const {
-  AID_PREFIX,
   TEST_OWNER_DID,
   TEST_OWNER_ADDRESS,
   PASSWORD
@@ -25,7 +24,7 @@ module.exports = {
 
   async mirrorIdentity(testDID) {
     testDID = getIdentifier(testDID)
-    
+
     const publicKey = Buffer.from(testDID, 'hex')
     const hash = blake2b(publicKey).toString('hex')
     const path = `${__dirname}/fixtures/identities`
