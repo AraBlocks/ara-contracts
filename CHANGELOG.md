@@ -1,4 +1,4 @@
-# [0.10.0](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.10.0) (2018-12-07)
+## [0.10.1](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.10.1) (2018-12-07)
 
 
 ### Bug Fixes
@@ -8,28 +8,29 @@
 * deploy standard during migration ([acefd34](https://github.com/AraBlocks/ara-contracts/commit/acefd34))
 * increase timeout ([b09e898](https://github.com/AraBlocks/ara-contracts/commit/b09e898))
 * issue [#85](https://github.com/AraBlocks/ara-contracts/issues/85) ([614ec5d](https://github.com/AraBlocks/ara-contracts/commit/614ec5d))
-* **constants.js:** remove chainIds from address switch ([1a44cc3](https://github.com/AraBlocks/ara-contracts/commit/1a44cc3))
-* lint ([48a9001](https://github.com/AraBlocks/ara-contracts/commit/48a9001))
+* **.npmignore:** revert bin/ and lib/ in npmignore ([e6177d4](https://github.com/AraBlocks/ara-contracts/commit/e6177d4))
+* **constants.js:** lint it up ([c061587](https://github.com/AraBlocks/ara-contracts/commit/c061587))
+* lint ([0a5ff7d](https://github.com/AraBlocks/ara-contracts/commit/0a5ff7d))
 * lint ([bff4ded](https://github.com/AraBlocks/ara-contracts/commit/bff4ded))
 * local network support in constants ([a4b8f19](https://github.com/AraBlocks/ara-contracts/commit/a4b8f19))
+* **constants.js:** remove chainIds from address switch ([1a44cc3](https://github.com/AraBlocks/ara-contracts/commit/1a44cc3))
 * missed a variable ([33e4dac](https://github.com/AraBlocks/ara-contracts/commit/33e4dac))
-* **migrations/2_deploy_contracts.js:** fix undefined ctx in deploy ([13378e1](https://github.com/AraBlocks/ara-contracts/commit/13378e1))
 * missed a word ([f1bd021](https://github.com/AraBlocks/ara-contracts/commit/f1bd021))
 * pass in owner still for allowance, bump ara-identity to 0.30.x ([b152283](https://github.com/AraBlocks/ara-contracts/commit/b152283))
 * remove async in promise ([733d17f](https://github.com/AraBlocks/ara-contracts/commit/733d17f))
 * remove logs ([f23c4ed](https://github.com/AraBlocks/ara-contracts/commit/f23c4ed))
 * remove owner being passed into ara-util.validate ([7cd9aad](https://github.com/AraBlocks/ara-contracts/commit/7cd9aad))
 * should fix travis ([68b67fc](https://github.com/AraBlocks/ara-contracts/commit/68b67fc))
-* **constants.js:** lint it up ([c061587](https://github.com/AraBlocks/ara-contracts/commit/c061587))
-* **constants.js:** revert privatenet addresses ([8e9ff24](https://github.com/AraBlocks/ara-contracts/commit/8e9ff24))
-* **migrations/2_deploy_contracts.js:** allow local truffle deployments ([0835298](https://github.com/AraBlocks/ara-contracts/commit/0835298))
-* **storage.js:** remove storage falsy checks ([8bd3ced](https://github.com/AraBlocks/ara-contracts/commit/8bd3ced))
-* test script ([447e1e1](https://github.com/AraBlocks/ara-contracts/commit/447e1e1))
+* test script ([7868e36](https://github.com/AraBlocks/ara-contracts/commit/7868e36))
 * travis ([2e20dbb](https://github.com/AraBlocks/ara-contracts/commit/2e20dbb))
-* travis ([3cfc45b](https://github.com/AraBlocks/ara-contracts/commit/3cfc45b))
 * travis ([79870a8](https://github.com/AraBlocks/ara-contracts/commit/79870a8))
+* travis ([3cfc45b](https://github.com/AraBlocks/ara-contracts/commit/3cfc45b))
 * travis? ([db5a541](https://github.com/AraBlocks/ara-contracts/commit/db5a541))
+* **constants.js:** revert privatenet addresses ([8e9ff24](https://github.com/AraBlocks/ara-contracts/commit/8e9ff24))
 * wrap bc events in promises ([510d235](https://github.com/AraBlocks/ara-contracts/commit/510d235))
+* **migrations/2_deploy_contracts.js:** allow local truffle deployments ([0835298](https://github.com/AraBlocks/ara-contracts/commit/0835298))
+* **migrations/2_deploy_contracts.js:** fix undefined ctx in deploy ([13378e1](https://github.com/AraBlocks/ara-contracts/commit/13378e1))
+* **storage.js:** remove storage falsy checks ([8bd3ced](https://github.com/AraBlocks/ara-contracts/commit/8bd3ced))
 
 
 ### Features
@@ -39,7 +40,7 @@
 * **rewards.js:** estimaate option for redeem rewards balance ([63ef04a](https://github.com/AraBlocks/ara-contracts/commit/63ef04a))
 * getJobOwner ([5b0f8bf](https://github.com/AraBlocks/ara-contracts/commit/5b0f8bf))
 * index event parameters ([f5ceec8](https://github.com/AraBlocks/ara-contracts/commit/f5ceec8))
-* rename commerce to ownership ([09e0bd1](https://github.com/AraBlocks/ara-contracts/commit/09e0bd1))
+* rename commerce to ownership ([b2a60aa](https://github.com/AraBlocks/ara-contracts/commit/b2a60aa))
 * show help if command provided is not valid ([c9eea56](https://github.com/AraBlocks/ara-contracts/commit/c9eea56))
 
 
