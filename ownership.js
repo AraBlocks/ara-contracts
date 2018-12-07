@@ -8,7 +8,6 @@ const {
   getIdentifier,
   validate,
   web3: {
-    isAddress,
     account,
     call,
     sha3,
@@ -142,10 +141,10 @@ async function approveOwnershipTransfer(opts) {
     throw new TypeError('Expecting opts object')
   } else if (!opts.contentDid || 'string' !== typeof opts.contentDid) {
     throw new TypeError('Expecting non-empty content DID')
-  } else if (!opts.password || 'string' !== typeof opts.password) {
-    throw new TypeError('Expecting non-empty password')
   } else if (!opts.newOwnerDid || 'string' !== typeof opts.newOwnerDid) {
     throw new TypeError('Expecting non-empty new owner DID')
+  } else if (!opts.password || 'string' !== typeof opts.password) {
+    throw new TypeError('Expecting non-empty password')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting boolean for estimate')
   }
@@ -157,7 +156,6 @@ async function approveOwnershipTransfer(opts) {
     keyringOpts
   } = opts
 
-  let ownerAddress
   let newOwnerAddress
   let ddo
   try {
@@ -167,20 +165,9 @@ async function approveOwnershipTransfer(opts) {
       label: 'approveOwnershipTransfer',
       keyringOpts
     }))
-    ownerAddress = await getAddressFromDID(getIdentifier(contentDid))
     newOwnerAddress = await getAddressFromDID(getIdentifier(newOwnerDid))
   } catch (err) {
     throw err
-  }
-
-  if (!isAddress(ownerAddress)) {
-    throw new Error(`opts.did did not resolve to a valid Ethereum address. 
-      Ensure ${contentDid} is a valid Ara identity.`)
-  }
-
-  if (!isAddress(newOwnerAddress)) {
-    throw new Error(`opts.newOwnerDid did not resolve to a valid Ethereum address.
-      Ensure ${newOwnerDid} is a valid Ara identity.`)
   }
 
   if (!(await proxyExists(contentDid))) {
@@ -247,11 +234,6 @@ async function _updateOwnershipRequest(opts, functionName = '') {
     requesterAddress = await getAddressFromDID(getIdentifier(requesterDid))
   } catch (err) {
     throw err
-  }
-
-  if (!isAddress(requesterAddress)) {
-    throw new Error(`opts.requesterDid did not resolve to a valid Ethereum address. 
-      Ensure ${requesterDid} is a valid Ara identity.`)
   }
 
   if (!(await proxyExists(contentDid))) {

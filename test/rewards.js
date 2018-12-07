@@ -55,7 +55,6 @@ test.before(async (t) => {
 
   await sendEthAraAndDeposit(TEST_FARMER_DID1)
   await sendEthAraAndDeposit(TEST_FARMER_DID2)
-  await sendEthAraAndDeposit(TEST_FARMER_DID3)
 })
 
 test.after(async (t) => {
