@@ -41,24 +41,6 @@ safeRunCommand "$command"
 command="ava test/token.js --verbose"
 safeRunCommand "$command"
 
-# command="ava test/registry.js --verbose"
-# safeRunCommand "$command"
-
-# command="ava test/purchase.js --verbose"
-# safeRunCommand "$command"
-
-# command="ava test/library.js --verbose"
-# safeRunCommand "$command"
-
-# command="ava test/rewards.js --verbose"
-# safeRunCommand "$command"
-
-command="ava test/storage.js --serial --verbose"
-safeRunCommand "$command"
-
-command="ava test/ownership.js --verbose"
-safeRunCommand "$command"
-
 command="ava test/registry.js --verbose"
 safeRunCommand "$command"
 
@@ -69,6 +51,9 @@ command="ava test/library.js --verbose"
 safeRunCommand "$command"
 
 command="ava test/rewards.js --verbose"
+safeRunCommand "$command"
+
+command="ava test/ownership.js --verbose"
 safeRunCommand "$command"
 
 # cleanup

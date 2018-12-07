@@ -41,12 +41,6 @@ test.after(async (t) => {
 test.serial('getOwner(contentDid)', async (t) => {
   const contentDid = getAfsDid(t)
 
-  await registry.deployProxy({
-    contentDid,
-    password,
-    version: '1'
-  })
-
   const initialOwner = await ownership.getOwner(contentDid)
   t.is(initialOwner, TEST_OWNER_ADDRESS)
 })
