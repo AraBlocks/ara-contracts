@@ -34,7 +34,13 @@ safeRunCommand "$command"
 # truffle test
 
 # ava tests
-command="ava test --verbose"
+command="ava test/util.js --verbose"
+safeRunCommand "$command"
+
+command="ava test/token.js --verbose"
+safeRunCommand "$command"
+
+command="ava test/ownership.js --verbose"
 safeRunCommand "$command"
 
 # cleanup
