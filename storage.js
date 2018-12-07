@@ -1,5 +1,6 @@
 const { web3: { tx, call, isAddress } } = require('ara-util')
 const { abi } = require('./build/contracts/AFS.json')
+const isBuffer = require('is-buffer')
 
 async function read(opts) {
   _validateOpts(opts)
@@ -33,6 +34,11 @@ async function write(opts, estimate = true, append = false) {
   const { offsets: msOffsets, buffer: msBuffer } = opts.msData
   const { account, to } = opts
 
+  console.log(mtOffsets)
+  console.log(mtBuffer)
+
+  console.log(msOffsets)
+  console.log(msBuffer)
   const { tx: transaction, ctx } = await tx.create({
     gasLimit: 4000000,
     account,
@@ -63,8 +69,12 @@ async function write(opts, estimate = true, append = false) {
 async function hasBuffer(opts) {
   _validateOpts(opts)
 
-  if (!opts.buffer || 'string' !== typeof opts.buffer) {
+  if (!opts.buffer || ('string' !== typeof opts.buffer && false === isBuffer(opts.buffer))) {
     throw new TypeError('Expecting valid hex string for opts.buffer')
+  }
+
+  if (isBuffer(opts.buffer)) {
+    opts.buffer = `0x${opts.buffer.toString('hex')}`
   }
 
   const {
