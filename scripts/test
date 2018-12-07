@@ -30,6 +30,7 @@ sleep 5
 
 command="truffle migrate --reset --network local"
 safeRunCommand "$command"
+sleep 20
 
 # truffle test
 
@@ -49,7 +50,10 @@ safeRunCommand "$command"
 # command="ava test/library.js --verbose"
 # safeRunCommand "$command"
 
-command="ava test/rewards.js --verbose"
+# command="ava test/rewards.js --verbose"
+# safeRunCommand "$command"
+
+command="ava test/storage.js --serial --verbose"
 safeRunCommand "$command"
 
 command="ava test/ownership.js --verbose"
