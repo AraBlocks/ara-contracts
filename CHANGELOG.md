@@ -1,4 +1,4 @@
-## [0.10.1](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.10.1) (2018-12-07)
+# [0.11.0](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.11.0) (2018-12-07)
 
 
 ### Bug Fixes
@@ -8,7 +8,7 @@
 * deploy standard during migration ([acefd34](https://github.com/AraBlocks/ara-contracts/commit/acefd34))
 * increase timeout ([b09e898](https://github.com/AraBlocks/ara-contracts/commit/b09e898))
 * issue [#85](https://github.com/AraBlocks/ara-contracts/issues/85) ([614ec5d](https://github.com/AraBlocks/ara-contracts/commit/614ec5d))
-* **.npmignore:** revert bin/ and lib/ in npmignore ([e6177d4](https://github.com/AraBlocks/ara-contracts/commit/e6177d4))
+* **.npmignore:** revert bin/ and lib/ in npmignore ([392288e](https://github.com/AraBlocks/ara-contracts/commit/392288e))
 * **constants.js:** lint it up ([c061587](https://github.com/AraBlocks/ara-contracts/commit/c061587))
 * lint ([0a5ff7d](https://github.com/AraBlocks/ara-contracts/commit/0a5ff7d))
 * lint ([bff4ded](https://github.com/AraBlocks/ara-contracts/commit/bff4ded))
