@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+
 const ownership = require('../ownership')
 const test = require('ava')
 
@@ -16,11 +18,6 @@ const {
   mirrorIdentity,
   cleanup
 } = require('./_util')
-
-const getOwnerDid1 = (t) => {
-  const { did } = t.context.ownerAccount1
-  return did
-}
 
 const getOwnerDid2 = (t) => {
   const { did } = t.context.ownerAccount2
@@ -90,7 +87,13 @@ test.serial('requestOwnership(opts)', async (t) => {
   const contentDid = getAfsDid1(t)
   const requesterDid = getOwnerDid2(t)
 
-  const cost = await ownership.requestOwnership({ requesterDid, contentDid, password, estimate: true })
+  const cost = await ownership.requestOwnership({
+    requesterDid,
+    contentDid,
+    password,
+    estimate: true
+  })
+
   t.true(cost > 0)
 
   const receipt = await ownership.requestOwnership({ requesterDid, contentDid, password })
@@ -107,7 +110,6 @@ test.serial('hasRequested(opts) true', async (t) => {
   requesterDid = getOwnerDid3(t)
   hasRequested = await ownership.hasRequested({ requesterDid, contentDid })
   t.false(hasRequested)
-
 })
 
 test.serial('getOwner(contentDid) invalid opts', async (t) => {
@@ -122,7 +124,7 @@ test.serial('getOwner(contentDid) invalid opts', async (t) => {
 test.serial('requestOwnership and revokeOwnershipRequest invalid generic opts', async (t) => {
   const contentDid = getAfsDid1(t)
   const undeployedDid = getAfsDid2(t)
-  let requesterDid = getOwnerDid2(t)
+  const requesterDid = getOwnerDid2(t)
 
   for (const func of funcMap) {
     await t.throwsAsync(func(), TypeError)
