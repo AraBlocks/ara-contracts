@@ -5,7 +5,7 @@
  * Charles Kelly <charles@ara.one>
  */
 
-const { mirrorIdentity } = require('./_util')
+const { mirrorIdentity, cleanup } = require('./_util')
 const { token } = require('../')
 const test = require('ava')
 
@@ -32,6 +32,42 @@ test.before(async (t) => {
   t.context.testAccount = await mirrorIdentity(TEST_DID)
 })
 
+test.after(async (t) => {
+  await cleanup(t.context.testAccount)
+})
+
+test('constrainTokenValue(val)', (t) => {
+  t.is('1', token.constrainTokenValue('1000000000000000000'))
+  t.is('1e-18', token.constrainTokenValue('1'))
+  t.is('1e-19', token.constrainTokenValue('0.1'))
+  t.is('1e-36', token.constrainTokenValue('0.000000000000000001'))
+  t.is('0', token.constrainTokenValue(''))
+})
+
+test('constrainTokenValue(val) invalid input', (t) => {
+  t.throws(() => token.constrainTokenValue(), TypeError)
+  t.throws(() => token.constrainTokenValue(123), TypeError)
+  t.throws(() => token.constrainTokenValue({ }), TypeError)
+  t.throws(() => token.constrainTokenValue([ ]), TypeError)
+  t.throws(() => token.constrainTokenValue([ '1' ]), TypeError)
+})
+
+test('expandTokenValue(val)', (t) => {
+  t.is('1000000000000000000', token.expandTokenValue('1'))
+  t.is('1', token.expandTokenValue('0.000000000000000001'))
+  t.is('0', token.expandTokenValue(''))
+})
+
+test('expandTokenValue(val) invalid input', (t) => {
+  t.throws(() => token.expandTokenValue(), TypeError)
+  t.throws(() => token.expandTokenValue(123), TypeError)
+  t.throws(() => token.expandTokenValue({ }), TypeError)
+  t.throws(() => token.expandTokenValue([ ]), TypeError)
+  t.throws(() => token.expandTokenValue([ '1' ]), TypeError)
+  // too small
+  t.throws(() => token.expandTokenValue('0.0000000000000000001'), Error)
+})
+
 test('balanceOf(address) invalid address', async (t) => {
   await t.throwsAsync(token.balanceOf(), TypeError)
   await t.throwsAsync(token.balanceOf({ }), TypeError)
@@ -39,6 +75,7 @@ test('balanceOf(address) invalid address', async (t) => {
   await t.throwsAsync(token.balanceOf([]), TypeError)
   await t.throwsAsync(token.balanceOf(TEST_OWNER_ADDRESS), Error)
   await t.throwsAsync(token.balanceOf('did:ara:1234'), Error)
+  // await t.throwsAsync(token.balanceOf(RANDOM_DID)) // should throw error from getAddressFromDID
 })
 
 test.serial('balanceOf(address)', async (t) => {
@@ -243,6 +280,7 @@ test('modifyDeposit(opts) invalid opts', async (t) => {
   await t.throwsAsync(token.modifyDeposit({ to: '' }), TypeError)
   await t.throwsAsync(token.modifyDeposit({ to: 1234 }), TypeError)
   await t.throwsAsync(token.modifyDeposit({ to: testDID, val: 1000 }), TypeError)
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: -1 }), TypeError)
   await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '10.00' }), TypeError)
   await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '-1' }), TypeError)
 
@@ -251,6 +289,13 @@ test('modifyDeposit(opts) invalid opts', async (t) => {
   await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did: '' }), TypeError)
   await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did: 1234 }), TypeError)
   await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did: 1234 }), TypeError)
+
+  await t.throwsAsync(token.modifyDeposit({
+    to: testDID,
+    val: '-1000',
+    did,
+    password
+  }))
 
   // withdraw
   await t.throwsAsync(token.modifyDeposit({
@@ -308,13 +353,50 @@ test('invalid generic opts group 1', async (t) => {
     await t.throwsAsync(func({ to: testDID, val: '1000', did: null }), TypeError)
     await t.throwsAsync(func({ to: testDID, val: '1000', did: '' }), TypeError)
     await t.throwsAsync(func({ to: testDID, val: '1000', did: 1234 }), TypeError)
-    await t.throwsAsync(func({ to: testDID, val: '1000', did: 1234 }), TypeError)
+    await t.throwsAsync(func({
+      to: testDID,
+      val: '1000',
+      did: 1234,
+      password,
+      from: did
+    }), TypeError)
 
     await t.throwsAsync(func({
-      to: testDID, val: '1000', did, password: null
+      to: testDID,
+      val: -1000,
+      did,
+      password
     }), TypeError)
+
     await t.throwsAsync(func({
-      to: testDID, val: '1000', did, password: 123
+      to: testDID,
+      from: did,
+      val: -1000,
+      did,
+      password
+    }), TypeError)
+
+    await t.throwsAsync(func({
+      to: testDID,
+      from: did,
+      val: '1000',
+      did,
+      password: 'wrong'
+    }), Error)
+
+    await t.throwsAsync(func({
+      to: testDID,
+      val: '1000',
+      did,
+      password: null
+    }), TypeError)
+
+    await t.throwsAsync(func({
+      to: testDID,
+      val: '1000',
+      did,
+      from: did,
+      password: 123
     }), TypeError)
   }
 })
@@ -333,7 +415,6 @@ test('invalid generic opts group 2', async (t) => {
     await t.throwsAsync(func({ spender: testDID, val: '10.00' }), TypeError)
     await t.throwsAsync(func({ spender: testDID, val: '1000', did: null }), TypeError)
     await t.throwsAsync(func({ spender: testDID, val: '1000', did: '' }), TypeError)
-    await t.throwsAsync(func({ spender: testDID, val: '1000', did: 1234 }), TypeError)
     await t.throwsAsync(func({ spender: testDID, val: '1000', did: 1234 }), TypeError)
 
     await t.throwsAsync(func({
