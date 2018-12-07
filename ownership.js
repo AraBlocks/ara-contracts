@@ -19,6 +19,29 @@ const {
   proxyExists
 } = require('./registry')
 
+async function getOwner(contentDid) {
+  if (!contentDid || 'string' !== typeof contentDid) {
+    throw new TypeError('Expecting non-empty content DID')
+  }
+
+  if (!(await proxyExists(contentDid))) {
+    throw new Error('Content does not have a valid proxy contract')
+  }
+
+  const proxy = await getProxyAddress(contentDid)
+
+  try {
+    const address = await call({
+      abi,
+      address: proxy,
+      functionName: 'owner_'
+    })
+    return address
+  } catch (err) {
+    throw err
+  }
+}
+
 /**
  * Requests ownership of an AFS.
  * @param  {Object} opts
@@ -212,5 +235,6 @@ async function _updateOwnershipRequest(opts, functionName = '') {
 module.exports = {
   approveOwnershipTransfer,
   revokeOwnershipRequest,
-  requestOwnership
+  requestOwnership,
+  getOwner
 }
