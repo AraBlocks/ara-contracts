@@ -1,6 +1,6 @@
+const { getAddressFromDID, getIdentifier } = require('ara-util')
 const { createIdentityKeyPath } = require('ara-identity')
 const { transfer, modifyDeposit } = require('../token')
-const { getAddressFromDID } = require('ara-util')
 const createContext = require('ara-context')
 const { blake2b } = require('ara-crypto')
 const mirror = require('mirror-folder')
@@ -24,9 +24,8 @@ const {
 module.exports = {
 
   async mirrorIdentity(testDID) {
-    if (AID_PREFIX === testDID.slice(0, AID_PREFIX.length)) {
-      testDID = testDID.slice(AID_PREFIX.length)
-    }
+    testDID = getIdentifier(testDID)
+    
     const publicKey = Buffer.from(testDID, 'hex')
     const hash = blake2b(publicKey).toString('hex')
     const path = `${__dirname}/fixtures/identities`
