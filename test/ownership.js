@@ -1,4 +1,4 @@
-const { ownership, registry } = require('../')
+const ownership = require('../ownership')
 const test = require('ava')
 
 const {
