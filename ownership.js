@@ -10,6 +10,8 @@ const {
   web3: {
     isAddress,
     account,
+    call,
+    sha3,
     tx
   }
 } = require('ara-util')
@@ -19,24 +21,78 @@ const {
   proxyExists
 } = require('./registry')
 
+/**
+ * Gets the address of the owner of an AFS
+ * @param  {String} contentDid
+ * @throws {Error|TypeError}
+ * @return {String}
+ */
 async function getOwner(contentDid) {
   if (!contentDid || 'string' !== typeof contentDid) {
     throw new TypeError('Expecting non-empty content DID')
   }
 
-  if (!(await proxyExists(contentDid))) {
-    throw new Error('Content does not have a valid proxy contract')
-  }
-
-  const proxy = await getProxyAddress(contentDid)
+  contentDid = getIdentifier(contentDid)
 
   try {
+    if (!(await proxyExists(contentDid))) {
+      throw new Error('Content does not have a valid proxy contract')
+    }
+
+    const proxy = await getProxyAddress(contentDid)
+
     const address = await call({
       abi,
       address: proxy,
       functionName: 'owner_'
     })
     return address
+  } catch (err) {
+    throw err
+  }
+}
+
+/**
+ * Checks if a DID has requested ownership of an AFS
+ * @param  {Object} opts
+ * @param  {String} opts.requesterDid
+ * @param  {String} opts.contentDid
+ * @param  {Object} [opts.keyringOpts]
+ * @throws {Error|TypeError}
+ * @return {Boolean}
+ */
+async function hasRequested(opts) {
+  if (!opts || 'object' !== typeof opts) {
+    throw new TypeError('Expecting opts object.')
+  } else if ('string' !== typeof opts.requesterDid || !opts.requesterDid) {
+    throw new TypeError('Expecting non-empty requester DID')
+  } else if ('string' !== typeof opts.contentDid || !opts.contentDid) {
+    throw new TypeError('Expecting non-empty content DID')
+  }
+
+  const { keyringOpts } = opts
+  let { requesterDid, contentDid } = opts
+  requesterDid = getIdentifier(requesterDid)
+  contentDid = getIdentifier(contentDid)
+
+  const requesterAddress = await getAddressFromDID(requesterDid, keyringOpts)
+
+  try {
+    if (!(await proxyExists(contentDid))) {
+      throw new Error('This content does not have a valid proxy contract')
+    }
+
+    const proxy = await getProxyAddress(contentDid)
+
+    const requested = await call({
+      abi,
+      address: proxy,
+      functionName: 'requesters_',
+      arguments: [
+        sha3(requesterAddress)
+      ]
+    })
+    return requested
   } catch (err) {
     throw err
   }
@@ -236,5 +292,6 @@ module.exports = {
   approveOwnershipTransfer,
   revokeOwnershipRequest,
   requestOwnership,
+  hasRequested,
   getOwner
 }

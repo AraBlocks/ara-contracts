@@ -1,5 +1,5 @@
 const { purchase } = require('./purchase')
-const commerce = require('./commerce')
+const ownership = require('./ownership')
 const registry = require('./registry')
 const storage = require('./storage')
 const library = require('./library')
@@ -9,7 +9,7 @@ const token = require('./token')
 module.exports = {
   purchase,
   registry,
-  commerce,
+  ownership,
   storage,
   library,
   rewards,
