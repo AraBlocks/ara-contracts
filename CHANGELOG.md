@@ -1,32 +1,34 @@
-# [0.9.0](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.9.0) (2018-12-07)
+# [0.10.0](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.10.0) (2018-12-07)
 
 
 ### Bug Fixes
 
 * add jobID tohex ([f9ec4e2](https://github.com/AraBlocks/ara-contracts/commit/f9ec4e2))
-* **constants.js:** revert privatenet addresses ([8e9ff24](https://github.com/AraBlocks/ara-contracts/commit/8e9ff24))
 * constants ([a26bed8](https://github.com/AraBlocks/ara-contracts/commit/a26bed8))
 * deploy standard during migration ([acefd34](https://github.com/AraBlocks/ara-contracts/commit/acefd34))
 * increase timeout ([b09e898](https://github.com/AraBlocks/ara-contracts/commit/b09e898))
-* **constants.js:** remove chainIds from address switch ([1a44cc3](https://github.com/AraBlocks/ara-contracts/commit/1a44cc3))
 * issue [#85](https://github.com/AraBlocks/ara-contracts/issues/85) ([614ec5d](https://github.com/AraBlocks/ara-contracts/commit/614ec5d))
+* **constants.js:** remove chainIds from address switch ([1a44cc3](https://github.com/AraBlocks/ara-contracts/commit/1a44cc3))
+* lint ([48a9001](https://github.com/AraBlocks/ara-contracts/commit/48a9001))
 * lint ([bff4ded](https://github.com/AraBlocks/ara-contracts/commit/bff4ded))
 * local network support in constants ([a4b8f19](https://github.com/AraBlocks/ara-contracts/commit/a4b8f19))
-* **migrations/2_deploy_contracts.js:** fix undefined ctx in deploy ([13378e1](https://github.com/AraBlocks/ara-contracts/commit/13378e1))
 * missed a variable ([33e4dac](https://github.com/AraBlocks/ara-contracts/commit/33e4dac))
+* **migrations/2_deploy_contracts.js:** fix undefined ctx in deploy ([13378e1](https://github.com/AraBlocks/ara-contracts/commit/13378e1))
 * missed a word ([f1bd021](https://github.com/AraBlocks/ara-contracts/commit/f1bd021))
 * pass in owner still for allowance, bump ara-identity to 0.30.x ([b152283](https://github.com/AraBlocks/ara-contracts/commit/b152283))
 * remove async in promise ([733d17f](https://github.com/AraBlocks/ara-contracts/commit/733d17f))
 * remove logs ([f23c4ed](https://github.com/AraBlocks/ara-contracts/commit/f23c4ed))
 * remove owner being passed into ara-util.validate ([7cd9aad](https://github.com/AraBlocks/ara-contracts/commit/7cd9aad))
 * should fix travis ([68b67fc](https://github.com/AraBlocks/ara-contracts/commit/68b67fc))
-* travis ([3cfc45b](https://github.com/AraBlocks/ara-contracts/commit/3cfc45b))
-* travis ([2e20dbb](https://github.com/AraBlocks/ara-contracts/commit/2e20dbb))
-* travis ([79870a8](https://github.com/AraBlocks/ara-contracts/commit/79870a8))
-* travis? ([db5a541](https://github.com/AraBlocks/ara-contracts/commit/db5a541))
 * **constants.js:** lint it up ([c061587](https://github.com/AraBlocks/ara-contracts/commit/c061587))
+* **constants.js:** revert privatenet addresses ([8e9ff24](https://github.com/AraBlocks/ara-contracts/commit/8e9ff24))
 * **migrations/2_deploy_contracts.js:** allow local truffle deployments ([0835298](https://github.com/AraBlocks/ara-contracts/commit/0835298))
 * **storage.js:** remove storage falsy checks ([8bd3ced](https://github.com/AraBlocks/ara-contracts/commit/8bd3ced))
+* test script ([447e1e1](https://github.com/AraBlocks/ara-contracts/commit/447e1e1))
+* travis ([2e20dbb](https://github.com/AraBlocks/ara-contracts/commit/2e20dbb))
+* travis ([3cfc45b](https://github.com/AraBlocks/ara-contracts/commit/3cfc45b))
+* travis ([79870a8](https://github.com/AraBlocks/ara-contracts/commit/79870a8))
+* travis? ([db5a541](https://github.com/AraBlocks/ara-contracts/commit/db5a541))
 * wrap bc events in promises ([510d235](https://github.com/AraBlocks/ara-contracts/commit/510d235))
 
 
@@ -37,6 +39,7 @@
 * **rewards.js:** estimaate option for redeem rewards balance ([63ef04a](https://github.com/AraBlocks/ara-contracts/commit/63ef04a))
 * getJobOwner ([5b0f8bf](https://github.com/AraBlocks/ara-contracts/commit/5b0f8bf))
 * index event parameters ([f5ceec8](https://github.com/AraBlocks/ara-contracts/commit/f5ceec8))
+* rename commerce to ownership ([09e0bd1](https://github.com/AraBlocks/ara-contracts/commit/09e0bd1))
 * show help if command provided is not valid ([c9eea56](https://github.com/AraBlocks/ara-contracts/commit/c9eea56))
 
 
