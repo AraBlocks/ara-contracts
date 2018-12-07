@@ -13,6 +13,7 @@ const {
   TEST_OWNER_DID_NO_METHOD,
   PASSWORD: password,
   TEST_OWNER_ADDRESS,
+  RANDOM_DID,
   TEST_DID
 } = require('./_constants')
 
@@ -75,7 +76,7 @@ test('balanceOf(address) invalid address', async (t) => {
   await t.throwsAsync(token.balanceOf([]), TypeError)
   await t.throwsAsync(token.balanceOf(TEST_OWNER_ADDRESS), Error)
   await t.throwsAsync(token.balanceOf('did:ara:1234'), Error)
-  // await t.throwsAsync(token.balanceOf(RANDOM_DID)) // should throw error from getAddressFromDID
+  await t.throwsAsync(token.balanceOf(RANDOM_DID), Error)
 })
 
 test.serial('balanceOf(address)', async (t) => {
@@ -255,6 +256,7 @@ test('getAmountDeposited(did) invalid did', async (t) => {
   await t.throwsAsync(token.getAmountDeposited([]), TypeError)
   await t.throwsAsync(token.getAmountDeposited(TEST_OWNER_ADDRESS), Error)
   await t.throwsAsync(token.getAmountDeposited('did:ara:1234'), Error)
+  await t.throwsAsync(token.getAmountDeposited(RANDOM_DID), Error)
 })
 
 test('allowance(opts) invalid opts', async (t) => {
@@ -269,6 +271,8 @@ test('allowance(opts) invalid opts', async (t) => {
   await t.throwsAsync(token.allowance({ owner: did }))
   await t.throwsAsync(token.allowance({ owner: did, spender: null }), Error)
   await t.throwsAsync(token.allowance({ owner: did, spender: 123 }), Error)
+  await t.throwsAsync(token.allowance({ owner: RANDOM_DID, spender: did }), Error)
+  await t.throwsAsync(token.allowance({ owner: did, spender: RANDOM_DID }), Error)
 })
 
 test('modifyDeposit(opts) invalid opts', async (t) => {
@@ -336,6 +340,13 @@ test('modifyDeposit(opts) invalid opts', async (t) => {
     did,
     password: 123
   }), TypeError)
+
+  await t.throwsAsync(token.modifyDeposit({
+    to: did,
+    val: '1000',
+    did,
+    password: 'wrong'
+  }), Error)
 })
 
 test('invalid generic opts group 1', async (t) => {
@@ -398,7 +409,27 @@ test('invalid generic opts group 1', async (t) => {
       from: did,
       password: 123
     }), TypeError)
+
+    await t.throwsAsync(func({
+      to: RANDOM_DID,
+      val: '1000',
+      did,
+      from: did,
+      password
+    }), Error)
   }
+})
+
+test('transferFrom(opts) invalid from', async (t) => {
+  const { did } = t.context.defaultAccount
+
+  await t.throwsAsync(token.transferFrom({
+    to: did,
+    val: '1000',
+    did,
+    from: RANDOM_DID,
+    password
+  }), Error)
 })
 
 test('invalid generic opts group 2', async (t) => {
@@ -420,8 +451,13 @@ test('invalid generic opts group 2', async (t) => {
     await t.throwsAsync(func({
       spender: testDID, val: '1000', did, password: null
     }), TypeError)
+
     await t.throwsAsync(func({
       spender: testDID, val: '1000', did, password: 123
     }), TypeError)
+
+    await t.throwsAsync(func({
+      spender: RANDOM_DID, val: '1000', did, password
+    }), Error)
   }
 })

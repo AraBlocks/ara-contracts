@@ -37,9 +37,6 @@ async function balanceOf(did, keyringOpts) {
   } catch (err) {
     throw err
   }
-  if (!isAddress(address)) {
-    throw new Error(`${did} did not resolve to a valid Ethereum address. Got ${address}. Ensure ${did} is a valid Ara identity.`)
-  }
 
   let balance
   try {
@@ -98,13 +95,6 @@ async function allowance(opts = {}) {
     throw err
   }
 
-  if (!isAddress(owner)) {
-    throw new Error(`'opts.owner' did not resolve to a valid Ethereum address. Got ${owner}. Ensure ${opts.owner} is a valid Ara identity.`)
-  }
-  if (!isAddress(spender)) {
-    throw new Error(`'opts.spender' did not resolve to a valid Ethereum address. Got ${spender}. Ensure ${opts.spender} is a valid Ara identity.`)
-  }
-
   let allowed
   try {
     allowed = await call({
@@ -151,10 +141,6 @@ async function transfer(opts = {}) {
     to = await _normalizeIDInput(to)
   } catch (err) {
     throw err
-  }
-
-  if (!isAddress(to)) {
-    throw new Error(`'opts.to' did not resolve to a valid Ethereum address. Got ${to}. Ensure ${opts.to} is a valid Ara identity.`)
   }
 
   did = `${AID_PREFIX}${did}`
@@ -204,10 +190,6 @@ async function approve(opts = {}) {
     spender = await _normalizeIDInput(spender)
   } catch (err) {
     throw err
-  }
-
-  if (!isAddress(spender)) {
-    throw new Error(`'opts.spender' did not resolve to a valid Ethereum address. Got ${spender}. Ensure ${opts.spender} is a valid Ara identity.`)
   }
 
   did = `${AID_PREFIX}${did}`
@@ -277,13 +259,6 @@ async function transferFrom(opts = {}) {
     throw err
   }
 
-  if (!isAddress(from)) {
-    throw new Error(`'opts.from' did not resolve to a valid Ethereum address. Got ${from}. Ensure ${opts.from} is a valid Ara identity.`)
-  }
-  if (!isAddress(to)) {
-    throw new Error(`'opts.to' did not resolve to a valid Ethereum address. Got ${to}. Ensure ${opts.to} is a valid Ara identity.`)
-  }
-
   did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
@@ -333,10 +308,6 @@ async function increaseApproval(opts = {}) {
     spender = await _normalizeIDInput(spender)
   } catch (err) {
     throw err
-  }
-
-  if (!isAddress(spender)) {
-    throw new Error(`'opts.spender' did not resolve to a valid Ethereum address. Got ${spender}. Ensure ${opts.spender} is a valid Ara identity.`)
   }
 
   did = `${AID_PREFIX}${did}`
@@ -394,10 +365,6 @@ async function decreaseApproval(opts = {}) {
     spender = await _normalizeIDInput(spender)
   } catch (err) {
     throw err
-  }
-
-  if (!isAddress(spender)) {
-    throw new Error(`'opts.spender' did not resolve to a valid Ethereum address. Got ${spender}. Ensure ${opts.spender} is a valid Ara identity.`)
   }
 
   did = `${AID_PREFIX}${did}`
@@ -541,10 +508,6 @@ async function getAmountDeposited(did, keyringOpts) {
     address = await getAddressFromDID(did, keyringOpts)
   } catch (err) {
     throw err
-  }
-
-  if (!isAddress(address)) {
-    throw new Error(`'did' did not resolve to a valid Ethereum address. Got ${address}. Ensure ${did} is a valid Ara identity.`)
   }
 
   let deposited
