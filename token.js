@@ -37,7 +37,6 @@ async function balanceOf(did, keyringOpts) {
   } catch (err) {
     throw err
   }
-
   if (!isAddress(address)) {
     throw new Error(`${did} did not resolve to a valid Ethereum address. Got ${address}. Ensure ${did} is a valid Ara identity.`)
   }
@@ -85,8 +84,10 @@ async function totalSupply() {
  * @throws {TypeError|Error}
  */
 async function allowance(opts = {}) {
-  if (!opts || 'object' !== typeof opts) {
-    throw new TypeError(`Expected 'opts' to be an object. Got ${opts}. Try passing in 'opts.owner' and 'opts.spender'.`)
+  if (!opts.owner || 'string' !== typeof opts.owner) {
+    throw new TypeError(`Expected opts.owner to be a valid string. Got ${opts.owner}. Ensure opts.owner is a valid Ara ID or Ethereum Address`)
+  } else if (!opts.spender || 'string' !== typeof opts.owner) {
+    throw new TypeError(`Expected opts.spender to be a valid string. Got ${opts.spender}. Ensure opts.spender is a valid Ara ID or Ethereum Address`)
   }
 
   let { owner, spender } = opts
@@ -130,9 +131,7 @@ async function allowance(opts = {}) {
  * @throws {TypeError|Error}
  */
 async function transfer(opts = {}) {
-  if (!opts || 'object' !== typeof opts) {
-    throw new TypeError(`Expected 'opts' to be an object. Got ${opts}. Try passing in 'opts.to', 'opts.val', 'opts.did', and 'opts.password'.`)
-  } else if (!opts.to || 'string' !== typeof opts.to) {
+  if (!opts.to || 'string' !== typeof opts.to) {
     throw new TypeError(`Expected 'opts.to' to be non-empty Ara DID string. Got ${opts.to}. Ensure ${opts.to} is a valid Ara identity.`)
   } else if (!opts.val || 0 >= Number(opts.val)) {
     throw new TypeError(`Expected 'opts.val' to be greater than 0. Got ${opts.val}. Ensure ${opts.val} is a positive number.`)
@@ -248,9 +247,7 @@ async function approve(opts = {}) {
  * @throws {TypeError|Error}
  */
 async function transferFrom(opts = {}) {
-  if (!opts || 'object' !== typeof opts) {
-    throw new TypeError(`Expected 'opts' to be an object. Got ${opts}. Try passing in 'opts.from', 'opts.to', 'opts.val', 'opts.did', and 'opts.password'.`)
-  } else if (!opts.to || 'string' !== typeof opts.to) {
+  if (!opts.to || 'string' !== typeof opts.to) {
     throw new TypeError(`Expected 'opts.to' to be non-empty Ara DID string. Got ${opts.to}. Ensure ${opts.to} is a valid Ara identity.`)
   } else if (!opts.from || 'string' !== typeof opts.from) {
     throw new TypeError(`Expected 'opts.from' to be non-empty Ara DID string. Got ${opts.from}. Ensure ${opts.from} is a valid Ara identity.`)
@@ -443,7 +440,12 @@ function expandTokenValue(val) {
   }
   const input = `${val}e${TOKEN_DECIMALS}`
   const { web3 } = createContext({ provider: false })
-  return web3.utils.toBN(BigNumber(input)).toString()
+  try {
+    const result = web3.utils.toBN(BigNumber(input)).toString()
+    return result
+  } catch (err) {
+    throw err
+  }
 }
 
 /**
@@ -476,9 +478,7 @@ function constrainTokenValue(val) {
  * @throws {TypeError}
  */
 async function modifyDeposit(opts = {}) {
-  if (!opts || 'object' !== typeof opts) {
-    throw new TypeError(`Expected 'opts' to be an object. Got ${opts}. Try passing in 'opts.did', 'opts.password', and 'opts.val'.`)
-  } else if (!opts.did || 'string' !== typeof opts.did) {
+  if (!opts.did || 'string' !== typeof opts.did) {
     throw new TypeError(`Expected 'opts.did' to be non-empty Ara DID string. Got ${opts.did}. Ensure ${opts.did} is a valid Ara identity.`)
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${opts.password}.`)

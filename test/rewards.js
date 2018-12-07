@@ -432,16 +432,16 @@ test.serial('allocate(opts) invalid job object', async (t) => {
   const invalidRewards = [ -1, 'h', true ]
 
   // slice arrays to pass by value
-  await t.throwsAsync(rewards.allocate({ flag: 'mismatch lengths', requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4.slice(0), rewards: validRewards3.slice(0) } }), Error)
-  await t.throwsAsync(rewards.allocate({ flag: 'invalid rewards', requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4.slice(0) } }), TypeError)
-  await t.throwsAsync(rewards.allocate({ flag: 'invalid farmers', requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: invalidFarmers.slice(0) } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4.slice(0), rewards: validRewards3.slice(0) } }), Error)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4.slice(0) } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: invalidFarmers.slice(0) } }), TypeError)
 
-  await t.throwsAsync(rewards.allocate({ flag: 'invalid rewards', requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4.slice(0), rewards: invalidRewards.slice(0) } }), TypeError)
-  await t.throwsAsync(rewards.allocate({ flag: 'invalid farmers', requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: invalidFarmers.slice(0), rewards: validRewards3.slice(0) } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4.slice(0), rewards: invalidRewards.slice(0) } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: invalidFarmers.slice(0), rewards: validRewards3.slice(0) } }), TypeError)
 
-  await t.throwsAsync(rewards.allocate({ flag: 'return budget obj', requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4.slice(0), rewards: validRewards4.slice(0), returnBudget: { } } }), TypeError)
-  await t.throwsAsync(rewards.allocate({ flag: 'return budget string', requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4.slice(0), rewards: validRewards4.slice(0), returnBudget: 'notaboolean' } }), TypeError)
-  await t.throwsAsync(rewards.allocate({ flag: 'return budget number', requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4.slice(0), rewards: validRewards4.slice(0), returnBudget: 123 } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4.slice(0), rewards: validRewards4.slice(0), returnBudget: { } } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4.slice(0), rewards: validRewards4.slice(0), returnBudget: 'notaboolean' } }), TypeError)
+  await t.throwsAsync(rewards.allocate({ requesterDid, contentDid, password, job: { jobId: VALID_JOBID, farmers: validFarmers4.slice(0), rewards: validRewards4.slice(0), returnBudget: 123 } }), TypeError)
 })
 
 test.serial('submit(opts) invalid opts', async (t) => {
