@@ -48,7 +48,7 @@ async function balanceOf(did, keyringOpts) {
       abi: tokenAbi,
       address: ARA_TOKEN_ADDRESS,
       functionName: 'balanceOf',
-      arguments: [ address ]
+      arguments: [address]
     })
   } catch (err) {
     throw err
@@ -110,7 +110,7 @@ async function allowance(opts = {}) {
       abi: tokenAbi,
       address: ARA_TOKEN_ADDRESS,
       functionName: 'allowance',
-      arguments: [ owner, spender ]
+      arguments: [owner, spender]
     })
   } catch (err) {
     throw err
@@ -170,7 +170,7 @@ async function transfer(opts = {}) {
       data: {
         abi: tokenAbi,
         functionName: 'transfer',
-        values: [ to, val ]
+        values: [to, val]
       }
     })
     receipt = await tx.sendSignedTransaction(transferTx)
@@ -224,7 +224,7 @@ async function approve(opts = {}) {
       data: {
         abi: tokenAbi,
         functionName: 'approve',
-        values: [ spender, val ]
+        values: [spender, val]
       }
     })
     receipt = await tx.sendSignedTransaction(approveTx)
@@ -300,7 +300,7 @@ async function transferFrom(opts = {}) {
       data: {
         abi: tokenAbi,
         functionName: 'transferFrom',
-        values: [ from, to, val ]
+        values: [from, to, val]
       }
     })
     receipt = await tx.sendSignedTransaction(transferFromTx)
@@ -355,7 +355,7 @@ async function increaseApproval(opts = {}) {
       data: {
         abi: tokenAbi,
         functionName: 'increaseApproval',
-        values: [ spender, val ]
+        values: [spender, val]
       }
     })
 
@@ -417,7 +417,7 @@ async function decreaseApproval(opts = {}) {
       data: {
         abi: tokenAbi,
         functionName: 'decreaseApproval',
-        values: [ spender, val ]
+        values: [spender, val]
       }
     })
     receipt = await tx.sendSignedTransaction(decreaseApprovalTx)
@@ -513,7 +513,7 @@ async function modifyDeposit(opts = {}) {
       data: {
         abi: tokenAbi,
         functionName: wd ? 'withdraw' : 'deposit',
-        values: [ val ]
+        values: [val]
       }
     })
     receipt = await tx.sendSignedTransaction(depositTx)
@@ -553,7 +553,7 @@ async function getAmountDeposited(did, keyringOpts) {
       abi: tokenAbi,
       address: ARA_TOKEN_ADDRESS,
       functionName: 'amountDeposited',
-      arguments: [ address ]
+      arguments: [address]
     })
   } catch (err) {
     throw err
@@ -571,6 +571,8 @@ function _validateApprovalOpts(opts) {
     throw new TypeError(`Expected 'opts.val' to be greater than 0. Got ${opts.val}. Ensure ${opts.val} is a positive number.`)
   } else if (!opts.did || 'string' !== typeof opts.did) {
     throw new TypeError(`Expected 'opts.did' to be non-empty Ara DID string. Got ${opts.did}. Ensure ${opts.did} is a valid Ara identity.`)
+  } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
+    throw new TypeError("Expected 'opts.estimate' to be a boolean")
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${opts.password}.`)
   }
