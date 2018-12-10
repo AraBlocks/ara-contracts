@@ -36,6 +36,7 @@ const {
  * @param  {String}  opts.contentDid
  * @param  {String}  opts.password
  * @param  {Number}  opts.budget
+ * @param  {Boolean} opts.estimate
  * @param  {Object} [opts.keyringOpts]
  * @throws {Error,TypeError}
  */
@@ -59,6 +60,7 @@ async function purchase(opts) {
   } = opts
 
   let { budget, contentDid } = opts
+  const estimate = opts.estimate || false
 
   const jobId = toHexString(randomBytes(32), { encoding: 'utf8', ethify: true })
   budget = budget || 0
@@ -104,15 +106,17 @@ async function purchase(opts) {
     if (val) {
       val = val.toString()
 
-      receipt = await token.increaseApproval({
+      load = await token.increaseApproval({
         did,
         password,
         spender: proxy,
-        val
+        val,
+        estimate
       })
 
-      if (receipt.status) {
+      if (load.status) {
         // 45353 gas
+        receipt = load
         debug('gas used', receipt.gasUsed)
       }
     }
@@ -133,6 +137,12 @@ async function purchase(opts) {
         ]
       }
     })
+
+    if (estimate) {
+      const cost = tx.estimateCost(purchaseTx)
+      ctx.close()
+      return String(Number(cost) + Number(load))
+    }
 
     receipt = await tx.sendSignedTransaction(purchaseTx)
     ctx.close()

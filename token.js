@@ -327,6 +327,7 @@ async function increaseApproval(opts = {}) {
 
   let { did, spender, val } = opts
   const { password, keyringOpts } = opts
+  const estimate = opts.estimate || false
 
   try {
     ({ did } = await validate({
@@ -357,6 +358,13 @@ async function increaseApproval(opts = {}) {
         values: [ spender, val ]
       }
     })
+
+    if (estimate) {
+      ctx.close()
+      const cost = tx.estimateCost(increaseApprovalTx)
+      return cost
+    }
+
     receipt = await tx.sendSignedTransaction(increaseApprovalTx)
     ctx.close()
   } catch (err) {
