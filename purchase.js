@@ -49,6 +49,8 @@ async function purchase(opts) {
     throw TypeError('Expecting non-empty content DID.')
   } else if ('string' !== typeof opts.password || !opts.password) {
     throw TypeError('Expecting non-empty password.')
+  } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
+    throw new TypeError("Expected 'opts.estimate' to be a boolean")
   } else if ('number' !== typeof opts.budget || 0 > opts.budget) {
     throw TypeError('Expecting budget to be 0 or greater.')
   }
@@ -82,6 +84,7 @@ async function purchase(opts) {
   did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
+  let load
   let receipt
   try {
     const purchased = await hasPurchased({ purchaserDid: did, contentDid })
@@ -106,7 +109,7 @@ async function purchase(opts) {
     if (val) {
       val = val.toString()
 
-      const load = await token.increaseApproval({
+      load = await token.increaseApproval({
         did,
         password,
         spender: proxy,
