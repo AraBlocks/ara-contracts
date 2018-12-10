@@ -106,7 +106,7 @@ async function purchase(opts) {
     if (val) {
       val = val.toString()
 
-      load = await token.increaseApproval({
+      const load = await token.increaseApproval({
         did,
         password,
         spender: proxy,
