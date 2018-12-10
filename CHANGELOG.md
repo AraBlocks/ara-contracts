@@ -1,4 +1,4 @@
-## [0.11.1](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.11.1) (2018-12-10)
+## [0.11.2](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.11.2) (2018-12-10)
 
 
 ### Bug Fixes
@@ -17,19 +17,20 @@
 * remove async in promise ([733d17f](https://github.com/AraBlocks/ara-contracts/commit/733d17f))
 * remove logs ([f23c4ed](https://github.com/AraBlocks/ara-contracts/commit/f23c4ed))
 * remove owner being passed into ara-util.validate ([7cd9aad](https://github.com/AraBlocks/ara-contracts/commit/7cd9aad))
-* revert contracts/ ignore, ara-identity 0.34.x => 0.37.x ([8914c82](https://github.com/AraBlocks/ara-contracts/commit/8914c82))
+* revert contracts/ ignore, ara-identity 0.34.x => 0.37.x ([73317cb](https://github.com/AraBlocks/ara-contracts/commit/73317cb))
 * should fix travis ([68b67fc](https://github.com/AraBlocks/ara-contracts/commit/68b67fc))
-* test script ([7868e36](https://github.com/AraBlocks/ara-contracts/commit/7868e36))
-* travis ([2e20dbb](https://github.com/AraBlocks/ara-contracts/commit/2e20dbb))
-* travis ([3cfc45b](https://github.com/AraBlocks/ara-contracts/commit/3cfc45b))
-* travis ([79870a8](https://github.com/AraBlocks/ara-contracts/commit/79870a8))
 * **.npmignore:** revert bin/ and lib/ in npmignore ([392288e](https://github.com/AraBlocks/ara-contracts/commit/392288e))
+* travis ([3cfc45b](https://github.com/AraBlocks/ara-contracts/commit/3cfc45b))
+* **.npmignore:** revert migrations, installed_contracts in ignore ([8afbca3](https://github.com/AraBlocks/ara-contracts/commit/8afbca3))
+* test script ([7868e36](https://github.com/AraBlocks/ara-contracts/commit/7868e36))
+* **migrations/2_deploy_contracts.js:** allow local truffle deployments ([0835298](https://github.com/AraBlocks/ara-contracts/commit/0835298))
+* travis ([79870a8](https://github.com/AraBlocks/ara-contracts/commit/79870a8))
+* travis ([2e20dbb](https://github.com/AraBlocks/ara-contracts/commit/2e20dbb))
 * **constants.js:** lint it up ([c061587](https://github.com/AraBlocks/ara-contracts/commit/c061587))
 * **constants.js:** remove chainIds from address switch ([1a44cc3](https://github.com/AraBlocks/ara-contracts/commit/1a44cc3))
-* **constants.js:** revert privatenet addresses ([8e9ff24](https://github.com/AraBlocks/ara-contracts/commit/8e9ff24))
-* **migrations/2_deploy_contracts.js:** allow local truffle deployments ([0835298](https://github.com/AraBlocks/ara-contracts/commit/0835298))
 * travis? ([db5a541](https://github.com/AraBlocks/ara-contracts/commit/db5a541))
 * wrap bc events in promises ([510d235](https://github.com/AraBlocks/ara-contracts/commit/510d235))
+* **constants.js:** revert privatenet addresses ([8e9ff24](https://github.com/AraBlocks/ara-contracts/commit/8e9ff24))
 * **migrations/2_deploy_contracts.js:** fix undefined ctx in deploy ([13378e1](https://github.com/AraBlocks/ara-contracts/commit/13378e1))
 * **storage.js:** remove storage falsy checks ([8bd3ced](https://github.com/AraBlocks/ara-contracts/commit/8bd3ced))
 
