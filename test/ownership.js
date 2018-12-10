@@ -172,7 +172,12 @@ test.serial('approveOwnershipTransfer(opts)', async (t) => {
   const contentDid = getAfsDid1(t)
   const newOwnerDid = getOwnerDid2(t)
 
-  const cost = await ownership.approveOwnershipTransfer({ contentDid, newOwnerDid, password, estimate: true })
+  const cost = await ownership.approveOwnershipTransfer({
+    contentDid,
+    newOwnerDid,
+    password,
+    estimate: true
+  })
   t.true(cost > 0)
 
   const receipt = await ownership.approveOwnershipTransfer({ contentDid, newOwnerDid, password })
@@ -182,8 +187,7 @@ test.serial('approveOwnershipTransfer(opts)', async (t) => {
   t.is(owner.toLowerCase(), await getAddressFromDID(newOwnerDid))
 })
 
-test.serial('hasRequested(opts) invalid opts',  async (t) => {
-  const contentDid = getAfsDid1(t)
+test.serial('hasRequested(opts) invalid opts', async (t) => {
   const requesterDid = getOwnerDid2(t)
 
   await t.throwsAsync(ownership.hasRequested(), TypeError)
