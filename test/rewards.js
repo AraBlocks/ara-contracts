@@ -53,8 +53,7 @@ test.before(async (t) => {
   t.context.farmerAccount2 = await mirrorIdentity(TEST_FARMER_DID2)
   t.context.farmerAccount3 = await mirrorIdentity(TEST_FARMER_DID3)
 
-  await sendEthAraAndDeposit(TEST_FARMER_DID1)
-  await sendEthAraAndDeposit(TEST_FARMER_DID2)
+  await sendEthAraAndDeposit(TEST_FARMER_DID3)
 })
 
 test.after(async (t) => {
@@ -273,6 +272,8 @@ test.serial('redeem(opts) insufficient deposit', async (t) => {
     val: '100',
     withdraw: true
   })
+  const amountDeposited = await token.getAmountDeposited(TEST_FARMER_DID2)
+  t.is(amountDeposited, '0')
 
   await t.throwsAsync(rewards.redeem({ farmerDid: TEST_FARMER_DID2, contentDid, password }), Error)
 })
@@ -285,6 +286,8 @@ test.serial('redeem(opts)', async (t) => {
     password,
     val: '100'
   })
+  const amountDeposited = await token.getAmountDeposited(TEST_FARMER_DID2)
+  t.is(amountDeposited, '100')
 
   const cost = await rewards.redeem({
     farmerDid: TEST_FARMER_DID1,
