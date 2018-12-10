@@ -34,11 +34,6 @@ async function write(opts, estimate = true, append = false) {
   const { offsets: msOffsets, buffer: msBuffer } = opts.msData
   const { account, to } = opts
 
-  console.log(mtOffsets)
-  console.log(mtBuffer)
-
-  console.log(msOffsets)
-  console.log(msBuffer)
   const { tx: transaction, ctx } = await tx.create({
     gasLimit: 4000000,
     account,
