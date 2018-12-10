@@ -223,7 +223,6 @@ async function _updateOwnershipRequest(opts, functionName = '') {
   } = opts
   let { requesterDid } = opts
 
-  let requesterAddress
   try {
     await validate({
       label: functionName,
@@ -231,7 +230,6 @@ async function _updateOwnershipRequest(opts, functionName = '') {
       keyringOpts,
       password
     })
-    requesterAddress = await getAddressFromDID(getIdentifier(requesterDid))
   } catch (err) {
     throw err
   }
