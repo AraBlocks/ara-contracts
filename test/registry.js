@@ -155,7 +155,7 @@ test.serial('upgradeProxy()', async (t) => {
   const cost = await registry.upgradeProxy({
     contentDid: did,
     password,
-    version: 2,
+    version: 3,
     estimate: true
   })
   t.true(cost > 0)
@@ -163,11 +163,11 @@ test.serial('upgradeProxy()', async (t) => {
   const upgraded = await registry.upgradeProxy({
     contentDid: did,
     password,
-    version: 2
+    version: 3
   })
   t.true(upgraded)
   const version = await registry.getProxyVersion(did)
-  t.is(version, '2')
+  t.is(version, '3')
 })
 
 test.serial('getProxyVersion(contentDid) invalid opts', async (t) => {

@@ -85,6 +85,7 @@ contract Registry {
    */
   function upgradeProxyAndCall(bytes32 _contentId, string _version, bytes _data) public onlyProxyOwner(_contentId) {
     require(versions_[_version] != address(0), "Version does not exist.");
+    require(keccak256(abi.encodePacked(proxyImpls_[proxy])) != keccak256(abi.encodePacked(_version)), "Proxy is already on this version.");
     Proxy proxy = Proxy(proxies_[_contentId]);
     proxyImpls_[proxy] = _version;
     require(address(proxy).call(abi.encodeWithSignature("init(bytes)", _data)), "Init failed.");
