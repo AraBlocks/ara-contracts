@@ -47,7 +47,7 @@ async function getLibrary(requesterDid = '') {
 
 /**
  * Gets the size of requesterDid's library
- * @param  {String} unhashd requesterDid
+ * @param  {String} unhashed requesterDid
  * @return {String} // web3 coerces return type uint16 to a string for some reason
  * @throws {TypeError}
  */

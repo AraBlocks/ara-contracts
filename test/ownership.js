@@ -1,5 +1,3 @@
-/* eslint-disable no-await-in-loop */
-
 const { getAddressFromDID } = require('ara-util')
 const ownership = require('../ownership')
 const test = require('ava')
@@ -88,9 +86,14 @@ test.serial('requestOwnership and revokeOwnershipRequest no proxy', async (t) =>
   const contentDid = getAfsDid2(t)
   const requesterDid = getOwnerDid2(t)
 
+  const promises = []
   for (const func of funcMap) {
-    await t.throwsAsync(func({ contentDid, requesterDid, password }), Error)
+    promises.push(new Promise(async (resolve) => {
+      await t.throwsAsync(func({ contentDid, requesterDid, password }))
+      resolve()
+    }))
   }
+  await Promise.all(promises)
 })
 
 test.serial('getOwner(contentDid)', async (t) => {
@@ -287,60 +290,65 @@ test.serial('requestOwnership and revokeOwnershipRequest invalid generic opts', 
   const undeployedDid = getAfsDid2(t)
   const requesterDid = getOwnerDid2(t)
 
+  const promises = []
   for (const func of funcMap) {
-    await t.throwsAsync(func(), TypeError)
-    await t.throwsAsync(func({ }), TypeError)
-    await t.throwsAsync(func(''), TypeError)
-    await t.throwsAsync(func('opts'), TypeError)
-    await t.throwsAsync(func(123), TypeError)
-    await t.throwsAsync(func([ ]), TypeError)
-    await t.throwsAsync(func(true), TypeError)
+    promises.push(new Promise(async (resolve) => {
+      await t.throwsAsync(func(), TypeError)
+      await t.throwsAsync(func({ }), TypeError)
+      await t.throwsAsync(func(''), TypeError)
+      await t.throwsAsync(func('opts'), TypeError)
+      await t.throwsAsync(func(123), TypeError)
+      await t.throwsAsync(func([ ]), TypeError)
+      await t.throwsAsync(func(true), TypeError)
 
-    await t.throwsAsync(func({ contentDid }), TypeError)
-    await t.throwsAsync(func({ contentDid: '' }), TypeError)
-    await t.throwsAsync(func({ contentDid: 'did:ara:invalid' }), Error)
-    await t.throwsAsync(func({ contentDid: 123 }), TypeError)
-    await t.throwsAsync(func({ contentDid: true }), TypeError)
-    await t.throwsAsync(func({ contentDid: { } }), TypeError)
+      await t.throwsAsync(func({ contentDid }), TypeError)
+      await t.throwsAsync(func({ contentDid: '' }), TypeError)
+      await t.throwsAsync(func({ contentDid: 'did:ara:invalid' }), Error)
+      await t.throwsAsync(func({ contentDid: 123 }), TypeError)
+      await t.throwsAsync(func({ contentDid: true }), TypeError)
+      await t.throwsAsync(func({ contentDid: { } }), TypeError)
 
-    await t.throwsAsync(func({ contentDid, requesterDid }), TypeError)
-    await t.throwsAsync(func({ contentDid, requesterDid: '' }), TypeError)
-    await t.throwsAsync(func({ contentDid, requesterDid: 'did:ara:invalid' }), Error)
-    await t.throwsAsync(func({ contentDid, requesterDid: 123 }), TypeError)
-    await t.throwsAsync(func({ contentDid, requesterDid: true }), TypeError)
-    await t.throwsAsync(func({ contentDid, requesterDid: { } }), TypeError)
+      await t.throwsAsync(func({ contentDid, requesterDid }), TypeError)
+      await t.throwsAsync(func({ contentDid, requesterDid: '' }), TypeError)
+      await t.throwsAsync(func({ contentDid, requesterDid: 'did:ara:invalid' }), Error)
+      await t.throwsAsync(func({ contentDid, requesterDid: 123 }), TypeError)
+      await t.throwsAsync(func({ contentDid, requesterDid: true }), TypeError)
+      await t.throwsAsync(func({ contentDid, requesterDid: { } }), TypeError)
 
-    await t.throwsAsync(func({ contentDid, requesterDid, password: '' }), TypeError)
-    await t.throwsAsync(func({ contentDid, requesterDid, password: 'wrong' }), Error)
-    await t.throwsAsync(func({ contentDid, requesterDid, password: 123 }), TypeError)
-    await t.throwsAsync(func({ contentDid, requesterDid, password: true }), TypeError)
-    await t.throwsAsync(func({ contentDid, requesterDid, password: { } }), TypeError)
+      await t.throwsAsync(func({ contentDid, requesterDid, password: '' }), TypeError)
+      await t.throwsAsync(func({ contentDid, requesterDid, password: 'wrong' }), Error)
+      await t.throwsAsync(func({ contentDid, requesterDid, password: 123 }), TypeError)
+      await t.throwsAsync(func({ contentDid, requesterDid, password: true }), TypeError)
+      await t.throwsAsync(func({ contentDid, requesterDid, password: { } }), TypeError)
 
-    await t.throwsAsync(func({
-      contentDid,
-      requesterDid,
-      password,
-      estimate: { }
-    }), TypeError)
+      await t.throwsAsync(func({
+        contentDid,
+        requesterDid,
+        password,
+        estimate: { }
+      }), TypeError)
 
-    await t.throwsAsync(func({
-      contentDid,
-      requesterDid,
-      password,
-      estimate: 'estimate'
-    }), TypeError)
+      await t.throwsAsync(func({
+        contentDid,
+        requesterDid,
+        password,
+        estimate: 'estimate'
+      }), TypeError)
 
-    await t.throwsAsync(func({
-      contentDid,
-      requesterDid,
-      password,
-      estimate: 123
-    }), TypeError)
+      await t.throwsAsync(func({
+        contentDid,
+        requesterDid,
+        password,
+        estimate: 123
+      }), TypeError)
 
-    await t.throwsAsync(func({
-      contentDid: undeployedDid,
-      requesterDid,
-      password
-    }), Error)
+      await t.throwsAsync(func({
+        contentDid: undeployedDid,
+        requesterDid,
+        password
+      }), Error)
+      resolve()
+    }))
   }
+  await Promise.all(promises)
 })

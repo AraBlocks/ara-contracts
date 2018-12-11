@@ -54,29 +54,7 @@ test.after(async (t) => {
 
 test.serial('purchase(opts) no budget', async (t) => {
   const contentDid = getAfsDid1(t)
-  const requesterDid = getDid(t)
-  const hashedRequesterDid = toHexString(hashDID(requesterDid), { encoding: 'hex', ethify: true })
-
-  let proxyAddress
-  try {
-    proxyAddress = await registry.deployProxy({ contentDid, password, version: '1' })
-  } catch (err) {
-    proxyAddress = await registry.getProxyAddress(contentDid)
-  }
-
-  const { contract: proxy, ctx } = await contract.get(abi, proxyAddress)
-  proxy.events.Purchased({ fromBlock: 'latest' })
-    .on('data', (log) => {
-      const { returnValues: { _purchaser } } = log
-      if (_purchaser === hashedRequesterDid) {
-        t.pass()
-      } else {
-        t.fail()
-      }
-      ctx.close()
-    })
-
-  const { jobId, receipt } = await purchase({ requesterDid, contentDid, password })
+  const { jobId, receipt } = await _purchaseWithBudget(contentDid, 0, t)
 
   t.not(jobId, ZERO_BYTES32)
   t.true(receipt && 'object' === typeof receipt)
@@ -97,29 +75,7 @@ test.serial('purchase(opts) no proxy', async (t) => {
 
 test.serial('purchase(opts) budget', async (t) => {
   const contentDid = getAfsDid2(t)
-  const requesterDid = getDid(t)
-  const hashedRequesterDid = toHexString(hashDID(requesterDid), { encoding: 'hex', ethify: true })
-
-  const proxyAddress = await registry.deployProxy({ contentDid, password, version: '1' })
-
-  const { contract: proxy, ctx } = await contract.get(abi, proxyAddress)
-  proxy.events.Purchased({ fromBlock: 'latest' })
-    .on('data', (log) => {
-      const { returnValues: { _purchaser } } = log
-      if (_purchaser === hashedRequesterDid) {
-        t.pass()
-      } else {
-        t.fail()
-      }
-      ctx.close()
-    })
-
-  const { jobId, receipt } = await purchase({
-    requesterDid,
-    contentDid,
-    password,
-    budget: 100
-  })
+  const { jobId, receipt } = await _purchaseWithBudget(contentDid, 100, t)
 
   t.not(jobId, ZERO_BYTES32)
   t.true(receipt && 'object' === typeof receipt)
@@ -183,3 +139,34 @@ test('purchase(opts) invalid opts', async (t) => {
     budget: -1
   }), TypeError)
 })
+
+async function _purchaseWithBudget(contentDid, budget, t) {
+  const requesterDid = getDid(t)
+  const hashedRequesterDid = toHexString(hashDID(requesterDid), { encoding: 'hex', ethify: true })
+
+  let proxyAddress
+  try {
+    proxyAddress = await registry.deployProxy({ contentDid, password, version: '1' })
+  } catch (err) {
+    proxyAddress = await registry.getProxyAddress(contentDid)
+  }
+
+  const { contract: proxy, ctx } = await contract.get(abi, proxyAddress)
+  proxy.events.Purchased({ fromBlock: 'latest' })
+    .on('data', (log) => {
+      const { returnValues: { _purchaser } } = log
+      if (_purchaser === hashedRequesterDid) {
+        t.pass()
+      } else {
+        t.fail()
+      }
+      ctx.close()
+    })
+
+  return purchase({
+    requesterDid,
+    contentDid,
+    password,
+    budget
+  })
+}
