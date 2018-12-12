@@ -438,12 +438,9 @@ async function deployNewStandard(opts) {
     const { contract: registry, ctx: ctx2 } = await contract.get(abi, constants.REGISTRY_ADDRESS)
     address = await new Promise((resolve, reject) => {
       tx.sendSignedTransaction(transaction)
-      console.log('sent transaction, where\'s my event')
       registry.events.StandardAdded({ fromBlock: 'latest' })
         .on('data', (log) => {
-          console.log('ON DATA')
           const { returnValues: { _version, _address } } = log
-          console.log(_version, version, sha3(version, false))
           if (_version === sha3(version, false)) {
             resolve(_address)
           }
