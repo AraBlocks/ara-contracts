@@ -145,7 +145,7 @@ async function purchase(opts) {
     if (estimate) {
       const cost = tx.estimateCost(purchaseTx)
       ctx.close()
-      return String(Number(cost) + Number(load))
+      return String(Number(cost) + Number(load || 0))
     }
 
     receipt = await tx.sendSignedTransaction(purchaseTx)
