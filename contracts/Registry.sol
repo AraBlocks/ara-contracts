@@ -11,8 +11,8 @@ contract Registry {
   string public latestVersion_;
 
   event ProxyDeployed(address indexed _owner, bytes32 indexed _contentId, address _address);
-  event ProxyUpgraded(bytes32 indexed _contentId, string _version);
-  event StandardAdded(string _version, address _address);
+  event ProxyUpgraded(bytes32 indexed _contentId, string indexed _version);
+  event StandardAdded(string indexed _version, address _address);
 
   constructor() public {
     owner_ = msg.sender;

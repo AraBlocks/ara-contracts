@@ -42,6 +42,7 @@ const {
  * @param  {String}         opts.requesterDid
  * @param  {String}         opts.contentDid
  * @param  {String}         opts.password
+ * @param  {Boolean}        [opts.estimate]
  * @param  {Object}         [opts.keyringOpts]
  * @param  {Object}         opts.job
  * @param  {string|Buffer}  opts.job.jobId
@@ -60,6 +61,8 @@ async function submit(opts) {
     throw TypeError('Expecting non-empty password')
   } else if (!opts.job || 'object' !== typeof opts.job) {
     throw TypeError('Expecting job object.')
+  } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
+    throw TypeError('Expecting opts.estimate to be of type boolean')
   }
 
   const {
@@ -103,6 +106,8 @@ async function submit(opts) {
   did = `${AID_PREFIX}${did}`
   const acct = await account.load({ did, password })
 
+  const estimate = opts.estimate || false
+
   debug(`${did} submitting ${budget} Ara as rewards for ${jobId} in ${contentDid}`)
 
   // make sure user hasn't already purchased
@@ -122,10 +127,11 @@ async function submit(opts) {
       did,
       password,
       spender: proxy,
-      val: budget
+      val: budget,
+      estimate
     })
 
-    if (receipt.status) {
+    if ('object' === typeof receipt && receipt.status) {
       // 30225 gas
       debug('gas used', receipt.gasUsed)
     }
@@ -145,6 +151,12 @@ async function submit(opts) {
         ]
       }
     })
+
+    if (estimate) {
+      const cost = tx.estimateCost(submitTx)
+      ctx1.close()
+      return Number(cost) + Number(receipt)
+    }
 
     const { contract: proxyContract, ctx: ctx2 } = await contract.get(afsAbi, proxy)
     receipt = await new Promise((resolve, reject) => {
@@ -175,6 +187,7 @@ async function submit(opts) {
  * @param  {String}         opts.requesterDid
  * @param  {String}         opts.contentDid
  * @param  {String}         opts.password
+ * @param  {Boolean}        [opts.estimate]
  * @param  {Object}         [opts.keyringOpts]
  * @param  {Object}         opts.job
  * @param  {string|Buffer}  opts.job.jobId
@@ -195,6 +208,8 @@ async function allocate(opts) {
     throw TypeError('Expecting non-empty password')
   } else if (!opts.job || 'object' !== typeof opts.job) {
     throw TypeError('Expecting job object.')
+  } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
+    throw TypeError('Expecting opts.estimate to be of type boolean')
   }
 
   const {
@@ -266,6 +281,7 @@ async function allocate(opts) {
   did = `${AID_PREFIX}${did}`
 
   const acct = await account.load({ did, password })
+  const estimate = opts.estimate || false
 
   // make sure user hasn't already purchased
   const purchased = await hasPurchased({ contentDid, purchaserDid: did })
@@ -297,6 +313,12 @@ async function allocate(opts) {
         ]
       }
     })
+
+    if (estimate) {
+      const cost = tx.estimateCost(allocateTx)
+      ctx1.close()
+      return cost
+    }
 
     const receipt = await tx.sendSignedTransaction(allocateTx)
     ctx1.close()
