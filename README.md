@@ -759,6 +759,8 @@ Checks if a requester `DID` has requested ownership of an AFS.
   - `contentDid` - The `DID` of the content in question
   - `keyringOpts` - optional Keyring options
 
+Returns `boolean`.
+
 ```js
 const hasRequested = await ownership.hasRequested({ requesterDid, contentDid })
 ```
