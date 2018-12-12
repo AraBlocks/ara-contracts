@@ -12,7 +12,7 @@ contract Library {
     mapping (uint16 => bytes32) content; // index => contentId (unhashed)
   }
 
-  event AddedToLib(bytes32 indexed _contentId);
+  event AddedToLib(bytes32 indexed _identity, bytes32 indexed _contentId);
 
   constructor(address _registry) public {
     owner_ = msg.sender;
@@ -43,6 +43,6 @@ contract Library {
     assert (libraries_[_identity].content[libSize] == bytes32(0));
     libraries_[_identity].content[libSize] = _contentId;
     libraries_[_identity].size++;
-    emit AddedToLib(_contentId);
+    emit AddedToLib(_identity, _contentId);
   }
 }

@@ -2,19 +2,11 @@
 
 const { abi } = require('./build/contracts/Registry.json')
 const debug = require('debug')('ara-contracts:registry')
-const clearModule = require('clear-module')
 const { parse, resolve } = require('path')
 const solc = require('solc')
 const fs = require('fs')
 
-const {
-  AID_PREFIX,
-  LIBRARY_ADDRESS,
-  REGISTRY_ADDRESS,
-  ARA_TOKEN_ADDRESS,
-  STANDARD_VERSION,
-  ZERO_ADDRESS
-} = require('./constants')
+let constants = require('./constants')
 
 const {
   validate,
@@ -22,6 +14,7 @@ const {
   getDocumentOwner,
   web3: {
     tx,
+    sha3,
     call,
     account,
     contract,
@@ -57,7 +50,7 @@ async function getProxyAddress(contentDid = '') {
   try {
     return call({
       abi,
-      address: REGISTRY_ADDRESS,
+      address: constants.REGISTRY_ADDRESS,
       functionName: 'getProxyAddress',
       arguments: [
         toHexString(contentDid, { encoding: 'hex', ethify: true })
@@ -78,7 +71,7 @@ async function getProxyVersion(contentDid = '') {
   try {
     return call({
       abi,
-      address: REGISTRY_ADDRESS,
+      address: constants.REGISTRY_ADDRESS,
       functionName: 'getProxyVersion',
       arguments: [
         toHexString(contentDid, { encoding: 'hex', ethify: true })
@@ -129,12 +122,12 @@ async function upgradeProxy(opts) {
     throw err
   }
 
-  if (ZERO_ADDRESS === await getStandard(version)) {
+  if (constants.ZERO_ADDRESS === await getStandard(version)) {
     throw new Error(`AFS Standard version ${version} does not exist. Please try again with an existing version.`)
   }
 
   let owner = getDocumentOwner(ddo, true)
-  owner = `${AID_PREFIX}${owner}`
+  owner = `${constants.AID_PREFIX}${owner}`
 
   const acct = await account.load({ did: owner, password })
 
@@ -142,7 +135,7 @@ async function upgradeProxy(opts) {
   try {
     const { tx: transaction, ctx: ctx1 } = await tx.create({
       account: acct,
-      to: REGISTRY_ADDRESS,
+      to: constants.REGISTRY_ADDRESS,
       gasLimit: 1000000,
       data: {
         abi,
@@ -160,7 +153,7 @@ async function upgradeProxy(opts) {
       return cost
     }
 
-    const { contract: registry, ctx: ctx2 } = await contract.get(abi, REGISTRY_ADDRESS)
+    const { contract: registry, ctx: ctx2 } = await contract.get(abi, constants.REGISTRY_ADDRESS)
     upgraded = await new Promise((resolve, reject) => {
       tx.sendSignedTransaction(transaction)
       // listen to ProxyUpgraded event for proxy address
@@ -206,7 +199,7 @@ async function deployProxy(opts) {
   const { password, contentDid, keyringOpts } = opts
   const estimate = opts.estimate || false
 
-  let version = opts.version || STANDARD_VERSION
+  let version = opts.version || constants.STANDARD_VERSION
   if ('number' === typeof version) {
     version = version.toString()
   }
@@ -232,18 +225,18 @@ async function deployProxy(opts) {
 
   debug('creating tx to deploy proxy for', did)
   let owner = getDocumentOwner(ddo, true)
-  owner = `${AID_PREFIX}${owner}`
+  owner = `${constants.AID_PREFIX}${owner}`
   const acct = await account.load({ did: owner, password })
 
   let proxyAddress = null
   try {
     const encodedData = web3Abi.encodeParameters(
       [ 'address', 'address', 'address', 'bytes32' ],
-      [ acct.address, ARA_TOKEN_ADDRESS, LIBRARY_ADDRESS, toHexString(contentDid, { encoding: 'hex', ethify: true }) ]
+      [ acct.address, constants.ARA_TOKEN_ADDRESS, constants.LIBRARY_ADDRESS, toHexString(contentDid, { encoding: 'hex', ethify: true }) ]
     )
     const { tx: transaction, ctx: ctx1 } = await tx.create({
       account: acct,
-      to: REGISTRY_ADDRESS,
+      to: constants.REGISTRY_ADDRESS,
       gasLimit: 3000000,
       data: {
         abi,
@@ -260,7 +253,7 @@ async function deployProxy(opts) {
       ctx1.close()
       return cost
     }
-    const { contract: registry, ctx: ctx2 } = await contract.get(abi, REGISTRY_ADDRESS)
+    const { contract: registry, ctx: ctx2 } = await contract.get(abi, constants.REGISTRY_ADDRESS)
     proxyAddress = await new Promise((resolve, reject) => {
       tx.sendSignedTransaction(transaction)
       // listen to ProxyDeployed event for proxy address
@@ -292,7 +285,7 @@ async function getLatestStandard() {
   try {
     const version = await call({
       abi,
-      address: REGISTRY_ADDRESS,
+      address: constants.REGISTRY_ADDRESS,
       functionName: 'latestVersion_'
     })
     return getStandard(version)
@@ -319,7 +312,7 @@ async function getStandard(version) {
   try {
     const address = await call({
       abi,
-      address: REGISTRY_ADDRESS,
+      address: constants.REGISTRY_ADDRESS,
       functionName: 'getImplementation',
       arguments: [
         version
@@ -344,8 +337,8 @@ async function getStandard(version) {
  */
 async function deployNewStandard(opts) {
   // ensures compatability with truffle migrate step
-  clearModule('./constants')
-  const constants = require('./constants')
+  delete require.cache[require.resolve('./constants')]
+  constants = require('./constants')
 
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
@@ -445,13 +438,15 @@ async function deployNewStandard(opts) {
     const { contract: registry, ctx: ctx2 } = await contract.get(abi, constants.REGISTRY_ADDRESS)
     address = await new Promise((resolve, reject) => {
       tx.sendSignedTransaction(transaction)
+      console.log('sent transaction, where\'s my event')
       registry.events.StandardAdded({ fromBlock: 'latest' })
         .on('data', (log) => {
+          console.log('ON DATA')
           const { returnValues: { _version, _address } } = log
-          if (_version === version) {
+          console.log(_version, version, sha3(version, false))
+          if (_version === sha3(version, false)) {
             resolve(_address)
           }
-          reject(new Error('Standard version mismatch'))
         })
         .on('error', log => reject(log))
     })

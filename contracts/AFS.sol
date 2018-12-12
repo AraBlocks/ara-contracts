@@ -30,12 +30,12 @@ contract AFS is Ownable {
     uint256 budget;
   }
 
-  event Commit();
-  event Unlisted();
+  event Commit(bytes32 _did);
+  event Unlisted(bytes32 _did);
   event PriceSet(uint256 _price);
   event BudgetSubmitted(address indexed _sender, bytes32 indexed _jobId, uint256 _budget);
   event RewardsAllocated(address indexed _farmer, bytes32 indexed _jobId, uint256 _allocated, uint256 _remaining);
-  event InsufficientDeposit(address _farmer);
+  event InsufficientDeposit(address indexed _farmer);
   event Purchased(bytes32 indexed _purchaser, uint256 _price);
   event Redeemed(address indexed _sender, uint256 _amount);
 
@@ -208,7 +208,7 @@ contract AFS is Ownable {
       }
     }
 
-    emit Commit();
+    emit Commit(did_);
   }
 
   function write(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
@@ -236,7 +236,7 @@ contract AFS is Ownable {
       }
     }
 
-    emit Commit();
+    emit Commit(did_);
   }
 
   function read(uint8 _file, uint256 _offset) public view returns (bytes buffer) {
@@ -252,7 +252,7 @@ contract AFS is Ownable {
 
   function unlist() public onlyBy(owner_) returns (bool success) {
     listed_ = false;
-    emit Unlisted();
+    emit Unlisted(did_);
     return true;
   }
 }
