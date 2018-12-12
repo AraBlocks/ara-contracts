@@ -92,11 +92,13 @@ The contracts in this repository are currently deployed on [Ara Privatenet](http
 * [token.constrainTokenValue(val)](#constrain)
 * [token.expandTokenValue(val)](#expand)
 
-### Commerce
+### Ownership
 
-* [async commerce.approveOwnershipTransfer(opts)](#approveownership)
-* [async commerce.revokeOwnershipRequest(opts)](#revokeownership)
-* [async commerce.requestOwnership(opts)](#requestownership)
+* [async ownership.approveOwnershipTransfer(opts)](#approveownership)
+* [async ownership.revokeOwnershipRequest(opts)](#revokeownership)
+* [async ownership.requestOwnership(opts)](#requestownership)
+* [async ownership.hasRequested(opts)](#hasrequested)
+* [async ownership.getOwner(contentDid)](#getowner)
 
 
 <a name="purchase"></a>
@@ -684,7 +686,7 @@ const expandedValue = token.expandTokenValue(constrainedValue) // expandedValue 
 ```
 
 <a name="approveownership"></a>
-### `async commerce.approveOwnershipTransfer(opts)`
+### `async ownership.approveOwnershipTransfer(opts)`
 
 Approves an AFS ownership transfer request.
 
@@ -697,7 +699,7 @@ Approves an AFS ownership transfer request.
 Returns transaction `receipt` object.
 
 ```js
-const receipt = await commerce.approveOwnershipTransfer({
+const receipt = await ownership.approveOwnershipTransfer({
   contentDid,
   password,
   newOwnerDid
@@ -705,7 +707,7 @@ const receipt = await commerce.approveOwnershipTransfer({
 ```
 
 <a name="revokeownership"></a>
-### `async commerce.revokeOwnershipRequest(opts)`
+### `async ownership.revokeOwnershipRequest(opts)`
 
 Revokes an outstanding ownership request of an AFS.
 
@@ -718,7 +720,7 @@ Revokes an outstanding ownership request of an AFS.
 Returns transaction `receipt` object.
 
 ```js
-const receipt = await commerce.revokeOwnershipRequest({
+const receipt = await ownership.revokeOwnershipRequest({
   requesterDid,
   contentDid,
   password
@@ -726,7 +728,7 @@ const receipt = await commerce.revokeOwnershipRequest({
 ```
 
 <a name="requestownership"></a>
-### `async commerce.requestOwnership(opts)`
+### `async ownership.requestOwnership(opts)`
 
 Requests ownership of an AFS.
 
@@ -735,15 +737,41 @@ Requests ownership of an AFS.
   - `contentDid` - The `DID` of the content to transfer ownership
   - `password` - The password of the account requesting ownership
   - `estimate` - optional Flag to check cost of `requestOwnership`
+  - `keyringOpts` - optional Keyring options
 
 Returns transaction `receipt` object.
 
 ```js
-const receipt = await commerce.requestOwnership({
+const receipt = await ownership.requestOwnership({
   requesterDid,
   contentDid,
   password
 })
+```
+
+<a name="hasrequested"></a>
+### `async ownership.hasRequested(opts)`
+
+Checks if a requester `DID` has requested ownership of an AFS.
+
+- `opts`
+  - `requesterDid` - The `DID` of the account requesting ownership
+  - `contentDid` - The `DID` of the content in question
+  - `keyringOpts` - optional Keyring options
+
+```js
+const hasRequested = await ownership.hasRequested({ requesterDid, contentDid })
+```
+
+<a name="getowner"></a>
+### `async ownership.getOwner(contentDid)`
+
+Gets the Ethereum address of the owner of an AFS.
+
+- `contentDid` - The `DID` of the content to get the owner for
+
+```js
+const owner = await ownership.getOwner(contentDid)
 ```
 
 ## Contributing
