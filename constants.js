@@ -6,7 +6,7 @@ module.exports = {
   },
 
   get REGISTRY_ADDRESS() {
-    const local = '0x68a085a21fbe285395296523b61e2c34e16e6c65'
+    const local = '0xf996af566992c7e34e6fd0bd3df79ec16296f5aa'
     const privatenet = '0xb5d7d042c5fbf143e36a2aa5f4ee06a72998470e'
     const testnet = '0xf7909332314a2b587176f14d7005ab0157a72340'
     const mainnet = ''
@@ -14,7 +14,7 @@ module.exports = {
   },
 
   get LIBRARY_ADDRESS() {
-    const local = '0x6ed6d0e84d9bcd113775af6a36d8967ca24f3c08'
+    const local = '0x231b665a03ffedd96b497e123861498d87f4a65f'
     const privatenet = '0x695a75a29674ee95bbd1323596cb6f9d14c579f8'
     const testnet = '0x257f0c1ac57cbecbc6565b6f543031f55bcedf15'
     const mainnet = ''
@@ -22,7 +22,7 @@ module.exports = {
   },
 
   get ARA_TOKEN_ADDRESS() {
-    const local = '0x53d82a040cb2f96d91621964ae40079ef55e3233'
+    const local = '0x90647064ae72c10d396b7b21ce52562dc73660de'
     const privatenet = '0x27d7efaa490a01b78a2b7e439cc4f7b56ceb501c'
     const testnet = '0x1ca4db2d6ec8c1d7b4e39e5d60e80337ea385ae5'
     const mainnet = ''
@@ -39,7 +39,7 @@ module.exports = {
 
   TEST_OWNER_ADDRESS: '0xa0b3a0ca8523e036a116184c5c07ca932e611d06',
   // 0x for ganache, no prefix for geth
-  TEST_OWNER_PK: '0x8662c06fab466f44e0b7937812671d07b4e298a609c7d9654e27c1d0d2653f20',
+  TEST_OWNER_PK: '0xc02898ee5e5956ed9a4573906419fb6688ce54f40beaa4f8a9c314253f5326c0',
   TEST_OWNER_PASSWORD: 'pass',
 
   // TODO(cckelly) get a better hold on constants
