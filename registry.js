@@ -208,13 +208,13 @@ async function deployProxy(opts) {
     version = version.toString()
   }
 
-  // identifier portion of content DID
+  // content DID identifier
   let did
-  // content DDO
-  let ddo
   // owner account
   let acct
   if (!ownerDid) {
+    // content DDO
+    let ddo
     try {
       ({ did, ddo } = await validate({
         did: contentDid, password, label: 'registry', keyringOpts
