@@ -190,13 +190,13 @@ async function deployProxy(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
   } else if (!opts.contentDid || 'string' !== typeof opts.contentDid) {
-    throw new TypeError('Expecting non-empty content DID')
+    throw new TypeError('Expecting non-empty string for content DID')
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError('Expecting non-empty password')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting estimate to be of type boolean')
   } else if (opts.ownerDid && 'string' !== typeof opts.contentDid) {
-    throw new TypeError('Expecting non-empty content DID')
+    throw new TypeError('Expecting non-empty string for owner DID')
   }
 
   const { contentDid, password, keyringOpts } = opts
