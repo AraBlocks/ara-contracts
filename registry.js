@@ -180,59 +180,81 @@ async function upgradeProxy(opts) {
  * @param  {String} opts.contentDid // unhashed
  * @param  {String} opts.password
  * @param  {String|number} opts.version
- * @param  {Boolean} opts.estimate
+ * @param  {Boolean} [opts.estimate]
  * @param  {Object} [opts.keyringOpts]
+ * @param  {String} [opts.ownerDid] // only used for estimate
  * @return {string}
  * @throws {Error,TypeError}
  */
 async function deployProxy(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
-  } else if (null == opts.contentDid || 'string' !== typeof opts.contentDid || !opts.contentDid) {
+  } else if (!opts.contentDid || 'string' !== typeof opts.contentDid) {
     throw new TypeError('Expecting non-empty content DID')
-  } else if (null == opts.password || 'string' !== typeof opts.password || !opts.password) {
+  } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError('Expecting non-empty password')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting estimate to be of type boolean')
+  } else if (opts.ownerDid && 'string' !== typeof opts.contentDid) {
+    throw new TypeError('Expecting non-empty content DID')
   }
 
-  const { password, contentDid, keyringOpts } = opts
-  const estimate = opts.estimate || false
+  const { contentDid, password, keyringOpts } = opts
+  let { ownerDid } = opts
+  const estimate = opts.estimate || ownerDid || false
 
   let version = opts.version || constants.STANDARD_VERSION
   if ('number' === typeof version) {
     version = version.toString()
   }
 
+  // identifier portion of content DID
   let did
+  // content DDO
   let ddo
-  try {
-    ({ did, ddo } = await validate({
-      did: contentDid, password, label: 'registry', keyringOpts
-    }))
-  } catch (err) {
-    throw err
-  }
-
-  try {
-    const address = await getProxyAddress(did)
-    if (!/^0x0+$/.test(address)) {
-      throw new Error(`Proxy for ${did} already exists. No need to deploy proxy.`)
+  // owner account
+  let acct
+  if (!ownerDid) {
+    try {
+      ({ did, ddo } = await validate({
+        did: contentDid, password, label: 'registry', keyringOpts
+      }))
+    } catch (err) {
+      throw err
     }
-  } catch (err) {
-    throw err
-  }
 
-  debug('creating tx to deploy proxy for', did)
-  let owner = getDocumentOwner(ddo, true)
-  owner = `${constants.AID_PREFIX}${owner}`
-  const acct = await account.load({ did: owner, password })
+    try {
+      const address = await getProxyAddress(did)
+      if (!/^0x0+$/.test(address)) {
+        throw new Error(`Proxy for ${did} already exists. No need to deploy proxy.`)
+      }
+    } catch (err) {
+      throw err
+    }
+
+    debug('creating tx to deploy proxy for', did)
+    let owner = getDocumentOwner(ddo, true)
+    owner = `${constants.AID_PREFIX}${owner}`
+    acct = await account.load({ did: owner, password })
+  } else {
+    try {
+      await validate({
+        did: ownerDid, password, label: 'registry', keyringOpts
+      })
+    } catch (err) {
+      throw err
+    }
+    did = getIdentifier(contentDid)
+    debug('estimating cost to deploy for fake did', did)
+    ownerDid = `${constants.AID_PREFIX}${getIdentifier(ownerDid)}`
+    acct = await account.load({ did: ownerDid, password })
+  }
 
   let proxyAddress = null
   try {
     const encodedData = web3Abi.encodeParameters(
       [ 'address', 'address', 'address', 'bytes32' ],
-      [ acct.address, constants.ARA_TOKEN_ADDRESS, constants.LIBRARY_ADDRESS, toHexString(contentDid, { encoding: 'hex', ethify: true }) ]
+      [ acct.address, constants.ARA_TOKEN_ADDRESS, constants.LIBRARY_ADDRESS, toHexString(did, { encoding: 'hex', ethify: true }) ]
     )
     const { tx: transaction, ctx: ctx1 } = await tx.create({
       account: acct,
@@ -253,6 +275,7 @@ async function deployProxy(opts) {
       ctx1.close()
       return cost
     }
+
     const { contract: registry, ctx: ctx2 } = await contract.get(abi, constants.REGISTRY_ADDRESS)
     proxyAddress = await new Promise((resolve, reject) => {
       tx.sendSignedTransaction(transaction)
@@ -260,7 +283,7 @@ async function deployProxy(opts) {
       registry.events.ProxyDeployed({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { _contentId, _address } } = log
-          if (_contentId === toHexString(contentDid, { encoding: 'hex', ethify: true })) {
+          if (_contentId === toHexString(did, { encoding: 'hex', ethify: true })) {
             resolve(_address)
           }
           reject(new Error('Content DIDs do not match'))

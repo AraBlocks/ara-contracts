@@ -120,13 +120,22 @@ test.serial('proxyExists() does not exist', async (t) => {
 test.serial('deployProxy()', async (t) => {
   const did = getAfsDid(t)
 
-  const cost = await registry.deployProxy({
+  const cost1 = await registry.deployProxy({
     contentDid: did,
     password,
     version: 2,
     estimate: true
   })
-  t.true(cost > 0)
+  t.true(cost1 > 0)
+
+  const fakeDid = 'did:ara:37ecb2a896412dfa6538ab4282d7d6a78492f1a0948963189c84fdb6dc263a13'
+  const cost2 = await registry.deployProxy({
+    contentDid: fakeDid,
+    password,
+    ownerDid: getDid(t),
+    version: 2
+  })
+  t.true(cost1 === cost2)
 
   const deployedAddress = await registry.deployProxy({
     contentDid: did,

@@ -181,6 +181,7 @@ Deploys a proxy to an `AFS` standard.
   - `version` - The version to use with this proxy
   - `estimate` - optional Flag to check cost of `deployProxy`
   - `keyringOpts` - optional Keyring options
+  - `ownerDid` - optional Owner `DID` used in conjunction with `estimate` to bypass needing a real AFS
 
 Returns the address at which the proxy was deployed.
 
