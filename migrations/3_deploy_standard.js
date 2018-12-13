@@ -1,8 +1,20 @@
 const { deployNewStandard } = require('../registry')
 const constants = require('../constants')
 
-module.exports = (deployer) => {
+module.exports = (deployer, network) => {
   deployer.then(async () => {
+    const { TEMP_OWNER_DID, ROPSTEN_DEPLOY_DID, OWNER_PASSWORD } = constants
+
+    let requesterDid
+    let password
+    if ('privatenet' === network || 'local' === network) {
+      requesterDid = TEMP_OWNER_DID
+      password = OWNER_PASSWORD
+    } else if ('testnet' === network) {
+      requesterDid = ROPSTEN_DEPLOY_DID
+      password = process.env.TESTNET_PASSWORD
+    }
+
     try {
       console.log('\tDeploying AFS Standard...')
       const address = await new Promise((resolve, reject) => {
@@ -10,8 +22,8 @@ module.exports = (deployer) => {
           console.log('\t...deploying')
           try {
             const a = await deployNewStandard({
-              requesterDid: constants.TEMP_OWNER_DID,
-              password: constants.OWNER_PASSWORD,
+              requesterDid,
+              password,
               version: constants.STANDARD_VERSION,
               paths: constants.STANDARD_DEPS_PATHS
             })
