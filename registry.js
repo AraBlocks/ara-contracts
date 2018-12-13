@@ -195,7 +195,7 @@ async function deployProxy(opts) {
     throw new TypeError('Expecting non-empty password')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting estimate to be of type boolean')
-  } else if (opts.ownerDid && 'string' !== typeof opts.contentDid) {
+  } else if (opts.ownerDid && 'string' !== typeof opts.ownerDid) {
     throw new TypeError('Expecting non-empty string for owner DID')
   }
 
