@@ -15,11 +15,10 @@ usage: act: [-hDV] [--help] [--version]
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show this message||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
 |-contracts, -D, --debug||:*')|
 |-s, --secret|Shared secret for the keyring||
 |-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
 
 
 
@@ -41,8 +40,10 @@ usage: act deploy: [-h] [--help]
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
 
 
 #### Subcommands
@@ -68,7 +69,9 @@ act-deploy proxy [options] <did> <version>
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-v, --verbose|Show verbose output||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
 |-u, --upgrade|Flag to indicate upgrade to <version>||
 |-f, --force|Bypass password input, must also pass in password.||
 |-p, --password|Password for DID||
@@ -78,7 +81,7 @@ act-deploy proxy [options] <did> <version>
 | Flag(s) | Description | Type |
 |--|--|--|
 |did|The content DID for this proxy|string|
-|version, V|The version name of the AFS standard to use with this proxy|string required|
+|V, version, v|The version name of the AFS standard to use with this proxy|string required|
 
 
 
@@ -99,7 +102,9 @@ act-deploy standard [options] <did> <version> <pathspec...>
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-v, --verbose|Show verbose output||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
 |-f, --force|Bypass password input, must also pass in password.||
 |-p, --password|Password for DID||
 
@@ -108,7 +113,7 @@ act-deploy standard [options] <did> <version> <pathspec...>
 | Flag(s) | Description | Type |
 |--|--|--|
 |did|The registry contract owner DID|string|
-|version, V|The version name of the new AFS standard|string|
+|V, version, v|The version name of the new AFS standard|string|
 |pathspec|Paths to the solidity dependencies(s) of AFS.sol|array required default: |
 
 
@@ -132,8 +137,10 @@ usage: act library: [-h] [--help]
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
 
 
 #### Positionals
@@ -165,8 +172,10 @@ act-library get <did> <index>
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
 
 
 #### Positionals
@@ -195,9 +204,11 @@ act-purchase <purchaser> <did> [--budget]
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
-|-b, --budget|The amount of Ara to budget for downloading the AFS||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
+|-b, --budget|The amount of Ara to budget for downloading the AFS[number]||
 
 
 #### Positionals
@@ -226,8 +237,10 @@ usage: act reward: [-h] [--help] [options]
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
 
 
 #### Subcommands
@@ -256,8 +269,10 @@ act-reward balance <did> <content>
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
 
 
 #### Positionals
@@ -285,8 +300,10 @@ act-reward redeem <did> <content>
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
 
 
 #### Positionals
@@ -314,8 +331,10 @@ act-reward submit <did> <content> <budget>
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
 
 
 #### Positionals
@@ -344,8 +363,10 @@ act-reward budget <content> <jobId>
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
 
 
 #### Positionals
@@ -373,9 +394,11 @@ act-reward allocate <did> <content> <jobId> [--returnBudget]
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
-|-r, --returnBudget|Flag to indicate whether the remaining rewards budget should be returned to the budget allocator||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring||
+|-v, --version, -V|Show version number||
+|-r, --returnBudget|Flag to indicate whether the remaining rewards budget||
 
 
 #### Positionals
@@ -405,8 +428,10 @@ act-approve [options] <owner> <spender> <amount>
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
 |-i, --increase|Flag to increase approval by <amount>||
 |-d, --decrease|Flag to decrease approval by <amount>||
 
@@ -437,9 +462,11 @@ act-transfer [--sender] <from> <to> <amount>
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
-|-s, --sender|DID of the sender of the transaction if it is not <from> [string]||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
+|-s, --sender|DID of the sender of the transaction if it is not <from>||
 
 
 #### Positionals
@@ -469,8 +496,10 @@ act-deposit <did> <amount>
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
 
 
 #### Positionals
@@ -498,8 +527,10 @@ act-withdraw <did> <amount>
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
 
 
 #### Positionals
@@ -528,8 +559,10 @@ usage: act token: [-h] [--help] [options] [--] <command>
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
 
 
 #### Subcommands
@@ -557,8 +590,10 @@ act-token deposited <did>
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
 
 
 #### Positionals
@@ -585,8 +620,10 @@ act-token balance <did>
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
 
 
 #### Positionals
@@ -613,8 +650,10 @@ act-token allowance <did> <spender>
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
 
 
 #### Positionals
@@ -642,7 +681,9 @@ act-token supply
 | Flag(s) | Description | Type |
 |--|--|--|
 |-h, --help|Show help||
-|-V, --version|Show ACT CLI version||
-|-v, --verbose|Show verbose output||
+|-contracts, -D, --debug||:*')|
+|-s, --secret|Shared secret for the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
 
 
