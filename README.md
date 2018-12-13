@@ -64,6 +64,7 @@ The contracts in this repository are currently deployed on [Ara Privatenet](http
 * [async registry.deployNewStandard(opts)](#newstandard)
 
 ### Library
+
 * [async library.getLibrary(requesterDid)](#getlibrary)
 * [async library.getLibrarySize(requesterDid)](#librarysize)
 * [async library.getLibraryItem(opts)](#libraryitem)
