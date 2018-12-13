@@ -1,6 +1,14 @@
-const { web3: { tx, call, isAddress } } = require('ara-util')
 const { abi } = require('./build/contracts/AFS.json')
 const isBuffer = require('is-buffer')
+
+const {
+  getAddressFromDID,
+  web3: {
+    isAddress,
+    call,
+    tx
+  }
+} = require('ara-util')
 
 async function read(opts) {
   _validateOpts(opts)
@@ -91,6 +99,32 @@ async function hasBuffer(opts) {
   })
 }
 
+function isEmpty(did = '') {
+  if (!did || 'string' !== typeof did) {
+    throw new TypeError('Expecting DID URI to be non-empty string')
+  }
+
+  const address = await getAddressFromDID(did)
+  // isAddress should just be checked in getAddressFromDID
+  if (!isAddress(address)) {
+    throw new Error(`${did} did not resolve to valid Ethereum address`)
+  }
+
+  const empty = true
+  try {
+    // only need to check first header
+    const buf = await read({
+      fileIndex: 0,
+      offset: 0,
+      address
+    })
+    empty = null !== buf
+  } catch (err) {
+    throw err
+  }
+  return empty
+}
+
 function _validateOpts(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts to be of type object')
@@ -107,6 +141,7 @@ function _validateOpts(opts) {
 
 module.exports = {
   hasBuffer,
+  isEmpty,
   write,
   read
 }

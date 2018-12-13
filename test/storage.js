@@ -235,3 +235,9 @@ test.serial("write(opts) read(opts) append", async (t) => {
   t.is(result, msBuffer)
 })
 
+test.serial("isEmpty(did) invalid did", async (t) => {
+  await t.throwsAsync(storage.isEmpty())
+  await t.throwsAsync(storage.isEmpty({ }))
+  await t.throwsAsync(storage.isEmpty(null))
+  await t.throwsAsync(storage.isEmpty('did:ara:1234'))
+})
