@@ -252,7 +252,6 @@ async function deployProxy(opts) {
 
   let proxyAddress = null
   try {
-    console.log('this guy here', toHexString(did, { encoding: 'hex', ethify: true }))
     const encodedData = web3Abi.encodeParameters(
       [ 'address', 'address', 'address', 'bytes32' ],
       [ acct.address, constants.ARA_TOKEN_ADDRESS, constants.LIBRARY_ADDRESS, toHexString(did, { encoding: 'hex', ethify: true }) ]

@@ -167,7 +167,7 @@ test.serial('getBudget(opts)', async (t) => {
 test.serial('getJobOwner(opts)', async (t) => {
   const contentDid = getAfsDid(t)
   const jobOwner = await rewards.getJobOwner({ contentDid, jobId })
-  t.is(jobOwner, TEST_OWNER_ADDRESS)
+  t.is(jobOwner.toLowerCase(), TEST_OWNER_ADDRESS)
 })
 
 test.serial('allocate(opts) not purchased', async (t) => {
