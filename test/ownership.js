@@ -100,7 +100,7 @@ test.serial('getOwner(contentDid)', async (t) => {
   const contentDid = getAfsDid1(t)
 
   const initialOwner = await ownership.getOwner(contentDid)
-  t.is(initialOwner, TEST_OWNER_ADDRESS)
+  t.is(initialOwner.toLowerCase(), TEST_OWNER_ADDRESS)
 })
 
 test.serial('hasRequested(opts) false', async (t) => {
