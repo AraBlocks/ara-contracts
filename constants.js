@@ -29,6 +29,14 @@ module.exports = {
     return getAddress(local, privatenet, testnet, mainnet)
   },
 
+  get FACTORY_ADDRESS() {
+    const local = '0x0000000000000000000000000000000000000000',
+    const privatenet = '0x0000000000000000000000000000000000000000',
+    const testnet = '0x0000000000000000000000000000000000000000',
+    const mainnet = '0x0000000000000000000000000000000000000000'
+    return getAddress(local, privatenet, testnet, mainnet)
+  },
+
   TEMP_OWNER_DID: 'did:ara:9f26296a16e3260b77a165db15646b8a85f2cd590577ea2872c6bbbffed911a2',
   OWNER_PASSWORD: 'pass',
   // private key: 0xc02898ee5e5956ed9a4573906419fb6688ce54f40beaa4f8a9c314253f5326c0
