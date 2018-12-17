@@ -1,13 +1,13 @@
-## [0.13.2](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.13.2) (2018-12-13)
+## [0.13.3](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.13.3) (2018-12-17)
 
 
 ### Bug Fixes
 
-* 134 ([398a6f0](https://github.com/AraBlocks/ara-contracts/commit/398a6f0))
-* add help(false) back ([e6fed05](https://github.com/AraBlocks/ara-contracts/commit/e6fed05))
+* 134 ([941d25e](https://github.com/AraBlocks/ara-contracts/commit/941d25e))
+* add help(false) back ([2fa8a34](https://github.com/AraBlocks/ara-contracts/commit/2fa8a34))
 * add jobID tohex ([f9ec4e2](https://github.com/AraBlocks/ara-contracts/commit/f9ec4e2))
 * add return value to README ([e106b79](https://github.com/AraBlocks/ara-contracts/commit/e106b79))
-* add version aliases ([6a40445](https://github.com/AraBlocks/ara-contracts/commit/6a40445))
+* add version aliases ([74814a0](https://github.com/AraBlocks/ara-contracts/commit/74814a0))
 * address PR comments ([5505832](https://github.com/AraBlocks/ara-contracts/commit/5505832))
 * check the correct value ([c6a42d9](https://github.com/AraBlocks/ara-contracts/commit/c6a42d9))
 * constants ([a26bed8](https://github.com/AraBlocks/ara-contracts/commit/a26bed8))
@@ -33,7 +33,7 @@
 * remove async in promise ([733d17f](https://github.com/AraBlocks/ara-contracts/commit/733d17f))
 * remove logs ([f23c4ed](https://github.com/AraBlocks/ara-contracts/commit/f23c4ed))
 * remove owner being passed into ara-util.validate ([7cd9aad](https://github.com/AraBlocks/ara-contracts/commit/7cd9aad))
-* remove unused verbose option ([3e243ae](https://github.com/AraBlocks/ara-contracts/commit/3e243ae))
+* remove unused verbose option ([584261f](https://github.com/AraBlocks/ara-contracts/commit/584261f))
 * revert contracts/ ignore, ara-identity 0.34.x => 0.37.x ([73317cb](https://github.com/AraBlocks/ara-contracts/commit/73317cb))
 * rewards test ([4edec35](https://github.com/AraBlocks/ara-contracts/commit/4edec35))
 * should fix travis ([68b67fc](https://github.com/AraBlocks/ara-contracts/commit/68b67fc))
