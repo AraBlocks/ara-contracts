@@ -150,6 +150,11 @@ test.serial("hasBuffer(opts) buffer does not exist", async (t) => {
   t.true(false === Boolean(exists))
 })
 
+test.serial("isEmpty(did) empty", async (t) => {
+  const { address } = t.context
+  t.is(true, await storage.isEmpty(address))
+})
+
 test.serial("hasBuffer(opts) buffer exists", async (t) => {
   const { address } = t.context
 
@@ -196,6 +201,11 @@ test.serial("hasBuffer(opts) buffer exists", async (t) => {
   t.true(true === Boolean(exists))
 })
 
+test.serial("isEmpty(did) not empty", async (t) => {
+  const { address } = t.context
+  t.is(false, await storage.isEmpty(address))
+})
+
 test.serial("write(opts) read(opts) append", async (t) => {
   const { address } = t.context
 
@@ -239,5 +249,5 @@ test.serial("isEmpty(did) invalid did", async (t) => {
   await t.throwsAsync(storage.isEmpty())
   await t.throwsAsync(storage.isEmpty({ }))
   await t.throwsAsync(storage.isEmpty(null))
-  await t.throwsAsync(storage.isEmpty('did:ara:1234'))
+  await t.throwsAsync(storage.isEmpty('0x1234'))
 })
