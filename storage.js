@@ -2,7 +2,6 @@ const { abi } = require('./build/contracts/AFS.json')
 const isBuffer = require('is-buffer')
 
 const {
-  getAddressFromDID,
   web3: {
     isAddress,
     call,
