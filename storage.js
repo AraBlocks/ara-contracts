@@ -103,7 +103,6 @@ async function isEmpty(address = '') {
     throw new TypeError('Expecting address to be non-empty string')
   }
 
-  // isAddress should just be checked in getAddressFromDID
   if (!isAddress(address)) {
     throw new Error(`${address} is not a valid Ethereum address`)
   }
