@@ -71,6 +71,7 @@ The contracts in this repository are currently deployed on [Ara Privatenet](http
 * [async library.hasPurchased(opts)](#haspurchased)
 
 ### Rewards
+
 * [async rewards.submit(opts)](#submit)
 * [async rewards.allocate(opts)](#allocate)
 * [async rewards.redeem(opts)](#redeem)

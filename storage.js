@@ -99,18 +99,17 @@ async function hasBuffer(opts) {
   })
 }
 
-function isEmpty(did = '') {
-  if (!did || 'string' !== typeof did) {
-    throw new TypeError('Expecting DID URI to be non-empty string')
+async function isEmpty(address = '') {
+  if (!address || 'string' !== typeof address) {
+    throw new TypeError('Expecting address to be non-empty string')
   }
 
-  const address = await getAddressFromDID(did)
   // isAddress should just be checked in getAddressFromDID
   if (!isAddress(address)) {
-    throw new Error(`${did} did not resolve to valid Ethereum address`)
+    throw new Error(`${address} is not a valid Ethereum address`)
   }
 
-  const empty = true
+  let empty = true
   try {
     // only need to check first header
     const buf = await read({
@@ -118,7 +117,7 @@ function isEmpty(did = '') {
       offset: 0,
       address
     })
-    empty = null !== buf
+    empty = null === buf
   } catch (err) {
     throw err
   }
