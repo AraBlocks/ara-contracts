@@ -1,4 +1,4 @@
-## [0.14.1](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.14.1) (2018-12-17)
+# [0.15.0](https://github.com/AraBlocks/ara-contracts/compare/0.3.0...0.15.0) (2018-12-17)
 
 
 ### Bug Fixes
@@ -16,7 +16,7 @@
 * increase timeout ([b09e898](https://github.com/AraBlocks/ara-contracts/commit/b09e898))
 * issue [#85](https://github.com/AraBlocks/ara-contracts/issues/85) ([614ec5d](https://github.com/AraBlocks/ara-contracts/commit/614ec5d))
 * **.npmignore:** revert migrations, installed_contracts in ignore ([d5aef2d](https://github.com/AraBlocks/ara-contracts/commit/d5aef2d))
-* **build/*:** revert ABIs ([9273068](https://github.com/AraBlocks/ara-contracts/commit/9273068))
+* **build/*:** revert ABIs ([840cf83](https://github.com/AraBlocks/ara-contracts/commit/840cf83))
 * **constants.js:** lint it up ([c061587](https://github.com/AraBlocks/ara-contracts/commit/c061587))
 * **constants.js:** remove chainIds from address switch ([1a44cc3](https://github.com/AraBlocks/ara-contracts/commit/1a44cc3))
 * **constants.js:** revert privatenet addresses ([8e9ff24](https://github.com/AraBlocks/ara-contracts/commit/8e9ff24))
@@ -24,7 +24,7 @@
 * **migrations/2_deploy_contracts.js:** fix undefined ctx in deploy ([13378e1](https://github.com/AraBlocks/ara-contracts/commit/13378e1))
 * **purchase.js:** accounted for budget == 0 for estimate ([#159](https://github.com/AraBlocks/ara-contracts/issues/159)) ([69dcf12](https://github.com/AraBlocks/ara-contracts/commit/69dcf12))
 * tests ([387ac8c](https://github.com/AraBlocks/ara-contracts/commit/387ac8c))
-* **storage.js:** remove comment ([1ff778a](https://github.com/AraBlocks/ara-contracts/commit/1ff778a))
+* **storage.js:** remove comment ([7302568](https://github.com/AraBlocks/ara-contracts/commit/7302568))
 * library tests ([7e20d63](https://github.com/AraBlocks/ara-contracts/commit/7e20d63))
 * lint ([daf3f9d](https://github.com/AraBlocks/ara-contracts/commit/daf3f9d))
 * lint ([4cdc00e](https://github.com/AraBlocks/ara-contracts/commit/4cdc00e))
@@ -70,10 +70,10 @@
 * index event parameters ([f5ceec8](https://github.com/AraBlocks/ara-contracts/commit/f5ceec8))
 * rename commerce to ownership ([b2a60aa](https://github.com/AraBlocks/ara-contracts/commit/b2a60aa))
 * show help if command provided is not valid ([c9eea56](https://github.com/AraBlocks/ara-contracts/commit/c9eea56))
-* storage isEmpty wip ([6673aae](https://github.com/AraBlocks/ara-contracts/commit/6673aae))
+* storage isEmpty wip ([04e643a](https://github.com/AraBlocks/ara-contracts/commit/04e643a))
 * **purchase.js:** Added estimate opt for purchasing ([#154](https://github.com/AraBlocks/ara-contracts/issues/154)) ([cdb511a](https://github.com/AraBlocks/ara-contracts/commit/cdb511a))
 * **rewards.js:** estimaate option for redeem rewards balance ([63ef04a](https://github.com/AraBlocks/ara-contracts/commit/63ef04a))
-* **storage.js:** checking if an AFS has been committed to ([7a37c24](https://github.com/AraBlocks/ara-contracts/commit/7a37c24))
+* **storage.js:** checking if an AFS has been committed to ([31f7d97](https://github.com/AraBlocks/ara-contracts/commit/31f7d97))
 
 
 
