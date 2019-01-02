@@ -1,6 +1,8 @@
 const { abi: factoryAbi } = require('./build/contracts/AraFactory.sol')
 const replace = require('replace-in-file')
 const constants = require('./constants')
+const mkdirp = require('mkdirp')
+const pify = require('pify')
 const path = require('path')
 const solc = require('solc')
 const fs = require('fs')
@@ -15,12 +17,22 @@ const {
   }
 } = require('ara-util')
 
+const bytesdir = './bytecode'
+
+/*
+ * Step 1: Compiles contracts into bytecode and saves to disk
+ * This step must be performed manually locally before pushing to Github
+ */
+async function compileAraContracts() {
+  await pify(mkdirp)(bytesdir)
+
+  await _compileRegistry()
+  await _compileLibrary()
+  await _compileToken()
+}
+
 /* 
- * 12/14/2018 @mahjiang
- *
- * Ultimately this needs to be split into 2 functions:
- * 1) Compiles + writes to disk the bytecode for each contract
- * 2) Calls deployContract() in the AraFactory contract with the stored bytecode
+ * Step 2: Deploys contracts through the AraFactory contract and saves addresses to Constants.js
  */
 async function deployAraContracts(opts) {
   if (!opts || 'object' !== typeof opts) {
@@ -58,9 +70,7 @@ async function deployAraContracts(opts) {
   }
 }
 
-async function _deployRegistry(acct) {
-  const label = 'Registry.sol:Registry'
-
+async function _compileRegistry() {
   const sources = {
     'Proxy.sol': fs.readFileSync(path.resolve(__dirname, './contracts/Proxy.sol'), 'utf8')
   }
@@ -68,27 +78,23 @@ async function _deployRegistry(acct) {
   const compiledContract = compiledFile.contracts['Registry.sol:Registry']
   const abi = JSON.parse(compiledContract.interface)
   const { bytecode } = compiledContract
-  return _sendTx(acct, label, bytecode)
+
+  await pify(fs.writeFile)(`${bytesdir}/Registry`, bytecode)
 }
 
-async function _deployLibrary(acct, registryAddress) {
-  const label = 'Library.sol:Library'
-
+async function _compileLibrary() {
   const sources = {
     'Registry.sol': fs.readFileSync(path.resolve(__dirname, './contracts/Registry.sol'), 'utf8')
   }
   const compiledFile = solc.compile({ sources }, 1)
   const compiledContract = compiledFile.contracts['Library.sol:Library']
   const abi = JSON.parse(compiledContract.interface)
-  let { bytecode } = compiledContract
-  const bytecodeWithParameters = web3Abi.encodeParameters([ 'address' ], [ registryAddress ]).slice(2)
-  bytecode += bytecodeWithParameters
-  return _sendTx(acct, label, bytecode)
+  const { bytecode } = compiledContract
+
+  await pify(fs.writeFile)(`${bytesdir}/Library`, bytecode)
 }
 
-async function _deployToken(acct) {
-  const label = 'AraToken.sol:AraToken'
-
+async function _compileToken() {
   const sources = {
     'StandardToken.sol': fs.readFileSync(path.resolve(__dirname, './contracts/StandardToken.sol'), 'utf8'),
     'ERC20.sol': fs.readFileSync(path.resolve(__dirname, './contracts/ERC20.sol'), 'utf8'),
@@ -98,6 +104,33 @@ async function _deployToken(acct) {
   const compiledContract = compiledFile.contracts['AraToken.sol:AraToken']
   const abi = JSON.parse(compiledContract.interface)
   const { bytecode } = compiledContract
+
+  await pify(fs.writeFile)(`${bytesdir}/Token`, bytecode)
+}
+
+async function _deployRegistry(acct) {
+  const label = 'Registry.sol:Registry'
+
+  const bytecode = await pify(fs.readFile)(`${bytesdir}/Registry`)
+
+  return _sendTx(acct, label, bytecode)
+}
+
+async function _deployLibrary(acct, registryAddress) {
+  const label = 'Library.sol:Library'
+
+  let bytecode = await pify(fs.readFile)(`${bytesdir}/Library`)
+  const encodedParameters = web3Abi.encodeParameters([ 'address' ], [ registryAddress ]).slice(2)
+  bytecode += encodedParameters
+
+  return _sendTx(acct, label, bytecode)
+}
+
+async function _deployToken(acct) {
+  const label = 'AraToken.sol:AraToken'
+
+  const bytecode = await pify(fs.readFile)(`${bytesdir}/Token`)
+
   return _sendTx(acct, label, bytecode)
 }
 
@@ -139,5 +172,6 @@ async function _replaceConstants(registryAddress, libraryAddress, tokenAddress) 
 }
 
 module.exports = {
+  compileAraContracts,
   deployAraContracts
 }
