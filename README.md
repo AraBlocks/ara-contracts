@@ -50,7 +50,7 @@ The contracts in this repository are currently deployed on [Ara Privatenet](http
 
 ### Purchase
 
-* [purchase(opts)](#purchase)
+* [purchase(opts)](#purchaseopts)
 
 ### Registry
 
@@ -103,7 +103,7 @@ The contracts in this repository are currently deployed on [Ara Privatenet](http
 * [async ownership.getOwner(contentDid)](#getowner)
 
 
-<a name="purchase"></a>
+<a name="purchaseopts"></a>
 ### `async purchase(opts)`
 
 Purchases an `AFS` and adds it to the requester's library.
