@@ -2,6 +2,7 @@
 
 /* eslint no-shadow: [ "error", { "allow": ["_", "program", "argv"] }] */
 
+const { compileAndDeployAraContracts } = require('../factory')
 const debug = require('debug')('ara-contracts:cli:deploy')
 const { createProgram } = require('../lib/program')
 const { info, error } = require('ara-console')
@@ -65,6 +66,13 @@ const { argv } = program
         describe: 'Password for DID'
       })
   }, onstandard)
+  .command('$0 <did>', 'Compiles and deploys the Ara core contracts (Registry, Library, Token)', (_) => {
+    _
+      .positional('did', {
+        type: 'string',
+        describe: 'The DID of the AFS master account'
+      })
+  }, ondeploy)
   .help('h')
   .recommendCommands()
   .strict()
@@ -150,6 +158,26 @@ async function onstandard(argv) {
       keyringOpts
     })
     info(`New AFS standard version ${version} deployed at address ${address}.`)
+  } catch (err) {
+    onfatal(err)
+  }
+}
+
+async function ondeploy(argv) {
+  const { did } = argv
+  const { password } = await promptForPassword()
+
+  try {
+    info(`Compiling and deploying contracts...`)
+    const {
+      registryAddress,
+      libraryAddress,
+      tokenAddress
+    } = await compileAndDeployAraContracts({
+      masterDid: did,
+      password
+    })
+    info(`Deployed Registry (${registryAddress}), Library (${libraryAddress}), and Token (${tokenAddress})`)
   } catch (err) {
     onfatal(err)
   }

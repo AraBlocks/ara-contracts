@@ -6,34 +6,34 @@ module.exports = {
   },
 
   get REGISTRY_ADDRESS() {
-    const local = '0xf996af566992c7e34e6fd0bd3df79ec16296f5aa'
-    const privatenet = '0xb5d7d042c5fbf143e36a2aa5f4ee06a72998470e'
+    const local = '0x68a085a21fbe285395296523b61e2c34e16e6c65'
+    const privatenet = '0x80d6B85f2B566c8e272d702e7AE7D0b85A2066B0'
     const testnet = '0xf7909332314a2b587176f14d7005ab0157a72340'
     const mainnet = ''
     return getAddress(local, privatenet, testnet, mainnet)
   },
 
   get LIBRARY_ADDRESS() {
-    const local = '0x231b665a03ffedd96b497e123861498d87f4a65f'
-    const privatenet = '0x695a75a29674ee95bbd1323596cb6f9d14c579f8'
+    const local = '0x6ed6d0e84d9bcd113775af6a36d8967ca24f3c08'
+    const privatenet = '0x8c6F38740aA67ee54f59914CE6fD0184D04c00e3'
     const testnet = '0x257f0c1ac57cbecbc6565b6f543031f55bcedf15'
     const mainnet = ''
     return getAddress(local, privatenet, testnet, mainnet)
   },
 
   get ARA_TOKEN_ADDRESS() {
-    const local = '0x90647064ae72c10d396b7b21ce52562dc73660de'
-    const privatenet = '0x27d7efaa490a01b78a2b7e439cc4f7b56ceb501c'
+    const local = '0x53d82a040cb2f96d91621964ae40079ef55e3233'
+    const privatenet = '0x577b253C3c89B2371a52F4eF6bF0C79256Beb7bf'
     const testnet = '0x1ca4db2d6ec8c1d7b4e39e5d60e80337ea385ae5'
     const mainnet = ''
     return getAddress(local, privatenet, testnet, mainnet)
   },
 
   get FACTORY_ADDRESS() {
-    const local = '0x0000000000000000000000000000000000000000',
-    const privatenet = '0x0000000000000000000000000000000000000000',
-    const testnet = '0x0000000000000000000000000000000000000000',
-    const mainnet = '0x0000000000000000000000000000000000000000'
+    const local = '0x0000000000000000000000000000000000000000'
+    const privatenet = '0x1ef54f5235e2a29614479333d658efdacfccf464'
+    const testnet = '0x0000000000000000000000000000000000000002'
+    const mainnet = '0x0000000000000000000000000000000000000003'
     return getAddress(local, privatenet, testnet, mainnet)
   },
 
@@ -56,7 +56,7 @@ module.exports = {
   TOKEN_DECIMALS: 18,
   STANDARD_VERSION: '1',
   JOB_ID_LENGTH: 64,
-  STANDARD_DEPS_PATHS: ['./contracts/AFS.sol', './contracts/Library.sol', './contracts/Registry.sol', './contracts/Proxy.sol', './contracts/AraToken.sol'],
+  STANDARD_DEPS_PATHS: ['./contracts/ignored_contracts/AFS.sol', './contracts/ignored_contracts/Library.sol', './contracts/ignored_contracts/Registry.sol', './contracts/ignored_contracts/Proxy.sol', './contracts/ignored_contracts/AraToken.sol'],
   ZERO_BYTES32: '0x00000000000000000000000000000000',
   ZERO_ADDRESS: '0x0000000000000000000000000000000000000000'
 }
