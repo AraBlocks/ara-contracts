@@ -8,6 +8,6 @@ contract AraFactory {
       deployedAddress := create(0, add(_code, 0x20), mload(_code))
       jumpi(invalidJumpLabel, iszero(extcodesize(deployedAddress))) // jumps if no code at addresses
     }
-    ContractDeployed(label, deployedAddress);
+    emit ContractDeployed(label, deployedAddress);
   }
 }
