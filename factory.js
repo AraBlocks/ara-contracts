@@ -39,19 +39,19 @@ async function compileAndDeployAraContracts(opts) {
  */
 async function compileAraContracts() {
   try {
-    debug(`Compiling contracts...`)
+    debug('Compiling contracts...')
     await pify(mkdirp)(bytesdir)
 
     await _compileRegistry()
     await _compileLibrary()
     await _compileToken()
-    debug(`Contracts compiled.`)
+    debug('Contracts compiled.')
   } catch (err) {
     throw err
   }
 }
 
-/* 
+/*
  * Step 2: Deploys contracts through the AraFactory contract and saves addresses to Constants.js
  * @param  {String} opts.masterDid
  * @param  {String} opts.password
@@ -83,7 +83,7 @@ async function deployAraContracts(opts) {
   }
 
   try {
-    debug(`Deploying...`)
+    debug('Deploying...')
     const registryAddress = await _deployRegistry(acct)
     debug(`Deployed Registry at ${registryAddress}.`)
     const libraryAddress = await _deployLibrary(acct, registryAddress)
