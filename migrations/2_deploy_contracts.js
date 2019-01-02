@@ -8,9 +8,6 @@ const replace = require('replace-in-file')
 const constants = require('../constants')
 const path = require('path')
 
-// const Library = artifacts.require('./Library.sol')
-// const AraToken = artifacts.require('./AraToken.sol')
-// const Registry = artifacts.require('./Registry.sol')
 const AraFactory = artifacts.require('./AraFactory.sol')
 
 module.exports = (deployer, network, defaultAccounts) => {
@@ -44,9 +41,6 @@ module.exports = (deployer, network, defaultAccounts) => {
     }
 
     // deploy
-    // await deployer.deploy(Registry, { from })
-    // await deployer.deploy(Library, Registry.address, { from })
-    // await deployer.deploy(AraToken, { from })
     await deployer.deploy(AraFactory, { from })
     await ondeployfactorycomplete()
     if ('local' === network || 'privatenet' === network) {
@@ -58,11 +52,6 @@ module.exports = (deployer, network, defaultAccounts) => {
 
 async function ondeployfactorycomplete() {
   const constantsPath = path.resolve(__dirname, '../constants.js')
-  // const options = {
-  //   files: constantsPath,
-  //   from: [ constants.REGISTRY_ADDRESS, constants.LIBRARY_ADDRESS, constants.ARA_TOKEN_ADDRESS ],
-  //   to: [ Registry.address, Library.address, AraToken.address ]
-  // }
   const options = {
     files: constantsPath,
     from: [ constants.FACTORY_ADDRESS ],
@@ -73,7 +62,7 @@ async function ondeployfactorycomplete() {
 
 async function deploycore() {
  try {
-  console.log('\tDeploying Ara Registry, Library, and Token')
+  console.log('\tDeploying Ara Registry, Library, and Token...')
   const {
     registryAddress,
     libraryAddress,
