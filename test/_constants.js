@@ -1,3 +1,5 @@
+const path = require('path')
+
 module.exports = {
   // path da7f747240ae8eb299b5d1785bbe3253c0c8ac266323699a6e7b4e27e550700c
   TEST_OWNER_DID: 'did:ara:9f26296a16e3260b77a165db15646b8a85f2cd590577ea2872c6bbbffed911a2',
@@ -24,5 +26,6 @@ module.exports = {
   RANDOM_DID: 'did:ara:cad40qa56b6a9f5a272e9717eb146b275b8d18a0e6de2c15a901ee79c25b4c80',
   PASSWORD: 'pass',
   ZERO_BYTES32: '0x00000000000000000000000000000000',
-  AID_PREFIX: 'did:ara:'
+  AID_PREFIX: 'did:ara:',
+  BYTESDIR: path.resolve('./bytecode')
 }
