@@ -19,20 +19,20 @@ usage: act deploy: [-h] [--help]
 
 // Parse program arguments based on yargs spec
 const { argv } = program
-  .command('proxy [options] <did> <versionName>', 'Deploy a proxy contract for <did>', (_) => {
+  .command('proxy [options] <did> <version-name>', 'Deploy a proxy contract for <did>', (_) => {
     _
       .positional('did', {
         type: 'string',
         describe: 'The content DID for this proxy'
       })
-      .positional('versionName', {
+      .positional('version-name', {
         type: 'string',
         describe: 'The version name of the AFS standard to use with this proxy'
       })
       .option('upgrade', {
         alias: 'u',
         type: 'boolean',
-        describe: 'Flag to indicate upgrade to <versionName>'
+        describe: 'Flag to indicate upgrade to <version-name>'
       })
       .option('force', {
         alias: 'f',
@@ -43,13 +43,13 @@ const { argv } = program
         describe: 'Password for DID'
       })
   }, onproxy)
-  .command('standard [options] <did> <versionName> <pathspec...>', 'Deploy a new AFS standard <versionName> with <did> (the registry contract owner)', (_) => {
+  .command('standard [options] <did> <version-name> <pathspec...>', 'Deploy a new AFS standard <version-name> with <did> (the registry contract owner)', (_) => {
     _
       .positional('did', {
         type: 'string',
         describe: 'The registry contract owner DID'
       })
-      .positional('versionName', {
+      .positional('version-name', {
         type: 'string',
         describe: 'The version name of the new AFS standard'
       })
