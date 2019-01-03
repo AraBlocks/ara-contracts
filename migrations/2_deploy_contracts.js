@@ -73,7 +73,9 @@ async function deploycore() {
     masterDid: constants.TEMP_OWNER_DID,
     password: constants.OWNER_PASSWORD
   })
-  console.log(`\tDeployed Registry (${registryAddress}), Library (${libraryAddress}), and Token (${tokenAddress})`)
+  console.log(`\tDeployed Registry (${registryAddress})`)
+  console.log(`\tDeployed Library (${libraryAddress})`)
+  console.log(`\tDeployed Token (${tokenAddress})`)
  } catch (err) {
   throw err
  }
