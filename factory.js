@@ -18,8 +18,6 @@ const {
   }
 } = require('ara-util')
 
-const bytesdir = path.resolve(__dirname, './bytecode')
-
 async function compileAndDeployAraContracts(opts) {
   try {
     await compileAraContracts()
@@ -40,7 +38,7 @@ async function compileAndDeployAraContracts(opts) {
 async function compileAraContracts() {
   try {
     debug('Compiling contracts...')
-    await pify(mkdirp)(bytesdir)
+    await pify(mkdirp)(constants.BYTESDIR)
 
     await _compileRegistry()
     await _compileLibrary()
@@ -125,7 +123,7 @@ async function _compileRegistry() {
         'Registry.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Registry.sol'), 'utf8'),
         'Proxy.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Proxy.sol'), 'utf8')
       },
-      `${bytesdir}/Registry`
+      `${constants.BYTESDIR}/Registry`
     )
     debug('Compiled registry.')
   } catch (err) {
@@ -143,7 +141,7 @@ async function _compileLibrary() {
         'Proxy.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Proxy.sol'), 'utf8'),
         'Library.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Library.sol'), 'utf8')
       },
-      `${bytesdir}/Library`
+      `${constants.BYTESDIR}/Library`
     )
     debug('Compiled library.')
   } catch (err) {
@@ -162,7 +160,7 @@ async function _compileToken() {
         'ERC20.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/ERC20.sol'), 'utf8'),
         'openzeppelin-solidity/contracts/math/SafeMath.sol': await pify(fs.readFile)(path.resolve(__dirname, './node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol'), 'utf8'),
       },
-      `${bytesdir}/Token`
+      `${constants.BYTESDIR}/Token`
     )
     debug('Compiled token')
   } catch (err) {
@@ -173,7 +171,7 @@ async function _compileToken() {
 async function _deployRegistry(acct) {
   const label = 'Registry.sol:Registry'
 
-  let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${bytesdir}/Registry`))
+  let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Registry`))
   const encodedParameters = web3Abi.encodeParameters([ 'address' ], [ acct.address ]).slice(2)
   bytecode += encodedParameters
 
@@ -183,7 +181,7 @@ async function _deployRegistry(acct) {
 async function _deployLibrary(acct, registryAddress) {
   const label = 'Library.sol:Library'
 
-  let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${bytesdir}/Library`))
+  let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Library`))
   const encodedParameters = web3Abi.encodeParameters([ 'address', 'address' ], [ acct.address, registryAddress ]).slice(2)
   bytecode += encodedParameters
 
@@ -193,7 +191,7 @@ async function _deployLibrary(acct, registryAddress) {
 async function _deployToken(acct) {
   const label = 'AraToken.sol:AraToken'
 
-  let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${bytesdir}/Token`))
+  let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Token`))
   const encodedParameters = web3Abi.encodeParameters([ 'address' ], [ acct.address ]).slice(2)
   bytecode += encodedParameters
 
