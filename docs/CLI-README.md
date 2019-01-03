@@ -46,11 +46,18 @@ usage: act deploy: [-h] [--help]
 |-v, --version, -V|Show version number||
 
 
+#### Positionals
+| Flag(s) | Description | Type |
+|--|--|--|
+|did|The DID of the AFS master account|string|
+
+
+
 #### Subcommands
 | Subcommand | Description |
 |--|--|
 |act-deploy proxy|Deploy a proxy contract for <did>|
-|act-deploy standard|Deploy a new AFS standard <version>|
+|act-deploy standard|Deploy a new AFS standard|
 
 
  ### act-deploy proxy(1)
@@ -62,7 +69,7 @@ Deploy a proxy contract for <did>
 #### Usage
 
 ```sh
-act-deploy proxy [options] <did> <version>
+act-deploy proxy [options] <did> <version-name>
 ```
 
 #### Options
@@ -72,7 +79,8 @@ act-deploy proxy [options] <did> <version>
 |-contracts, -D, --debug||:*')|
 |-s, --secret|Shared secret for the keyring||
 |-n, --network|Network name of the key for the DID resolver in the keyring [string]||
-|-u, --upgrade|Flag to indicate upgrade to <version>||
+|-v, --version, -V|Show version number||
+|-name, -u, --upgrade|[boolean]|>|
 |-f, --force|Bypass password input, must also pass in password.||
 |-p, --password|Password for DID||
 
@@ -81,7 +89,7 @@ act-deploy proxy [options] <did> <version>
 | Flag(s) | Description | Type |
 |--|--|--|
 |did|The content DID for this proxy|string|
-|V, version, v|The version name of the AFS standard to use with this proxy|string required|
+|version-name|The version name of the AFS standard to use with this proxy|string required|
 
 
 
@@ -90,12 +98,12 @@ act-deploy proxy [options] <did> <version>
 
 #### Abstract
 
-Deploy a new AFS standard <version>
+Deploy a new AFS standard
 
 #### Usage
 
 ```sh
-act-deploy standard [options] <did> <version> <pathspec...>
+act-deploy standard [options] <did> <version-name> <pathspec...>
 ```
 
 #### Options
@@ -105,6 +113,7 @@ act-deploy standard [options] <did> <version> <pathspec...>
 |-contracts, -D, --debug||:*')|
 |-s, --secret|Shared secret for the keyring||
 |-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-v, --version, -V|Show version number||
 |-f, --force|Bypass password input, must also pass in password.||
 |-p, --password|Password for DID||
 
@@ -113,7 +122,7 @@ act-deploy standard [options] <did> <version> <pathspec...>
 | Flag(s) | Description | Type |
 |--|--|--|
 |did|The registry contract owner DID|string|
-|V, version, v|The version name of the new AFS standard|string|
+|version-name|The version name of the new AFS standard|string|
 |pathspec|Paths to the solidity dependencies(s) of AFS.sol|array required default: |
 
 
