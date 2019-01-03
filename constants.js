@@ -1,3 +1,5 @@
+const path = require('path')
+
 module.exports = {
   AID_PREFIX: 'did:ara:',
 
@@ -58,7 +60,8 @@ module.exports = {
   JOB_ID_LENGTH: 64,
   STANDARD_DEPS_PATHS: ['./contracts/ignored_contracts/AFS.sol', './contracts/ignored_contracts/Library.sol', './contracts/ignored_contracts/Registry.sol', './contracts/ignored_contracts/Proxy.sol', './contracts/ignored_contracts/AraToken.sol'],
   ZERO_BYTES32: '0x00000000000000000000000000000000',
-  ZERO_ADDRESS: '0x0000000000000000000000000000000000000000'
+  ZERO_ADDRESS: '0x0000000000000000000000000000000000000000',
+  BYTESDIR: path.resolve(__dirname, './bytecode')
 }
 
 const rc = require('ara-runtime-configuration')()
