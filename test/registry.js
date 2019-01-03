@@ -35,7 +35,7 @@ test.after(async (t) => {
 
 test.serial('deployNewStandard(opts)', async (t) => {
   const owner = getDid(t)
-  const paths = [ resolve(__dirname, '../contracts/AFS.sol'), resolve(__dirname, '../contracts/Library.sol'), resolve(__dirname, '../contracts/Registry.sol'), resolve(__dirname, '../contracts/Proxy.sol'), resolve(__dirname, '../contracts/AraToken.sol') ]
+  const paths = [ resolve(__dirname, '../contracts/ignored_contracts/AFS.sol'), resolve(__dirname, '../contracts/ignored_contracts/Library.sol'), resolve(__dirname, '../contracts/ignored_contracts/Registry.sol'), resolve(__dirname, '../contracts/ignored_contracts/Proxy.sol'), resolve(__dirname, '../contracts/ignored_contracts/AraToken.sol') ]
   const version = '2'
   const address = await registry.deployNewStandard({
     requesterDid: owner,
@@ -64,7 +64,7 @@ test.serial('deployNewStandard(opts) uncompilable standard', async (t) => {
 
 test.serial('deployNewStandard(opts) standard version exists', async (t) => {
   const owner = getDid(t)
-  const paths = [ 'node_modules/ara-contracts/contracts/AFS.sol', 'node_modules/ara-contracts/contracts/Library.sol', 'node_modules/ara-contracts/contracts/Registry.sol', 'node_modules/ara-contracts/contracts/Proxy.sol', 'node_modules/ara-contracts/contracts/AraToken.sol' ]
+  const paths = [ resolve(__dirname, '../contracts/ignored_contracts/AFS.sol'), resolve(__dirname, '../contracts/ignored_contracts/Library.sol'), resolve(__dirname, '../contracts/ignored_contracts/Registry.sol'), resolve(__dirname, '../contracts/ignored_contracts/Proxy.sol'), resolve(__dirname, '../contracts/ignored_contracts/AraToken.sol') ]
   const version = '2'
   await t.throwsAsync(registry.deployNewStandard({
     requesterDid: owner,
@@ -76,7 +76,7 @@ test.serial('deployNewStandard(opts) standard version exists', async (t) => {
 
 test.serial('deployNewStandard(opts) not owner', async (t) => {
   const owner = getAfsDid(t)
-  const paths = [ 'node_modules/ara-contracts/contracts/AFS.sol', 'node_modules/ara-contracts/contracts/Library.sol', 'node_modules/ara-contracts/contracts/Registry.sol', 'node_modules/ara-contracts/contracts/Proxy.sol', 'node_modules/ara-contracts/contracts/AraToken.sol' ]
+  const paths = [ resolve(__dirname, '../contracts/ignored_contracts/AFS.sol'), resolve(__dirname, '../contracts/ignored_contracts/Library.sol'), resolve(__dirname, '../contracts/ignored_contracts/Registry.sol'), resolve(__dirname, '../contracts/ignored_contracts/Proxy.sol'), resolve(__dirname, '../contracts/ignored_contracts/AraToken.sol') ]
   const version = '3'
   await t.throwsAsync(registry.deployNewStandard({
     requesterDid: owner,
@@ -88,7 +88,7 @@ test.serial('deployNewStandard(opts) not owner', async (t) => {
 
 test.serial('deployNewStandard(opts) version is number', async (t) => {
   const owner = getDid(t)
-  const paths = [ resolve(__dirname, '../contracts/AFS.sol'), resolve(__dirname, '../contracts/Library.sol'), resolve(__dirname, '../contracts/Registry.sol'), resolve(__dirname, '../contracts/Proxy.sol'), resolve(__dirname, '../contracts/AraToken.sol') ]
+  const paths = [ resolve(__dirname, '../contracts/ignored_contracts/AFS.sol'), resolve(__dirname, '../contracts/ignored_contracts/Library.sol'), resolve(__dirname, '../contracts/ignored_contracts/Registry.sol'), resolve(__dirname, '../contracts/ignored_contracts/Proxy.sol'), resolve(__dirname, '../contracts/ignored_contracts/AraToken.sol') ]
   const version = 3
   const address = await registry.deployNewStandard({
     requesterDid: owner,

@@ -2,6 +2,7 @@
 
 /* eslint no-shadow: [ "error", { "allow": ["_", "program", "argv"] }] */
 
+const { compileAndDeployAraContracts } = require('../factory')
 const debug = require('debug')('ara-contracts:cli:deploy')
 const { createProgram } = require('../lib/program')
 const { info, error } = require('ara-console')
@@ -18,20 +19,20 @@ usage: act deploy: [-h] [--help]
 
 // Parse program arguments based on yargs spec
 const { argv } = program
-  .command('proxy [options] <did> <version>', 'Deploy a proxy contract for <did>', (_) => {
+  .command('proxy [options] <did> <version-name>', 'Deploy a proxy contract for <did>', (_) => {
     _
       .positional('did', {
         type: 'string',
         describe: 'The content DID for this proxy'
       })
-      .positional('version', {
+      .positional('version-name', {
         type: 'string',
         describe: 'The version name of the AFS standard to use with this proxy'
       })
       .option('upgrade', {
         alias: 'u',
         type: 'boolean',
-        describe: 'Flag to indicate upgrade to <version>'
+        describe: 'Flag to indicate upgrade to <version-name>'
       })
       .option('force', {
         alias: 'f',
@@ -42,13 +43,13 @@ const { argv } = program
         describe: 'Password for DID'
       })
   }, onproxy)
-  .command('standard [options] <did> <version> <pathspec...>', 'Deploy a new AFS standard <version> with <did> (the registry contract owner)', (_) => {
+  .command('standard [options] <did> <version-name> <pathspec...>', 'Deploy a new AFS standard <version-name> with <did> (the registry contract owner)', (_) => {
     _
       .positional('did', {
         type: 'string',
         describe: 'The registry contract owner DID'
       })
-      .positional('version', {
+      .positional('version-name', {
         type: 'string',
         describe: 'The version name of the new AFS standard'
       })
@@ -65,6 +66,13 @@ const { argv } = program
         describe: 'Password for DID'
       })
   }, onstandard)
+  .command('$0 <did>', 'Compiles and deploys the Ara core contracts (Registry, Library, Token)', (_) => {
+    _
+      .positional('did', {
+        type: 'string',
+        describe: 'The DID of the AFS master account'
+      })
+  }, ondeploy)
   .help('h')
   .recommendCommands()
   .strict()
@@ -78,7 +86,7 @@ module.exports = (async function main() {
 
 async function onproxy(argv) {
   const {
-    did, version, upgrade, force
+    did, versionName, upgrade, force
   } = argv
   let { password } = argv
   const { secret, network, keyring } = argv
@@ -96,11 +104,11 @@ async function onproxy(argv) {
       contentDid: did,
       keyringOpts,
       password,
-      version
+      version: versionName
     }
     const estimateOpts = Object.assign({}, opts, { estimate: true })
     if (!upgrade) {
-      info(`Deploying new proxy for ${did} at version ${version}...`)
+      info(`Deploying new proxy for ${did} at version ${versionName}...`)
       // act deploy proxy a5805b7acc9cb27c75a7852dff6555dc2cc0b8ff000dd287ccc05d4c4edf33e6 1
       const cost = await registry.deployProxy(estimateOpts)
       const { answer } = await promptCostConfirmation(cost)
@@ -109,14 +117,14 @@ async function onproxy(argv) {
         info(`Proxy deployed at address ${address} for ${did}.`)
       }
     } else {
-      info(`Upgrading proxy for ${did} to version ${version}...`)
+      info(`Upgrading proxy for ${did} to version ${versionName}...`)
       // act deploy proxy -u f5153d78579dcc7d4ed57acd3cc789a69fe3780314432443a471d1e2dea577b8
       const cost = await registry.upgradeProxy(estimateOpts)
       const { answer } = await promptCostConfirmation(cost)
       if (answer) {
         const upgraded = await registry.upgradeProxy(opts)
         if (upgraded) {
-          info(`Proxy successfully upgraded to version ${version}.`)
+          info(`Proxy successfully upgraded to version ${versionName}.`)
         }
       }
     }
@@ -126,7 +134,7 @@ async function onproxy(argv) {
 }
 
 async function onstandard(argv) {
-  const { did, version, force } = argv
+  const { did, versionName, force } = argv
   let { password } = argv
   const [ ...paths ] = argv.pathspec
   const { secret, network, keyring } = argv
@@ -140,16 +148,36 @@ async function onstandard(argv) {
   }
 
   try {
-    info(`Deploying new AFS standard version ${version}...`)
-    // DEBUG=* act deploy standard 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 1 ./contracts/AFS.sol ./contracts/Library.sol ./contracts/Registry.sol ./contracts/Proxy.sol ./contracts/AraToken.sol -D
+    info(`Deploying new AFS standard version ${versionName}...`)
+    // DEBUG=* act deploy standard f07e6462ff1fe42af1f98e2bb474936b60a4fc05669458f60dfdc98f1750f1b9 1 ./contracts/ignored_contracts/AFS.sol ./contracts/ignored_contracts/Library.sol ./contracts/ignored_contracts/Registry.sol ./contracts/ignored_contracts/Proxy.sol ./contracts/ignored_contracts/AraToken.sol -D
     const address = await registry.deployNewStandard({
       requesterDid: did,
       password,
-      version,
+      version: versionName,
       paths,
       keyringOpts
     })
-    info(`New AFS standard version ${version} deployed at address ${address}.`)
+    info(`New AFS standard version ${versionName} deployed at address ${address}.`)
+  } catch (err) {
+    onfatal(err)
+  }
+}
+
+async function ondeploy(argv) {
+  const { did } = argv
+  const { password } = await promptForPassword()
+
+  try {
+    info('Compiling and deploying contracts...')
+    const {
+      registryAddress,
+      libraryAddress,
+      tokenAddress
+    } = await compileAndDeployAraContracts({
+      masterDid: did,
+      password
+    })
+    info(`Deployed Registry (${registryAddress}), Library (${libraryAddress}), and Token (${tokenAddress})`)
   } catch (err) {
     onfatal(err)
   }

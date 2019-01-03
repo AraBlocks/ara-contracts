@@ -1,14 +1,14 @@
 /* eslint no-undef: "off" */
 /* eslint indent: "off" */
 
+const { compileAndDeployAraContracts } = require('../factory')
+const { deployNewStandard } = require('../registry')
 const createContext = require('ara-context')
 const replace = require('replace-in-file')
 const constants = require('../constants')
 const path = require('path')
 
-const Library = artifacts.require('./Library.sol')
-const AraToken = artifacts.require('./AraToken.sol')
-const Registry = artifacts.require('./Registry.sol')
+const AraFactory = artifacts.require('./AraFactory.sol')
 
 module.exports = (deployer, network, defaultAccounts) => {
   deployer.then(async () => {
@@ -43,19 +43,65 @@ module.exports = (deployer, network, defaultAccounts) => {
     }
 
     // deploy
-    await deployer.deploy(Registry, { from })
-    await deployer.deploy(Library, Registry.address, { from })
-    await deployer.deploy(AraToken, { from })
-    await ondeploycomplete()
+    await deployer.deploy(AraFactory, { from })
+    await ondeployfactorycomplete()
+    if ('local' === network || 'privatenet' === network) {
+      await deploycore()
+      await deploystandard()
+    }
   })
 }
 
-async function ondeploycomplete() {
+async function ondeployfactorycomplete() {
   const constantsPath = path.resolve(__dirname, '../constants.js')
   const options = {
     files: constantsPath,
-    from: [ constants.REGISTRY_ADDRESS, constants.LIBRARY_ADDRESS, constants.ARA_TOKEN_ADDRESS ],
-    to: [ Registry.address, Library.address, AraToken.address ]
+    from: [ constants.FACTORY_ADDRESS ],
+    to: [ AraFactory.address ]
   }
   await replace(options)
+}
+
+async function deploycore() {
+ try {
+  console.log('\tDeploying Ara Registry, Library, and Token...')
+  const {
+    registryAddress,
+    libraryAddress,
+    tokenAddress
+  } = await compileAndDeployAraContracts({
+    masterDid: constants.TEMP_OWNER_DID,
+    password: constants.OWNER_PASSWORD
+  })
+  console.log(`\tDeployed Registry (${registryAddress})`)
+  console.log(`\tDeployed Library (${libraryAddress})`)
+  console.log(`\tDeployed Token (${tokenAddress})`)
+ } catch (err) {
+  throw err
+ }
+}
+
+async function deploystandard() {
+  try {
+    console.log('\tDeploying AFS Standard...')
+    const address = await new Promise((resolve, reject) => {
+      setTimeout(async () => {
+        console.log('\t...deploying')
+        try {
+          const a = await deployNewStandard({
+            requesterDid: constants.TEMP_OWNER_DID,
+            password: constants.OWNER_PASSWORD,
+            version: constants.STANDARD_VERSION,
+            paths: constants.STANDARD_DEPS_PATHS
+          })
+          resolve(a)
+        } catch (err) {
+          reject(err)
+        }
+      }, 15000)
+    })
+    console.log(`\tStandard deployed at ${address}.`)
+  } catch (err) {
+    throw err
+  }
 }

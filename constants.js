@@ -6,26 +6,34 @@ module.exports = {
   },
 
   get REGISTRY_ADDRESS() {
-    const local = '0xf996af566992c7e34e6fd0bd3df79ec16296f5aa'
-    const privatenet = '0xb5d7d042c5fbf143e36a2aa5f4ee06a72998470e'
-    const testnet = '0xf7909332314a2b587176f14d7005ab0157a72340'
+    const local = '0x68a085a21fbe285395296523b61e2c34e16e6c65'
+    const privatenet = '0xae3c7D9Ba27026DD7063D8CDFF819D559baF1cE1'
+    const testnet = '0xcEd3f47f30a4CC7b635F1c3a734AE055Bc4c6a58'
     const mainnet = ''
     return getAddress(local, privatenet, testnet, mainnet)
   },
 
   get LIBRARY_ADDRESS() {
-    const local = '0x231b665a03ffedd96b497e123861498d87f4a65f'
-    const privatenet = '0x695a75a29674ee95bbd1323596cb6f9d14c579f8'
-    const testnet = '0x257f0c1ac57cbecbc6565b6f543031f55bcedf15'
+    const local = '0x6ed6d0e84d9bcd113775af6a36d8967ca24f3c08'
+    const privatenet = '0xc5896cb51aD5B272A9AE03845513DA084ec0e8e5'
+    const testnet = '0x4ddCeb7839C8D9A672224C412c63d5EadcAC4582'
     const mainnet = ''
     return getAddress(local, privatenet, testnet, mainnet)
   },
 
   get ARA_TOKEN_ADDRESS() {
-    const local = '0x90647064ae72c10d396b7b21ce52562dc73660de'
-    const privatenet = '0x27d7efaa490a01b78a2b7e439cc4f7b56ceb501c'
-    const testnet = '0x1ca4db2d6ec8c1d7b4e39e5d60e80337ea385ae5'
+    const local = '0x53d82a040cb2f96d91621964ae40079ef55e3233'
+    const privatenet = '0xA2947eF745feAcaf66D2c8edE30d65D4BF1e6DEE'
+    const testnet = '0x164f45df4909d38af0F177c4cbF9B7a841456938'
     const mainnet = ''
+    return getAddress(local, privatenet, testnet, mainnet)
+  },
+
+  get FACTORY_ADDRESS() {
+    const local = '0x0000000000000000000000000000000000000000'
+    const privatenet = '0xdedc7325f7d37ffeac06d2e60238989e7070ac21'
+    const testnet = '0xd8a46c8e1d9dc5b03d726c9e302720a74ed2189b'
+    const mainnet = '0x0000000000000000000000000000000000000003'
     return getAddress(local, privatenet, testnet, mainnet)
   },
 
@@ -48,7 +56,7 @@ module.exports = {
   TOKEN_DECIMALS: 18,
   STANDARD_VERSION: '1',
   JOB_ID_LENGTH: 64,
-  STANDARD_DEPS_PATHS: ['./contracts/AFS.sol', './contracts/Library.sol', './contracts/Registry.sol', './contracts/Proxy.sol', './contracts/AraToken.sol'],
+  STANDARD_DEPS_PATHS: ['./contracts/ignored_contracts/AFS.sol', './contracts/ignored_contracts/Library.sol', './contracts/ignored_contracts/Registry.sol', './contracts/ignored_contracts/Proxy.sol', './contracts/ignored_contracts/AraToken.sol'],
   ZERO_BYTES32: '0x00000000000000000000000000000000',
   ZERO_ADDRESS: '0x0000000000000000000000000000000000000000'
 }

@@ -14,8 +14,8 @@ contract Registry {
   event ProxyUpgraded(bytes32 indexed _contentId, string indexed _version);
   event StandardAdded(string indexed _version, address _address);
 
-  constructor() public {
-    owner_ = msg.sender;
+  constructor(address _owner) public {
+    owner_ = _owner;
   }
 
   modifier restricted() {
