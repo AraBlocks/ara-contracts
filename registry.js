@@ -448,7 +448,7 @@ async function deployNewStandard(opts) {
     const compiledContract = compiledFile.contracts['AFS.sol:AFS']
     afsAbi = JSON.parse(compiledContract.interface)
     const { bytecode } = compiledContract
-    bytes = `0x${bytecode}`
+    bytes = toHexString(bytecode, { encoding: 'hex', ethify: true })
 
     await pify(fs.writeFile)(bytespath, bytes)
   }
@@ -458,7 +458,7 @@ async function deployNewStandard(opts) {
     const { contractAddress } = await contract.deploy({
       account: acct,
       abi: afsAbi,
-      bytecode: toHexString(bytes, { encoding: 'hex', ethify: false })
+      bytecode: bytes
     })
     const { tx: transaction, ctx: ctx1 } = await tx.create({
       account: acct,
