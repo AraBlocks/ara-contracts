@@ -7,7 +7,6 @@ contract AraFactory {
     assembly {
       deployedAddress := create(0, add(_code, 0x20), mload(_code))
     }
-    //deployedAddress = address(0);
     emit ContractDeployed(label, deployedAddress);
   }
 }

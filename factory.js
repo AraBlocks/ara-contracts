@@ -45,6 +45,7 @@ async function compileAraContracts() {
     await _compileRegistry()
     await _compileLibrary()
     await _compileToken()
+
     debug('Contracts compiled.')
   } catch (err) {
     throw err
@@ -103,18 +104,29 @@ async function deployAraContracts(opts) {
   }
 }
 
+async function _compile(contractname, sources, bytespath) {
+  try {
+    const compiledFile = solc.compile({ sources }, 1)
+    const compiledContract = compiledFile.contracts[`${contractname}`]
+    const { bytecode } = compiledContract
+
+    await pify(fs.writeFile)(path.resolve(__dirname, `${bytespath}`), `0x${bytecode}`)
+  } catch (err) {
+    throw err
+  }
+}
+
 async function _compileRegistry() {
   try {
     debug('Compiling registry...')
-    const sources = {
-      'Registry.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Registry.sol'), 'utf8'),
-      'Proxy.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Proxy.sol'), 'utf8')
-    }
-    const compiledFile = solc.compile({ sources }, 1)
-    const compiledContract = compiledFile.contracts['Registry.sol:Registry']
-    const { bytecode } = compiledContract
-
-    await pify(fs.writeFile)(path.resolve(__dirname, `${bytesdir}/Registry`), `0x${bytecode}`)
+    await _compile(
+      'Registry.sol:Registry',
+      {
+        'Registry.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Registry.sol'), 'utf8'),
+        'Proxy.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Proxy.sol'), 'utf8')
+      },
+      `${bytesdir}/Registry`
+    )
     debug('Compiled registry.')
   } catch (err) {
     throw err
@@ -124,16 +136,15 @@ async function _compileRegistry() {
 async function _compileLibrary() {
   try {
     debug('Compiling library...')
-    const sources = {
-      'Registry.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Registry.sol'), 'utf8'),
-      'Proxy.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Proxy.sol'), 'utf8'),
-      'Library.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Library.sol'), 'utf8')
-    }
-    const compiledFile = solc.compile({ sources }, 1)
-    const compiledContract = compiledFile.contracts['Library.sol:Library']
-    const { bytecode } = compiledContract
-
-    await pify(fs.writeFile)(path.resolve(__dirname, `${bytesdir}/Library`), `0x${bytecode}`)
+    await _compile(
+      'Library.sol:Library',
+      {
+        'Registry.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Registry.sol'), 'utf8'),
+        'Proxy.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Proxy.sol'), 'utf8'),
+        'Library.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Library.sol'), 'utf8')
+      },
+      `${bytesdir}/Library`
+    )
     debug('Compiled library.')
   } catch (err) {
     throw err
@@ -143,18 +154,17 @@ async function _compileLibrary() {
 async function _compileToken() {
   try {
     debug('Compiling token...')
-    const sources = {
-      'AraToken.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/AraToken.sol'), 'utf8'),
-      'StandardToken.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/StandardToken.sol'), 'utf8'),
-      'ERC20.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/ERC20.sol'), 'utf8'),
-      'openzeppelin-solidity/contracts/math/SafeMath.sol': await pify(fs.readFile)(path.resolve(__dirname, './node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol'), 'utf8'),
-    }
-    const compiledFile = solc.compile({ sources }, 1)
-    const compiledContract = compiledFile.contracts['AraToken.sol:AraToken']
-    const { bytecode } = compiledContract
-
-    await pify(fs.writeFile)(path.resolve(__dirname, `${bytesdir}/Token`), `0x${bytecode}`)
-    debug('Compiled Token')
+    await _compile(
+      'AraToken.sol:AraToken',
+      {
+        'AraToken.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/AraToken.sol'), 'utf8'),
+        'StandardToken.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/StandardToken.sol'), 'utf8'),
+        'ERC20.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/ERC20.sol'), 'utf8'),
+        'openzeppelin-solidity/contracts/math/SafeMath.sol': await pify(fs.readFile)(path.resolve(__dirname, './node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol'), 'utf8'),
+      },
+      `${bytesdir}/Token`
+    )
+    debug('Compiled token')
   } catch (err) {
     throw err
   }
