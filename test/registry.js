@@ -1,12 +1,15 @@
 const { isAddress } = require('ara-util/web3')
 const { registry } = require('../')
 const { resolve } = require('path')
+const rimraf = require('rimraf')
+const pify = require('pify')
 const test = require('ava')
 
 const {
   TEST_OWNER_DID_NO_METHOD,
   TEST_AFS_DID1,
-  PASSWORD: password
+  PASSWORD: password,
+  BYTESDIR
 } = require('./_constants')
 
 const {
@@ -31,6 +34,8 @@ test.before(async (t) => {
 
 test.after(async (t) => {
   await cleanup(t.context.afsAccount)
+  await pify(rimraf)(`${BYTESDIR}/Standard_2`)
+  await pify(rimraf)(`${BYTESDIR}/Standard_3`)
 })
 
 test.serial('deployNewStandard(opts)', async (t) => {
