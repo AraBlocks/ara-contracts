@@ -368,9 +368,9 @@ async function _compileStandard(bytespath, paths) {
 
     const compiledFile = solc.compile({ sources }, 1)
     const compiledContract = compiledFile.contracts['AFS.sol:AFS']
-    afsAbi = JSON.parse(compiledContract.interface)
+    const afsAbi = JSON.parse(compiledContract.interface)
     const { bytecode } = compiledContract
-    bytes = toHexString(bytecode, { encoding: 'hex', ethify: true })
+    const bytes = toHexString(bytecode, { encoding: 'hex', ethify: true })
 
     await pify(fs.writeFile)(bytespath, bytes)
     return { bytes, afsAbi }
@@ -460,7 +460,7 @@ async function deployNewStandard(opts) {
   } catch (err) {
     debug(`Could not read ${bytespath}; compiling instead...`)
 
-    const { bytes: b, afsAbi: a }= await _compileStandard(bytespath, paths)
+    const { bytes: b, afsAbi: a } = await _compileStandard(bytespath, paths)
     bytes = b
     afsAbi = a
   }
