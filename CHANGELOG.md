@@ -1,32 +1,26 @@
-# [0.18.0](https://github.com/AraBlocks/ara-contracts/compare/0.16.0...0.18.0) (2019-01-03)
+## [0.18.1](https://github.com/AraBlocks/ara-contracts/compare/0.16.0...0.18.1) (2019-01-07)
 
 
 ### Bug Fixes
 
+* 0x prefix ([a9194d5](https://github.com/AraBlocks/ara-contracts/commit/a9194d5))
 * added quiet mode ganache ([525b781](https://github.com/AraBlocks/ara-contracts/commit/525b781))
 * attempting disabling quiet mode ([e1106df](https://github.com/AraBlocks/ara-contracts/commit/e1106df))
 * convert test AFS owner to new privatenet account ([a1513a3](https://github.com/AraBlocks/ara-contracts/commit/a1513a3))
-* downgrade truffle ([4460a39](https://github.com/AraBlocks/ara-contracts/commit/4460a39))
-* downgrade truffle ([5e16a60](https://github.com/AraBlocks/ara-contracts/commit/5e16a60))
+* ethify ([66b43f2](https://github.com/AraBlocks/ara-contracts/commit/66b43f2))
 * forgot pk in constants, added new fixture ([c2de479](https://github.com/AraBlocks/ara-contracts/commit/c2de479))
-* lint ([7b55418](https://github.com/AraBlocks/ara-contracts/commit/7b55418))
-* lint ([ed2833f](https://github.com/AraBlocks/ara-contracts/commit/ed2833f))
-* PR comments ([f867ca4](https://github.com/AraBlocks/ara-contracts/commit/f867ca4))
+* lint ([a7025b5](https://github.com/AraBlocks/ara-contracts/commit/a7025b5))
+* PR comments, cleanup tests ([5c2509f](https://github.com/AraBlocks/ara-contracts/commit/5c2509f))
+* revert ([c6f8e9a](https://github.com/AraBlocks/ara-contracts/commit/c6f8e9a))
+* revert abis ([27da21f](https://github.com/AraBlocks/ara-contracts/commit/27da21f))
 * update privatenet deploy account to accomodate mnemonic seed change ([70f055f](https://github.com/AraBlocks/ara-contracts/commit/70f055f))
-* update registry test paths ([6970052](https://github.com/AraBlocks/ara-contracts/commit/6970052))
-* update registry test paths ([c9d5904](https://github.com/AraBlocks/ara-contracts/commit/c9d5904))
 * updated test constants ([a6955c3](https://github.com/AraBlocks/ara-contracts/commit/a6955c3))
-* use dash instead of camel case in CLI ([10242bb](https://github.com/AraBlocks/ara-contracts/commit/10242bb))
+* without toHexString ([0489e4a](https://github.com/AraBlocks/ara-contracts/commit/0489e4a))
 
 
 ### Features
 
-* migrate privatenet works ([b04b009](https://github.com/AraBlocks/ara-contracts/commit/b04b009))
-* migrate privatenet works ([f11c93a](https://github.com/AraBlocks/ara-contracts/commit/f11c93a))
-* separate compilation and deployment ([9e806f1](https://github.com/AraBlocks/ara-contracts/commit/9e806f1))
-* separate compilation and deployment ([8a7f230](https://github.com/AraBlocks/ara-contracts/commit/8a7f230))
-* start ara factory ([2df8d59](https://github.com/AraBlocks/ara-contracts/commit/2df8d59))
-* wip ([9392b4c](https://github.com/AraBlocks/ara-contracts/commit/9392b4c))
+* use compiled bytecode when deploying AFS standard if available ([1f0e570](https://github.com/AraBlocks/ara-contracts/commit/1f0e570))
 
 
 
@@ -99,13 +93,11 @@
 * contracts storage interface ([123a701](https://github.com/AraBlocks/ara-contracts/commit/123a701))
 * fixes [#140](https://github.com/AraBlocks/ara-contracts/issues/140) ([e56b76d](https://github.com/AraBlocks/ara-contracts/commit/e56b76d))
 * getJobOwner ([5b0f8bf](https://github.com/AraBlocks/ara-contracts/commit/5b0f8bf))
+* **package.json:** added shipright cmd to version hook ([ca12fd3](https://github.com/AraBlocks/ara-contracts/commit/ca12fd3))
 * index event parameters ([f5ceec8](https://github.com/AraBlocks/ara-contracts/commit/f5ceec8))
 * rename commerce to ownership ([b2a60aa](https://github.com/AraBlocks/ara-contracts/commit/b2a60aa))
-* **package.json:** added shipright cmd to version hook ([ca12fd3](https://github.com/AraBlocks/ara-contracts/commit/ca12fd3))
 * show help if command provided is not valid ([c9eea56](https://github.com/AraBlocks/ara-contracts/commit/c9eea56))
-* start ara factory ([906d14f](https://github.com/AraBlocks/ara-contracts/commit/906d14f))
 * storage isEmpty wip ([04e643a](https://github.com/AraBlocks/ara-contracts/commit/04e643a))
-* wip ([d4bb1a8](https://github.com/AraBlocks/ara-contracts/commit/d4bb1a8))
 * **purchase.js:** Added estimate opt for purchasing ([#154](https://github.com/AraBlocks/ara-contracts/issues/154)) ([cdb511a](https://github.com/AraBlocks/ara-contracts/commit/cdb511a))
 * **rewards.js:** estimaate option for redeem rewards balance ([63ef04a](https://github.com/AraBlocks/ara-contracts/commit/63ef04a))
 * **storage.js:** checking if an AFS has been committed to ([31f7d97](https://github.com/AraBlocks/ara-contracts/commit/31f7d97))
