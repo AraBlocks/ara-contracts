@@ -195,6 +195,8 @@ async function deployProxy(opts) {
     throw new TypeError('Expecting non-empty string for content DID')
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError('Expecting non-empty password')
+  } else if (opts.afsPassword && 'string' !== typeof opts.afsPassword) {
+    throw TypeError('Expecting non-empty password.')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting estimate to be of type boolean')
   } else if (opts.ownerDid && 'string' !== typeof opts.ownerDid) {
@@ -202,8 +204,10 @@ async function deployProxy(opts) {
   }
 
   const { contentDid, password, keyringOpts } = opts
-  let { ownerDid } = opts
+  let { ownerDid, afsPassword } = opts
   const estimate = opts.estimate || ownerDid || false
+
+  afsPassword = afsPassword || password
 
   let version = opts.version || constants.STANDARD_VERSION
   if ('number' === typeof version) {
@@ -219,7 +223,7 @@ async function deployProxy(opts) {
     let ddo
     try {
       ({ did, ddo } = await validate({
-        did: contentDid, password, label: 'registry', keyringOpts
+        did: contentDid, password: afsPassword, label: 'registry', keyringOpts
       }))
     } catch (err) {
       throw err

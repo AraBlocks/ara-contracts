@@ -42,6 +42,10 @@ const { argv } = program
         alias: 'p',
         describe: 'Password for DID'
       })
+      .option('afs-password', {
+        alias: 'a',
+        describe: 'Password for AFS'
+      })
   }, onproxy)
   .command('standard [options] <did> <version-name> <pathspec...>', 'Deploy a new AFS standard <version-name> with <did> (the registry contract owner)', (_) => {
     _
@@ -88,7 +92,7 @@ async function onproxy(argv) {
   const {
     did, versionName, upgrade, force
   } = argv
-  let { password } = argv
+  let { password, afsPassword } = argv
   const { secret, network, keyring } = argv
   const keyringOpts = { secret, network, keyring }
   if (force && !password) {
@@ -97,6 +101,8 @@ async function onproxy(argv) {
 
   if (!force) {
     ({ password } = await promptForPassword())
+    const { password: afsPass } = await promptForPassword('Please provide the passphrase for this AFS.\nPassphrase:')
+    afsPassword = afsPass
   }
 
   try {
@@ -104,6 +110,7 @@ async function onproxy(argv) {
       contentDid: did,
       keyringOpts,
       password,
+      afsPassword,
       version: versionName
     }
     const estimateOpts = Object.assign({}, opts, { estimate: true })
@@ -183,14 +190,14 @@ async function ondeploy(argv) {
   }
 }
 
-async function promptForPassword() {
+async function promptForPassword(message) {
+  message = message || 'Please provide the passphrase for your identity. This is needed to ' +
+    'complete this action.\n' +
+    'Passphrase:'
   return inquirer.prompt([ {
     type: 'password',
     name: 'password',
-    message:
-    'Please provide the passphrase for your identity. This is needed to ' +
-    'complete this action.\n' +
-    'Passphrase:'
+    message
   } ])
 }
 
