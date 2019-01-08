@@ -132,6 +132,7 @@ async function revokeOwnershipRequest(opts) {
  * @param  {String}  opts.contentDid
  * @param  {String}  opts.newOwnerDid
  * @param  {String}  opts.password
+ * @param  {String}  opts.afsPassword
  * @param  {Boolean} opts.estimate
  * @throws {Error|TypeError}
  * @return {Object}
@@ -145,6 +146,8 @@ async function approveOwnershipTransfer(opts) {
     throw new TypeError('Expecting non-empty new owner DID')
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError('Expecting non-empty password')
+  } else if (opts.afsPassword && 'string' !== typeof opts.afsPassword) {
+    throw TypeError('Expecting non-empty password.')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting boolean for estimate')
   }
@@ -156,12 +159,16 @@ async function approveOwnershipTransfer(opts) {
     keyringOpts
   } = opts
 
+  let { afsPassword } = opts
+
+  afsPassword = afsPassword || password
+
   let newOwnerAddress
   let ddo
   try {
     ({ ddo } = await validate({
       did: contentDid,
-      password,
+      password: afsPassword,
       label: 'approveOwnershipTransfer',
       keyringOpts
     }))

@@ -88,6 +88,7 @@ async function getProxyVersion(contentDid = '') {
  * Upgrades a proxy to a new version // 33834 gas
  * @param  {String} opts.contentDid // unhashed
  * @param  {String} opts.password
+ * @param  {String} opts.afsPassword
  * @param  {String|number} opts.version
  * @param  {Object} [opts.keyringOpts]
  * @return {Bool}
@@ -100,15 +101,19 @@ async function upgradeProxy(opts) {
     throw new TypeError('Expecting non-empty content DID')
   } else if (null == opts.password || 'string' !== typeof opts.password || !opts.password) {
     throw new TypeError('Expecting non-empty password')
+  } else if (opts.afsPassword && 'string' !== typeof opts.afsPassword) {
+    throw TypeError('Expecting non-empty password.')
   } else if (('string' !== typeof opts.version && 'number' !== typeof opts.version) || !opts.version) {
     throw new TypeError('Expecting non-empty version string or number')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting estimate to be of type boolean')
   }
 
-  let { version } = opts
+  let { version, afsPassword } = opts
   const { contentDid, password, keyringOpts } = opts
   const estimate = opts.estimate || false
+
+  afsPassword = afsPassword || password
 
   if ('number' === typeof version) {
     version = version.toString()
@@ -118,7 +123,7 @@ async function upgradeProxy(opts) {
   let ddo
   try {
     ({ did, ddo } = await validate({
-      did: contentDid, password, label: 'registry', keyringOpts
+      did: contentDid, password: afsPassword, label: 'registry', keyringOpts
     }))
   } catch (err) {
     throw err
@@ -181,6 +186,7 @@ async function upgradeProxy(opts) {
  * Deploys a proxy contract for opts.contentDid // 349574 gas
  * @param  {String} opts.contentDid // unhashed
  * @param  {String} opts.password
+ * @param  {String} opts.afsPassword
  * @param  {String|number} opts.version
  * @param  {Boolean} [opts.estimate]
  * @param  {Object} [opts.keyringOpts]
