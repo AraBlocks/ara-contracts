@@ -29,10 +29,12 @@ const { argv } = program
         type: 'number',
         describe: 'The amount of Ara to budget for downloading the AFS'
       })
+      .option('password')
   })
   .help('h')
   .recommendCommands()
   .strict()
+  .hide('password')
 
 // Main program entry
 module.exports = (async function main() {
@@ -45,17 +47,20 @@ module.exports = (async function main() {
     did
   } = argv
 
+  let { password } = argv
+
   const keyringOpts = { secret, network, keyring }
 
   if (0 > budget) {
     throw new TypeError(`Expecting 'budget' to be a 0 or greater. Got ${budget}. Try passing in a non-negative budget.`)
   }
 
-  const { password } = await promptForPassword()
+  if (!password) {
+    ({ password } = await promptForPassword())
+  }
 
   info(`Purchasing ${did}...`)
   try {
-    // act purchase 8a98c8305035dcbb1e8fa0826965200269e232e45ac572d26a45db9581986e67 7fc45f2eebdd98248876910d4ced1361f0395a02c4381609be793aa359fa25c7 --budget 1000 -D
     const { jobId } = await purchase({
       requesterDid: purchaser,
       contentDid: did,
