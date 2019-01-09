@@ -1,26 +1,28 @@
-## [0.18.1](https://github.com/AraBlocks/ara-contracts/compare/0.16.0...0.18.1) (2019-01-07)
+# [0.19.0](https://github.com/AraBlocks/ara-contracts/compare/0.16.0...0.19.0) (2019-01-09)
 
 
 ### Bug Fixes
 
-* 0x prefix ([a9194d5](https://github.com/AraBlocks/ara-contracts/commit/a9194d5))
+* 0x prefix ([cba1437](https://github.com/AraBlocks/ara-contracts/commit/cba1437))
 * added quiet mode ganache ([525b781](https://github.com/AraBlocks/ara-contracts/commit/525b781))
 * attempting disabling quiet mode ([e1106df](https://github.com/AraBlocks/ara-contracts/commit/e1106df))
 * convert test AFS owner to new privatenet account ([a1513a3](https://github.com/AraBlocks/ara-contracts/commit/a1513a3))
-* ethify ([66b43f2](https://github.com/AraBlocks/ara-contracts/commit/66b43f2))
+* deploy proxy password bug ([928250d](https://github.com/AraBlocks/ara-contracts/commit/928250d))
+* ethify ([d9b22fe](https://github.com/AraBlocks/ara-contracts/commit/d9b22fe))
 * forgot pk in constants, added new fixture ([c2de479](https://github.com/AraBlocks/ara-contracts/commit/c2de479))
-* lint ([a7025b5](https://github.com/AraBlocks/ara-contracts/commit/a7025b5))
-* PR comments, cleanup tests ([5c2509f](https://github.com/AraBlocks/ara-contracts/commit/5c2509f))
-* revert ([c6f8e9a](https://github.com/AraBlocks/ara-contracts/commit/c6f8e9a))
-* revert abis ([27da21f](https://github.com/AraBlocks/ara-contracts/commit/27da21f))
+* lint ([877af7c](https://github.com/AraBlocks/ara-contracts/commit/877af7c))
+* more password bug fixes ([baf4283](https://github.com/AraBlocks/ara-contracts/commit/baf4283))
+* PR comments, cleanup tests ([c5aa884](https://github.com/AraBlocks/ara-contracts/commit/c5aa884))
+* revert ([94348aa](https://github.com/AraBlocks/ara-contracts/commit/94348aa))
+* revert abis ([db0b9aa](https://github.com/AraBlocks/ara-contracts/commit/db0b9aa))
 * update privatenet deploy account to accomodate mnemonic seed change ([70f055f](https://github.com/AraBlocks/ara-contracts/commit/70f055f))
 * updated test constants ([a6955c3](https://github.com/AraBlocks/ara-contracts/commit/a6955c3))
-* without toHexString ([0489e4a](https://github.com/AraBlocks/ara-contracts/commit/0489e4a))
+* without toHexString ([c76a4fe](https://github.com/AraBlocks/ara-contracts/commit/c76a4fe))
 
 
 ### Features
 
-* use compiled bytecode when deploying AFS standard if available ([1f0e570](https://github.com/AraBlocks/ara-contracts/commit/1f0e570))
+* use compiled bytecode when deploying AFS standard if available ([90a18a5](https://github.com/AraBlocks/ara-contracts/commit/90a18a5))
 
 
 
