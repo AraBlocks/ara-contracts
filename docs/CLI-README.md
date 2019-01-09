@@ -78,11 +78,12 @@ act-deploy proxy [options] <did> <version-name>
 |-h, --help|Show help||
 |-contracts, -D, --debug||:*')|
 |-s, --secret|Shared secret for the keyring||
-|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
+|-n, --network|Network name of the key for the DID resolver in the keyring||
 |-v, --version, -V|Show version number||
 |-name, -u, --upgrade|[boolean]|>|
 |-f, --force|Bypass password input, must also pass in password.||
 |-p, --password|Password for DID||
+|-a, -password, --afs|Password for AFS||
 
 
 #### Positionals
