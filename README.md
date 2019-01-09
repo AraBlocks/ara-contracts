@@ -163,13 +163,14 @@ Upgrades a proxy to another `AFS` standard.
 - `opts`
   - `contentDid` - The `DID` of the content
   - `password` - The password of the owner of the proxy
+  - `afsPassword` - The password of the AFS
   - `version` - The `AFS` standard version to upgrade to
   - `keyringOpts` - optional Keyring options
 
 Returns a `boolean` indicating whether the proxy was successfully upgraded.
 
 ```js
-const upgraded = await registry.upgradeProxy({ contentDid, password, version: '1' })
+const upgraded = await registry.upgradeProxy({ contentDid, password, afsPassword, version: '1' })
 ```
 
 <a name="deploy"></a>
@@ -180,6 +181,7 @@ Deploys a proxy to an `AFS` standard.
 - `opts`
   - `contentDid` - The `DID` of the content to deploy a proxy for
   - `password` - The password of the owner of the `AFS`
+  - `afsPassword` - The password of the AFS
   - `version` - The version to use with this proxy
   - `estimate` - optional Flag to check cost of `deployProxy`
   - `keyringOpts` - optional Keyring options
@@ -188,7 +190,7 @@ Deploys a proxy to an `AFS` standard.
 Returns the address at which the proxy was deployed.
 
 ```js
-const address = await registry.deployProxy({ contentDid, password, version: '1' })
+const address = await registry.deployProxy({ contentDid, password, afsPassword, version: '1' })
 ```
 
 <a name="proxyversion"></a>
@@ -696,6 +698,7 @@ Approves an AFS ownership transfer request.
 - `opts`
   - `contentDid` - The `DID` of the content to transfer ownership
   - `password` - The password of the current owner
+  - `afsPassword` - The password of the AFS
   - `newOwnerDid` - The `DID` of the account to transfer ownership to
   - `estimate` - optional Flag to check cost of `approveOwnershipTransfer`
 
@@ -705,6 +708,7 @@ Returns transaction `receipt` object.
 const receipt = await ownership.approveOwnershipTransfer({
   contentDid,
   password,
+  afsPassword,
   newOwnerDid
 })
 ```
