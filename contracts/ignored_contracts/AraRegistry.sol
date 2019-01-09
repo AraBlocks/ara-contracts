@@ -3,15 +3,19 @@ pragma solidity ^0.4.24;
 import "./Proxy.sol";
 
 contract AraRegistry {
-  mapping (string => UpgradeableContract) private contracts_; // contract name -> struct
+  mapping (string => UpgradeableContract) private contracts_; // contract name => struct
 
   struct UpgradeableContract {
     bool initialized_;
-    
+
     address proxy_;
     string latestVersion_;
     mapping (string => address) versions_;
   }
+
+  event UpgradeableContractAdded(string _contractName, string _version, address _address);
+  event ContractUpgraded(string _contractName, string _version, address _address);
+  event ProxyDeployed(string _contractName, address _address);
 
   function getLatestVersionAddress(string _contractName) public view returns (address) {
     return contracts_[_contractName].versions_[contracts_[_contractName].latestVersion_];
@@ -32,6 +36,8 @@ contract AraRegistry {
     contracts_[_contractName].latestVersion_ = _version;
     contracts_[_contractName].versions_[_version] = deployedAddress;
     _deployProxy(_contractName);
+
+    emit UpgradeableContractAdded(_contractName, _version, deployedAddress);
   }
 
   function upgradeContract(string _contractName, string _version, bytes _code) public {
@@ -43,11 +49,15 @@ contract AraRegistry {
 
     contracts_[_contractName].latestVersion_ = _version;
     contracts_[_contractName].versions_[_version] = deployedAddress;
+
+    emit ContractUpgraded(_contractName, _version, deployedAddress);
   }
 
   function _deployProxy(string _contractName) private {
     require(contracts_[_contractName].proxy_ == address(0), "Only one proxy can exist per upgradeable contract.");
     Proxy proxy = new Proxy(address(this));
     contracts_[_contractName].proxy_ = proxy;
+
+    emit ProxyDeployed(_contractName, proxy);
   }
 }
