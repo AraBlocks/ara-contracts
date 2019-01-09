@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "./Proxy.sol";
+import "./AraProxy.sol";
 
 contract AraRegistry {
   mapping (string => UpgradeableContract) private contracts_; // contract name => struct
@@ -55,7 +55,7 @@ contract AraRegistry {
 
   function _deployProxy(string _contractName) private {
     require(contracts_[_contractName].proxy_ == address(0), "Only one proxy can exist per upgradeable contract.");
-    Proxy proxy = new Proxy(address(this));
+    AraProxy proxy = new AraProxy(address(this), _contractName);
     contracts_[_contractName].proxy_ = proxy;
 
     emit ProxyDeployed(_contractName, proxy);
