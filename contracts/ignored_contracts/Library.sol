@@ -14,11 +14,6 @@ contract Library {
 
   event AddedToLib(bytes32 indexed _identity, bytes32 indexed _contentId);
 
-  // constructor(address _owner, address _registry) public {
-  //   owner_ = _owner;
-  //   registry_ = Registry(_registry);
-  // }
-
   function init(bytes _data) public {
     uint256 btsptr;
     address ownerAddr;
