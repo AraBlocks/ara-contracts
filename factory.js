@@ -94,17 +94,17 @@ async function deployAraContracts(opts) {
  * @throws {Error, TypeError}
  */
 async function compileAndUpgradeRegistry(opts) {
+  let acct
   try {
-    await pify(mkdirp)(constants.BYTESDIR)
-
-    await _compileRegistry()
+    acct = await _validateMasterOpts(opts)
   } catch (err) {
     throw err
   }
-  try {
-    const acct = await _validateMasterOpts(opts)
 
-    _deployRegistry(acct, true)
+  try {
+    await pify(mkdirp)(constants.BYTESDIR)
+    await _compileRegistry()
+    await _deployRegistry(acct, true)
   } catch (err) {
     throw err
   }
@@ -119,17 +119,17 @@ async function compileAndUpgradeRegistry(opts) {
  * @throws {Error, TypeError}
  */
 async function compileAndUpgradeLibrary(opts) {
+  let acct
   try {
-    await pify(mkdirp)(constants.BYTESDIR)
-
-    await _compileLibrary()
+    acct = await _validateMasterOpts(opts)
   } catch (err) {
     throw err
   }
-  try {
-    const acct = await _validateMasterOpts(opts)
 
-    _deployLibrary(acct, constants.REGISTRY_ADDRESS, true)
+  try {
+    await pify(mkdirp)(constants.BYTESDIR)
+    await _compileLibrary()
+    await _deployLibrary(acct, constants.REGISTRY_ADDRESS, true)
   } catch (err) {
     throw err
   }
@@ -144,17 +144,17 @@ async function compileAndUpgradeLibrary(opts) {
  * @throws {Error, TypeError}
  */
 async function compileAndUpgradeToken(opts) {
+  let acct
   try {
-    await pify(mkdirp)(constants.BYTESDIR)
-
-    await _compileToken()
+    acct = await _validateMasterOpts(opts)
   } catch (err) {
     throw err
   }
-  try {
-    const acct = await _validateMasterOpts(opts)
 
-    _deployToken(acct, true)
+  try {
+    await pify(mkdirp)(constants.BYTESDIR)
+    await _compileToken()
+    await _deployToken(acct, true)
   } catch (err) {
     throw err
   }
@@ -287,6 +287,7 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false) {
 
   let address
   try {
+    const values = upgrade ? [ sha3(label, false), version, bytecode ] : [ sha3(label, false), version, bytecode, data ]
     const { tx: transaction, ctx } = await tx.create({
       account: acct,
       to: constants.ARA_REGISTRY_ADDRESS,
@@ -294,7 +295,7 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false) {
       data: {
         abi: registryAbi,
         functionName: upgrade ? 'upgradeContract' : 'addNewUpgradeableContract',
-        values: [ sha3(label, false), version, bytecode, data ]
+        values
       }
     })
     ctx.close()

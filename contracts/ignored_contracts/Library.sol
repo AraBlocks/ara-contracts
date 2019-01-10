@@ -15,6 +15,8 @@ contract Library {
   event AddedToLib(bytes32 indexed _identity, bytes32 indexed _contentId);
 
   function init(bytes _data) public {
+    require(owner_ == address(0), 'Library has already been initialized.');
+
     uint256 btsptr;
     address ownerAddr;
     address registryAddr;
