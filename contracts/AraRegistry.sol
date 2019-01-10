@@ -25,7 +25,7 @@ contract AraRegistry {
     return contracts_[_contractName].versions_[_version];
   }
 
-  function addNewUpgradeableContract(string _contractName, string _version, bytes _code) public {
+  function addNewUpgradeableContract(string _contractName, string _version, bytes _code, bytes _data) public {
     require(!contracts_[_contractName].initialized_, "Upgradeable contract already exists. Try upgrading instead.");
     address deployedAddress;
     assembly {
@@ -35,7 +35,7 @@ contract AraRegistry {
     contracts_[_contractName].initialized_ = true;
     contracts_[_contractName].latestVersion_ = _version;
     contracts_[_contractName].versions_[_version] = deployedAddress;
-    _deployProxy(_contractName);
+    _deployProxy(_contractName, _data);
 
     emit UpgradeableContractAdded(_contractName, _version, deployedAddress);
   }
@@ -53,9 +53,10 @@ contract AraRegistry {
     emit ContractUpgraded(_contractName, _version, deployedAddress);
   }
 
-  function _deployProxy(string _contractName) private {
+  function _deployProxy(string _contractName, bytes _data) private {
     require(contracts_[_contractName].proxy_ == address(0), "Only one proxy can exist per upgradeable contract.");
     AraProxy proxy = new AraProxy(address(this), _contractName);
+    require(address(proxy).call(abi.encodeWithSignature("init(bytes)", _data)), "Init failed.");
     contracts_[_contractName].proxy_ = proxy;
 
     emit ProxyDeployed(_contractName, proxy);

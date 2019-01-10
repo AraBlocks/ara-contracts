@@ -61,7 +61,7 @@ async function compileAraContracts() {
 async function deployAraContracts(opts) {
   let acct
   try {
-    acct = _validateMasterOpts(opts)
+    acct = await _validateMasterOpts(opts)
   } catch (err) {
     throw err
   }
@@ -101,7 +101,7 @@ async function compileAndUpgradeRegistry(opts) {
     throw err
   }
   try {
-    const acct = _validateMasterOpts(opts)
+    const acct = await _validateMasterOpts(opts)
 
     _deployRegistry(acct, true)
   } catch (err) {
@@ -126,7 +126,7 @@ async function compileAndUpgradeLibrary(opts) {
     throw err
   }
   try {
-    const acct = _validateMasterOpts(opts)
+    const acct = await _validateMasterOpts(opts)
 
     _deployLibrary(acct, constants.REGISTRY_ADDRESS, true)
   } catch (err) {
@@ -151,7 +151,7 @@ async function compileAndUpgradeToken(opts) {
     throw err
   }
   try {
-    const acct = _validateMasterOpts(opts)
+    const acct = await _validateMasterOpts(opts)
 
     _deployToken(acct, true)
   } catch (err) {
@@ -251,36 +251,36 @@ async function _compileToken() {
 }
 
 async function _deployRegistry(acct, upgrade = false) {
-  debug(`${upgrade ? 'Upgrading' : 'Deploying'} Registry contract ${upgrade ? 'to' : ''} version ${constants.REGISTRY_VERSION}.`)
+  debug(`${upgrade ? 'Upgrading' : 'Deploying'} Registry contract ${upgrade ? 'to ' : ''}version ${constants.REGISTRY_VERSION}.`)
 
-  let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Registry`))
-  const encodedParameters = web3Abi.encodeParameters([ 'address' ], [ acct.address ]).slice(2)
-  bytecode += encodedParameters
+  let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Registry_${constants.REGISTRY_VERSION}`))
+  const encodedData = web3Abi.encodeParameters([ 'address' ], [ acct.address ])
+  bytecode += encodedData.slice(2)
 
-  return _sendTx(acct, constants.REGISTRY_LABEL, constants.REGISTRY_VERSION, bytecode, upgrade)
+  return _sendTx(acct, constants.REGISTRY_LABEL, constants.REGISTRY_VERSION, bytecode, encodedData, upgrade)
 }
 
 async function _deployLibrary(acct, registryAddress, upgrade = false) {
-  debug(`${upgrade ? 'Upgrading' : 'Deploying'} Library contract ${upgrade ? 'to' : ''} version ${constants.LIBRARY_VERSION}.`)
+  debug(`${upgrade ? 'Upgrading' : 'Deploying'} Library contract ${upgrade ? 'to ' : ''}version ${constants.LIBRARY_VERSION}.`)
 
-  let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Library`))
-  const encodedParameters = web3Abi.encodeParameters([ 'address', 'address' ], [ acct.address, registryAddress ]).slice(2)
-  bytecode += encodedParameters
+  let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Library_${constants.LIBRARY_VERSION}`))
+  const encodedData = web3Abi.encodeParameters([ 'address', 'address' ], [ acct.address, registryAddress ])
+  bytecode += encodedData.slice(2)
 
-  return _sendTx(acct, constants.LIBRARY_LABEL, constants.LIBRARY_VERSION, bytecode, upgrade)
+  return _sendTx(acct, constants.LIBRARY_LABEL, constants.LIBRARY_VERSION, bytecode, encodedData, upgrade)
 }
 
 async function _deployToken(acct, upgrade = false) {
-  debug(`${upgrade ? 'Upgrading' : 'Deploying'} Token contract ${upgrade ? 'to' : ''} version ${constants.TOKEN_VERSION}.`)
+  debug(`${upgrade ? 'Upgrading' : 'Deploying'} Token contract ${upgrade ? 'to ' : ''}version ${constants.TOKEN_VERSION}.`)
 
-  let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Token`))
-  const encodedParameters = web3Abi.encodeParameters([ 'address' ], [ acct.address ]).slice(2)
-  bytecode += encodedParameters
+  let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Token_${constants.TOKEN_VERSION}`))
+  const encodedData = web3Abi.encodeParameters([ 'address' ], [ acct.address ])
+  bytecode += encodedData.slice(2)
 
-  return _sendTx(acct, constants.TOKEN_LABEL, constants.TOKEN_VERSION, bytecode, upgrade)
+  return _sendTx(acct, constants.TOKEN_LABEL, constants.TOKEN_VERSION, bytecode, encodedData, upgrade)
 }
 
-async function _sendTx(acct, label, version, bytecode, upgrade = false) {
+async function _sendTx(acct, label, version, bytecode, data, upgrade = false) {
   delete require.cache[require.resolve('./constants')]
   constants = require('./constants')
 
@@ -293,7 +293,7 @@ async function _sendTx(acct, label, version, bytecode, upgrade = false) {
       data: {
         abi: registryAbi,
         functionName: upgrade ? 'upgradeContract' : 'addNewUpgradeableContract',
-        values: [ label, version, bytecode ]
+        values: [ label, version, bytecode, data ]
       }
     })
     ctx.close()

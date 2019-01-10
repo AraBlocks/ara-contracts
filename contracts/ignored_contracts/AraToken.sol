@@ -17,8 +17,18 @@ contract AraToken is StandardToken {
   event Withdraw(address indexed to, uint256 value, uint256 total);
 
   // constructor
-  constructor(address _owner) public {
-    _mint(_owner, formatDecimals(1000000000)); // 1,000,000,000
+  // constructor(address _owner) public {
+  //   _mint(_owner, formatDecimals(1000000000)); // 1,000,000,000
+  // }
+
+  function init(bytes _data) public {
+    uint256 btsptr;
+    address ownerAddr;
+    assembly {
+      btsptr := add(_data, 32)
+      ownerAddr := mload(btsptr)
+    }
+    _mint(ownerAddr, formatDecimals(1000000000)); // 1,000,000,000
   }
 
   function formatDecimals(uint256 _value) internal pure returns (uint256) {

@@ -98,7 +98,7 @@ async function deploystandard() {
         } catch (err) {
           reject(err)
         }
-      }, 15000)
+      }, 5000)
     })
     console.log(`\tStandard deployed at ${address}.`)
   } catch (err) {
