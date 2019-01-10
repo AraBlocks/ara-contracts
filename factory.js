@@ -251,9 +251,7 @@ async function _compileToken() {
 }
 
 async function _deployRegistry(acct, upgrade = false) {
-  upgrade
-    ? debug(`Upgrading Registry contract to version ${constants.REGISTRY_VERSION}.`)
-    : debug(`Deploying Registry contract version ${constants.REGISTRY_VERSION}.`)
+  debug(`${upgrade ? 'Upgrading' : 'Deploying'} Registry contract ${upgrade ? 'to' : ''} version ${constants.REGISTRY_VERSION}.`)
 
   let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Registry`))
   const encodedParameters = web3Abi.encodeParameters([ 'address' ], [ acct.address ]).slice(2)
@@ -263,9 +261,7 @@ async function _deployRegistry(acct, upgrade = false) {
 }
 
 async function _deployLibrary(acct, registryAddress, upgrade = false) {
-  upgrade
-    ? debug(`Upgrading Library contract to version ${constants.LIBRARY_VERSION}.`)
-    : debug(`Deploying Library contract version ${constants.LIBRARY_VERSION}.`)
+  debug(`${upgrade ? 'Upgrading' : 'Deploying'} Library contract ${upgrade ? 'to' : ''} version ${constants.LIBRARY_VERSION}.`)
 
   let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Library`))
   const encodedParameters = web3Abi.encodeParameters([ 'address', 'address' ], [ acct.address, registryAddress ]).slice(2)
@@ -275,9 +271,7 @@ async function _deployLibrary(acct, registryAddress, upgrade = false) {
 }
 
 async function _deployToken(acct, upgrade = false) {
-  upgrade
-    ? debug(`Upgrading Ara Token contract to version ${constants.TOKEN_VERSION}.`)
-    : debug(`Deploying Ara Token contract version ${constants.TOKEN_VERSION}.`)
+  debug(`${upgrade ? 'Upgrading' : 'Deploying'} Token contract ${upgrade ? 'to' : ''} version ${constants.TOKEN_VERSION}.`)
 
   let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Token`))
   const encodedParameters = web3Abi.encodeParameters([ 'address' ], [ acct.address ]).slice(2)
