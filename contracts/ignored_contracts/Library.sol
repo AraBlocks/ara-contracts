@@ -14,9 +14,23 @@ contract Library {
 
   event AddedToLib(bytes32 indexed _identity, bytes32 indexed _contentId);
 
-  constructor(address _owner, address _registry) public {
-    owner_ = _owner;
-    registry_ = Registry(_registry);
+  // constructor(address _owner, address _registry) public {
+  //   owner_ = _owner;
+  //   registry_ = Registry(_registry);
+  // }
+
+  function init(bytes _data) public {
+    uint256 btsptr;
+    address ownerAddr;
+    address registryAddr;
+    assembly {
+      btsptr := add(_data, 32)
+      ownerAddr := mload(btsptr)
+      btsptr := add(_data, 64)
+      registryAddr := mload(btsptr)
+    }
+    owner_ = ownerAddr;
+    registry_ = Registry(registryAddr);
   }
 
   modifier restricted() {

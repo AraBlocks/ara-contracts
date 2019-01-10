@@ -14,8 +14,18 @@ contract Registry {
   event ProxyUpgraded(bytes32 indexed _contentId, string indexed _version);
   event StandardAdded(string indexed _version, address _address);
 
-  constructor(address _owner) public {
-    owner_ = _owner;
+  // constructor(address _owner) public {
+  //   owner_ = _owner;
+  // }
+
+  function init(bytes _data) public {
+    uint256 btsptr;
+    address ownerAddr;
+    assembly {
+      btsptr := add(_data, 32)
+      ownerAddr := mload(btsptr)
+    }
+    owner_ = ownerAddr;
   }
 
   modifier restricted() {

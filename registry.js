@@ -448,7 +448,6 @@ async function deployNewStandard(opts) {
   } catch (err) {
     throw err
   }
-
   const prefixedDid = `${constants.AID_PREFIX}${did}`
   const acct = await account.load({ did: prefixedDid, password })
   const registryOwner = await call({
@@ -456,6 +455,7 @@ async function deployNewStandard(opts) {
     address: constants.REGISTRY_ADDRESS,
     functionName: 'owner_'
   })
+
   if (acct.address != registryOwner) {
     throw new Error('Only the owner of the Registry contract may deploy a new standard.')
   }
