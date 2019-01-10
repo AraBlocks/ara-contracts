@@ -44,7 +44,7 @@ async function balanceOf(did, keyringOpts) {
       abi: tokenAbi,
       address: ARA_TOKEN_ADDRESS,
       functionName: 'balanceOf',
-      arguments: [address]
+      arguments: [ address ]
     })
   } catch (err) {
     throw err
@@ -101,7 +101,7 @@ async function allowance(opts = {}) {
       abi: tokenAbi,
       address: ARA_TOKEN_ADDRESS,
       functionName: 'allowance',
-      arguments: [owner, spender]
+      arguments: [ owner, spender ]
     })
   } catch (err) {
     throw err
@@ -155,7 +155,7 @@ async function transfer(opts = {}) {
       data: {
         abi: tokenAbi,
         functionName: 'transfer',
-        values: [to, val]
+        values: [ to, val ]
       }
     })
     receipt = await tx.sendSignedTransaction(transferTx)
@@ -205,7 +205,7 @@ async function approve(opts = {}) {
       data: {
         abi: tokenAbi,
         functionName: 'approve',
-        values: [spender, val]
+        values: [ spender, val ]
       }
     })
     receipt = await tx.sendSignedTransaction(approveTx)
@@ -272,7 +272,7 @@ async function transferFrom(opts = {}) {
       data: {
         abi: tokenAbi,
         functionName: 'transferFrom',
-        values: [from, to, val]
+        values: [ from, to, val ]
       }
     })
     receipt = await tx.sendSignedTransaction(transferFromTx)
@@ -323,7 +323,7 @@ async function increaseApproval(opts = {}) {
       data: {
         abi: tokenAbi,
         functionName: 'increaseApproval',
-        values: [spender, val]
+        values: [ spender, val ]
       }
     })
 
@@ -381,7 +381,7 @@ async function decreaseApproval(opts = {}) {
       data: {
         abi: tokenAbi,
         functionName: 'decreaseApproval',
-        values: [spender, val]
+        values: [ spender, val ]
       }
     })
     receipt = await tx.sendSignedTransaction(decreaseApprovalTx)
@@ -480,7 +480,7 @@ async function modifyDeposit(opts = {}) {
       data: {
         abi: tokenAbi,
         functionName: wd ? 'withdraw' : 'deposit',
-        values: [val]
+        values: [ val ]
       }
     })
     receipt = await tx.sendSignedTransaction(depositTx)
@@ -516,7 +516,7 @@ async function getAmountDeposited(did, keyringOpts) {
       abi: tokenAbi,
       address: ARA_TOKEN_ADDRESS,
       functionName: 'amountDeposited',
-      arguments: [address]
+      arguments: [ address ]
     })
   } catch (err) {
     throw err
