@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "./AraProxy.sol";
+import "./ignored_contracts/AraProxy.sol";
 
 contract AraRegistry {
   mapping (string => UpgradeableContract) private contracts_; // contract name => struct
