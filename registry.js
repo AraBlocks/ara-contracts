@@ -448,6 +448,7 @@ async function deployNewStandard(opts) {
   } catch (err) {
     throw err
   }
+
   const prefixedDid = `${constants.AID_PREFIX}${did}`
   const acct = await account.load({ did: prefixedDid, password })
   const registryOwner = await call({

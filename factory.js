@@ -12,6 +12,7 @@ const {
   validate,
   web3: {
     tx,
+    sha3,
     account,
     contract,
     abi: web3Abi
@@ -293,7 +294,7 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false) {
       data: {
         abi: registryAbi,
         functionName: upgrade ? 'upgradeContract' : 'addNewUpgradeableContract',
-        values: [ label, version, bytecode, data ]
+        values: [ sha3(label, false), version, bytecode, data ]
       }
     })
     ctx.close()
@@ -305,7 +306,7 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false) {
         registry.events.ProxyDeployed()
           .on('data', (log) => {
             const { returnValues: { _contractName, _address } } = log
-            if (label === _contractName) {
+            if (sha3(label, false) === _contractName) {
               debug(`Proxy deployed for ${label} at ${_address}`)
               resolve(_address)
             }
@@ -318,7 +319,7 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false) {
         registry.events.ContractUpgraded()
           .on('data', (log) => {
             const { returnValues: { _contractName, _version } } = log
-            if (label === _contractName && version === _version) {
+            if (sha3(label, false) === _contractName && version === _version) {
               debug(`${label} upgraded to version ${version}.`)
               resolve()
             }

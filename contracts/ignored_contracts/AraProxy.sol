@@ -9,17 +9,17 @@ import "../AraRegistry.sol";
 contract AraProxy {
 
   bytes32 private constant storagePosition_ = keccak256("io.ara.proxy.storage");
-  // bytes32 private constant contractNamePosition_ = keccak256("io.ara.proxy.contractName");
+  bytes32 private constant contractNamePosition_ = keccak256("io.ara.proxy.contractName");
 
   /**
   * @dev the constructor sets the AraRegistry address
   */
-  constructor(address _registryAddress, string _contractName) public {
+  constructor(address _registryAddress, bytes32 _contractName) public {
     bytes32 storagePosition = storagePosition_;
-    // bytes32 contractNamePosition = contractNamePosition_;
+    bytes32 contractNamePosition = contractNamePosition_;
     assembly {
       sstore(storagePosition, _registryAddress)
-      // sstore(contractNamePosition, _contractName)
+      sstore(contractNamePosition, _contractName)
     }
   }
 
@@ -29,16 +29,16 @@ contract AraProxy {
   */
   function () payable public {
     bytes32 storagePosition = storagePosition_;
-    // bytes32 contractNamePosition = contractNamePosition_;
+    bytes32 contractNamePosition = contractNamePosition_;
 
     address registryAddress;
-    // string memory contractName;
+    bytes32 contractName;
     assembly {
       registryAddress := sload(storagePosition)
-      // contractName := sload(contractNamePosition)
+      contractName := sload(contractNamePosition)
     }
     AraRegistry reg = AraRegistry(registryAddress);
-    address _impl = reg.getLatestVersionAddress('Registry.sol:Registry');
+    address _impl = reg.getLatestVersionAddress(contractName);
     
     require(_impl != address(0));
 
