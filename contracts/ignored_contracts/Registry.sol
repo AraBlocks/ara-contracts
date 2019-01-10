@@ -15,6 +15,8 @@ contract Registry {
   event StandardAdded(string indexed _version, address _address);
 
   function init(bytes _data) public {
+    require(owner_ == address(0), 'Registry has already been initialized.');
+
     uint256 btsptr;
     address ownerAddr;
     assembly {

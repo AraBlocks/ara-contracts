@@ -5,6 +5,7 @@ import "./StandardToken.sol";
 contract AraToken is StandardToken {
 
   // metadata
+  bool    private initialized;
   string  public constant name = "Ara Token";
   string  public constant symbol = "ARA";
   uint256 public constant decimals = 18;
@@ -17,6 +18,9 @@ contract AraToken is StandardToken {
   event Withdraw(address indexed to, uint256 value, uint256 total);
 
   function init(bytes _data) public {
+    require(!initialized, 'Ara Token has already been initialized.');
+    initialized = true;
+    
     uint256 btsptr;
     address ownerAddr;
     assembly {
