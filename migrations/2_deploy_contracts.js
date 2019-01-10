@@ -8,7 +8,7 @@ const replace = require('replace-in-file')
 const constants = require('../constants')
 const path = require('path')
 
-const AraFactory = artifacts.require('./AraFactory.sol')
+const AraRegistry = artifacts.require('./AraRegistry.sol')
 
 module.exports = (deployer, network, defaultAccounts) => {
   deployer.then(async () => {
@@ -43,8 +43,8 @@ module.exports = (deployer, network, defaultAccounts) => {
     }
 
     // deploy
-    await deployer.deploy(AraFactory, { from })
-    await ondeployfactorycomplete()
+    await deployer.deploy(AraRegistry, { from })
+    await ondeployararegistrycomplete()
     if ('local' === network || 'privatenet' === network) {
       await deploycore()
       await deploystandard()
@@ -52,12 +52,12 @@ module.exports = (deployer, network, defaultAccounts) => {
   })
 }
 
-async function ondeployfactorycomplete() {
+async function ondeployararegistrycomplete() {
   const constantsPath = path.resolve(__dirname, '../constants.js')
   const options = {
     files: constantsPath,
-    from: [ constants.FACTORY_ADDRESS ],
-    to: [ AraFactory.address ]
+    from: [ constants.ARA_REGISTRY_ADDRESS ],
+    to: [ AraRegistry.address ]
   }
   await replace(options)
 }

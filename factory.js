@@ -1,4 +1,4 @@
-const { abi: factoryAbi } = require('./build/contracts/AraFactory.json')
+const { abi: registryAbi } = require('./build/contracts/AraRegistry.json')
 const debug = require('debug')('ara-contracts:factory')
 const replace = require('replace-in-file')
 let constants = require('./constants')
@@ -59,6 +59,107 @@ async function compileAraContracts() {
  * @throws {Error, TypeError}
  */
 async function deployAraContracts(opts) {
+  let acct
+  try {
+    acct = _validateMasterOpts(opts)
+  } catch (err) {
+    throw err
+  }
+
+  try {
+    debug('Deploying...')
+    const registryAddress = await _deployRegistry(acct)
+    const libraryAddress = await _deployLibrary(acct, registryAddress)
+    const tokenAddress = await _deployToken(acct)
+
+    await _replaceConstants(registryAddress, libraryAddress, tokenAddress)
+
+    return {
+      registryAddress,
+      libraryAddress,
+      tokenAddress
+    }
+  } catch (err) {
+    throw err
+  }
+}
+
+/*
+ * Compiles and upgrades Registry contract
+ * @param  {String} opts.masterDid
+ * @param  {String} opts.password
+ * @param  {Object} [opts.keyringOpts]
+ * @return {Object}
+ * @throws {Error, TypeError}
+ */
+async function compileAndUpgradeRegistry(opts) {
+  try {
+    await pify(mkdirp)(constants.BYTESDIR)
+
+    await _compileRegistry()
+  } catch (err) {
+    throw err
+  }
+  try {
+    const acct = _validateMasterOpts(opts)
+
+    _deployRegistry(acct, true)
+  } catch (err) {
+    throw err
+  }
+}
+
+/*
+ * Compiles and upgrades Library contract
+ * @param  {String} opts.masterDid
+ * @param  {String} opts.password
+ * @param  {Object} [opts.keyringOpts]
+ * @return {Object}
+ * @throws {Error, TypeError}
+ */
+async function compileAndUpgradeLibrary(opts) {
+  try {
+    await pify(mkdirp)(constants.BYTESDIR)
+
+    await _compileLibrary()
+  } catch (err) {
+    throw err
+  }
+  try {
+    const acct = _validateMasterOpts(opts)
+
+    _deployLibrary(acct, constants.REGISTRY_ADDRESS, true)
+  } catch (err) {
+    throw err
+  }
+}
+
+/*
+ * Compiles and upgrades Token contract
+ * @param  {String} opts.masterDid
+ * @param  {String} opts.password
+ * @param  {Object} [opts.keyringOpts]
+ * @return {Object}
+ * @throws {Error, TypeError}
+ */
+async function compileAndUpgradeToken(opts) {
+  try {
+    await pify(mkdirp)(constants.BYTESDIR)
+
+    await _compileToken()
+  } catch (err) {
+    throw err
+  }
+  try {
+    const acct = _validateMasterOpts(opts)
+
+    _deployToken(acct, true)
+  } catch (err) {
+    throw err
+  }
+}
+
+async function _validateMasterOpts(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
   } else if ('string' !== typeof opts.masterDid || !opts.masterDid) {
@@ -80,26 +181,7 @@ async function deployAraContracts(opts) {
   } catch (err) {
     throw err
   }
-
-  try {
-    debug('Deploying...')
-    const registryAddress = await _deployRegistry(acct)
-    debug(`Deployed Registry at ${registryAddress}.`)
-    const libraryAddress = await _deployLibrary(acct, registryAddress)
-    debug(`Deployed Library at ${libraryAddress}.`)
-    const tokenAddress = await _deployToken(acct)
-    debug(`Deployed Ara Token at ${tokenAddress}.`)
-
-    await _replaceConstants(registryAddress, libraryAddress, tokenAddress)
-
-    return {
-      registryAddress,
-      libraryAddress,
-      tokenAddress
-    }
-  } catch (err) {
-    throw err
-  }
+  return acct
 }
 
 async function _compile(contractname, sources, bytespath) {
@@ -116,16 +198,16 @@ async function _compile(contractname, sources, bytespath) {
 
 async function _compileRegistry() {
   try {
-    debug('Compiling registry...')
+    debug('Compiling Registry...')
     await _compile(
-      'Registry.sol:Registry',
+      constants.REGISTRY_LABEL,
       {
         'Registry.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Registry.sol'), 'utf8'),
         'Proxy.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Proxy.sol'), 'utf8')
       },
-      `${constants.BYTESDIR}/Registry`
+      `${constants.BYTESDIR}/Registry_${constants.REGISTRY_VERSION}`
     )
-    debug('Compiled registry.')
+    debug('Compiled Registry.')
   } catch (err) {
     throw err
   }
@@ -133,17 +215,17 @@ async function _compileRegistry() {
 
 async function _compileLibrary() {
   try {
-    debug('Compiling library...')
+    debug('Compiling Library...')
     await _compile(
-      'Library.sol:Library',
+      constants.LIBRARY_LABEL,
       {
         'Registry.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Registry.sol'), 'utf8'),
         'Proxy.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Proxy.sol'), 'utf8'),
         'Library.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Library.sol'), 'utf8')
       },
-      `${constants.BYTESDIR}/Library`
+      `${constants.BYTESDIR}/Library_${constants.LIBRARY_VERSION}`
     )
-    debug('Compiled library.')
+    debug('Compiled Library.')
   } catch (err) {
     throw err
   }
@@ -151,54 +233,60 @@ async function _compileLibrary() {
 
 async function _compileToken() {
   try {
-    debug('Compiling token...')
+    debug('Compiling Ara Token...')
     await _compile(
-      'AraToken.sol:AraToken',
+      constants.TOKEN_LABEL,
       {
         'AraToken.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/AraToken.sol'), 'utf8'),
         'StandardToken.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/StandardToken.sol'), 'utf8'),
         'ERC20.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/ERC20.sol'), 'utf8'),
         'openzeppelin-solidity/contracts/math/SafeMath.sol': await pify(fs.readFile)(path.resolve(__dirname, './node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol'), 'utf8'),
       },
-      `${constants.BYTESDIR}/Token`
+      `${constants.BYTESDIR}/Token_${constants.TOKEN_VERSION}`
     )
-    debug('Compiled token')
+    debug('Compiled Ara Token.')
   } catch (err) {
     throw err
   }
 }
 
-async function _deployRegistry(acct) {
-  const label = 'Registry.sol:Registry'
+async function _deployRegistry(acct, upgrade = false) {
+  upgrade
+    ? debug(`Upgrading Registry contract to version ${constants.REGISTRY_VERSION}.`)
+    : debug(`Deploying Registry contract version ${constants.REGISTRY_VERSION}.`)
 
   let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Registry`))
   const encodedParameters = web3Abi.encodeParameters([ 'address' ], [ acct.address ]).slice(2)
   bytecode += encodedParameters
 
-  return _sendTx(acct, label, bytecode)
+  return _sendTx(acct, constants.REGISTRY_LABEL, constants.REGISTRY_VERSION, bytecode, upgrade)
 }
 
-async function _deployLibrary(acct, registryAddress) {
-  const label = 'Library.sol:Library'
+async function _deployLibrary(acct, registryAddress, upgrade = false) {
+  upgrade
+    ? debug(`Upgrading Library contract to version ${constants.LIBRARY_VERSION}.`)
+    : debug(`Deploying Library contract version ${constants.LIBRARY_VERSION}.`)
 
   let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Library`))
   const encodedParameters = web3Abi.encodeParameters([ 'address', 'address' ], [ acct.address, registryAddress ]).slice(2)
   bytecode += encodedParameters
 
-  return _sendTx(acct, label, bytecode)
+  return _sendTx(acct, constants.LIBRARY_LABEL, constants.LIBRARY_VERSION, bytecode, upgrade)
 }
 
-async function _deployToken(acct) {
-  const label = 'AraToken.sol:AraToken'
+async function _deployToken(acct, upgrade = false) {
+  upgrade
+    ? debug(`Upgrading Ara Token contract to version ${constants.TOKEN_VERSION}.`)
+    : debug(`Deploying Ara Token contract version ${constants.TOKEN_VERSION}.`)
 
   let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Token`))
   const encodedParameters = web3Abi.encodeParameters([ 'address' ], [ acct.address ]).slice(2)
   bytecode += encodedParameters
 
-  return _sendTx(acct, label, bytecode)
+  return _sendTx(acct, constants.TOKEN_LABEL, constants.TOKEN_VERSION, bytecode, upgrade)
 }
 
-async function _sendTx(acct, label, bytecode) {
+async function _sendTx(acct, label, version, bytecode, upgrade = false) {
   delete require.cache[require.resolve('./constants')]
   constants = require('./constants')
 
@@ -206,28 +294,44 @@ async function _sendTx(acct, label, bytecode) {
   try {
     const { tx: transaction, ctx } = await tx.create({
       account: acct,
-      to: constants.FACTORY_ADDRESS,
+      to: constants.ARA_REGISTRY_ADDRESS,
       gasLimit: 7000000,
       data: {
-        abi: factoryAbi,
-        functionName: 'deployContract',
-        values: [ label, bytecode ]
+        abi: registryAbi,
+        functionName: upgrade ? 'upgradeContract' : 'addNewUpgradeableContract',
+        values: [ label, version, bytecode ]
       }
     })
     ctx.close()
 
-    const { contract: factory, ctx: ctx2 } = await contract.get(factoryAbi, constants.FACTORY_ADDRESS)
-    address = await new Promise((resolve, reject) => {
-      tx.sendSignedTransaction(transaction)
-      factory.events.ContractDeployed()
-        .on('data', (log) => {
-          const { returnValues: { _label, _deployedAddress } } = log
-          if (label === _label) {
-            resolve(_deployedAddress)
-          }
-        })
-        .on('error', log => reject(log))
-    })
+    const { contract: registry, ctx: ctx2 } = await contract.get(registryAbi, constants.ARA_REGISTRY_ADDRESS)
+    if (!upgrade) {
+      address = await new Promise((resolve, reject) => {
+        tx.sendSignedTransaction(transaction)
+        registry.events.ProxyDeployed()
+          .on('data', (log) => {
+            const { returnValues: { _contractName, _address } } = log
+            if (label === _contractName) {
+              debug(`Proxy deployed for ${label} at ${_address}`)
+              resolve(_address)
+            }
+          })
+          .on('error', log => reject(log))
+      })
+    } else {
+      await new Promise((resolve, reject) => {
+        tx.sendSignedTransaction(transaction)
+        registry.events.ContractUpgraded()
+          .on('data', (log) => {
+            const { returnValues: { _contractName, _version } } = log
+            if (label === _contractName && version === _version) {
+              debug(`${label} upgraded to version ${version}.`)
+              resolve()
+            }
+          })
+          .on('error', log => reject(log))
+      })
+    }
     ctx2.close()
   } catch (err) {
     throw err
@@ -247,6 +351,9 @@ async function _replaceConstants(registryAddress, libraryAddress, tokenAddress) 
 
 module.exports = {
   compileAndDeployAraContracts,
+  compileAndUpgradeRegistry,
+  compileAndUpgradeLibrary,
+  compileAndUpgradeToken,
   compileAraContracts,
   deployAraContracts
 }

@@ -31,13 +31,17 @@ module.exports = {
     return getAddress(local, privatenet, testnet, mainnet)
   },
 
-  get FACTORY_ADDRESS() {
+  get ARA_REGISTRY_ADDRESS() {
     const local = '0x0000000000000000000000000000000000000000'
     const privatenet = '0xdedc7325f7d37ffeac06d2e60238989e7070ac21'
     const testnet = '0xd8a46c8e1d9dc5b03d726c9e302720a74ed2189b'
     const mainnet = '0x0000000000000000000000000000000000000003'
     return getAddress(local, privatenet, testnet, mainnet)
   },
+
+  REGISTRY_LABEL: 'Registry.sol:Registry',
+  LIBRARY_LABEL: 'Library.sol:Library',
+  TOKEN_LABEL: 'AraToken.sol:AraToken',
 
   TEMP_OWNER_DID: 'did:ara:9f26296a16e3260b77a165db15646b8a85f2cd590577ea2872c6bbbffed911a2',
   OWNER_PASSWORD: 'pass',
@@ -57,6 +61,9 @@ module.exports = {
 
   TOKEN_DECIMALS: 18,
   STANDARD_VERSION: '1',
+  REGISTRY_VERSION: '1',
+  LIBRARY_VERSION: '1',
+  TOKEN_VERSION: '1',
   JOB_ID_LENGTH: 64,
   STANDARD_DEPS_PATHS: ['./contracts/ignored_contracts/AFS.sol', './contracts/ignored_contracts/Library.sol', './contracts/ignored_contracts/Registry.sol', './contracts/ignored_contracts/Proxy.sol', './contracts/ignored_contracts/AraToken.sol'],
   ZERO_BYTES32: '0x00000000000000000000000000000000',
