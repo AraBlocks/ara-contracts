@@ -69,6 +69,7 @@ module.exports = (async function main() {
 }())
 
 async function onupgrade(argv) {
+  console.log(argv)
   const {
     did, registry, library, token, versionName
   } = argv
@@ -81,17 +82,17 @@ async function onupgrade(argv) {
   try {
     if (registry) {
       info('Upgrading Registry contract...')
-      await replaceVersion(constants.REGISTRY_VERSION, versionName)
+      await replaceVersion(`REGISTRY_VERSION: '${constants.REGISTRY_VERSION}'`, `REGISTRY_VERSION: '${versionName}'`)
       await compileAndUpgradeRegistry({ masterDid: did, password })
       info('Registry contract upgraded!')
     } else if (library) {
       info('Upgrading Library contract...')
-      await replaceVersion(constants.LIBRARY_VERSION, versionName)
+      await replaceVersion(`LIBRARY_VERSION: '${constants.LIBRARY_VERSION}'`, `LIBRARY_VERSION: '${versionName}'`)
       await compileAndUpgradeLibrary({ masterDid: did, password })
       info('Library contract upgraded!')
     } else if (token) {
       info('Upgrading Ara Token contract...')
-      await replaceVersion(constants.TOKEN_VERSION, versionName)
+      await replaceVersion(`TOKEN_VERSION: '${constants.TOKEN_VERSION}'`, `TOKEN_VERSION: '${versionName}'`)
       await compileAndUpgradeToken({ masterDid: did, password })
       info('Ara Token contract upgraded!')
     }
