@@ -52,10 +52,7 @@ const { argv } = program
       })
       .conflicts('r', 'l')
       .conflicts('r', 't')
-      .conflicts('l', 'r')
       .conflicts('l', 't')
-      .conflicts('t', 'r')
-      .conflicts('t', 'l')
   }, onupgrade)
   .help('h')
   .recommendCommands()
@@ -81,16 +78,28 @@ async function onupgrade(argv) {
   const { password } = await promptForPassword()
   try {
     if (registry) {
+      if (constants.REGISTRY_VERSION === versionName) {
+        onfatal(new Error(`Registry version ${constants.REGISTRY_VERSION} has already been deployed.`))
+      }
+
       info('Upgrading Registry contract...')
       await replaceVersion(`REGISTRY_VERSION: '${constants.REGISTRY_VERSION}'`, `REGISTRY_VERSION: '${versionName}'`)
       await compileAndUpgradeRegistry({ masterDid: did, password })
       info('Registry contract upgraded!')
     } else if (library) {
+      if (constants.LIBRARY_VERSION === versionName) {
+        onfatal(new Error(`Library version ${constants.LIBRARY_VERSION} has already been deployed.`))
+      }
+
       info('Upgrading Library contract...')
       await replaceVersion(`LIBRARY_VERSION: '${constants.LIBRARY_VERSION}'`, `LIBRARY_VERSION: '${versionName}'`)
       await compileAndUpgradeLibrary({ masterDid: did, password })
       info('Library contract upgraded!')
     } else if (token) {
+      if (constants.TOKEN_VERSION === versionName) {
+        onfatal(new Error(`Ara Token version ${constants.TOKEN_VERSION} has already been deployed.`))
+      }
+
       info('Upgrading Ara Token contract...')
       await replaceVersion(`TOKEN_VERSION: '${constants.TOKEN_VERSION}'`, `TOKEN_VERSION: '${versionName}'`)
       await compileAndUpgradeToken({ masterDid: did, password })
