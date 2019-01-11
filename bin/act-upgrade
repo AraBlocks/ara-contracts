@@ -50,9 +50,11 @@ const { argv } = program
         type: 'boolean',
         describe: 'Upgrade Ara Token contract'
       })
-      .conflicts('r', 'l', 't')
-      .conflicts('l', 'r', 't')
-      .conflicts('t', 'l', 'r')
+      .conflicts('r', 'l')
+      .conflicts('r', 't')
+      .conflicts('l', 'r')
+      .conflicts('t', 'r')
+      .conflicts('t', 'l')
   }, onupgrade)
   .help('h')
   .recommendCommands()
