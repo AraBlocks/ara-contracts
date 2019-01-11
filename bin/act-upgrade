@@ -53,6 +53,7 @@ const { argv } = program
       .conflicts('r', 'l')
       .conflicts('r', 't')
       .conflicts('l', 'r')
+      .conflicts('l', 't')
       .conflicts('t', 'r')
       .conflicts('t', 'l')
   }, onupgrade)
