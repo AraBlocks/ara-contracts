@@ -7,7 +7,10 @@ const debug = require('debug')('ara-contracts:cli:deploy')
 const { createProgram } = require('../lib/program')
 const { info, error } = require('ara-console')
 const registry = require('../registry')
+const replace = require('replace-in-file')
+const constants = require('../constants')
 const inquirer = require('inquirer')
+const path = require('path')
 
 // yargs program command line interface instance
 const program = createProgram({
@@ -116,7 +119,7 @@ async function onproxy(argv) {
     const estimateOpts = Object.assign({}, opts, { estimate: true })
     if (!upgrade) {
       info(`Deploying new proxy for ${did} at version ${versionName}...`)
-      // act deploy proxy a5805b7acc9cb27c75a7852dff6555dc2cc0b8ff000dd287ccc05d4c4edf33e6 1
+      // act deploy proxy 536d9dfa1b199adb97d93d933734525752a720063e0fdc39b5aa9380ad31e5ce 2
       const cost = await registry.deployProxy(estimateOpts)
       const { answer } = await promptCostConfirmation(cost)
       if (answer) {
@@ -155,8 +158,13 @@ async function onstandard(argv) {
   }
 
   try {
+    if (constants.STANDARD_VERSION === versionName) {
+      onfatal(new Error(`AFS Standard version ${constants.STANDARD_VERSION} has already been deployed.`))
+    }
+
     info(`Deploying new AFS standard version ${versionName}...`)
-    // DEBUG=* act deploy standard f07e6462ff1fe42af1f98e2bb474936b60a4fc05669458f60dfdc98f1750f1b9 1 ./contracts/ignored_contracts/AFS.sol ./contracts/ignored_contracts/Library.sol ./contracts/ignored_contracts/Registry.sol ./contracts/ignored_contracts/Proxy.sol ./contracts/ignored_contracts/AraToken.sol -D
+    await replaceVersion(`STANDARD_VERSION: '${constants.STANDARD_VERSION}'`, `STANDARD_VERSION: '${versionName}'`)
+    // DEBUG=* act deploy standard 9f26296a16e3260b77a165db15646b8a85f2cd590577ea2872c6bbbffed911a2 2 ./contracts/ignored_contracts/AFS.sol ./contracts/ignored_contracts/Library.sol ./contracts/ignored_contracts/Registry.sol ./contracts/ignored_contracts/Proxy.sol ./contracts/ignored_contracts/AraToken.sol -D
     const address = await registry.deployNewStandard({
       requesterDid: did,
       password,
@@ -188,6 +196,16 @@ async function ondeploy(argv) {
   } catch (err) {
     onfatal(err)
   }
+}
+
+async function replaceVersion(from, to) {
+  const constantsPath = path.resolve(__dirname, '../constants.js')
+  const options = {
+    files: constantsPath,
+    from: [ from ],
+    to: [ to ]
+  }
+  await replace(options)
 }
 
 async function promptForPassword(message) {
