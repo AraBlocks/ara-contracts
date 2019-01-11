@@ -1,0 +1,127 @@
+#!/usr/bin/env node
+
+/* eslint no-shadow: [ "error", { "allow": ["_", "program", "argv"] }] */
+
+const debug = require('debug')('ara-contracts:cli:upgrade')
+const { createProgram } = require('../lib/program')
+const { info, error } = require('ara-console')
+const replace = require('replace-in-file')
+const constants = require('../constants')
+const inquirer = require('inquirer')
+const path = require('path')
+
+const {
+  compileAndUpgradeRegistry,
+  compileAndUpgradeLibrary,
+  compileAndUpgradeToken
+} = require('../factory')
+
+// yargs program command line interface instance
+const program = createProgram({
+  usage: `
+usage: act upgrade: [-h] [--help] 
+                   [options] [--] <did> <version-name>...
+`
+})
+
+const { argv } = program
+  .command('$0 [options] <did> <version-name>', 'Upgrade a contract to <version-name>.', (_) => {
+    _
+      .positional('did', {
+        type: 'string',
+        describe: 'The DID of the Ara master account'
+      })
+      .positional('version-name', {
+        type: 'string',
+        describe: 'The version name of the new Registry contract'
+      })
+      .option('registry', {
+        alias: 'r',
+        type: 'boolean',
+        describe: 'Upgrade Registry contract'
+      })
+      .option('library', {
+        alias: 'l',
+        type: 'boolean',
+        describe: 'Upgrade Library contract'
+      })
+      .option('token', {
+        alias: 't',
+        type: 'boolean',
+        describe: 'Upgrade Ara Token contract'
+      })
+      .conflicts('r', 'l', 't')
+      .conflicts('l', 'r', 't')
+      .conflicts('t', 'l', 'r')
+  }, onupgrade)
+  .help('h')
+  .recommendCommands()
+  .strict()
+
+// Main program entry
+module.exports = (async function main() {
+  if (argv.debug) {
+    require('debug').enable('ara-contracts*')
+  }
+}())
+
+async function onupgrade(argv) {
+  const {
+    did, registry, library, token, versionName
+  } = argv
+
+  if (!(registry || library || token)) {
+    onfatal(new Error('One of -r, -l, or -t options must be provided.'))
+  }
+
+  const { password } = await promptForPassword()
+  try {
+    if (registry) {
+      info('Upgrading Registry contract...')
+      await replaceVersion(constants.REGISTRY_VERSION, versionName)
+      await compileAndUpgradeRegistry({ masterDid: did, password })
+      info('Registry contract upgraded!')
+    } else if (library) {
+      info('Upgrading Library contract...')
+      await replaceVersion(constants.LIBRARY_VERSION, versionName)
+      await compileAndUpgradeLibrary({ masterDid: did, password })
+      info('Library contract upgraded!')
+    } else if (token) {
+      info('Upgrading Ara Token contract...')
+      await replaceVersion(constants.TOKEN_VERSION, versionName)
+      await compileAndUpgradeToken({ masterDid: did, password })
+      info('Ara Token contract upgraded!')
+    }
+  } catch (err) {
+    onfatal(err)
+  }
+}
+
+async function replaceVersion(from, to) {
+  const constantsPath = path.resolve(__dirname, '../constants.js')
+  const options = {
+    files: constantsPath,
+    from: [ from ],
+    to: [ to ]
+  }
+  await replace(options)
+}
+
+async function promptForPassword(message) {
+  message = message || 'Please provide the passphrase for your identity. This is needed to ' +
+    'complete this action.\n' +
+    'Passphrase:'
+  return inquirer.prompt([ {
+    type: 'password',
+    name: 'password',
+    message
+  } ])
+}
+
+function onfatal(err) {
+  if (err) {
+    debug(err)
+    error('fatal:', err.message)
+  }
+  process.exit(1)
+}

@@ -101,6 +101,9 @@ async function compileAndUpgradeRegistry(opts) {
     throw err
   }
 
+  delete require.cache[require.resolve('./constants')]
+  constants = require('./constants')
+
   try {
     await pify(mkdirp)(constants.BYTESDIR)
     await _compileRegistry()
@@ -126,6 +129,9 @@ async function compileAndUpgradeLibrary(opts) {
     throw err
   }
 
+  delete require.cache[require.resolve('./constants')]
+  constants = require('./constants')
+
   try {
     await pify(mkdirp)(constants.BYTESDIR)
     await _compileLibrary()
@@ -150,6 +156,9 @@ async function compileAndUpgradeToken(opts) {
   } catch (err) {
     throw err
   }
+
+  delete require.cache[require.resolve('./constants')]
+  constants = require('./constants')
 
   try {
     await pify(mkdirp)(constants.BYTESDIR)
