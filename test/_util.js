@@ -2,6 +2,7 @@ const { getAddressFromDID, getIdentifier } = require('ara-util')
 const { createIdentityKeyPath } = require('ara-identity')
 const { transfer, modifyDeposit } = require('../token')
 const createContext = require('ara-context')
+const replace = require('replace-in-file')
 const { blake2b } = require('ara-crypto')
 const mirror = require('mirror-folder')
 const { readFile } = require('fs')
@@ -12,7 +13,8 @@ const pify = require('pify')
 const {
   TEST_OWNER_DID,
   TEST_OWNER_ADDRESS,
-  PASSWORD
+  PASSWORD,
+  BYTESDIR
 } = require('./_constants')
 
 const {
@@ -62,5 +64,27 @@ module.exports = {
       password: PASSWORD,
       val: '100'
     })
+  },
+
+  async replaceBytesPath() {
+    const constantsPath = resolve(__dirname, '../constants.js')
+    const options = {
+      files: constantsPath,
+      from: [ 'path.resolve(__dirname, \'./bytecode\')' ],
+      to: [ `'${BYTESDIR}'` ]
+    }
+    await replace(options)
+  },
+
+  async cleanupAndResetBytesPath() {
+    const constantsPath = resolve(__dirname, '../constants.js')
+    await pify(rimraf)(BYTESDIR)
+
+    const options = {
+      files: constantsPath,
+      from: [ `'${BYTESDIR}'` ],
+      to: [ 'path.resolve(__dirname, \'./bytecode\')' ]
+    }
+    await replace(options)
   }
 }
