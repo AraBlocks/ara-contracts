@@ -86,5 +86,15 @@ module.exports = {
       to: [ 'path.resolve(__dirname, \'./bytecode\')' ]
     }
     await replace(options)
+  },
+
+  async replaceVersion(from, to) {
+    const constantsPath = resolve(__dirname, '../constants.js')
+    const options = {
+      files: constantsPath,
+      from: [ from ],
+      to: [ to ]
+    }
+    await replace(options)
   }
 }

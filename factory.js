@@ -13,6 +13,7 @@ const {
   web3: {
     tx,
     sha3,
+    call,
     account,
     contract,
     abi: web3Abi
@@ -172,6 +173,46 @@ async function compileAndUpgradeToken(opts) {
   }
 }
 
+async function getLatestVersionAddress(label) {
+  if ('string' !== typeof label || !label) {
+    throw new TypeError('Expecting label to be a non-empty string.')
+  }
+
+  try {
+    return call({
+      abi: registryAbi,
+      address: constants.ARA_REGISTRY_ADDRESS,
+      functionName: 'getLatestVersionAddress',
+      arguments: [
+        sha3(label, false)
+      ]
+    })
+  } catch (err) {
+    throw err
+  }
+}
+
+async function getUpgradeableContractAddress(label, version) {
+  if ('string' !== typeof label || !label) {
+    throw new TypeError('Expecting label to be a non-empty string.')
+  } else if ('string' !== typeof version || !version) {
+    throw new TypeError('Expecting version to be a non-empty string.')
+  }
+
+  try {
+    return call({
+      abi: registryAbi,
+      address: constants.ARA_REGISTRY_ADDRESS,
+      functionName: 'getUpgradeableContractAddress',
+      arguments: [
+        sha3(label, false), version
+      ]
+    })
+  } catch (err) {
+    throw err
+  }
+}
+
 async function _validateMasterOpts(opts) {
   if (!opts || 'object' !== typeof opts) {
     throw new TypeError('Expecting opts object.')
@@ -266,31 +307,63 @@ async function _compileToken() {
 async function _deployRegistry(acct, upgrade = false) {
   debug(`${upgrade ? 'Upgrading' : 'Deploying'} Registry contract ${upgrade ? 'to ' : ''}version ${constants.REGISTRY_VERSION}.`)
 
-  let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Registry_${constants.REGISTRY_VERSION}`))
-  const encodedData = web3Abi.encodeParameters([ 'address' ], [ acct.address ])
-  bytecode += encodedData.slice(2)
+  try {
+    let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Registry_${constants.REGISTRY_VERSION}`))
+    const encodedData = web3Abi.encodeParameters([ 'address' ], [ acct.address ])
+    bytecode += encodedData.slice(2)
 
-  return _sendTx(acct, constants.REGISTRY_LABEL, constants.REGISTRY_VERSION, bytecode, encodedData, upgrade)
+    return _sendTx(acct, constants.REGISTRY_LABEL, constants.REGISTRY_VERSION, bytecode, encodedData, upgrade)
+  } catch (err) {
+    throw err
+  }
 }
 
 async function _deployLibrary(acct, registryAddress, upgrade = false) {
   debug(`${upgrade ? 'Upgrading' : 'Deploying'} Library contract ${upgrade ? 'to ' : ''}version ${constants.LIBRARY_VERSION}.`)
 
-  let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Library_${constants.LIBRARY_VERSION}`))
-  const encodedData = web3Abi.encodeParameters([ 'address', 'address' ], [ acct.address, registryAddress ])
-  bytecode += encodedData.slice(2)
+  try {
+    let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Library_${constants.LIBRARY_VERSION}`))
+    const encodedData = web3Abi.encodeParameters([ 'address', 'address' ], [ acct.address, registryAddress ])
+    bytecode += encodedData.slice(2)
 
-  return _sendTx(acct, constants.LIBRARY_LABEL, constants.LIBRARY_VERSION, bytecode, encodedData, upgrade)
+    return _sendTx(acct, constants.LIBRARY_LABEL, constants.LIBRARY_VERSION, bytecode, encodedData, upgrade)
+  } catch (err) {
+    throw err
+  }
 }
 
 async function _deployToken(acct, upgrade = false) {
   debug(`${upgrade ? 'Upgrading' : 'Deploying'} Token contract ${upgrade ? 'to ' : ''}version ${constants.TOKEN_VERSION}.`)
 
-  let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Token_${constants.TOKEN_VERSION}`))
-  const encodedData = web3Abi.encodeParameters([ 'address' ], [ acct.address ])
-  bytecode += encodedData.slice(2)
+  try {
+    let bytecode = await pify(fs.readFile)(path.resolve(__dirname, `${constants.BYTESDIR}/Token_${constants.TOKEN_VERSION}`))
+    const encodedData = web3Abi.encodeParameters([ 'address' ], [ acct.address ])
+    bytecode += encodedData.slice(2)
 
-  return _sendTx(acct, constants.TOKEN_LABEL, constants.TOKEN_VERSION, bytecode, encodedData, upgrade)
+    return _sendTx(acct, constants.TOKEN_LABEL, constants.TOKEN_VERSION, bytecode, encodedData, upgrade)
+  } catch (err) {
+    throw err
+  }
+}
+
+async function _checkExists(label, version) {
+  try {
+    const address = await call({
+      abi: registryAbi,
+      address: constants.ARA_REGISTRY_ADDRESS,
+      functionName: 'getUpgradeableContractAddress',
+      arguments: [
+        sha3(label, false), version
+      ]
+    })
+
+    if (!/^0x0+$/.test(address)) {
+      return true
+    }
+    return false
+  } catch (err) {
+    throw err
+  }
 }
 
 async function _sendTx(acct, label, version, bytecode, data, upgrade = false) {
@@ -299,6 +372,10 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false) {
 
   let address
   try {
+    if (await _checkExists(label, version)) {
+      throw new Error(`${label} version ${version} already exists. Please update the version in constants.js and try again.`)
+    }
+
     const values = upgrade ? [ sha3(label, false), version, bytecode ] : [ sha3(label, false), version, bytecode, data ]
     const { tx: transaction, ctx } = await tx.create({
       account: acct,
@@ -310,13 +387,12 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false) {
         values
       }
     })
-    ctx.close()
 
     const { contract: registry, ctx: ctx2 } = await contract.get(registryAbi, constants.ARA_REGISTRY_ADDRESS)
     if (!upgrade) {
       address = await new Promise((resolve, reject) => {
         tx.sendSignedTransaction(transaction)
-        registry.events.ProxyDeployed()
+        registry.events.ProxyDeployed({ fromBlock: 'latest' })
           .on('data', (log) => {
             const { returnValues: { _contractName, _address } } = log
             if (sha3(label, false) === _contractName) {
@@ -340,6 +416,7 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false) {
           .on('error', log => reject(log))
       })
     }
+    ctx.close()
     ctx2.close()
   } catch (err) {
     throw err
@@ -358,9 +435,11 @@ async function _replaceConstants(registryAddress, libraryAddress, tokenAddress) 
 }
 
 module.exports = {
+  getUpgradeableContractAddress,
   compileAndDeployAraContracts,
   compileAndUpgradeRegistry,
   compileAndUpgradeLibrary,
+  getLatestVersionAddress,
   compileAndUpgradeToken,
   compileAraContracts,
   deployAraContracts
