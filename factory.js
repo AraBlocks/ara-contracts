@@ -64,6 +64,9 @@ async function compileAraContracts() {
  * @throws {Error, TypeError}
  */
 async function deployAraContracts(opts) {
+  delete require.cache[require.resolve('./constants')]
+  constants = require('./constants')
+
   let acct
   try {
     acct = await _validateMasterOpts(opts)
@@ -312,7 +315,7 @@ async function _deployRegistry(acct, upgrade = false) {
     const encodedData = web3Abi.encodeParameters([ 'address' ], [ acct.address ])
     bytecode += encodedData.slice(2)
 
-    return _sendTx(acct, constants.REGISTRY_LABEL, constants.REGISTRY_VERSION, bytecode, encodedData, upgrade)
+    return _sendTx(acct, constants.REGISTRY_NAME, constants.REGISTRY_VERSION, bytecode, encodedData, upgrade)
   } catch (err) {
     throw err
   }
@@ -326,7 +329,7 @@ async function _deployLibrary(acct, registryAddress, upgrade = false) {
     const encodedData = web3Abi.encodeParameters([ 'address', 'address' ], [ acct.address, registryAddress ])
     bytecode += encodedData.slice(2)
 
-    return _sendTx(acct, constants.LIBRARY_LABEL, constants.LIBRARY_VERSION, bytecode, encodedData, upgrade)
+    return _sendTx(acct, constants.LIBRARY_NAME, constants.LIBRARY_VERSION, bytecode, encodedData, upgrade)
   } catch (err) {
     throw err
   }
@@ -340,7 +343,7 @@ async function _deployToken(acct, upgrade = false) {
     const encodedData = web3Abi.encodeParameters([ 'address' ], [ acct.address ])
     bytecode += encodedData.slice(2)
 
-    return _sendTx(acct, constants.TOKEN_LABEL, constants.TOKEN_VERSION, bytecode, encodedData, upgrade)
+    return _sendTx(acct, constants.TOKEN_NAME, constants.TOKEN_VERSION, bytecode, encodedData, upgrade)
   } catch (err) {
     throw err
   }
