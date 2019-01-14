@@ -1,4 +1,4 @@
-const constants = require('../constants')
+let constants = require('../constants')
 const factory = require('../factory')
 const pify = require('pify')
 const path = require('path')
@@ -26,6 +26,16 @@ const getDid = (t) => {
   return did
 }
 
+const funcMap = [
+  factory.compileAndUpgradeRegistry,
+  factory.compileAndUpgradeLibrary,
+  factory.compileAndUpgradeToken,
+  factory.deployAraContracts
+]
+
+const versionName1 = 'la-di-da'
+const versionName2 = 'la-di-da2'
+
 test.before(async (t) => {
   t.context.defaultAccount = await mirrorIdentity(TEST_OWNER_DID_NO_METHOD)
   await replaceBytesPath()
@@ -33,6 +43,27 @@ test.before(async (t) => {
 
 test.after(async () => {
   await cleanupAndResetBytesPath()
+})
+
+test.serial('getLatestVersionAddress(label) invalid args', async (t) => {
+  await t.throwsAsync(factory.getLatestVersionAddress(), TypeError)
+  await t.throwsAsync(factory.getLatestVersionAddress(''), TypeError)
+  await t.throwsAsync(factory.getLatestVersionAddress(123), TypeError)
+  await t.throwsAsync(factory.getLatestVersionAddress(true), TypeError)
+  await t.throwsAsync(factory.getLatestVersionAddress({ }), TypeError)
+})
+
+test.serial('getUpgradeableContractAddress(label, version) invalid args', async (t) => {
+  await t.throwsAsync(factory.getUpgradeableContractAddress(), TypeError)
+  await t.throwsAsync(factory.getUpgradeableContractAddress(''), TypeError)
+  await t.throwsAsync(factory.getUpgradeableContractAddress(123), TypeError)
+  await t.throwsAsync(factory.getUpgradeableContractAddress(true), TypeError)
+  await t.throwsAsync(factory.getUpgradeableContractAddress({ }), TypeError)
+
+  await t.throwsAsync(factory.getUpgradeableContractAddress('label', ''), TypeError)
+  await t.throwsAsync(factory.getUpgradeableContractAddress('label', 123), TypeError)
+  await t.throwsAsync(factory.getUpgradeableContractAddress('label', true), TypeError)
+  await t.throwsAsync(factory.getUpgradeableContractAddress('label', { }), TypeError)
 })
 
 test.serial('compileAraContracts()', async (t) => {
@@ -43,41 +74,17 @@ test.serial('compileAraContracts()', async (t) => {
   await t.notThrowsAsync(pify(fs.readFile)(path.resolve(BYTESDIR, `./Token_${constants.TOKEN_VERSION}`)))
 })
 
-test.serial('deployAraContracts() invalid opts', async (t) => {
-  const masterDid = getDid(t)
-
-  await t.throwsAsync(factory.deployAraContracts(), TypeError)
-  await t.throwsAsync(factory.deployAraContracts('opts'), TypeError)
-  await t.throwsAsync(factory.deployAraContracts({ }), TypeError)
-
-  await t.throwsAsync(factory.deployAraContracts({ masterDid }), TypeError)
-  await t.throwsAsync(factory.deployAraContracts({ password }), TypeError)
-  await t.throwsAsync(factory.deployAraContracts({ masterDid: '' }), TypeError)
-  await t.throwsAsync(factory.deployAraContracts({ password: '' }), TypeError)
-
-  await t.throwsAsync(factory.deployAraContracts({ masterDid: '', password }), TypeError)
-  await t.throwsAsync(factory.deployAraContracts({ masterDid: 'did:ara:invalid', password }), TypeError)
-  await t.throwsAsync(factory.deployAraContracts({ masterDid: true, password }), TypeError)
-
-  await t.throwsAsync(factory.deployAraContracts({ masterDid, password: '' }), TypeError)
-  await t.throwsAsync(factory.deployAraContracts({ masterDid, password: 123 }), TypeError)
-  await t.throwsAsync(factory.deployAraContracts({ masterDid, password: true }), TypeError)
-})
-
-test.serial('deployAraContracts() version already deployed', async (t) => {
-  const masterDid = getDid(t)
-
-  await t.throwsAsync(factory.deployAraContracts({ masterDid, password }), Error)
-})
-
 test.serial('deployAraContracts()', async (t) => {
   const masterDid = getDid(t)
 
-  await replaceVersions()
+  await replaceVersions(versionName1)
   await replaceNames()
 
   await t.notThrowsAsync(factory.compileAraContracts())
   await t.notThrowsAsync(factory.deployAraContracts({ masterDid, password }))
+
+  delete require.cache[require.resolve('../constants')]
+  constants = require('../constants')
 
   const latestRegistryAddress = await factory.getLatestVersionAddress(constants.REGISTRY_NAME)
   const registryAddress = await factory.getUpgradeableContractAddress(constants.REGISTRY_NAME, constants.REGISTRY_VERSION)
@@ -91,6 +98,110 @@ test.serial('deployAraContracts()', async (t) => {
   const tokenAddress = await factory.getUpgradeableContractAddress(constants.TOKEN_NAME, constants.TOKEN_VERSION)
   t.is(latestTokenAddress, tokenAddress)
 
-  await resetVersions()
+  await resetVersions(versionName1)
   await resetNames()
+})
+
+test.serial('deploy functions invalid generic opts', async (t) => {
+  const masterDid = getDid(t)
+
+  const promises = []
+
+  for (const func of funcMap) {
+    promises.push(new Promise(async (resolve) => {
+      await t.throwsAsync(func(), TypeError)
+      await t.throwsAsync(func('opts'), TypeError)
+      await t.throwsAsync(func({ }), TypeError)
+
+      await t.throwsAsync(func({ masterDid }), TypeError)
+      await t.throwsAsync(func({ password }), TypeError)
+      await t.throwsAsync(func({ masterDid: '' }), TypeError)
+      await t.throwsAsync(func({ password: '' }), TypeError)
+
+      await t.throwsAsync(func({ masterDid: '', password }), TypeError)
+      await t.throwsAsync(func({ masterDid: 'did:ara:invalid', password }), TypeError)
+      await t.throwsAsync(func({ masterDid: true, password }), TypeError)
+
+      await t.throwsAsync(func({ masterDid, password: '' }), TypeError)
+      await t.throwsAsync(func({ masterDid, password: 123 }), TypeError)
+      await t.throwsAsync(func({ masterDid, password: true }), TypeError)
+      resolve()
+    }))
+  }
+  await Promise.all(promises)
+})
+
+test.serial('deploy functions already deployed', async (t) => {
+  const masterDid = getDid(t)
+
+  const opts = { masterDid, password }
+  const promises = []
+
+  for (const func of funcMap) {
+    promises.push(new Promise(async (resolve) => {
+      await t.throwsAsync(func(opts), Error)
+      resolve()
+    }))
+  }
+  await Promise.all(promises)
+})
+
+test.serial('compileAndUpgradeRegistry(opts)', async (t) => {
+  const masterDid = getDid(t)
+
+  await replaceVersions(versionName2)
+
+  delete require.cache[require.resolve('../constants')]
+  constants = require('../constants')
+
+  const opts = { masterDid, password }
+
+  await t.notThrowsAsync(factory.compileAndUpgradeRegistry(opts))
+  const latestRegistryAddress = await factory.getLatestVersionAddress(constants.REGISTRY_NAME)
+  const oldRegistryAddress = await factory.getUpgradeableContractAddress(constants.REGISTRY_NAME, versionName1)
+  const registryAddress = await factory.getUpgradeableContractAddress(constants.REGISTRY_NAME, constants.REGISTRY_VERSION)
+  t.is(latestRegistryAddress, registryAddress)
+  t.not(oldRegistryAddress, latestRegistryAddress)
+
+  await resetVersions(versionName2)
+})
+
+test.serial('compileAndUpgradeLibrary(opts)', async (t) => {
+  const masterDid = getDid(t)
+
+  await replaceVersions(versionName2)
+
+  delete require.cache[require.resolve('../constants')]
+  constants = require('../constants')
+
+  const opts = { masterDid, password }
+
+  await t.notThrowsAsync(factory.compileAndUpgradeLibrary(opts))
+  const latestLibraryAddress = await factory.getLatestVersionAddress(constants.LIBRARY_NAME)
+  const oldLibraryAddress = await factory.getUpgradeableContractAddress(constants.LIBRARY_NAME, versionName1)
+  const libraryAddress = await factory.getUpgradeableContractAddress(constants.LIBRARY_NAME, constants.LIBRARY_VERSION)
+  t.is(latestLibraryAddress, libraryAddress)
+  t.not(oldLibraryAddress, latestLibraryAddress)
+
+  await resetVersions(versionName2)
+})
+
+test.serial('compileAndUpgradeToken(opts)', async (t) => {
+  const masterDid = getDid(t)
+
+  await replaceVersions(versionName2)
+
+  delete require.cache[require.resolve('../constants')]
+  constants = require('../constants')
+
+  const opts = { masterDid, password }
+
+  await t.notThrowsAsync(factory.compileAndUpgradeToken(opts))
+  const latestTokenAddress = await factory.getLatestVersionAddress(constants.TOKEN_NAME)
+  const oldTokenAddress = await factory.getUpgradeableContractAddress(constants.TOKEN_NAME, versionName1)
+  const tokenAddress = await factory.getUpgradeableContractAddress(constants.TOKEN_NAME, constants.TOKEN_VERSION)
+  t.is(latestTokenAddress, tokenAddress)
+  t.not(oldTokenAddress, latestTokenAddress)
+
+  await resetVersions(versionName2)
 })
