@@ -23,8 +23,6 @@ const {
   parse
 } = require('path')
 
-const randomVersionName = 'la-di-da'
-
 module.exports = {
 
   async mirrorIdentity(testDID) {
@@ -91,21 +89,21 @@ module.exports = {
     await replace(options)
   },
 
-  async replaceVersions() {
+  async replaceVersions(versionName) {
     const constantsPath = resolve(__dirname, '../constants.js')
     const options = {
       files: constantsPath,
       from: [ `REGISTRY_VERSION: '${constants.REGISTRY_VERSION}'`, `LIBRARY_VERSION: '${constants.LIBRARY_VERSION}'`, `TOKEN_VERSION: '${constants.TOKEN_VERSION}'` ],
-      to: [ `REGISTRY_VERSION: '${randomVersionName}'`, `LIBRARY_VERSION: '${randomVersionName}'`, `TOKEN_VERSION: '${randomVersionName}'` ]
+      to: [ `REGISTRY_VERSION: '${versionName}'`, `LIBRARY_VERSION: '${versionName}'`, `TOKEN_VERSION: '${versionName}'` ]
     }
     await replace(options)
   },
 
-  async resetVersions() {
+  async resetVersions(versionName) {
     const constantsPath = resolve(__dirname, '../constants.js')
     const options = {
       files: constantsPath,
-      from: [ `REGISTRY_VERSION: '${randomVersionName}'`, `LIBRARY_VERSION: '${randomVersionName}'`, `TOKEN_VERSION: '${randomVersionName}'` ],
+      from: [ `REGISTRY_VERSION: '${versionName}'`, `LIBRARY_VERSION: '${versionName}'`, `TOKEN_VERSION: '${versionName}'` ],
       to: [ `REGISTRY_VERSION: '${constants.REGISTRY_VERSION}'`, `LIBRARY_VERSION: '${constants.LIBRARY_VERSION}'`, `TOKEN_VERSION: '${constants.TOKEN_VERSION}'` ]
     }
     await replace(options)
