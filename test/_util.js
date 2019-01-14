@@ -116,7 +116,7 @@ module.exports = {
     const options = {
       files: constantsPath,
       from: [ `REGISTRY_NAME: '${constants.REGISTRY_NAME}'`, `LIBRARY_NAME: '${constants.LIBRARY_NAME}'`, `TOKEN_NAME: '${constants.TOKEN_NAME}'` ],
-      to: [ `REGISTRY_NAME: 'regname'`, `LIBRARY_NAME: 'libname'`, `TOKEN_NAME: 'tokenname'` ]
+      to: [ 'REGISTRY_NAME: \'regname\'', 'LIBRARY_NAME: \'libname\'', 'TOKEN_NAME: \'tokenname\'' ]
     }
     await replace(options)
   },
@@ -125,7 +125,7 @@ module.exports = {
     const constantsPath = resolve(__dirname, '../constants.js')
     const options = {
       files: constantsPath,
-      from: [ `REGISTRY_NAME: 'regname'`, `LIBRARY_NAME: 'libname'`, `TOKEN_NAME: 'tokenname'` ],
+      from: [ 'REGISTRY_NAME: \'regname\'', 'LIBRARY_NAME: \'libname\'', 'TOKEN_NAME: \'tokenname\'' ],
       to: [ `REGISTRY_NAME: '${constants.REGISTRY_NAME}'`, `LIBRARY_NAME: '${constants.LIBRARY_NAME}'`, `TOKEN_NAME: '${constants.TOKEN_NAME}'` ]
     }
     await replace(options)
