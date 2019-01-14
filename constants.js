@@ -10,7 +10,7 @@ module.exports = {
   get REGISTRY_ADDRESS() {
     const local = '0x658b1e9C3484FB2BF4d91AeF066E2C3803F69DF9'
     const privatenet = '0xb8269093d6fd7899cDdfC6A3dE8Ac83a7BB9F9C0'
-    const testnet = '0xcEd3f47f30a4CC7b635F1c3a734AE055Bc4c6a58'
+    const testnet = '0x1deD872B87E9727eD7e78D405D90f39997D2Ca97'
     const mainnet = ''
     return getAddress(local, privatenet, testnet, mainnet)
   },
@@ -18,7 +18,7 @@ module.exports = {
   get LIBRARY_ADDRESS() {
     const local = '0x37BEFdC72D5b9680d4e33eF7aEc8adEe01817E2F'
     const privatenet = '0xf56F7963aa96425D7407c8da87e90811eB32D49a'
-    const testnet = '0x4ddCeb7839C8D9A672224C412c63d5EadcAC4582'
+    const testnet = '0xd02D0a9408383172525c6163a2C5ADeDeb9Dc70a'
     const mainnet = ''
     return getAddress(local, privatenet, testnet, mainnet)
   },
@@ -26,7 +26,7 @@ module.exports = {
   get ARA_TOKEN_ADDRESS() {
     const local = '0xDBAB08A3f456814aaFb98E339A25E3d7c4C48151'
     const privatenet = '0xB0029275D8948eD4544f6a86B7fB061afb54A0d0'
-    const testnet = '0x164f45df4909d38af0F177c4cbF9B7a841456938'
+    const testnet = '0xa9E5F84052Dcd1c75A64EdC29c1C1fB498C5d67c'
     const mainnet = ''
     return getAddress(local, privatenet, testnet, mainnet)
   },
@@ -34,7 +34,7 @@ module.exports = {
   get ARA_REGISTRY_ADDRESS() {
     const local = '0xf996af566992c7e34e6fd0bd3df79ec16296f5aa'
     const privatenet = '0x22bfa518b365a78cee41672fdab501e59802861b'
-    const testnet = '0xd8a46c8e1d9dc5b03d726c9e302720a74ed2189b'
+    const testnet = '0x1014e0f631f3c02fa5a5d8999c5a56cc5747c2b4'
     const mainnet = '0x0000000000000000000000000000000000000003'
     return getAddress(local, privatenet, testnet, mainnet)
   },
