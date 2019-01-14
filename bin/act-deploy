@@ -7,10 +7,7 @@ const debug = require('debug')('ara-contracts:cli:deploy')
 const { createProgram } = require('../lib/program')
 const { info, error } = require('ara-console')
 const registry = require('../registry')
-const replace = require('replace-in-file')
-const constants = require('../constants')
 const inquirer = require('inquirer')
-const path = require('path')
 
 // yargs program command line interface instance
 const program = createProgram({
@@ -191,16 +188,6 @@ async function ondeploy(argv) {
   } catch (err) {
     onfatal(err)
   }
-}
-
-async function replaceVersion(from, to) {
-  const constantsPath = path.resolve(__dirname, '../constants.js')
-  const options = {
-    files: constantsPath,
-    from: [ from ],
-    to: [ to ]
-  }
-  await replace(options)
 }
 
 async function promptForPassword(message) {
