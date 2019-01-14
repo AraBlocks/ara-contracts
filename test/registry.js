@@ -1,4 +1,5 @@
 const { isAddress } = require('ara-util/web3')
+const { BYTESDIR } = require('../constants')
 const { registry } = require('../')
 const { resolve } = require('path')
 const rimraf = require('rimraf')
@@ -8,8 +9,7 @@ const test = require('ava')
 const {
   TEST_OWNER_DID_NO_METHOD,
   TEST_AFS_DID1,
-  PASSWORD: password,
-  BYTESDIR
+  PASSWORD: password
 } = require('./_constants')
 
 const {
