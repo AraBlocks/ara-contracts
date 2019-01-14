@@ -14,7 +14,11 @@ const {
 const {
   cleanupAndResetBytesPath,
   replaceBytesPath,
-  mirrorIdentity
+  replaceVersions,
+  mirrorIdentity,
+  resetVersions,
+  replaceNames,
+  resetNames
 } = require('./_util')
 
 const getDid = (t) => {
@@ -66,12 +70,27 @@ test.serial('deployAraContracts() version already deployed', async (t) => {
   await t.throwsAsync(factory.deployAraContracts({ masterDid, password }), Error)
 })
 
-// test.serial('deployAraContracts()', async (t) => {
-//   const masterDid = getDid(t)
+test.serial('deployAraContracts()', async (t) => {
+  const masterDid = getDid(t)
 
-//   await t.notThrowsAsync(factory.deployAraContracts({ masterDid, password }))
+  await replaceVersions()
+  await replaceNames()
 
-//   const latestVersionAddress = await factory.getLatestVersionAddress(constants.REGISTRY_LABEL)
-//   const address = await factory.getUpgradeableContractAddress(constants.REGISTRY_LABEL, constants.REGISTRY_VERSION)
-//   t.is(latestVersionAddress, address)
-// })
+  await t.notThrowsAsync(factory.compileAraContracts())
+  await t.notThrowsAsync(factory.deployAraContracts({ masterDid, password }))
+
+  const latestRegistryAddress = await factory.getLatestVersionAddress(constants.REGISTRY_NAME)
+  const registryAddress = await factory.getUpgradeableContractAddress(constants.REGISTRY_NAME, constants.REGISTRY_VERSION)
+  t.is(latestRegistryAddress, registryAddress)
+
+  const latestLibraryAddress = await factory.getLatestVersionAddress(constants.LIBRARY_NAME)
+  const libraryAddress = await factory.getUpgradeableContractAddress(constants.LIBRARY_NAME, constants.LIBRARY_VERSION)
+  t.is(latestLibraryAddress, libraryAddress)
+
+  const latestTokenAddress = await factory.getLatestVersionAddress(constants.TOKEN_NAME)
+  const tokenAddress = await factory.getUpgradeableContractAddress(constants.TOKEN_NAME, constants.TOKEN_VERSION)
+  t.is(latestTokenAddress, tokenAddress)
+
+  await resetVersions()
+  await resetNames()
+})

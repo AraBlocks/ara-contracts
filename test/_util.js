@@ -4,6 +4,7 @@ const { transfer, modifyDeposit } = require('../token')
 const createContext = require('ara-context')
 const replace = require('replace-in-file')
 const { blake2b } = require('ara-crypto')
+const constants = require('../constants')
 const mirror = require('mirror-folder')
 const { readFile } = require('fs')
 const mkdirp = require('mkdirp')
@@ -21,6 +22,8 @@ const {
   resolve,
   parse
 } = require('path')
+
+const randomVersionName = 'la-di-da'
 
 module.exports = {
 
@@ -88,12 +91,42 @@ module.exports = {
     await replace(options)
   },
 
-  async replaceVersion(from, to) {
+  async replaceVersions() {
     const constantsPath = resolve(__dirname, '../constants.js')
     const options = {
       files: constantsPath,
-      from: [ from ],
-      to: [ to ]
+      from: [ `REGISTRY_VERSION: '${constants.REGISTRY_VERSION}'`, `LIBRARY_VERSION: '${constants.LIBRARY_VERSION}'`, `TOKEN_VERSION: '${constants.TOKEN_VERSION}'` ],
+      to: [ `REGISTRY_VERSION: '${randomVersionName}'`, `LIBRARY_VERSION: '${randomVersionName}'`, `TOKEN_VERSION: '${randomVersionName}'` ]
+    }
+    await replace(options)
+  },
+
+  async resetVersions() {
+    const constantsPath = resolve(__dirname, '../constants.js')
+    const options = {
+      files: constantsPath,
+      from: [ `REGISTRY_VERSION: '${randomVersionName}'`, `LIBRARY_VERSION: '${randomVersionName}'`, `TOKEN_VERSION: '${randomVersionName}'` ],
+      to: [ `REGISTRY_VERSION: '${constants.REGISTRY_VERSION}'`, `LIBRARY_VERSION: '${constants.LIBRARY_VERSION}'`, `TOKEN_VERSION: '${constants.TOKEN_VERSION}'` ]
+    }
+    await replace(options)
+  },
+
+  async replaceNames() {
+    const constantsPath = resolve(__dirname, '../constants.js')
+    const options = {
+      files: constantsPath,
+      from: [ `REGISTRY_NAME: '${constants.REGISTRY_NAME}'`, `LIBRARY_NAME: '${constants.LIBRARY_NAME}'`, `TOKEN_NAME: '${constants.TOKEN_NAME}'` ],
+      to: [ `REGISTRY_NAME: 'regname'`, `LIBRARY_NAME: 'libname'`, `TOKEN_NAME: 'tokenname'` ]
+    }
+    await replace(options)
+  },
+
+  async resetNames() {
+    const constantsPath = resolve(__dirname, '../constants.js')
+    const options = {
+      files: constantsPath,
+      from: [ `REGISTRY_NAME: 'regname'`, `LIBRARY_NAME: 'libname'`, `TOKEN_NAME: 'tokenname'` ],
+      to: [ `REGISTRY_NAME: '${constants.REGISTRY_NAME}'`, `LIBRARY_NAME: '${constants.LIBRARY_NAME}'`, `TOKEN_NAME: '${constants.TOKEN_NAME}'` ]
     }
     await replace(options)
   }
