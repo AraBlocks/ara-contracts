@@ -27,5 +27,5 @@ module.exports = {
   PASSWORD: 'pass',
   ZERO_BYTES32: '0x00000000000000000000000000000000',
   AID_PREFIX: 'did:ara:',
-  BYTESDIR: path.resolve('./bytecode')
+  BYTESDIR: path.resolve(__dirname, '../bytecode_test')
 }

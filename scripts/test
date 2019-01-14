@@ -59,5 +59,8 @@ safeRunCommand "$command"
 command="ava test/rewards.js --verbose"
 safeRunCommand "$command"
 
+command="ava test/factory.js --verbose"
+safeRunCommand "$command"
+
 # cleanup
 pkill -f ganache 

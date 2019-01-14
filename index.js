@@ -4,14 +4,16 @@ const registry = require('./registry')
 const storage = require('./storage')
 const library = require('./library')
 const rewards = require('./rewards')
+const factory = require('./factory')
 const token = require('./token')
 
 module.exports = {
+  ownership,
   purchase,
   registry,
-  ownership,
   storage,
   library,
   rewards,
+  factory,
   token
 }

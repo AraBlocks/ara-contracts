@@ -37,6 +37,9 @@ async function compileAndDeployAraContracts(opts) {
  * This step must be performed manually locally before pushing to Github
  */
 async function compileAraContracts() {
+  delete require.cache[require.resolve('./constants')]
+  constants = require('./constants')
+
   try {
     debug('Compiling contracts...')
     await pify(mkdirp)(constants.BYTESDIR)
