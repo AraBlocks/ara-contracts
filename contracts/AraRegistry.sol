@@ -3,6 +3,7 @@ pragma solidity ^0.4.24;
 import "./ignored_contracts/AraProxy.sol";
 
 contract AraRegistry {
+  address public owner_;
   mapping (bytes32 => UpgradeableContract) private contracts_; // keccak256(contractname) => struct
 
   struct UpgradeableContract {
@@ -17,6 +18,18 @@ contract AraRegistry {
   event ContractUpgraded(bytes32 _contractName, string _version, address _address);
   event ProxyDeployed(bytes32 _contractName, address _address);
 
+  constructor() public {
+    owner_ = msg.sender;
+  }
+
+  modifier restricted() {
+    require (
+      msg.sender == owner_,
+      "Sender not authorized."
+    );
+    _;
+  }
+
   function getLatestVersionAddress(bytes32 _contractName) public view returns (address) {
     return contracts_[_contractName].versions_[contracts_[_contractName].latestVersion_];
   }
@@ -25,7 +38,7 @@ contract AraRegistry {
     return contracts_[_contractName].versions_[_version];
   }
 
-  function addNewUpgradeableContract(bytes32 _contractName, string _version, bytes _code, bytes _data) public {
+  function addNewUpgradeableContract(bytes32 _contractName, string _version, bytes _code, bytes _data) public restricted {
     require(!contracts_[_contractName].initialized_, "Upgradeable contract already exists. Try upgrading instead.");
     address deployedAddress;
     assembly {
@@ -40,7 +53,7 @@ contract AraRegistry {
     emit UpgradeableContractAdded(_contractName, _version, deployedAddress);
   }
 
-  function upgradeContract(bytes32 _contractName, string _version, bytes _code) public {
+  function upgradeContract(bytes32 _contractName, string _version, bytes _code) public restricted {
     require(contracts_[_contractName].initialized_, "Upgradeable contract must exist before it can be upgrading. Try adding one instead.");
     address deployedAddress;
     assembly {
