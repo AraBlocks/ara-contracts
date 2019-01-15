@@ -54,7 +54,7 @@ contract AraRegistry {
   }
 
   function upgradeContract(bytes32 _contractName, string _version, bytes _code) public restricted {
-    require(contracts_[_contractName].initialized_, "Upgradeable contract must exist before it can be upgrading. Try adding one instead.");
+    require(contracts_[_contractName].initialized_, "Upgradeable contract must exist before it can be upgraded. Try adding one instead.");
     address deployedAddress;
     assembly {
       deployedAddress := create(0, add(_code, 0x20), mload(_code))
