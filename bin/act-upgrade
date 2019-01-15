@@ -50,9 +50,6 @@ const { argv } = program
         type: 'boolean',
         describe: 'Upgrade Ara Token contract'
       })
-      .conflicts('r', 'l')
-      .conflicts('r', 't')
-      .conflicts('l', 't')
   }, onupgrade)
   .help('h')
   .recommendCommands()
@@ -85,7 +82,9 @@ async function onupgrade(argv) {
       await replaceVersion(`REGISTRY_VERSION: '${constants.REGISTRY_VERSION}'`, `REGISTRY_VERSION: '${versionName}'`)
       await compileAndUpgradeRegistry({ masterDid: did, password })
       info('Registry contract upgraded!')
-    } else if (library) {
+    }
+    
+    if (library) {
       if (constants.LIBRARY_VERSION === versionName) {
         onfatal(new Error(`Library version ${constants.LIBRARY_VERSION} has already been deployed.`))
       }
@@ -94,7 +93,9 @@ async function onupgrade(argv) {
       await replaceVersion(`LIBRARY_VERSION: '${constants.LIBRARY_VERSION}'`, `LIBRARY_VERSION: '${versionName}'`)
       await compileAndUpgradeLibrary({ masterDid: did, password })
       info('Library contract upgraded!')
-    } else if (token) {
+    }
+
+    if (token) {
       if (constants.TOKEN_VERSION === versionName) {
         onfatal(new Error(`Ara Token version ${constants.TOKEN_VERSION} has already been deployed.`))
       }
