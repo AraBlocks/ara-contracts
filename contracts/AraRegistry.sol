@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "./ignored_contracts/AraProxy.sol";
+import "./AraProxy.sol";
 
 contract AraRegistry {
   address public owner_;
