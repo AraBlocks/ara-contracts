@@ -83,7 +83,7 @@ async function onupgrade(argv) {
       await compileAndUpgradeRegistry({ masterDid: did, password })
       info('Registry contract upgraded!')
     }
-    
+
     if (library) {
       if (constants.LIBRARY_VERSION === versionName) {
         onfatal(new Error(`Library version ${constants.LIBRARY_VERSION} has already been deployed.`))
