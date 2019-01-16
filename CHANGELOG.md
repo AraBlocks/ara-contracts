@@ -1,27 +1,52 @@
-# [0.19.0](https://github.com/AraBlocks/ara-contracts/compare/0.16.0...0.19.0) (2019-01-09)
+# [0.20.0](https://github.com/AraBlocks/ara-contracts/compare/0.16.0...0.20.0) (2019-01-16)
 
 
 ### Bug Fixes
 
 * 0x prefix ([cba1437](https://github.com/AraBlocks/ara-contracts/commit/cba1437))
+* actually silence ganache... ([948ede5](https://github.com/AraBlocks/ara-contracts/commit/948ede5))
+* add mods to AraRegistry ([338e479](https://github.com/AraBlocks/ara-contracts/commit/338e479))
 * added quiet mode ganache ([525b781](https://github.com/AraBlocks/ara-contracts/commit/525b781))
+* AraProxy (i think?) ([c876f71](https://github.com/AraBlocks/ara-contracts/commit/c876f71))
 * attempting disabling quiet mode ([e1106df](https://github.com/AraBlocks/ara-contracts/commit/e1106df))
+* bytesdir ([782ebb3](https://github.com/AraBlocks/ara-contracts/commit/782ebb3))
+* can upgrade all contracts at once ([f95b8d1](https://github.com/AraBlocks/ara-contracts/commit/f95b8d1))
+* cant silence ganache... ([b3d4c2f](https://github.com/AraBlocks/ara-contracts/commit/b3d4c2f))
+* cli arg description ([ad494c6](https://github.com/AraBlocks/ara-contracts/commit/ad494c6))
+* cli updates ([7f35312](https://github.com/AraBlocks/ara-contracts/commit/7f35312))
 * convert test AFS owner to new privatenet account ([a1513a3](https://github.com/AraBlocks/ara-contracts/commit/a1513a3))
-* deploy proxy password bug ([928250d](https://github.com/AraBlocks/ara-contracts/commit/928250d))
+* deploy proxy password bug ([8a89340](https://github.com/AraBlocks/ara-contracts/commit/8a89340))
 * ethify ([d9b22fe](https://github.com/AraBlocks/ara-contracts/commit/d9b22fe))
+* forgot a conflicts ([bbd139d](https://github.com/AraBlocks/ara-contracts/commit/bbd139d))
 * forgot pk in constants, added new fixture ([c2de479](https://github.com/AraBlocks/ara-contracts/commit/c2de479))
+* lint ([1acb3fa](https://github.com/AraBlocks/ara-contracts/commit/1acb3fa))
 * lint ([877af7c](https://github.com/AraBlocks/ara-contracts/commit/877af7c))
-* more password bug fixes ([baf4283](https://github.com/AraBlocks/ara-contracts/commit/baf4283))
+* lint ([ce85b70](https://github.com/AraBlocks/ara-contracts/commit/ce85b70))
+* lint ([81789ad](https://github.com/AraBlocks/ara-contracts/commit/81789ad))
+* more password bug fixes ([cf1cbcc](https://github.com/AraBlocks/ara-contracts/commit/cf1cbcc))
+* or not... ([8f5dded](https://github.com/AraBlocks/ara-contracts/commit/8f5dded))
 * PR comments, cleanup tests ([c5aa884](https://github.com/AraBlocks/ara-contracts/commit/c5aa884))
+* remove spaces ([7eccba3](https://github.com/AraBlocks/ara-contracts/commit/7eccba3))
 * revert ([94348aa](https://github.com/AraBlocks/ara-contracts/commit/94348aa))
 * revert abis ([db0b9aa](https://github.com/AraBlocks/ara-contracts/commit/db0b9aa))
 * update privatenet deploy account to accomodate mnemonic seed change ([70f055f](https://github.com/AraBlocks/ara-contracts/commit/70f055f))
 * updated test constants ([a6955c3](https://github.com/AraBlocks/ara-contracts/commit/a6955c3))
+* upgrades should be working, more testing needed ([98ac217](https://github.com/AraBlocks/ara-contracts/commit/98ac217))
+* use AraProxy instead of Proxy ([5a42628](https://github.com/AraBlocks/ara-contracts/commit/5a42628))
 * without toHexString ([c76a4fe](https://github.com/AraBlocks/ara-contracts/commit/c76a4fe))
+* woops ([1a2572e](https://github.com/AraBlocks/ara-contracts/commit/1a2572e))
 
 
 ### Features
 
+* add calls to factory and more tests ([fbe8c08](https://github.com/AraBlocks/ara-contracts/commit/fbe8c08))
+* add events ([bc895cb](https://github.com/AraBlocks/ara-contracts/commit/bc895cb))
+* API WIP ([e7beb19](https://github.com/AraBlocks/ara-contracts/commit/e7beb19))
+* just a start ([21d30f3](https://github.com/AraBlocks/ara-contracts/commit/21d30f3))
+* progress, need to fix AraProxy ([60339c8](https://github.com/AraBlocks/ara-contracts/commit/60339c8))
+* update deploy cli to replace version ([4abc53e](https://github.com/AraBlocks/ara-contracts/commit/4abc53e))
+* upgrade api update ([1b704a4](https://github.com/AraBlocks/ara-contracts/commit/1b704a4))
+* upgrade progress ([e7cb9fc](https://github.com/AraBlocks/ara-contracts/commit/e7cb9fc))
 * use compiled bytecode when deploying AFS standard if available ([90a18a5](https://github.com/AraBlocks/ara-contracts/commit/90a18a5))
 
 
