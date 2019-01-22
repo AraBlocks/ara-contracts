@@ -98,6 +98,7 @@ contract Registry {
     require(versions_[_version] != address(0), "Version does not exist.");
     require(keccak256(abi.encodePacked(proxyImpls_[proxy])) != keccak256(abi.encodePacked(_version)), "Proxy is already on this version.");
     AraProxy proxy = AraProxy(proxies_[_contentId]);
+    proxy.setImplementation(versions_[_version]);
     proxyImpls_[proxy] = _version;
     require(address(proxy).call(abi.encodeWithSignature("init(bytes)", _data)), "Init failed.");
     emit ProxyUpgraded(_contentId, _version);
