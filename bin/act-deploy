@@ -156,7 +156,7 @@ async function onstandard(argv) {
 
   try {
     info(`Deploying new AFS standard version ${versionName}...`)
-    // DEBUG=* act deploy standard f07e6462ff1fe42af1f98e2bb474936b60a4fc05669458f60dfdc98f1750f1b9 1 ./contracts/ignored_contracts/AFS.sol ./contracts/ignored_contracts/Library.sol ./contracts/ignored_contracts/Registry.sol ./contracts/ignored_contracts/Proxy.sol ./contracts/ignored_contracts/AraToken.sol -D
+    // DEBUG=* act deploy standard f07e6462ff1fe42af1f98e2bb474936b60a4fc05669458f60dfdc98f1750f1b9 1 ./contracts/ignored_contracts/AFS.sol ./contracts/ignored_contracts/Library.sol ./contracts/ignored_contracts/Registry.sol ./contracts/AraProxy.sol ./contracts/ignored_contracts/AraToken.sol -D
     const address = await registry.deployNewStandard({
       requesterDid: did,
       password,

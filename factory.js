@@ -255,7 +255,7 @@ async function _compileRegistry() {
     constants.REGISTRY_LABEL,
     {
       'Registry.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Registry.sol'), 'utf8'),
-      'Proxy.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Proxy.sol'), 'utf8')
+      'AraProxy.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/AraProxy.sol'), 'utf8')
     },
     `${constants.BYTESDIR}/Registry_${constants.REGISTRY_VERSION}`
   )
@@ -268,7 +268,7 @@ async function _compileLibrary() {
     constants.LIBRARY_LABEL,
     {
       'Registry.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Registry.sol'), 'utf8'),
-      'Proxy.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Proxy.sol'), 'utf8'),
+      'AraProxy.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/AraProxy.sol'), 'utf8'),
       'Library.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Library.sol'), 'utf8')
     },
     `${constants.BYTESDIR}/Library_${constants.LIBRARY_VERSION}`

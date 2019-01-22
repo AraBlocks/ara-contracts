@@ -240,12 +240,11 @@ Returns the address at which the standard was deployed.
 
 ```js
 const version = '1'
-const paths = ['./contracts/AFS.sol',
-               './contracts/Library.sol',
-               './contracts/Registry.sol',
-               './contracts/Proxy.sol',
-               './contracts/AraToken.sol',
-               './contracts/Jobs.sol']
+const paths = ['./contracts/ignored_contracts/AFS.sol',
+               './contracts/ignored_contracts/Library.sol',
+               './contracts/ignored_contracts/Registry.sol',
+               './contracts/AraProxy.sol',
+               './contracts/AraToken.sol']
 const address = await registry.deployNewStandard({
   requesterDid,
   password,
