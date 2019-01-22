@@ -1,25 +1,44 @@
 pragma solidity ^0.4.24;
 
-import "./AraRegistry.sol";
-
 /**
  * @title AraProxy
  * @dev Gives the possibility to delegate any call to a foreign implementation.
  */
 contract AraProxy {
 
-  bytes32 private constant storagePosition_ = keccak256("io.ara.proxy.storage");
-  bytes32 private constant contractNamePosition_ = keccak256("io.ara.proxy.contractName");
+  bytes32 private constant registryPosition_ = keccak256("io.ara.proxy.registry");
+  bytes32 private constant implementationPosition_ = keccak256("io.ara.proxy.implementation");
+
+  modifier restricted() {
+    bytes32 registryPosition = registryPosition_;
+    address registryAddress;
+    assembly {
+      registryAddress := sload(registryPosition)
+    }
+    require(
+      msg.sender == registryAddress,
+      "Only the AraRegistry can upgrade this proxy."
+    );
+    _;
+  }
 
   /**
   * @dev the constructor sets the AraRegistry address
   */
-  constructor(address _registryAddress, bytes32 _contractName) public {
-    bytes32 storagePosition = storagePosition_;
-    bytes32 contractNamePosition = contractNamePosition_;
+  constructor(address _registryAddress, address _implementationAddress) public {
+    bytes32 registryPosition = registryPosition_;
+    bytes32 implementationPosition = implementationPosition_;
     assembly {
-      sstore(storagePosition, _registryAddress)
-      sstore(contractNamePosition, _contractName)
+      sstore(registryPosition, _registryAddress)
+      sstore(implementationPosition, _implementationAddress)
+    }
+  }
+
+  function setImplementation(address _newImplementation) public restricted {
+    require(_newImplementation != address(0));
+    bytes32 implementationPosition = implementationPosition_;
+    assembly {
+      sstore(implementationPosition, _newImplementation)
     }
   }
 
@@ -28,19 +47,11 @@ contract AraProxy {
   * This function will return whatever the implementation call returns
   */
   function () payable public {
-    bytes32 storagePosition = storagePosition_;
-    bytes32 contractNamePosition = contractNamePosition_;
-
-    address registryAddress;
-    bytes32 contractName;
+    bytes32 implementationPosition = implementationPosition_;
+    address _impl;
     assembly {
-      registryAddress := sload(storagePosition)
-      contractName := sload(contractNamePosition)
+      _impl := sload(implementationPosition)
     }
-    AraRegistry reg = AraRegistry(registryAddress);
-    address _impl = reg.getLatestVersionAddress(contractName);
-    
-    require(_impl != address(0));
 
     assembly {
       let ptr := mload(0x40)
