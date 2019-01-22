@@ -7,12 +7,21 @@ Blockchain interactions in Ara modules.
 
 ## Overview
 
-This repository contains all contracts deployed by Ara. There are four contracts used throughout the entire network:
+This repository contains all contracts deployed by Ara. There are five core contracts used throughout the entire network:
 
 1. `AraToken.sol` - The Ara ERC20 token contract
+* [Ropsten Proxy](https://ropsten.etherscan.io/address/0xc3c25941c8120e52e358ff70cb7e81deb056edad#code)
+* [Ropsten Implementation](https://ropsten.etherscan.io/address/0xbac6888c4f49c3164fb437f435b8a6b5d04c7aaa#code)
 2. `AFS.sol` - The `AFS` standard contract which defines the logic for `AFS` configurations and behavior on the blockchain (see the accompanying [RFC](https://github.com/AraBlocks/RFCs/blob/master/text/0004-afs-contract-standard.md))
+* [Ropsten Implementation](https://ropsten.etherscan.io/address/0x5cfbeb92bd89023871f0a1a812f420fcb9508259#code)
 3. `Library.sol` - The contract where content ownership across the network is consolidated and tracked
+* [Ropsten Proxy](https://ropsten.etherscan.io/address/0x14dc90ced083cd2dee9a5c6c114fa316414994e5#code)
+* [Ropsten Implementation](https://ropsten.etherscan.io/address/0xb149236325f3b5df5bdccbb8f88b13ad317eeb35#code)
 4. `Registry.sol` - The contract where `AFS` proxies and `AFS` standards are created, linked, and tracked
+* [Ropsten Proxy](https://ropsten.etherscan.io/address/0xcacfcfed87273eb24c146988e5fb7f209386cf5e#code)
+* [Ropsten Implementation](https://ropsten.etherscan.io/address/0x07bce500d9df91c9229b556faca3c970180d5550#code)
+5. `AraRegistry.sol` - The contract which deploys all other Ara core contracts
+* [Ropsten Implementation](https://ropsten.etherscan.io/address/0x9bcb2083bced899e9aff64f948e432e908de66cc#code)
 
 In addition to these globally-used contracts, Ara deploys a proxy contract for each individual `AFS` that gets committed to the blockchain ([see `ara-filesystem`](https://github.com/AraBlocks/ara-filesystem/)). This contract serves as the storage layer for `AFS` on the blockchain, while the `AFS` standard serves as the logic layer.
 
