@@ -48,7 +48,7 @@ contract AraRegistry {
     contracts_[_contractName].initialized_ = true;
     contracts_[_contractName].latestVersion_ = _version;
     contracts_[_contractName].versions_[_version] = deployedAddress;
-    _deployProxy(_contractName, _data);
+    _deployProxy(_contractName, deployedAddress, _data);
 
     emit UpgradeableContractAdded(_contractName, _version, deployedAddress);
   }
@@ -60,15 +60,18 @@ contract AraRegistry {
       deployedAddress := create(0, add(_code, 0x20), mload(_code))
     }
 
+    AraProxy proxy = AraProxy(contracts_[_contractName].proxy_);
+    proxy.setImplementation(deployedAddress);
+
     contracts_[_contractName].latestVersion_ = _version;
     contracts_[_contractName].versions_[_version] = deployedAddress;
 
     emit ContractUpgraded(_contractName, _version, deployedAddress);
   }
 
-  function _deployProxy(bytes32 _contractName, bytes _data) private {
+  function _deployProxy(bytes32 _contractName, address _implementationAddress, bytes _data) private {
     require(contracts_[_contractName].proxy_ == address(0), "Only one proxy can exist per upgradeable contract.");
-    AraProxy proxy = new AraProxy(address(this), _contractName);
+    AraProxy proxy = new AraProxy(address(this), _implementationAddress);
     require(address(proxy).call(abi.encodeWithSignature("init(bytes)", _data)), "Init failed.");
     contracts_[_contractName].proxy_ = proxy;
 
