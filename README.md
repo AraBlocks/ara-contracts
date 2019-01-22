@@ -244,7 +244,7 @@ const paths = ['./contracts/ignored_contracts/AFS.sol',
                './contracts/ignored_contracts/Library.sol',
                './contracts/ignored_contracts/Registry.sol',
                './contracts/AraProxy.sol',
-               './contracts/AraToken.sol']
+               './contracts/ignored_contracts/AraToken.sol']
 const address = await registry.deployNewStandard({
   requesterDid,
   password,
