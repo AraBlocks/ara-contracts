@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "./Proxy.sol";
+import "../AraProxy.sol";
 
 contract Registry {
   address public owner_;
@@ -67,7 +67,8 @@ contract Registry {
    */
   function createAFS(bytes32 _contentId, string _version, bytes _data) public {
     require(proxies_[_contentId] == address(0), "Proxy already exists for this content.");
-    Proxy proxy = new Proxy(address(this));
+    require(versions_[_version] != address(0), "Version does not exist.");
+    AraProxy proxy = new AraProxy(address(this), versions_[_version]);
     proxies_[_contentId] = proxy;
     proxyOwners_[_contentId] = msg.sender;
     upgradeProxyAndCall(_contentId, _version, _data);
@@ -81,6 +82,8 @@ contract Registry {
    */
   function upgradeProxy(bytes32 _contentId, string _version) public onlyProxyOwner(_contentId) {
     require(versions_[_version] != address(0), "Version does not exist.");
+    AraProxy proxy = AraProxy(proxies_[_contentId]);
+    proxy.setImplementation(versions_[_version]);
     proxyImpls_[proxies_[_contentId]] = _version;
     emit ProxyUpgraded(_contentId, _version);
   }
@@ -94,7 +97,7 @@ contract Registry {
   function upgradeProxyAndCall(bytes32 _contentId, string _version, bytes _data) public onlyProxyOwner(_contentId) {
     require(versions_[_version] != address(0), "Version does not exist.");
     require(keccak256(abi.encodePacked(proxyImpls_[proxy])) != keccak256(abi.encodePacked(_version)), "Proxy is already on this version.");
-    Proxy proxy = Proxy(proxies_[_contentId]);
+    AraProxy proxy = AraProxy(proxies_[_contentId]);
     proxyImpls_[proxy] = _version;
     require(address(proxy).call(abi.encodeWithSignature("init(bytes)", _data)), "Init failed.");
     emit ProxyUpgraded(_contentId, _version);
