@@ -366,6 +366,15 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false) {
   if (!upgrade) {
     address = await new Promise((resolve, reject) => {
       tx.sendSignedTransaction(transaction)
+      registry.events.UpgradeableContractAdded({ fromBlock: 'latest' })
+        .on('data', (log) => {
+          const { returnValues: { _contractName, _address } } = log
+          if (sha3(label, false) === _contractName) {
+            debug(`Implementation deployed for ${label} at ${_address}`)
+            debug(label, 'abi-encoded constructor parameters:', web3Abi.encodeParameters([ 'address', 'address' ], [ constants.ARA_REGISTRY_ADDRESS, _address ]))
+          }
+        })
+        .on('error', log => reject(log))
       registry.events.ProxyDeployed({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { _contractName, _address } } = log
