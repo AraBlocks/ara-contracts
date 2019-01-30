@@ -12,6 +12,9 @@ This repository contains all contracts deployed by Ara. There are five core cont
 1. `AraToken.sol` - The Ara ERC20 token contract
 * [Ropsten Proxy](https://ropsten.etherscan.io/address/0xc3c25941c8120e52e358ff70cb7e81deb056edad#code)
 * [Ropsten Implementation](https://ropsten.etherscan.io/address/0xbac6888c4f49c3164fb437f435b8a6b5d04c7aaa#code)
+
+* [Mainnet Proxy](https://etherscan.io/address/0xa92e7c82b11d10716ab534051b271d2f6aef7df5#code)
+* [Mainnet Implementation](https://etherscan.io/address/0xb8ca408aff631b65021850cd7ebf8eac7f3c0312#code)
 2. `AFS.sol` - The `AFS` standard contract which defines the logic for `AFS` configurations and behavior on the blockchain (see the accompanying [RFC](https://github.com/AraBlocks/RFCs/blob/master/text/0004-afs-contract-standard.md))
 * [Ropsten Implementation](https://ropsten.etherscan.io/address/0x5cfbeb92bd89023871f0a1a812f420fcb9508259#code)
 3. `Library.sol` - The contract where content ownership across the network is consolidated and tracked
@@ -22,6 +25,8 @@ This repository contains all contracts deployed by Ara. There are five core cont
 * [Ropsten Implementation](https://ropsten.etherscan.io/address/0x07bce500d9df91c9229b556faca3c970180d5550#code)
 5. `AraRegistry.sol` - The contract which deploys all other Ara core contracts
 * [Ropsten Implementation](https://ropsten.etherscan.io/address/0x9bcb2083bced899e9aff64f948e432e908de66cc#code)
+
+* [Mainnet Implementation](https://etherscan.io/address/0xf8314584346fc84e96b36113784f6b562e5b01af#code)
 
 In addition to these globally-used contracts, Ara deploys a proxy contract for each individual `AFS` that gets committed to the blockchain ([see `ara-filesystem`](https://github.com/AraBlocks/ara-filesystem/)). This contract serves as the storage layer for `AFS` on the blockchain, while the `AFS` standard serves as the logic layer.
 
