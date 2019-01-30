@@ -27,7 +27,7 @@ module.exports = {
     const local = '0xDBAB08A3f456814aaFb98E339A25E3d7c4C48151'
     const privatenet = '0x980EAAD8f950B3Fe77537202182285bf8C226cA4'
     const testnet = '0xc3C25941c8120e52e358ff70CB7e81dEB056EDAd'
-    const mainnet = ''
+    const mainnet = '0xa92E7c82B11d10716aB534051B271D2f6aEf7Df5'
     return getAddress(local, privatenet, testnet, mainnet)
   },
 
@@ -35,7 +35,7 @@ module.exports = {
     const local = '0xf996af566992c7e34e6fd0bd3df79ec16296f5aa'
     const privatenet = '0x9b4e24285f34c13c107528f9b6a4366a6e9edd73'
     const testnet = '0x9bcb2083bced899e9aff64f948e432e908de66cc'
-    const mainnet = '0x0000000000000000000000000000000000000003'
+    const mainnet = '0xf8314584346fc84e96b36113784f6b562e5b01af'
     return getAddress(local, privatenet, testnet, mainnet)
   },
 
@@ -54,6 +54,9 @@ module.exports = {
 
   ROPSTEN_DEPLOY_DID: 'did:ara:f07e6462ff1fe42af1f98e2bb474936b60a4fc05669458f60dfdc98f1750f1b9',
   ROPSTEN_DEPLOY_ADDRESS: '0x91287ec5e2eff90bdb1750abe9359d7576f744d3',
+
+  MAINNET_DEPLOY_DID: 'did:ara:4de9f36634e8df9d0201c8537320df5dbf1a7ef5057ca8b570e22b743d41225b',
+  MAINNET_DEPLOY_ADDRESS: '0xe4127f775e738f30ca3672f62d0f63fd3aab66b8',
 
   TEST_OWNER_ADDRESS: '0xa0b3a0ca8523e036a116184c5c07ca932e611d06',
   // 0x for ganache, no prefix for geth

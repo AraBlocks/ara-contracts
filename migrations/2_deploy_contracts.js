@@ -12,7 +12,7 @@ const AraRegistry = artifacts.require('./AraRegistry.sol')
 
 module.exports = (deployer, network, defaultAccounts) => {
   deployer.then(async () => {
-    const { DEFAULT_ADDRESS, ROPSTEN_DEPLOY_ADDRESS } = constants
+    const { DEFAULT_ADDRESS, ROPSTEN_DEPLOY_ADDRESS, MAINNET_DEPLOY_ADDRESS } = constants
 
     let from
     if ('privatenet' === network) {
@@ -22,6 +22,8 @@ module.exports = (deployer, network, defaultAccounts) => {
       from = defaultAccounts[index]
     } else if ('testnet' === network) {
       from = ROPSTEN_DEPLOY_ADDRESS
+    } else if ('mainnet' === network) {
+      from = MAINNET_DEPLOY_ADDRESS
     } else {
       from = DEFAULT_ADDRESS
     }
