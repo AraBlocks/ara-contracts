@@ -1,4 +1,14 @@
-# [0.21.0](https://github.com/AraBlocks/ara-contracts/compare/0.16.0...0.21.0) (2019-01-23)
+# [0.22.0](https://github.com/AraBlocks/ara-contracts/compare/0.20.0...0.22.0) (2019-02-04)
+
+
+### Features
+
+* consolidate proxy usage to AraProxy ([f0da598](https://github.com/AraBlocks/ara-contracts/commit/f0da598))
+* refactor out AraRegistry dependency in AraProxy ([4c3cdfa](https://github.com/AraBlocks/ara-contracts/commit/4c3cdfa))
+
+
+
+# [0.20.0](https://github.com/AraBlocks/ara-contracts/compare/0.16.0...0.20.0) (2019-01-16)
 
 
 ### Bug Fixes
@@ -42,10 +52,8 @@
 * add calls to factory and more tests ([7f6fb0c](https://github.com/AraBlocks/ara-contracts/commit/7f6fb0c))
 * add events ([507d7fa](https://github.com/AraBlocks/ara-contracts/commit/507d7fa))
 * API WIP ([fa22234](https://github.com/AraBlocks/ara-contracts/commit/fa22234))
-* consolidate proxy usage to AraProxy ([1a933dd](https://github.com/AraBlocks/ara-contracts/commit/1a933dd))
 * just a start ([ff758cf](https://github.com/AraBlocks/ara-contracts/commit/ff758cf))
 * progress, need to fix AraProxy ([cf28b05](https://github.com/AraBlocks/ara-contracts/commit/cf28b05))
-* refactor out AraRegistry dependency in AraProxy ([a4dbb50](https://github.com/AraBlocks/ara-contracts/commit/a4dbb50))
 * update deploy cli to replace version ([84c9069](https://github.com/AraBlocks/ara-contracts/commit/84c9069))
 * upgrade api update ([a994bc8](https://github.com/AraBlocks/ara-contracts/commit/a994bc8))
 * upgrade progress ([fbc48f5](https://github.com/AraBlocks/ara-contracts/commit/fbc48f5))
