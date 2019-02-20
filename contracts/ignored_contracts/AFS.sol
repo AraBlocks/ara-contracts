@@ -1,12 +1,13 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "./Ownable.sol";
 import "./Library.sol";
 import "./AraToken.sol";
 import "bytes/BytesLib.sol";
+import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 
 contract AFS is Ownable {
-
+  using SafeMath for uint256;
   using BytesLib for bytes;
 
   string   public version_ = "1";
@@ -108,7 +109,7 @@ contract AFS is Ownable {
       && (jobs_[_jobId].sender == address(0) || jobs_[_jobId].sender == msg.sender), "Job submission invalid.");
 
     if (token_.transferFrom(msg.sender, address(this), _budget)) {
-      jobs_[_jobId].budget += _budget;
+      jobs_[_jobId].budget = jobs_[_jobId].budget.add(_budget);
       jobs_[_jobId].sender = msg.sender;
       assert(jobs_[_jobId].budget <= token_.balanceOf(address(this)));
       emit BudgetSubmitted(msg.sender, _jobId, _budget);
@@ -119,15 +120,15 @@ contract AFS is Ownable {
     require(_farmers.length == _rewards.length, "Unequal number of farmers and rewards.");
     uint256 totalRewards;
     for (uint8 i = 0; i < _rewards.length; i++) {
-      totalRewards += _rewards[i];
+      totalRewards = totalRewards.add(_rewards[i]);
     }
     require(totalRewards <= jobs_[_jobId].budget, "Insufficient budget.");
     for (uint8 j = 0; j < _farmers.length; j++) {
       if (token_.amountDeposited(_farmers[j]) >= depositRequirement_ || purchasers_[keccak256(abi.encodePacked(msg.sender))]) {
         assert(jobs_[_jobId].budget >= _rewards[j]);
         bytes32 farmer = keccak256(abi.encodePacked(_farmers[j]));
-        rewards_[farmer] += _rewards[j];
-        jobs_[_jobId].budget -= _rewards[j];
+        rewards_[farmer] = rewards_[farmer].add(_rewards[j]);
+        jobs_[_jobId].budget = jobs_[_jobId].budget.sub(_rewards[j]);
         emit RewardsAllocated(_farmers[j], _jobId, _rewards[j], jobs_[_jobId].budget);
       } else {
         emit InsufficientDeposit(_farmers[j]);
@@ -136,7 +137,7 @@ contract AFS is Ownable {
     if (_return) {
       uint256 remaining = jobs_[_jobId].budget;
       if (remaining > 0) {
-        rewards_[keccak256(abi.encodePacked(msg.sender))] += remaining;
+        rewards_[keccak256(abi.encodePacked(msg.sender))] = rewards_[keccak256(abi.encodePacked(msg.sender))].add(remaining);
         jobs_[_jobId].budget = 0;
         redeemBalance();
       }
@@ -176,7 +177,7 @@ contract AFS is Ownable {
     require(listed_, "Content is not listed for purchase.");
     uint256 allowance = token_.allowance(msg.sender, address(this));
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
-    require (!purchasers_[hashedAddress] && allowance >= price_ + _budget, "Unable to purchase.");
+    require (!purchasers_[hashedAddress] && allowance >= price_.add(_budget), "Unable to purchase.");
 
     if (token_.transferFrom(msg.sender, owner_, price_)) {
       purchasers_[hashedAddress] = true;
