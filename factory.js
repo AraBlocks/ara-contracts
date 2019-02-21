@@ -243,7 +243,6 @@ async function _validateMasterOpts(opts) {
 
 async function _compile(contractname, sources, bytespath) {
   const compiledFile = solc.compile({ sources }, 1)
-  console.log(compiledFile)
   const compiledContract = compiledFile.contracts[`${contractname}`]
   const { bytecode } = compiledContract
 
@@ -271,7 +270,7 @@ async function _compileLibrary() {
       'Registry.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Registry.sol'), 'utf8'),
       'AraProxy.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/AraProxy.sol'), 'utf8'),
       'Library.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/Library.sol'), 'utf8'),
-      'openzeppelin-solidity/contracts/math/SafeMath.sol': await pify(fs.readFile)(path.resolve(__dirname, './node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol'), 'utf8'),
+      'SafeMath32.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/SafeMath32.sol'), 'utf8')
     },
     `${constants.BYTESDIR}/Library_${constants.LIBRARY_VERSION}`
   )

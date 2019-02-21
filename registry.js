@@ -368,6 +368,7 @@ async function _compileStandard(bytespath, paths) {
       'openzeppelin-solidity/contracts/math/SafeMath.sol': await pify(fs.readFile)(resolve(__dirname, './node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol'), 'utf8'),
       'Ownable.sol': await pify(fs.readFile)(resolve(__dirname, './contracts/ignored_contracts/Ownable.sol'), 'utf8'),
       'bytes/BytesLib.sol': await pify(fs.readFile)(resolve(__dirname, './installed_contracts/bytes/contracts/BytesLib.sol'), 'utf8'),
+      'SafeMath32.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/SafeMath32.sol'), 'utf8')
     }
 
     paths.forEach((path) => {
