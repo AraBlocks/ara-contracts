@@ -20,7 +20,7 @@ contract Library {
   function init(bytes _data) public {
     require(owner_ == address(0), 'Library has already been initialized.');
 
-    uint32 btsptr;
+    uint256 btsptr;
     address ownerAddr;
     address registryAddr;
     assembly {
