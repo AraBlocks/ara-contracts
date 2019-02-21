@@ -4,6 +4,7 @@ import "./Ownable.sol";
 import "./Library.sol";
 import "./AraToken.sol";
 import "bytes/BytesLib.sol";
+import '../SafeMath32.sol';
 import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 
 contract AFS is Ownable {

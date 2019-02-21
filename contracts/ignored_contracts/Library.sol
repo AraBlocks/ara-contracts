@@ -1,18 +1,18 @@
 pragma solidity ^0.4.24;
 
-import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
+import '../SafeMath32.sol';
 import "./Registry.sol";
 
 contract Library {
-  using SafeMath for uint256;
+  using SafeMath32 for uint32;
 
   address public owner_;
   mapping (bytes32 => Lib) private libraries_; // hashed methodless owner did => library
   Registry registry_;
 
   struct Lib {
-    uint256 size;
-    mapping (uint256 => bytes32) content; // index => contentId (unhashed)
+    uint32 size;
+    mapping (uint32 => bytes32) content; // index => contentId (unhashed)
   }
 
   event AddedToLib(bytes32 indexed _identity, bytes32 indexed _contentId);
@@ -20,7 +20,7 @@ contract Library {
   function init(bytes _data) public {
     require(owner_ == address(0), 'Library has already been initialized.');
 
-    uint256 btsptr;
+    uint32 btsptr;
     address ownerAddr;
     address registryAddr;
     assembly {
@@ -43,17 +43,17 @@ contract Library {
      _;
   }
 
-  function getLibrarySize(bytes32 _identity) public view returns (uint256 size) {
+  function getLibrarySize(bytes32 _identity) public view returns (uint32 size) {
     return libraries_[_identity].size;
   }
 
-  function getLibraryItem(bytes32 _identity, uint256 _index) public view returns (bytes32 contentId) {
+  function getLibraryItem(bytes32 _identity, uint32 _index) public view returns (bytes32 contentId) {
     require (_index < libraries_[_identity].size, "Index does not exist.");
     return libraries_[_identity].content[_index];
   }
 
   function addLibraryItem(bytes32 _identity, bytes32 _contentId) public fromProxy(_contentId) {
-    uint256 libSize = libraries_[_identity].size;
+    uint32 libSize = libraries_[_identity].size;
     assert (libraries_[_identity].content[libSize] == bytes32(0));
     libraries_[_identity].content[libSize] = _contentId;
     libraries_[_identity].size++;
