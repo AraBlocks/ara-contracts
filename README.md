@@ -10,21 +10,21 @@ Blockchain interactions in Ara modules.
 This repository contains all contracts deployed by Ara. There are five core contracts used throughout the entire network:
 
 1. `AraToken.sol` - The Ara ERC20 token contract
-* [Ropsten Proxy](https://ropsten.etherscan.io/address/0xc3c25941c8120e52e358ff70cb7e81deb056edad#code)
-* [Ropsten Implementation](https://ropsten.etherscan.io/address/0xbac6888c4f49c3164fb437f435b8a6b5d04c7aaa#code)
+* [Ropsten Proxy](https://ropsten.etherscan.io/address/0x06be7386f99c38d26d53d83cbf1b9f438930694b#code)
+* [Ropsten Implementation](https://ropsten.etherscan.io/address/0xc349b831e83248368aa69c42fa717f700fecb8ce#code)
 
 * [Mainnet Proxy](https://etherscan.io/address/0xa92e7c82b11d10716ab534051b271d2f6aef7df5#code)
 * [Mainnet Implementation](https://etherscan.io/address/0xb8ca408aff631b65021850cd7ebf8eac7f3c0312#code)
 2. `AFS.sol` - The `AFS` standard contract which defines the logic for `AFS` configurations and behavior on the blockchain (see the accompanying [RFC](https://github.com/AraBlocks/RFCs/blob/master/text/0004-afs-contract-standard.md))
-* [Ropsten Implementation](https://ropsten.etherscan.io/address/0x5cfbeb92bd89023871f0a1a812f420fcb9508259#code)
+* [Ropsten Implementation](https://ropsten.etherscan.io/address/0xa2eb81f1449f09e29968920ddae115ed360d1fe2#code)
 3. `Library.sol` - The contract where content ownership across the network is consolidated and tracked
-* [Ropsten Proxy](https://ropsten.etherscan.io/address/0x14dc90ced083cd2dee9a5c6c114fa316414994e5#code)
-* [Ropsten Implementation](https://ropsten.etherscan.io/address/0xb149236325f3b5df5bdccbb8f88b13ad317eeb35#code)
+* [Ropsten Proxy](https://ropsten.etherscan.io/address/0xec26659b209e9e89a23d26298ba0359b1b6c7f76#code)
+* [Ropsten Implementation](https://ropsten.etherscan.io/address/0x991198dac7e5aa586ed129735e142c01ad81ed69#code)
 4. `Registry.sol` - The contract where `AFS` proxies and `AFS` standards are created, linked, and tracked
-* [Ropsten Proxy](https://ropsten.etherscan.io/address/0xcacfcfed87273eb24c146988e5fb7f209386cf5e#code)
-* [Ropsten Implementation](https://ropsten.etherscan.io/address/0x07bce500d9df91c9229b556faca3c970180d5550#code)
+* [Ropsten Proxy](https://ropsten.etherscan.io/address/0xdb8f8d6cc69a346d608e64c2ddb5b3ed7e4b32d6#code)
+* [Ropsten Implementation](https://ropsten.etherscan.io/address/0xbbc4d435c7426cef12c4b6d4d12552a1e7de24ef#code)
 5. `AraRegistry.sol` - The contract which deploys all other Ara core contracts
-* [Ropsten Implementation](https://ropsten.etherscan.io/address/0x9bcb2083bced899e9aff64f948e432e908de66cc#code)
+* [Ropsten Implementation](https://ropsten.etherscan.io/address/0x6bda4b9fcb082e72b30081393d4ae7b05360e517#code)
 
 * [Mainnet Implementation](https://etherscan.io/address/0xf8314584346fc84e96b36113784f6b562e5b01af#code)
 
