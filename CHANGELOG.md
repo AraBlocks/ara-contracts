@@ -1,10 +1,17 @@
-# [0.22.0](https://github.com/AraBlocks/ara-contracts/compare/0.20.0...0.22.0) (2019-02-04)
+# [0.23.0](https://github.com/AraBlocks/ara-contracts/compare/0.20.0...0.23.0) (2019-02-25)
+
+
+### Bug Fixes
+
+* undo something ([da8b736](https://github.com/AraBlocks/ara-contracts/commit/da8b736))
+* use safemath ([6aae2b2](https://github.com/AraBlocks/ara-contracts/commit/6aae2b2))
 
 
 ### Features
 
 * consolidate proxy usage to AraProxy ([f0da598](https://github.com/AraBlocks/ara-contracts/commit/f0da598))
 * refactor out AraRegistry dependency in AraProxy ([4c3cdfa](https://github.com/AraBlocks/ara-contracts/commit/4c3cdfa))
+* update Library contract to use uint32, redeploy to privatenet ([276f158](https://github.com/AraBlocks/ara-contracts/commit/276f158))
 
 
 
