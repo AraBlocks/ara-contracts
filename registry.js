@@ -475,6 +475,7 @@ async function deployNewStandard(opts) {
   try {
     bytes = await pify(fs.readFile)(bytespath, 'utf8')
 
+    /* eslint-disable import/no-dynamic-require */
     const compiledAfs = require(compiledPath)
     afsAbi = compiledAfs.abi
   } catch (err) {
