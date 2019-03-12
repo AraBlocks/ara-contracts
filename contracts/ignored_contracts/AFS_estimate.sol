@@ -7,7 +7,7 @@ import "bytes/BytesLib.sol";
 import '../SafeMath32.sol';
 import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 
-contract AFS is Ownable {
+contract AFSestimate is Ownable {
   using SafeMath for uint256;
   using BytesLib for bytes;
 
