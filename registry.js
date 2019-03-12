@@ -398,6 +398,7 @@ async function _compileStandard(bytespath, paths) {
  * @param  {String} opts.version
  * @param  {String} opts.paths
  * @param  {Object} [opts.keyringOpts]
+ * @param  {String} [opts.compiledPath]
  * @return {String}
  * @throws {Error,TypeError}
  */
@@ -414,6 +415,8 @@ async function deployNewStandard(opts) {
     throw TypeError('Expecting non-empty password')
   } else if (!opts.paths || !opts.paths.length) {
     throw TypeError('Expecting one or more paths')
+  } else if (opts.compiledPath && 'string' !== typeof opts.compiledPath) {
+    throw new TypeError('Expecting path to be a string.')
   }
 
   if (null == opts.version || 'string' !== typeof opts.version || !opts.version) {
@@ -426,6 +429,7 @@ async function deployNewStandard(opts) {
 
   const {
     requesterDid,
+    compiledPath,
     keyringOpts,
     password,
     version,
@@ -467,7 +471,7 @@ async function deployNewStandard(opts) {
   let afsAbi
   try {
     bytes = await pify(fs.readFile)(bytespath, 'utf8')
-    const compiledAfs = require('./build/contracts/AFS.json')
+    const compiledAfs = require(compiledPath || './build/contracts/AFS.json')
     afsAbi = compiledAfs.abi
   } catch (err) {
     debug(`Could not read ${bytespath}; compiling instead...`)
