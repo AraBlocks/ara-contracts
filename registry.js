@@ -378,7 +378,9 @@ async function _compileStandard(bytespath, paths) {
     })
 
     const compiledFile = solc.compile({ sources }, 1)
-    const compiledContract = compiledFile.contracts['AFS.sol:AFS']
+    const label = Object.keys(compiledFile.contracts)[0]
+    debug(`writing bytecode for ${label}`)
+    const compiledContract = compiledFile.contracts[label]
     const afsAbi = JSON.parse(compiledContract.interface)
     const { bytecode } = compiledContract
     const bytes = toHexString(bytecode, { encoding: 'hex', ethify: true })
@@ -427,9 +429,10 @@ async function deployNewStandard(opts) {
     }
   }
 
+  let { compiledPath } = opts
+  compiledPath = compiledPath || './build/contracts/AFS.json'
   const {
     requesterDid,
-    compiledPath,
     keyringOpts,
     password,
     version,
@@ -471,7 +474,8 @@ async function deployNewStandard(opts) {
   let afsAbi
   try {
     bytes = await pify(fs.readFile)(bytespath, 'utf8')
-    const compiledAfs = require(compiledPath || './build/contracts/AFS.json')
+
+    const compiledAfs = require(compiledPath)
     afsAbi = compiledAfs.abi
   } catch (err) {
     debug(`Could not read ${bytespath}; compiling instead...`)

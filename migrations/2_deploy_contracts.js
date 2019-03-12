@@ -113,7 +113,7 @@ async function deploystandard() {
             password: constants.OWNER_PASSWORD,
             version: `${constants.STANDARD_VERSION}_estimate`,
             paths: constants.ESTIMATE_DEPS_PATHS,
-            compiledPath: './build/contracts/AFS_estimate.json'
+            compiledPath: './build/contracts/AFSestimate.json'
           })
           resolve(a)
         } catch (err) {
