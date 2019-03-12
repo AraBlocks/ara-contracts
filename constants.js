@@ -73,6 +73,7 @@ module.exports = {
   TOKEN_VERSION: '1',
   JOB_ID_LENGTH: 64,
   STANDARD_DEPS_PATHS: [ './contracts/ignored_contracts/AFS.sol', './contracts/ignored_contracts/Library.sol', './contracts/ignored_contracts/Registry.sol', './contracts/AraProxy.sol', './contracts/ignored_contracts/AraToken.sol' ],
+  ESTIMATE_DEPS_PATHS: [ './contracts/ignored_contracts/AFS_estimate.sol', './contracts/ignored_contracts/Library.sol', './contracts/ignored_contracts/Registry.sol', './contracts/AraProxy.sol', './contracts/ignored_contracts/AraToken.sol' ],
   ZERO_BYTES32: '0x00000000000000000000000000000000',
   ZERO_ADDRESS: '0x0000000000000000000000000000000000000000',
   BYTESDIR: path.resolve(__dirname, './bytecode')

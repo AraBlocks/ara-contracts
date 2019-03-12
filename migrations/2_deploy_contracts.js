@@ -103,6 +103,25 @@ async function deploystandard() {
       }, 5000)
     })
     console.log(`\tStandard deployed at ${address}.`)
+    console.log('\tDeploying AFS Estimate Standard...')
+    const estimateAddress = await new Promise((resolve, reject) => {
+      setTimeout(async () => {
+        console.log('\t...deploying')
+        try {
+          const a = await deployNewStandard({
+            requesterDid: constants.TEMP_OWNER_DID,
+            password: constants.OWNER_PASSWORD,
+            version: `${constants.STANDARD_VERSION}_estimate`,
+            paths: constants.ESTIMATE_DEPS_PATHS,
+            compiledPath: './build/contracts/AFS_estimate.json'
+          })
+          resolve(a)
+        } catch (err) {
+          reject(err)
+        }
+      }, 5000)
+    })
+    console.log(`\tEstimate standard deployed at ${estimateAddress}`)
   } catch (err) {
     throw err
   }
