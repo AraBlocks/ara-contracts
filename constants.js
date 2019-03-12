@@ -66,6 +66,9 @@ module.exports = {
   // TODO(cckelly) get a better hold on constants
   TEST_OWNER_ADDRESS_2: '0x1019468D3060F0b8c5d9C432f0c4Db33e28b3582',
 
+  // privatenet -- version: 1, password: estimate, address: 0x6A8Fa21A4a1fd9EDed403EF714eC767E8581f724
+  STANDARD_ESTIMATE_PROXY: '5f5afd026a2d6e1ed85eb9d6086a936e39a44c47d220a1e4fcc569cdcf738501',
+
   TOKEN_DECIMALS: 18,
   STANDARD_VERSION: '1',
   REGISTRY_VERSION: '1',
