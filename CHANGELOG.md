@@ -1,17 +1,20 @@
-# [0.23.0](https://github.com/AraBlocks/ara-contracts/compare/0.20.0...0.23.0) (2019-02-25)
+# [0.24.0](https://github.com/AraBlocks/ara-contracts/compare/0.20.0...0.24.0) (2019-03-13)
 
 
 ### Bug Fixes
 
-* undo something ([da8b736](https://github.com/AraBlocks/ara-contracts/commit/da8b736))
-* use safemath ([6aae2b2](https://github.com/AraBlocks/ara-contracts/commit/6aae2b2))
+* undo something ([85f265e](https://github.com/AraBlocks/ara-contracts/commit/85f265e))
+* use safemath ([c2bbaa4](https://github.com/AraBlocks/ara-contracts/commit/c2bbaa4))
+* **): lint; add(:** standard estimate proxy did ([93d5656](https://github.com/AraBlocks/ara-contracts/commit/93d5656))
 
 
 ### Features
 
 * consolidate proxy usage to AraProxy ([f0da598](https://github.com/AraBlocks/ara-contracts/commit/f0da598))
+* dynamically determine standard compile label ([e3756eb](https://github.com/AraBlocks/ara-contracts/commit/e3756eb))
 * refactor out AraRegistry dependency in AraProxy ([4c3cdfa](https://github.com/AraBlocks/ara-contracts/commit/4c3cdfa))
-* update Library contract to use uint32, redeploy to privatenet ([276f158](https://github.com/AraBlocks/ara-contracts/commit/276f158))
+* support estimate standard ([a0bb2fd](https://github.com/AraBlocks/ara-contracts/commit/a0bb2fd))
+* update Library contract to use uint32, redeploy to privatenet ([6321541](https://github.com/AraBlocks/ara-contracts/commit/6321541))
 
 
 
