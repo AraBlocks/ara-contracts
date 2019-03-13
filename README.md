@@ -49,7 +49,7 @@ This repository contains all contracts deployed by Ara. There are five global co
 This repository also provides programmatic (see the API section) and command-line interfaces (see the Usage section) for interacting with the contracts.
 
 ## AFS Proxies
-In addition to these globally-used contracts, Ara deploys a proxy contract for each individual `AFS` that gets committed to the blockchain (see [`ara-filesystem`](https://github.com/AraBlocks/ara-filesystem/) and [proxy architecture](https://blog.zeppelinos.org/proxy-patterns/)). This contract serves as the storage layer for `AFS`s on the blockchain, while the `AFS Standard` serves as the API (business logic layer) for interacting with `AFS`s on the blockchain.
+In addition to these global contracts, Ara deploys a proxy contract for each individual `AFS` that gets committed to the blockchain (see [`ara-filesystem`](https://github.com/AraBlocks/ara-filesystem/) and [proxy architecture](https://blog.zeppelinos.org/proxy-patterns/)). This contract serves as the storage layer for `AFS`s on the blockchain, while the `AFS Standard` serves as the API (business logic layer) for interacting with `AFS`s on the blockchain.
 
 ## Stability
 
