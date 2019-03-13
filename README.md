@@ -7,7 +7,7 @@ Blockchain interactions in Ara modules.
 
 ## Overview
 
-This repository contains all contracts deployed by Ara. There are five core contracts used throughout the entire network:
+This repository contains all contracts deployed by Ara. There are five global contracts used throughout the entire network:
 
 1. `AraToken.sol` - The Ara ERC20 token contract
 
@@ -39,7 +39,7 @@ This repository contains all contracts deployed by Ara. There are five core cont
 | Ropsten | Proxy          | `0xdb8f8d6cc69a346d608e64c2ddb5b3ed7e4b32d6` | https://ropsten.etherscan.io/address/0xdb8f8d6cc69a346d608e64c2ddb5b3ed7e4b32d6#code |
 | Ropsten | Implementation | `0xbbc4d435c7426cef12c4b6d4d12552a1e7de24ef` | https://ropsten.etherscan.io/address/0xbbc4d435c7426cef12c4b6d4d12552a1e7de24ef#code |
 
-5. `AraRegistry.sol` - The contract used to deploy all other Ara Core contracts (Library, Registry, AraToken)
+5. `AraRegistry.sol` - The contract used to deploy the Library, Registry, and AraToken contracts
 
 | Network | Type           | Address                                      | Verified Source                                                                      |
 | ------- | -------------- | -------------------------------------------- | ------------------------------------------------------------------------------------ |
