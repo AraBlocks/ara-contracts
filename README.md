@@ -10,29 +10,46 @@ Blockchain interactions in Ara modules.
 This repository contains all contracts deployed by Ara. There are five core contracts used throughout the entire network:
 
 1. `AraToken.sol` - The Ara ERC20 token contract
-* [Ropsten Proxy](https://ropsten.etherscan.io/address/0x06be7386f99c38d26d53d83cbf1b9f438930694b#code)
-* [Ropsten Implementation](https://ropsten.etherscan.io/address/0xc349b831e83248368aa69c42fa717f700fecb8ce#code)
 
-* [Mainnet Proxy](https://etherscan.io/address/0xa92e7c82b11d10716ab534051b271d2f6aef7df5#code)
-* [Mainnet Implementation](https://etherscan.io/address/0xb8ca408aff631b65021850cd7ebf8eac7f3c0312#code)
-2. `AFS.sol` - The `AFS` standard contract which defines the API for interacting with `AFS`s on the blockchain (see the accompanying [RFC](https://github.com/AraBlocks/RFCs/blob/master/text/0004-afs-contract-standard.md)). The current `AFS Standard` version is `1`. Future Standards are not necessarily sequential or superseding in nature and may exist in parallel (e.g., another `AFS Standard` may be named `ecommerce` which can be used for an entirely different class of `AFS`s). In order to estimate costs for interacting with the Standard without needing to deploy a proxy beforehand, we additionally deploy a version of all `AFS Standard`s without `modifiers` which are named `${version name}_estimate`. The current `AFS Estimate Standard` version is `1_estimate`.
-* [Ropsten Implementation `1`](https://ropsten.etherscan.io/address/0xa2eb81f1449f09e29968920ddae115ed360d1fe2#code)
-* [Ropsten Implementation `1_estimate`](https://ropsten.etherscan.io/address/0x9edd0b2fee8441fb6e16e2dab71bccbc702f0487)
+| Network | Type           | Address                                      | Verified Source                                                                      |
+| ------- | -------------- | -------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Ropsten | Proxy          | `0x06be7386f99c38d26d53d83cbf1b9f438930694b` | https://ropsten.etherscan.io/address/0x06be7386f99c38d26d53d83cbf1b9f438930694b#code |
+| Ropsten | Implementation | `0xc349b831e83248368aa69c42fa717f700fecb8ce` | https://ropsten.etherscan.io/address/0xc349b831e83248368aa69c42fa717f700fecb8ce#code |
+| Mainnet | Proxy          | `0xa92e7c82b11d10716ab534051b271d2f6aef7df5` | https://etherscan.io/address/0xa92e7c82b11d10716ab534051b271d2f6aef7df5#code         |
+| Mainnet | Implementation | `0xb8ca408aff631b65021850cd7ebf8eac7f3c0312` | https://etherscan.io/address/0xb8ca408aff631b65021850cd7ebf8eac7f3c0312#code         |
+
+2. `AFS.sol` - The `AFS` standard contract defines the API for interacting with `AFS`s on the blockchain (see the accompanying [RFC](https://github.com/AraBlocks/RFCs/blob/master/text/0004-afs-contract-standard.md)). The current `AFS Standard` version is `1`. Future Standards are not necessarily sequential or superseding in nature and may exist in parallel (e.g., another `AFS Standard` may be named `ecommerce` which can be used for an entirely different class of `AFS`s). In order to estimate costs for interacting with the Standard without needing to deploy a proxy beforehand, we additionally deploy a version of all `AFS Standard`s without `modifiers` which are named `${version name}_estimate`. The current `AFS Estimate Standard` version is `1_estimate`.
+
+| Network | Version      | Address                                      | Verified Source                                                                      |
+| ------- | ------------ | -------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Ropsten | `1`          | `0xa2eb81f1449f09e29968920ddae115ed360d1fe2` | https://ropsten.etherscan.io/address/0xa2eb81f1449f09e29968920ddae115ed360d1fe2#code |
+| Ropsten | `1_estimate` | `0x9edd0b2fee8441fb6e16e2dab71bccbc702f0487` | https://ropsten.etherscan.io/address/0x9edd0b2fee8441fb6e16e2dab71bccbc702f0487#code |
+
 3. `Library.sol` - The contract where content ownership across the network is consolidated and tracked
-* [Ropsten Proxy](https://ropsten.etherscan.io/address/0xec26659b209e9e89a23d26298ba0359b1b6c7f76#code)
-* [Ropsten Implementation](https://ropsten.etherscan.io/address/0x991198dac7e5aa586ed129735e142c01ad81ed69#code)
-4. `Registry.sol` - The contract where `AFS` proxies and `AFS` standards are created, linked, and tracked
-* [Ropsten Proxy](https://ropsten.etherscan.io/address/0xdb8f8d6cc69a346d608e64c2ddb5b3ed7e4b32d6#code)
-* [Ropsten Implementation](https://ropsten.etherscan.io/address/0xbbc4d435c7426cef12c4b6d4d12552a1e7de24ef#code)
-5. `AraRegistry.sol` - The contract which deploys all other Ara core contracts
-* [Ropsten Implementation](https://ropsten.etherscan.io/address/0x6bda4b9fcb082e72b30081393d4ae7b05360e517#code)
 
-* [Mainnet Implementation](https://etherscan.io/address/0xf8314584346fc84e96b36113784f6b562e5b01af#code)
+| Network | Type           | Address                                      | Verified Source                                                                      |
+| ------- | -------------- | -------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Ropsten | Proxy          | `0xec26659b209e9e89a23d26298ba0359b1b6c7f76` | https://ropsten.etherscan.io/address/0xec26659b209e9e89a23d26298ba0359b1b6c7f76#code |
+| Ropsten | Implementation | `0x991198dac7e5aa586ed129735e142c01ad81ed69` | https://ropsten.etherscan.io/address/0x991198dac7e5aa586ed129735e142c01ad81ed69#code |
+
+4. `Registry.sol` - The contract where `AFS` proxies and `AFS` standards are created, linked, and tracked
+
+| Network | Type           | Address                                      | Verified Source                                                                      |
+| ------- | -------------- | -------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Ropsten | Proxy          | `0xdb8f8d6cc69a346d608e64c2ddb5b3ed7e4b32d6` | https://ropsten.etherscan.io/address/0xdb8f8d6cc69a346d608e64c2ddb5b3ed7e4b32d6#code |
+| Ropsten | Implementation | `0xbbc4d435c7426cef12c4b6d4d12552a1e7de24ef` | https://ropsten.etherscan.io/address/0xbbc4d435c7426cef12c4b6d4d12552a1e7de24ef#code |
+
+5. `AraRegistry.sol` - The contract used to deploy all other Ara Core contracts (Library, Registry, AraToken)
+
+| Network | Type           | Address                                      | Verified Source                                                                      |
+| ------- | -------------- | -------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Ropsten | Implementation | `0x6bda4b9fcb082e72b30081393d4ae7b05360e517` | https://ropsten.etherscan.io/address/0x6bda4b9fcb082e72b30081393d4ae7b05360e517#code |
+| Mainnet | Implementation | `0xf8314584346fc84e96b36113784f6b562e5b01af` | https://etherscan.io/address/0xf8314584346fc84e96b36113784f6b562e5b01af#code         |
 
 This repository also provides programmatic (see the API section) and command-line interfaces (see the Usage section) for interacting with the contracts.
 
 ## AFS Proxies
-In addition to these globally-used contracts, Ara deploys a proxy contract for each individual `AFS` that gets committed to the blockchain (see [`ara-filesystem`](https://github.com/AraBlocks/ara-filesystem/) and [proxy architecture](https://blog.zeppelinos.org/proxy-patterns/)). This contract serves as the storage layer for `AFS`s on the blockchain, while the `AFS Standard` serves as the API (business logic layer) for interacting with AFSs on the blockchain.
+In addition to these globally-used contracts, Ara deploys a proxy contract for each individual `AFS` that gets committed to the blockchain (see [`ara-filesystem`](https://github.com/AraBlocks/ara-filesystem/) and [proxy architecture](https://blog.zeppelinos.org/proxy-patterns/)). This contract serves as the storage layer for `AFS`s on the blockchain, while the `AFS Standard` serves as the API (business logic layer) for interacting with `AFS`s on the blockchain.
 
 ## Stability
 
