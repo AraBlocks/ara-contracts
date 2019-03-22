@@ -74,7 +74,6 @@ test('balanceOf(address) invalid address', async (t) => {
   await t.throwsAsync(token.balanceOf({ }), TypeError)
   await t.throwsAsync(token.balanceOf(1234), TypeError)
   await t.throwsAsync(token.balanceOf([]), TypeError)
-  await t.throwsAsync(token.balanceOf(TEST_OWNER_ADDRESS), Error)
   await t.throwsAsync(token.balanceOf('did:ara:1234'), Error)
   await t.throwsAsync(token.balanceOf(RANDOM_DID), Error)
 })

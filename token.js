@@ -29,9 +29,9 @@ const {
  * @return {Number}
  * @throws {Error|TypeError}
  */
-async function balanceOf(account, keyringOpts) {
+async function balanceOf(acct, keyringOpts) {
   try {
-    account = await _normalizeIDInput(account)
+    acct = await _normalizeIDInput(acct, keyringOpts)
   } catch (err) {
     throw err
   }
@@ -42,7 +42,7 @@ async function balanceOf(account, keyringOpts) {
       abi: tokenAbi,
       address: ARA_TOKEN_ADDRESS,
       functionName: 'balanceOf',
-      arguments: [ account ]
+      arguments: [ acct ]
     })
   } catch (err) {
     throw err
@@ -537,11 +537,11 @@ function _validateApprovalOpts(opts) {
   }
 }
 
-async function _normalizeIDInput(id) {
+async function _normalizeIDInput(id, keyringOpts) {
   try {
     if (!isAddress(id)) {
       id = getIdentifier(id)
-      id = await getAddressFromDID(id)
+      id = await getAddressFromDID(id, keyringOpts)
     }
   } catch (err) {
     throw err
