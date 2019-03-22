@@ -23,11 +23,11 @@ const { argv } = program
         describe: 'DID of the account to check'
       })
   }, ondeposited)
-  .command('balance <did>', 'Query Ara balance of <did>', (_) => {
+  .command('balance <account>', 'Query Ara balance of of an Ara identity or Ethereum address', (_) => {
     _
-      .positional('did', {
+      .positional('account', {
         type: 'string',
-        describe: 'DID of the account to check'
+        describe: 'DID/Ethereum address of the account to check'
       })
   }, onbalance)
   .command('allowance <did> <spender>', 'Query number of Ara <spender> can spend on behalf of <did>', (_) => {
@@ -85,13 +85,13 @@ async function onsupply() {
 
 async function onbalance(argv) {
   const {
-    did, secret, network, keyring
+    account, secret, network, keyring
   } = argv
   const keyringOpts = { secret, network, keyring }
   try {
-    info(`Getting Ara balance for ${did}...`)
-    const amount = await token.balanceOf(did, keyringOpts)
-    info(`${did} has a balance of ${amount} Ara.`)
+    info(`Getting Ara balance for ${account}...`)
+    const amount = await token.balanceOf(account, keyringOpts)
+    info(`${account} has a balance of ${amount} Ara.`)
   } catch (err) {
     onfatal(err)
   }

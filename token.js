@@ -23,17 +23,15 @@ const {
 } = require('ara-util/web3')
 
 /**
- * Get the Ara balance of a specific Ara DID.
- * @param  {String} did
+ * Get the Ara balance of a specific Ara DID or Ethereum address.
+ * @param  {String} account
  * @param  {Object} [keyringOpts]
  * @return {Number}
  * @throws {Error|TypeError}
  */
-async function balanceOf(did, keyringOpts) {
-  let address
+async function balanceOf(account, keyringOpts) {
   try {
-    did = getIdentifier(did)
-    address = await getAddressFromDID(did, keyringOpts)
+    account = await _normalizeIDInput(account)
   } catch (err) {
     throw err
   }
@@ -44,7 +42,7 @@ async function balanceOf(did, keyringOpts) {
       abi: tokenAbi,
       address: ARA_TOKEN_ADDRESS,
       functionName: 'balanceOf',
-      arguments: [ address ]
+      arguments: [ account ]
     })
   } catch (err) {
     throw err
@@ -122,11 +120,11 @@ async function allowance(opts = {}) {
  */
 async function transfer(opts = {}) {
   if (!opts.to || 'string' !== typeof opts.to) {
-    throw new TypeError(`Expected 'opts.to' to be non-empty Ara DID string. Got ${opts.to}. Ensure ${opts.to} is a valid Ara identity.`)
+    throw new TypeError(`Expected 'opts.to' to be non-empty Ara DID or Ethereum address string. Got ${opts.to}. Ensure ${opts.to} is a valid Ara identity.`)
   } else if (!opts.val || 0 >= Number(opts.val)) {
     throw new TypeError(`Expected 'opts.val' to be greater than 0. Got ${opts.val}. Ensure ${opts.val} is a positive number.`)
   } else if (!opts.did || 'string' !== typeof opts.did) {
-    throw new TypeError(`Expected 'opts.did' to be non-empty Ara DID string. Got ${opts.did}. Ensure ${opts.did} is a valid Ara identity.`)
+    throw new TypeError(`Expected 'opts.did' to be non-empty Ara DID string. Got ${opts.did}. Ensure ${opts.did} is a valid Ara identity or Ethereum address.`)
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${opts.password}.`)
   }
