@@ -170,7 +170,6 @@ async function upgradeProxy(opts) {
           if (_contentId === toHexString(did, { encoding: 'hex', ethify: true })) {
             resolve(true)
           }
-          reject(new Error('Content DIDs do not match'))
         })
         .on('error', log => reject(log))
     })
@@ -298,7 +297,6 @@ async function deployProxy(opts) {
           if (_contentId === toHexString(did, { encoding: 'hex', ethify: true })) {
             resolve(_address)
           }
-          reject(new Error('Content DIDs do not match'))
         })
         .on('error', log => reject(log))
     })
