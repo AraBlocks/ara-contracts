@@ -164,8 +164,10 @@ async function submit(opts) {
       proxyContract.events.BudgetSubmitted({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { _did, _jobId, _budget } } = log
-          debug(`budgetted ${token.constrainTokenValue(_budget)} Ara for job ${_jobId} in ${_did}`)
-          resolve(r)
+          if (_jobId === jobId) {
+            debug(`budgetted ${token.constrainTokenValue(_budget)} Ara for job ${_jobId} in ${_did}`)
+            resolve(r)
+          }
         })
         .on('error', log => reject(log))
     })
@@ -400,21 +402,26 @@ async function redeem(opts) {
     const { contract: proxyContract, ctx: ctx2 } = await contract.get(afsAbi, proxy)
     const { contract: tokenContract, ctx: ctx3 } = await contract.get(tokenAbi, ARA_TOKEN_ADDRESS)
     balance = await new Promise((resolve, reject) => {
+      const { web3 } = ctx3
       tx.sendSignedTransaction(redeemTx).catch(err => reject(err))
       tokenContract.events.Transfer({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { from, to, value } } = log
-          balance = token.constrainTokenValue(value)
-          debug(`${balance} Ara transferred from ${from} to ${to}`)
-          resolve(balance)
+          if (web3.utils.toChecksumAddress(from) === web3.utils.toChecksumAddress(proxy) && web3.utils.toChecksumAddress(to) === web3.utils.toChecksumAddress(acct.address)) {
+            balance = token.constrainTokenValue(value)
+            debug(`${balance} Ara transferred from ${from} to ${to}`)
+            resolve(balance)
+          }
         })
         .on('error', log => reject(log))
 
       proxyContract.events.InsufficientDeposit({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { _farmer } } = log
-          debug(`Failed to redeem rewards for ${_farmer} due to insufficient deposit`)
-          reject(new Error('Insufficent Deposit'))
+          if (web3.utils.toChecksumAddress(_farmer) === web3.utils.toChecksumAddress(acct.address)) {
+            debug(`Failed to redeem rewards for ${_farmer} due to insufficient deposit`)
+            reject(new Error('Insufficent Deposit'))
+          }
         })
         .on('error', log => reject(log))
     })
