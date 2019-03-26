@@ -1,18 +1,20 @@
-## [0.24.1](https://github.com/AraBlocks/ara-contracts/compare/0.20.0...0.24.1) (2019-03-26)
+## [0.24.2](https://github.com/AraBlocks/ara-contracts/compare/0.20.0...0.24.2) (2019-03-26)
 
 
 ### Bug Fixes
 
-* lint ([4c0feb4](https://github.com/AraBlocks/ara-contracts/commit/4c0feb4))
-* undo something ([85f265e](https://github.com/AraBlocks/ara-contracts/commit/85f265e))
+* ensure event listeners resolve the correct event ([d6dbe70](https://github.com/AraBlocks/ara-contracts/commit/d6dbe70))
+* error handling ([7d287f6](https://github.com/AraBlocks/ara-contracts/commit/7d287f6))
+* lint ([7924e02](https://github.com/AraBlocks/ara-contracts/commit/7924e02))
 * use safemath ([c2bbaa4](https://github.com/AraBlocks/ara-contracts/commit/c2bbaa4))
-* wording ([f3b747c](https://github.com/AraBlocks/ara-contracts/commit/f3b747c))
+* wording ([6420a0f](https://github.com/AraBlocks/ara-contracts/commit/6420a0f))
 * **): lint; add(:** standard estimate proxy did ([8fc0f29](https://github.com/AraBlocks/ara-contracts/commit/8fc0f29))
+* undo something ([85f265e](https://github.com/AraBlocks/ara-contracts/commit/85f265e))
 
 
 ### Features
 
-* allow token transfer and balance with Etheruem address ([ef954d3](https://github.com/AraBlocks/ara-contracts/commit/ef954d3))
+* allow token transfer and balance with Etheruem address ([764674e](https://github.com/AraBlocks/ara-contracts/commit/764674e))
 * consolidate proxy usage to AraProxy ([f0da598](https://github.com/AraBlocks/ara-contracts/commit/f0da598))
 * dynamically determine standard compile label ([1ca775c](https://github.com/AraBlocks/ara-contracts/commit/1ca775c))
 * refactor out AraRegistry dependency in AraProxy ([4c3cdfa](https://github.com/AraBlocks/ara-contracts/commit/4c3cdfa))
