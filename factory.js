@@ -366,7 +366,7 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false) {
   const { contract: registry, ctx: ctx2 } = await contract.get(registryAbi, constants.ARA_REGISTRY_ADDRESS)
   if (!upgrade) {
     address = await new Promise((resolve, reject) => {
-      tx.sendSignedTransaction(transaction)
+      tx.sendSignedTransaction(transaction).catch(err => reject(err))
       registry.events.UpgradeableContractAdded({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { _contractName, _address } } = log
@@ -388,7 +388,7 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false) {
     })
   } else {
     await new Promise((resolve, reject) => {
-      tx.sendSignedTransaction(transaction)
+      tx.sendSignedTransaction(transaction).catch(err => reject(err))
       registry.events.ContractUpgraded()
         .on('data', (log) => {
           const { returnValues: { _contractName, _version } } = log

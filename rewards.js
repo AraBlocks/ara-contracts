@@ -160,7 +160,7 @@ async function submit(opts) {
 
     const { contract: proxyContract, ctx: ctx2 } = await contract.get(afsAbi, proxy)
     receipt = await new Promise((resolve, reject) => {
-      const r = tx.sendSignedTransaction(submitTx)
+      const r = tx.sendSignedTransaction(submitTx).catch(err => reject(err))
       proxyContract.events.BudgetSubmitted({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { _did, _jobId, _budget } } = log
@@ -400,7 +400,7 @@ async function redeem(opts) {
     const { contract: proxyContract, ctx: ctx2 } = await contract.get(afsAbi, proxy)
     const { contract: tokenContract, ctx: ctx3 } = await contract.get(tokenAbi, ARA_TOKEN_ADDRESS)
     balance = await new Promise((resolve, reject) => {
-      tx.sendSignedTransaction(redeemTx)
+      tx.sendSignedTransaction(redeemTx).catch(err => reject(err))
       tokenContract.events.Transfer({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { from, to, value } } = log
