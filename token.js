@@ -124,7 +124,7 @@ async function transfer(opts = {}) {
   } else if (!opts.val || 0 >= Number(opts.val)) {
     throw new TypeError(`Expected 'opts.val' to be greater than 0. Got ${opts.val}. Ensure ${opts.val} is a positive number.`)
   } else if (!opts.did || 'string' !== typeof opts.did) {
-    throw new TypeError(`Expected 'opts.did' to be non-empty Ara DID string. Got ${opts.did}. Ensure ${opts.did} is a valid Ara identity or Ethereum address.`)
+    throw new TypeError(`Expected 'opts.did' to be non-empty Ara DID string. Got ${opts.did}. Ensure ${opts.did} is a valid Ara identity.`)
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${opts.password}.`)
   }
