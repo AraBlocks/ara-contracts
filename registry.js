@@ -162,7 +162,7 @@ async function upgradeProxy(opts) {
 
     const { contract: registry, ctx: ctx2 } = await contract.get(abi, constants.REGISTRY_ADDRESS)
     upgraded = await new Promise((resolve, reject) => {
-      tx.sendSignedTransaction(transaction)
+      tx.sendSignedTransaction(transaction).catch(err => reject(err))
       // listen to ProxyUpgraded event for proxy address
       registry.events.ProxyUpgraded({ fromBlock: 'latest' })
         .on('data', (log) => {
@@ -290,7 +290,7 @@ async function deployProxy(opts) {
 
     const { contract: registry, ctx: ctx2 } = await contract.get(abi, constants.REGISTRY_ADDRESS)
     proxyAddress = await new Promise((resolve, reject) => {
-      tx.sendSignedTransaction(transaction)
+      tx.sendSignedTransaction(transaction).catch(err => reject(err))
       // listen to ProxyDeployed event for proxy address
       registry.events.ProxyDeployed({ fromBlock: 'latest' })
         .on('data', (log) => {
@@ -509,7 +509,7 @@ async function deployNewStandard(opts) {
     // listen to ProxyDeployed event for proxy address
     const { contract: registry, ctx: ctx2 } = await contract.get(abi, constants.REGISTRY_ADDRESS)
     address = await new Promise((resolve, reject) => {
-      tx.sendSignedTransaction(transaction)
+      tx.sendSignedTransaction(transaction).catch(err => reject(err))
       registry.events.StandardAdded({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { _version, _address } } = log
