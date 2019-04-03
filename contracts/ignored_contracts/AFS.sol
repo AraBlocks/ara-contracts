@@ -71,7 +71,7 @@ contract AFS is Ownable {
     _;
   }
 
-  function init(bytes _data) public {
+  function init(bytes _data) public {//what calls this function?
     require(owner_ == address(0), 'This AFS standard has already been initialized.');
   
     uint256 btsptr;

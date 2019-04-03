@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "./AraProxy.sol";
+import "./AraProxy.sol";//whats the diff between this contract and `Registry`?
 
 contract AraRegistry {
   address public owner_;

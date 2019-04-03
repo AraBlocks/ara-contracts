@@ -100,7 +100,7 @@ contract Registry {
     AraProxy proxy = AraProxy(proxies_[_contentId]);
     proxy.setImplementation(versions_[_version]);
     proxyImpls_[proxy] = _version;
-    require(address(proxy).call(abi.encodeWithSignature("init(bytes)", _data)), "Init failed.");
+    require(address(proxy).call(abi.encodeWithSignature("init(bytes)", _data)), "Init failed.");//where does `init` come from?
     emit ProxyUpgraded(_contentId, _version);
   }
 
