@@ -37,7 +37,6 @@ contract AFS is Ownable {
   event PriceSet(uint256 _price);
   event BudgetSubmitted(address indexed _sender, bytes32 indexed _jobId, uint256 _budget);
   event RewardsAllocated(address indexed _farmer, bytes32 indexed _jobId, uint256 _allocated, uint256 _remaining);
-  event InsufficientDeposit(address indexed _farmer);
   event Purchased(bytes32 indexed _purchaser, uint256 _price);
   event Redeemed(address indexed _sender, uint256 _amount);
 
@@ -117,31 +116,30 @@ contract AFS is Ownable {
     }
   }
 
-  function allocateRewards(bytes32 _jobId, address[] _farmers, uint256[] _rewards, bool _return) public budgetSubmitted(_jobId) {
+  // only job submitter can allocate rewards - done
+  // all farmers must be purchasers - done
+  // farmer can't be allocator - done
+  // farmer array can't be 0 - done
+  // cannot return Ara - done
+
+  function allocateRewards(bytes32 _jobId, address[] _farmers, uint256[] _rewards) public budgetSubmitted(_jobId) {
+    require(jobs_[_jobId].sender == msg.sender, "Only the job creator can allocate rewards.");
+    require(_farmers.length > 0, "Must allocate to at least one farmer.");
     require(_farmers.length == _rewards.length, "Unequal number of farmers and rewards.");
     uint256 totalRewards;
     for (uint8 i = 0; i < _rewards.length; i++) {
+      address farmer = _farmers[i];
+      require(farmer != msg.sender, "Cannot allocate rewards to job creator.");
+      require(purchasers_[keccak256(abi.encodePacked(farmer))], "Farmer must be a purchaser of this AFS.");
       totalRewards = totalRewards.add(_rewards[i]);
     }
     require(totalRewards <= jobs_[_jobId].budget, "Insufficient budget.");
     for (uint8 j = 0; j < _farmers.length; j++) {
-      if (token_.amountDeposited(_farmers[j]) >= depositRequirement_ || purchasers_[keccak256(abi.encodePacked(msg.sender))]) {
-        assert(jobs_[_jobId].budget >= _rewards[j]);
-        bytes32 farmer = keccak256(abi.encodePacked(_farmers[j]));
-        rewards_[farmer] = rewards_[farmer].add(_rewards[j]);
-        jobs_[_jobId].budget = jobs_[_jobId].budget.sub(_rewards[j]);
-        emit RewardsAllocated(_farmers[j], _jobId, _rewards[j], jobs_[_jobId].budget);
-      } else {
-        emit InsufficientDeposit(_farmers[j]);
-      }
-    }
-    if (_return) {
-      uint256 remaining = jobs_[_jobId].budget;
-      if (remaining > 0) {
-        rewards_[keccak256(abi.encodePacked(msg.sender))] = rewards_[keccak256(abi.encodePacked(msg.sender))].add(remaining);
-        jobs_[_jobId].budget = 0;
-        redeemBalance();
-      }
+      assert(jobs_[_jobId].budget >= _rewards[j]);
+      bytes32 farmer = keccak256(abi.encodePacked(_farmers[j]));
+      rewards_[farmer] = rewards_[farmer].add(_rewards[j]);
+      jobs_[_jobId].budget = jobs_[_jobId].budget.sub(_rewards[j]);
+      emit RewardsAllocated(_farmers[j], _jobId, _rewards[j], jobs_[_jobId].budget);
     }
   }
 

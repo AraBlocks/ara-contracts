@@ -195,7 +195,6 @@ async function submit(opts) {
  * @param  {string|Buffer}  opts.job.jobId
  * @param  {Array}          opts.job.farmers
  * @param  {Array}          opts.job.rewards
- * @param  {Boolean}        opts.job.returnBudget
  * @returns {Object}
  * @throws {Error,TypeError}
  */
@@ -221,12 +220,8 @@ async function allocate(opts) {
     job
   } = opts
 
-  const { farmers, rewards, returnBudget = false } = job
+  const { farmers, rewards } = job
   let { jobId } = job
-
-  if (returnBudget && 'boolean' !== typeof returnBudget) {
-    throw new TypeError('Expecting opts.job.returnBudget to be boolean.')
-  }
 
   const validJobId = isValidJobId(jobId)
   if (!validJobId) {
@@ -310,8 +305,7 @@ async function allocate(opts) {
         values: [
           jobId,
           farmers,
-          rewards,
-          returnBudget
+          rewards
         ]
       }
     })
