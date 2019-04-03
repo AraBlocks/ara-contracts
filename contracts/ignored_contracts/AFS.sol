@@ -124,7 +124,7 @@ contract AFS is Ownable {
     for (uint256 i = 0; i < _rewards.length; i++) {
       address farmer = _farmers[i];
       require(farmer != msg.sender, "Cannot allocate rewards to job creator.");
-      require(purchasers_[keccak256(abi.encodePacked(farmer))] || token_.amountDeposited(_farmers[j]) >= depositRequirement_, "Farmer must be a purchaser of this AFS or have sufficient token deposit.");
+      require(purchasers_[keccak256(abi.encodePacked(farmer))] || token_.amountDeposited(farmer) >= depositRequirement_, "Farmer must be a purchaser of this AFS or have sufficient token deposit.");
       totalRewards = totalRewards.add(_rewards[i]);
     }
     require(totalRewards <= jobs_[_jobId].budget, "Insufficient budget.");
