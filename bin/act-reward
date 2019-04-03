@@ -71,7 +71,7 @@ const { argv } = program
         describe: 'The ID of the DCDN job the budget is for'
       })
   }, onbudget)
-  .command('allocate <did> <content> <jobId> [--returnBudget]', 'Allocate the budget for <jobId> between peers', (_) => {
+  .command('allocate <did> <content> <jobId>', 'Allocate the budget for <jobId> between peers', (_) => {
     _
       .positional('did', {
         type: 'string',
@@ -84,12 +84,6 @@ const { argv } = program
       .positional('jobId', {
         type: 'string',
         describe: 'The ID of the DCDN job the budget is for'
-      })
-      .option('returnBudget', {
-        alias: 'r',
-        type: 'boolean',
-        default: false,
-        describe: 'Flag to indicate whether the remaining rewards budget should be returned to the budget allocator'
       })
   }, onallocate)
   .help('h')
@@ -176,7 +170,7 @@ async function onbudget(argv) {
 
 async function onallocate(argv) {
   const {
-    content, did, jobId, secret, network, keyring, returnBudget
+    content, did, jobId, secret, network, keyring
   } = argv
   const keyringOpts = { secret, network, keyring }
   const { password } = await promptForPassword()
@@ -201,8 +195,7 @@ async function onallocate(argv) {
       job: {
         jobId,
         farmers,
-        rewards: distribution,
-        returnBudget
+        rewards: distribution
       }
     })
     info('All eligible rewards allocated')

@@ -37,6 +37,7 @@ contract AFS is Ownable {
   event PriceSet(uint256 _price);
   event BudgetSubmitted(address indexed _sender, bytes32 indexed _jobId, uint256 _budget);
   event RewardsAllocated(address indexed _farmer, bytes32 indexed _jobId, uint256 _allocated, uint256 _remaining);
+  event InsufficientDeposit(address indexed _farmer);
   event Purchased(bytes32 indexed _purchaser, uint256 _price);
   event Redeemed(address indexed _sender, uint256 _amount);
 
@@ -136,8 +137,8 @@ contract AFS is Ownable {
     require(totalRewards <= jobs_[_jobId].budget, "Insufficient budget.");
     for (uint8 j = 0; j < _farmers.length; j++) {
       assert(jobs_[_jobId].budget >= _rewards[j]);
-      bytes32 farmer = keccak256(abi.encodePacked(_farmers[j]));
-      rewards_[farmer] = rewards_[farmer].add(_rewards[j]);
+      bytes32 hashedFarmer = keccak256(abi.encodePacked(_farmers[j]));
+      rewards_[hashedFarmer] = rewards_[hashedFarmer].add(_rewards[j]);
       jobs_[_jobId].budget = jobs_[_jobId].budget.sub(_rewards[j]);
       emit RewardsAllocated(_farmers[j], _jobId, _rewards[j], jobs_[_jobId].budget);
     }
