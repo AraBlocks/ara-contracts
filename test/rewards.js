@@ -223,6 +223,7 @@ test.serial('allocate(opts) farmers with deposits', async (t) => {
   let allocated = 0
   const { contract: proxy, ctx } = await contract.get(abi, proxyAddress)
   await new Promise((resolve) => {
+    console.log('allocating for farmers with deposits')
     rewards.allocate({
       requesterDid,
       contentDid,
@@ -232,7 +233,7 @@ test.serial('allocate(opts) farmers with deposits', async (t) => {
         farmers,
         rewards: allocation
       }
-    })
+    }).catch(err => console.log('failed here', err.message))
     proxy.events.RewardsAllocated({ fromBlock: 'latest' })
       .on('data', (log) => {
         const { returnValues: { _farmer, _allocated } } = log
