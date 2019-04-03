@@ -117,25 +117,18 @@ contract AFS is Ownable {
     }
   }
 
-  // only job submitter can allocate rewards - done
-  // all farmers must be purchasers - done
-  // farmer can't be allocator - done
-  // farmer array can't be 0 - done
-  // cannot return Ara - done
-
   function allocateRewards(bytes32 _jobId, address[] _farmers, uint256[] _rewards) public budgetSubmitted(_jobId) {
-    require(jobs_[_jobId].sender == msg.sender, "Only the job creator can allocate rewards.");
     require(_farmers.length > 0, "Must allocate to at least one farmer.");
     require(_farmers.length == _rewards.length, "Unequal number of farmers and rewards.");
     uint256 totalRewards;
-    for (uint8 i = 0; i < _rewards.length; i++) {
+    for (uint256 i = 0; i < _rewards.length; i++) {
       address farmer = _farmers[i];
       require(farmer != msg.sender, "Cannot allocate rewards to job creator.");
-      require(purchasers_[keccak256(abi.encodePacked(farmer))], "Farmer must be a purchaser of this AFS.");
+      require(purchasers_[keccak256(abi.encodePacked(farmer))] || token_.amountDeposited(_farmers[j]) >= depositRequirement_, "Farmer must be a purchaser of this AFS or have sufficient token deposit.");
       totalRewards = totalRewards.add(_rewards[i]);
     }
     require(totalRewards <= jobs_[_jobId].budget, "Insufficient budget.");
-    for (uint8 j = 0; j < _farmers.length; j++) {
+    for (uint256 j = 0; j < _farmers.length; j++) {
       assert(jobs_[_jobId].budget >= _rewards[j]);
       bytes32 hashedFarmer = keccak256(abi.encodePacked(_farmers[j]));
       rewards_[hashedFarmer] = rewards_[hashedFarmer].add(_rewards[j]);
