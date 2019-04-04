@@ -105,7 +105,7 @@ contract AFS is Ownable {
   }
 
   function submitBudget(bytes32 _jobId, uint256 _budget) public purchaseRequired {
-    uint256 allowance = token_.allowance(msg.sender, address(this));
+    uint256 allowance = token_.allowance(msg.sender, address(this));//where/when is value for allowance set?
     require(_jobId != bytes32(0) && _budget > 0 && allowance >= _budget
       && (jobs_[_jobId].sender == address(0) || jobs_[_jobId].sender == msg.sender), "Job submission invalid.");
 
