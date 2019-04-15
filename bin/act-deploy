@@ -125,7 +125,7 @@ async function onproxy(argv) {
       }
     } else {
       info(`Upgrading proxy for ${did} to version ${versionName}...`)
-      // act deploy proxy -u f5153d78579dcc7d4ed57acd3cc789a69fe3780314432443a471d1e2dea577b8
+      // act deploy proxy -u 9cad8a3bf1756dcb363dc01f8f4ee11f24e25ed9127bc343ed46cd476819c470 2_estimate
       const cost = await registry.upgradeProxy(estimateOpts)
       const { answer } = await promptCostConfirmation(cost)
       if (answer) {
@@ -156,7 +156,7 @@ async function onstandard(argv) {
 
   try {
     info(`Deploying new AFS standard version ${versionName}...`)
-    // DEBUG=* act deploy standard f07e6462ff1fe42af1f98e2bb474936b60a4fc05669458f60dfdc98f1750f1b9 1_estimate ./contracts/ignored_contracts/AFS_estimate.sol ./contracts/ignored_contracts/Library.sol ./contracts/ignored_contracts/Registry.sol ./contracts/AraProxy.sol ./contracts/ignored_contracts/AraToken.sol -D
+    // DEBUG=* act deploy standard f07e6462ff1fe42af1f98e2bb474936b60a4fc05669458f60dfdc98f1750f1b9 2_estimate ./contracts/ignored_contracts/AFS_estimate.sol ./contracts/ignored_contracts/Library.sol ./contracts/ignored_contracts/Registry.sol ./contracts/AraProxy.sol ./contracts/ignored_contracts/AraToken.sol -D
     const address = await registry.deployNewStandard({
       requesterDid: did,
       password,

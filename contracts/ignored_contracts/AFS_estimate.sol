@@ -7,7 +7,7 @@ import "bytes/BytesLib.sol";
 import '../SafeMath32.sol';
 import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 
-contract AFSestimate is Ownable {
+contract AFS is Ownable {
   using SafeMath for uint256;
   using BytesLib for bytes;
 
@@ -43,6 +43,15 @@ contract AFSestimate is Ownable {
 
   uint8 constant mtBufferSize_ = 40;
   uint8 constant msBufferSize_ = 64;
+
+  modifier onlyBy(address _account)
+  {
+    require(
+      msg.sender == _account,
+      "Sender not authorized."
+    );
+    _;
+  }
 
   modifier purchaseRequired()
   {
@@ -90,7 +99,7 @@ contract AFSestimate is Ownable {
     depositRequirement_  = 100 * 10 ** token_.decimals();
   }
 
-  function setPrice(uint256 _price) external {
+  function setPrice(uint256 _price) external onlyBy(owner_) {
     price_ = _price;
     emit PriceSet(price_);
   }
@@ -108,31 +117,23 @@ contract AFSestimate is Ownable {
     }
   }
 
-  function allocateRewards(bytes32 _jobId, address[] _farmers, uint256[] _rewards, bool _return) public budgetSubmitted(_jobId) {
+  function allocateRewards(bytes32 _jobId, address[] _farmers, uint256[] _rewards) public budgetSubmitted(_jobId) {
+    require(_farmers.length > 0, "Must allocate to at least one farmer.");
     require(_farmers.length == _rewards.length, "Unequal number of farmers and rewards.");
     uint256 totalRewards;
-    for (uint8 i = 0; i < _rewards.length; i++) {
+    for (uint256 i = 0; i < _rewards.length; i++) {
+      address farmer = _farmers[i];
+      require(farmer != msg.sender, "Cannot allocate rewards to job creator.");
+      require(purchasers_[keccak256(abi.encodePacked(farmer))] || token_.amountDeposited(farmer) >= depositRequirement_, "Farmer must be a purchaser of this AFS or have sufficient token deposit.");
       totalRewards = totalRewards.add(_rewards[i]);
     }
     require(totalRewards <= jobs_[_jobId].budget, "Insufficient budget.");
-    for (uint8 j = 0; j < _farmers.length; j++) {
-      if (token_.amountDeposited(_farmers[j]) >= depositRequirement_ || purchasers_[keccak256(abi.encodePacked(msg.sender))]) {
-        assert(jobs_[_jobId].budget >= _rewards[j]);
-        bytes32 farmer = keccak256(abi.encodePacked(_farmers[j]));
-        rewards_[farmer] = rewards_[farmer].add(_rewards[j]);
-        jobs_[_jobId].budget = jobs_[_jobId].budget.sub(_rewards[j]);
-        emit RewardsAllocated(_farmers[j], _jobId, _rewards[j], jobs_[_jobId].budget);
-      } else {
-        emit InsufficientDeposit(_farmers[j]);
-      }
-    }
-    if (_return) {
-      uint256 remaining = jobs_[_jobId].budget;
-      if (remaining > 0) {
-        rewards_[keccak256(abi.encodePacked(msg.sender))] = rewards_[keccak256(abi.encodePacked(msg.sender))].add(remaining);
-        jobs_[_jobId].budget = 0;
-        redeemBalance();
-      }
+    for (uint256 j = 0; j < _farmers.length; j++) {
+      assert(jobs_[_jobId].budget >= _rewards[j]);
+      bytes32 hashedFarmer = keccak256(abi.encodePacked(_farmers[j]));
+      rewards_[hashedFarmer] = rewards_[hashedFarmer].add(_rewards[j]);
+      jobs_[_jobId].budget = jobs_[_jobId].budget.sub(_rewards[j]);
+      emit RewardsAllocated(_farmers[j], _jobId, _rewards[j], jobs_[_jobId].budget);
     }
   }
 
@@ -183,7 +184,7 @@ contract AFSestimate is Ownable {
   }
 
   function append(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
-    bytes _msBuffer) external {
+    bytes _msBuffer) external onlyBy(owner_) {
     
     require(listed_, "AFS is unlisted.");
     
@@ -207,7 +208,7 @@ contract AFSestimate is Ownable {
   }
 
   function write(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
-    bytes _msBuffer) public {
+    bytes _msBuffer) public onlyBy(owner_) {
 
     require(listed_, "AFS is unlisted.");
 
@@ -245,7 +246,7 @@ contract AFSestimate is Ownable {
     return metadata_[_file][_offset].equal(_buffer);
   }
 
-  function unlist() public returns (bool success) {
+  function unlist() public onlyBy(owner_) returns (bool success) {
     listed_ = false;
     emit Unlisted(did_);
     return true;
