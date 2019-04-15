@@ -44,15 +44,6 @@ contract AFSestimate is Ownable {
   uint8 constant mtBufferSize_ = 40;
   uint8 constant msBufferSize_ = 64;
 
-  modifier onlyBy(address _account)
-  {
-    require(
-      msg.sender == _account,
-      "Sender not authorized."
-    );
-    _;
-  }
-
   modifier purchaseRequired()
   {
     require(
@@ -99,7 +90,7 @@ contract AFSestimate is Ownable {
     depositRequirement_  = 100 * 10 ** token_.decimals();
   }
 
-  function setPrice(uint256 _price) external onlyBy(owner_) {
+  function setPrice(uint256 _price) external {
     price_ = _price;
     emit PriceSet(price_);
   }
@@ -184,7 +175,7 @@ contract AFSestimate is Ownable {
   }
 
   function append(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
-    bytes _msBuffer) external onlyBy(owner_) {
+    bytes _msBuffer) external {
     
     require(listed_, "AFS is unlisted.");
     
@@ -208,7 +199,7 @@ contract AFSestimate is Ownable {
   }
 
   function write(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
-    bytes _msBuffer) public onlyBy(owner_) {
+    bytes _msBuffer) public {
 
     require(listed_, "AFS is unlisted.");
 
@@ -246,7 +237,7 @@ contract AFSestimate is Ownable {
     return metadata_[_file][_offset].equal(_buffer);
   }
 
-  function unlist() public onlyBy(owner_) returns (bool success) {
+  function unlist() public returns (bool success) {
     listed_ = false;
     emit Unlisted(did_);
     return true;
