@@ -34,14 +34,14 @@ test.before(async (t) => {
 
 test.after(async (t) => {
   await cleanup(t.context.afsAccount)
-  await pify(rimraf)(`${BYTESDIR}/Standard_2`)
-  await pify(rimraf)(`${BYTESDIR}/Standard_3`)
+  await pify(rimraf)(`${BYTESDIR}/Standard_2.1`)
+  await pify(rimraf)(`${BYTESDIR}/Standard_3.1`)
 })
 
 test.serial('deployNewStandard(opts)', async (t) => {
   const owner = getDid(t)
   const paths = [ resolve(__dirname, '../contracts/ignored_contracts/AFS.sol'), resolve(__dirname, '../contracts/ignored_contracts/Library.sol'), resolve(__dirname, '../contracts/ignored_contracts/Registry.sol'), resolve(__dirname, '../contracts/AraProxy.sol'), resolve(__dirname, '../contracts/ignored_contracts/AraToken.sol') ]
-  const version = '2'
+  const version = '2.1'
   const address = await registry.deployNewStandard({
     requesterDid: owner,
     password,
@@ -58,7 +58,7 @@ test.serial('deployNewStandard(opts)', async (t) => {
 test.serial('deployNewStandard(opts) uncompilable standard', async (t) => {
   const owner = getDid(t)
   const paths = []
-  const version = '3'
+  const version = '3.1'
   await t.throwsAsync(registry.deployNewStandard({
     requesterDid: owner,
     password,
@@ -70,7 +70,7 @@ test.serial('deployNewStandard(opts) uncompilable standard', async (t) => {
 test.serial('deployNewStandard(opts) standard version exists', async (t) => {
   const owner = getDid(t)
   const paths = [ resolve(__dirname, '../contracts/ignored_contracts/AFS.sol'), resolve(__dirname, '../contracts/ignored_contracts/Library.sol'), resolve(__dirname, '../contracts/ignored_contracts/Registry.sol'), resolve(__dirname, '../contracts/AraProxy.sol'), resolve(__dirname, '../contracts/ignored_contracts/AraToken.sol') ]
-  const version = '2'
+  const version = '2.1'
   await t.throwsAsync(registry.deployNewStandard({
     requesterDid: owner,
     password,
@@ -82,7 +82,7 @@ test.serial('deployNewStandard(opts) standard version exists', async (t) => {
 test.serial('deployNewStandard(opts) not owner', async (t) => {
   const owner = getAfsDid(t)
   const paths = [ resolve(__dirname, '../contracts/ignored_contracts/AFS.sol'), resolve(__dirname, '../contracts/ignored_contracts/Library.sol'), resolve(__dirname, '../contracts/ignored_contracts/Registry.sol'), resolve(__dirname, '../contracts/AraProxy.sol'), resolve(__dirname, '../contracts/ignored_contracts/AraToken.sol') ]
-  const version = '3'
+  const version = '3.1'
   await t.throwsAsync(registry.deployNewStandard({
     requesterDid: owner,
     password,
@@ -94,7 +94,7 @@ test.serial('deployNewStandard(opts) not owner', async (t) => {
 test.serial('deployNewStandard(opts) version is number', async (t) => {
   const owner = getDid(t)
   const paths = [ resolve(__dirname, '../contracts/ignored_contracts/AFS.sol'), resolve(__dirname, '../contracts/ignored_contracts/Library.sol'), resolve(__dirname, '../contracts/ignored_contracts/Registry.sol'), resolve(__dirname, '../contracts/AraProxy.sol'), resolve(__dirname, '../contracts/ignored_contracts/AraToken.sol') ]
-  const version = 3
+  const version = 3.1
   const address = await registry.deployNewStandard({
     requesterDid: owner,
     password,
@@ -128,7 +128,7 @@ test.serial('deployProxy()', async (t) => {
   const cost1 = await registry.deployProxy({
     contentDid: did,
     password,
-    version: 2,
+    version: 2.1,
     estimate: true
   })
   t.true(cost1 > 0)
@@ -138,14 +138,14 @@ test.serial('deployProxy()', async (t) => {
     contentDid: fakeDid,
     password,
     ownerDid: getDid(t),
-    version: 2
+    version: 2.1
   })
   t.true(cost1 === cost2)
 
   const deployedAddress = await registry.deployProxy({
     contentDid: did,
     password,
-    version: 2
+    version: 2.1
   })
   const exists = await registry.proxyExists(did)
   t.true(exists)
@@ -159,7 +159,7 @@ test.serial('deployProxy() already exists', async (t) => {
   await t.throwsAsync(registry.deployProxy({
     contentDid: did,
     password,
-    version: 2
+    version: 2.1
   }), Error)
 })
 
@@ -169,7 +169,7 @@ test.serial('upgradeProxy()', async (t) => {
   const cost = await registry.upgradeProxy({
     contentDid: did,
     password,
-    version: 3,
+    version: 3.1,
     estimate: true
   })
   t.true(cost > 0)
@@ -177,11 +177,11 @@ test.serial('upgradeProxy()', async (t) => {
   const upgraded = await registry.upgradeProxy({
     contentDid: did,
     password,
-    version: 3
+    version: 3.1
   })
   t.true(upgraded)
   const version = await registry.getProxyVersion(did)
-  t.is(version, '3')
+  t.is(version, '3.1')
 })
 
 test.serial('getProxyVersion(contentDid) invalid opts', async (t) => {

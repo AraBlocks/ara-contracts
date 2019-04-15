@@ -146,7 +146,7 @@ async function _purchaseWithBudget(contentDid, budget, t) {
 
   let proxyAddress
   try {
-    proxyAddress = await registry.deployProxy({ contentDid, password, version: '1' })
+    proxyAddress = await registry.deployProxy({ contentDid, password, version: '2.1' })
   } catch (err) {
     proxyAddress = await registry.getProxyAddress(contentDid)
   }

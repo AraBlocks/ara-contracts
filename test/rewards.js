@@ -107,7 +107,7 @@ test.serial('submit(opts) has not purchased', async (t) => {
   const contentDid = getAfsDid(t)
   const requesterDid = getDid(t)
 
-  proxyAddress = await registry.deployProxy({ contentDid, password, version: '1' })
+  proxyAddress = await registry.deployProxy({ contentDid, password, version: '2.1' })
 
   await t.throwsAsync(rewards.submit({
     requesterDid,
