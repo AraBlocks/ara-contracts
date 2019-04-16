@@ -125,7 +125,7 @@ async function onproxy(argv) {
       }
     } else {
       info(`Upgrading proxy for ${did} to version ${versionName}...`)
-      // act deploy proxy -u 9cad8a3bf1756dcb363dc01f8f4ee11f24e25ed9127bc343ed46cd476819c470 3_estimate
+      // act deploy proxy -u 9cad8a3bf1756dcb363dc01f8f4ee11f24e25ed9127bc343ed46cd476819c470 4_estimate
       const cost = await registry.upgradeProxy(estimateOpts)
       const { answer } = await promptCostConfirmation(cost)
       if (answer) {
