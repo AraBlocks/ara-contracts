@@ -1,11 +1,19 @@
-## [0.24.2](https://github.com/AraBlocks/ara-contracts/compare/0.20.0...0.24.2) (2019-03-26)
+## [0.24.3](https://github.com/AraBlocks/ara-contracts/compare/0.20.0...0.24.3) (2019-04-16)
 
 
 ### Bug Fixes
 
-* ensure event listeners resolve the correct event ([d6dbe70](https://github.com/AraBlocks/ara-contracts/commit/d6dbe70))
-* error handling ([7d287f6](https://github.com/AraBlocks/ara-contracts/commit/7d287f6))
+* add back farmer deposit case ([d7af158](https://github.com/AraBlocks/ara-contracts/commit/d7af158))
+* add back InsufficientBudget event ([fbbca52](https://github.com/AraBlocks/ara-contracts/commit/fbbca52))
+* ensure event listeners resolve the correct event ([9ba73a1](https://github.com/AraBlocks/ara-contracts/commit/9ba73a1))
+* error handling ([22f6734](https://github.com/AraBlocks/ara-contracts/commit/22f6734))
+* fixed AFSestimate contract name, deployed standard 3 ([0b78610](https://github.com/AraBlocks/ara-contracts/commit/0b78610))
+* forgot to deploy bytecode ([ef9d10f](https://github.com/AraBlocks/ara-contracts/commit/ef9d10f))
+* improve allocateRewards ([0424929](https://github.com/AraBlocks/ara-contracts/commit/0424929))
 * lint ([7924e02](https://github.com/AraBlocks/ara-contracts/commit/7924e02))
+* removed modifiers from AFSestimate, deployed standard 4 ([a73bc34](https://github.com/AraBlocks/ara-contracts/commit/a73bc34))
+* tests ([b51a9da](https://github.com/AraBlocks/ara-contracts/commit/b51a9da))
+* typo ([8d52582](https://github.com/AraBlocks/ara-contracts/commit/8d52582))
 * use safemath ([c2bbaa4](https://github.com/AraBlocks/ara-contracts/commit/c2bbaa4))
 * wording ([6420a0f](https://github.com/AraBlocks/ara-contracts/commit/6420a0f))
 * **): lint; add(:** standard estimate proxy did ([8fc0f29](https://github.com/AraBlocks/ara-contracts/commit/8fc0f29))
