@@ -397,7 +397,7 @@ Allocate the budget for <jobId>
 #### Usage
 
 ```sh
-act-reward allocate <did> <content> <jobId> [--returnBudget]
+act-reward allocate <did> <content> <jobId>
 ```
 
 #### Options
@@ -406,9 +406,8 @@ act-reward allocate <did> <content> <jobId> [--returnBudget]
 |-h, --help|Show help||
 |-contracts, -D, --debug||:*')|
 |-s, --secret|Shared secret for the keyring||
-|-n, --network|Network name of the key for the DID resolver in the keyring||
+|-n, --network|Network name of the key for the DID resolver in the keyring [string]||
 |-v, --version, -V|Show version number||
-|-r, --returnBudget|Flag to indicate whether the remaining rewards budget||
 
 
 #### Positionals
