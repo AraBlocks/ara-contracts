@@ -407,7 +407,7 @@ function expandTokenValue(val) {
   if ('number' === typeof val) {
     val = val.toString()
   }
-  
+
   const input = `${val}e${TOKEN_DECIMALS}`
   const { web3 } = createContext({ provider: false })
   try {
