@@ -397,12 +397,17 @@ async function decreaseApproval(opts = {}) {
  * @throws {TypeError}
  */
 function expandTokenValue(val) {
-  if ('string' !== typeof val) {
+  if ('string' !== typeof val && 'number' !== typeof val) {
     throw new TypeError(`Expected 'val' to be of type string. Got ${val}. Ensure ${val} is the string representation of a positive number.`)
   }
   if (!val) {
     return '0'
   }
+
+  if ('number' === typeof val) {
+    val = val.toString()
+  }
+  
   const input = `${val}e${TOKEN_DECIMALS}`
   const { web3 } = createContext({ provider: false })
   try {
@@ -420,8 +425,11 @@ function expandTokenValue(val) {
  * @throws {TypeError}
  */
 function constrainTokenValue(val) {
-  if ('string' !== typeof val) {
-    throw new TypeError(`Expected 'val' to be of type string. Got ${val}. Ensure ${val} is the string representation of a positive number.`)
+  if ('string' !== typeof val && 'object' !== typeof val) {
+    throw new TypeError(`Expected 'val' to be of type string or BigNumber. Got ${val}. Ensure ${val} is the string or BigNumber representation of a positive number.`)
+  }
+  if ('object' === val) {
+    return BigNumber(`${val.toString()}e-${TOKEN_DECIMALS}`).toString()
   }
   if (!val) {
     return '0'
