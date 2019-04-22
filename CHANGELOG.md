@@ -1,3 +1,12 @@
+## [0.24.4](https://github.com/AraBlocks/ara-contracts/compare/0.24.3...0.24.4) (2019-04-22)
+
+
+### Bug Fixes
+
+* lint ([546b265](https://github.com/AraBlocks/ara-contracts/commit/546b265))
+
+
+
 ## [0.24.3](https://github.com/AraBlocks/ara-contracts/compare/0.20.0...0.24.3) (2019-04-16)
 
 
