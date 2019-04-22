@@ -61,7 +61,6 @@ test('expandTokenValue(val)', (t) => {
 
 test('expandTokenValue(val) invalid input', (t) => {
   t.throws(() => token.expandTokenValue(), TypeError)
-  t.throws(() => token.expandTokenValue(123), TypeError)
   t.throws(() => token.expandTokenValue({ }), TypeError)
   t.throws(() => token.expandTokenValue([ ]), TypeError)
   t.throws(() => token.expandTokenValue([ '1' ]), TypeError)

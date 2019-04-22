@@ -425,11 +425,8 @@ function expandTokenValue(val) {
  * @throws {TypeError}
  */
 function constrainTokenValue(val) {
-  if ('string' !== typeof val && 'object' !== typeof val) {
-    throw new TypeError(`Expected 'val' to be of type string or BigNumber. Got ${val}. Ensure ${val} is the string or BigNumber representation of a positive number.`)
-  }
-  if ('object' === val) {
-    return BigNumber(`${val.toString()}e-${TOKEN_DECIMALS}`).toString()
+  if ('string' !== typeof val) {
+    throw new TypeError(`Expected 'val' to be of type string. Got ${val}. Ensure ${val} is the string representation of a positive number.`)
   }
   if (!val) {
     return '0'
