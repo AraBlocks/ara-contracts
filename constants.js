@@ -11,7 +11,7 @@ module.exports = {
     const local = '0x658b1e9C3484FB2BF4d91AeF066E2C3803F69DF9'
     const privatenet = '0xFE751D4857e5E1D2d838C49c019D68F288138F94'
     const testnet = '0xdB8f8D6cc69A346D608e64C2DDb5b3Ed7e4B32D6'
-    const mainnet = ''
+    const mainnet = '0x17a6033535b1ab8cbbb430c62782d164d8f6ac45'
     return getAddress(local, privatenet, testnet, mainnet)
   },
 
@@ -19,7 +19,7 @@ module.exports = {
     const local = '0x37BEFdC72D5b9680d4e33eF7aEc8adEe01817E2F'
     const privatenet = '0x280702E2e45cdF63C1d01Bfc72746C02f1892f51'
     const testnet = '0xeC26659b209e9e89a23d26298BA0359B1b6C7f76'
-    const mainnet = ''
+    const mainnet = '0xC04B27294bb3d1abaAC39F2F97B4A95810bA91dd'
     return getAddress(local, privatenet, testnet, mainnet)
   },
 

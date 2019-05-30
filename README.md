@@ -22,8 +22,10 @@ This repository contains all contracts deployed by Ara. There are five global co
 
 | Network | Version      | Address                                      | Verified Source                                                                      |
 | ------- | ------------ | -------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Ropsten | `1`          | `0xa2eb81f1449f09e29968920ddae115ed360d1fe2` | https://ropsten.etherscan.io/address/0xa2eb81f1449f09e29968920ddae115ed360d1fe2#code |
-| Ropsten | `1_estimate` | `0x9edd0b2fee8441fb6e16e2dab71bccbc702f0487` | https://ropsten.etherscan.io/address/0x9edd0b2fee8441fb6e16e2dab71bccbc702f0487#code |
+| Ropsten | `4`          | `0xa2eb81f1449f09e29968920ddae115ed360d1fe2` | https://ropsten.etherscan.io/address/0xa2eb81f1449f09e29968920ddae115ed360d1fe2#code |
+| Ropsten | `4_estimate` | `0x9edd0b2fee8441fb6e16e2dab71bccbc702f0487` | https://ropsten.etherscan.io/address/0x9edd0b2fee8441fb6e16e2dab71bccbc702f0487#code |
+| Mainnet | `1`          | `0x3731685Fc2AD19D0d8FE9C3715A522A68E7eABFA` | https://etherscan.io/address/0x3731685fc2ad19d0d8fe9c3715a522a68e7eabfa#code |
+| Mainnet | `1_estimate` | `0xC0C8e33f861DFa70572Bd959D49c9ABc4871b4F0` | https://etherscan.io/address/0xc0c8e33f861dfa70572bd959d49c9abc4871b4f0#code |
 
 3. `Library.sol` - The contract where content ownership across the network is consolidated and tracked
 
@@ -31,6 +33,8 @@ This repository contains all contracts deployed by Ara. There are five global co
 | ------- | -------------- | -------------------------------------------- | ------------------------------------------------------------------------------------ |
 | Ropsten | Proxy          | `0xec26659b209e9e89a23d26298ba0359b1b6c7f76` | https://ropsten.etherscan.io/address/0xec26659b209e9e89a23d26298ba0359b1b6c7f76#code |
 | Ropsten | Implementation | `0x991198dac7e5aa586ed129735e142c01ad81ed69` | https://ropsten.etherscan.io/address/0x991198dac7e5aa586ed129735e142c01ad81ed69#code |
+| Mainnet | Proxy          | `0xC04B27294bb3d1abaAC39F2F97B4A95810bA91dd` | https://etherscan.io/address/0xc04b27294bb3d1abaac39f2f97b4a95810ba91dd#code |
+| Mainnet | Implementation | `0x991198dac7e5aa586ed129735e142c01ad81ed69` | https://etherscan.io/address/0xfdb1b5adf9cc13d8434f3d493f345a8bc46afcdc#code |
 
 4. `Registry.sol` - The contract where `AFS` proxies and `AFS` standards are created, linked, and tracked
 
@@ -38,6 +42,8 @@ This repository contains all contracts deployed by Ara. There are five global co
 | ------- | -------------- | -------------------------------------------- | ------------------------------------------------------------------------------------ |
 | Ropsten | Proxy          | `0xdb8f8d6cc69a346d608e64c2ddb5b3ed7e4b32d6` | https://ropsten.etherscan.io/address/0xdb8f8d6cc69a346d608e64c2ddb5b3ed7e4b32d6#code |
 | Ropsten | Implementation | `0xbbc4d435c7426cef12c4b6d4d12552a1e7de24ef` | https://ropsten.etherscan.io/address/0xbbc4d435c7426cef12c4b6d4d12552a1e7de24ef#code |
+| Mainnet | Proxy          | `0x17a6033535b1ab8cbbb430c62782d164d8f6ac45` | https://etherscan.io/address/0x17a6033535b1ab8cbbb430c62782d164d8f6ac45#code |
+| Mainnet | Implementation | `0x814F2ca790454c795F5e515A394CbFB7bE499737` | https://etherscan.io/address/0x814f2ca790454c795f5e515a394cbfb7be499737#code |
 
 5. `AraRegistry.sol` - The contract used to deploy the Library, Registry, and AraToken contracts
 
