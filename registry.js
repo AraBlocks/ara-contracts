@@ -2,6 +2,7 @@
 
 const { abi } = require('./build/contracts/Registry.json')
 const debug = require('debug')('ara-contracts:registry')
+const rc = require('ara-runtime-configuration')()
 const { parse, resolve } = require('path')
 const pify = require('pify')
 const path = require('path')
@@ -214,7 +215,10 @@ async function deployProxy(opts) {
 
   afsPassword = afsPassword || password
 
-  let version = opts.version || constants.STANDARD_VERSION
+  const network = rc.web3.network_id
+
+  let defaultVersion = 'mainnet' === network ? constants.MAIN_STANDARD_VERSION : constants.TEST_STANDARD_VERSION
+  let version = opts.version || defaultVersion
   if ('number' === typeof version) {
     version = version.toString()
   }

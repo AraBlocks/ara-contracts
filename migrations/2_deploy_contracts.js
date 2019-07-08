@@ -93,7 +93,7 @@ async function deploystandard() {
           const a = await deployNewStandard({
             requesterDid: constants.TEMP_OWNER_DID,
             password: constants.OWNER_PASSWORD,
-            version: constants.STANDARD_VERSION,
+            version: constants.TEST_STANDARD_VERSION,
             paths: constants.STANDARD_DEPS_PATHS
           })
           resolve(a)
@@ -111,7 +111,7 @@ async function deploystandard() {
           const a = await deployNewStandard({
             requesterDid: constants.TEMP_OWNER_DID,
             password: constants.OWNER_PASSWORD,
-            version: `${constants.STANDARD_VERSION}_estimate`,
+            version: `${constants.TEST_STANDARD_VERSION}_estimate`,
             paths: constants.ESTIMATE_DEPS_PATHS,
             compiledPath: './build/contracts/AFSestimate.json'
           })
