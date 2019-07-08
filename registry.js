@@ -217,7 +217,7 @@ async function deployProxy(opts) {
 
   const network = rc.web3.network_id
 
-  let defaultVersion = 'mainnet' === network ? constants.MAIN_STANDARD_VERSION : constants.TEST_STANDARD_VERSION
+  const defaultVersion = 'mainnet' === network ? constants.MAIN_STANDARD_VERSION : constants.TEST_STANDARD_VERSION
   let version = opts.version || defaultVersion
   if ('number' === typeof version) {
     version = version.toString()
