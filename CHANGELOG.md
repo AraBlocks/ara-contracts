@@ -1,32 +1,26 @@
-## [0.24.4](https://github.com/AraBlocks/ara-contracts/compare/0.24.3...0.24.4) (2019-04-22)
+# [0.25.0](https://github.com/AraBlocks/ara-contracts/compare/0.20.0...0.25.0) (2019-07-10)
 
 
 ### Bug Fixes
 
-* lint ([546b265](https://github.com/AraBlocks/ara-contracts/commit/546b265))
-
-
-
-## [0.24.3](https://github.com/AraBlocks/ara-contracts/compare/0.20.0...0.24.3) (2019-04-16)
-
-
-### Bug Fixes
-
-* add back farmer deposit case ([d7af158](https://github.com/AraBlocks/ara-contracts/commit/d7af158))
-* add back InsufficientBudget event ([fbbca52](https://github.com/AraBlocks/ara-contracts/commit/fbbca52))
+* add back farmer deposit case ([2800d7f](https://github.com/AraBlocks/ara-contracts/commit/2800d7f))
+* add back InsufficientBudget event ([e63b51e](https://github.com/AraBlocks/ara-contracts/commit/e63b51e))
 * ensure event listeners resolve the correct event ([9ba73a1](https://github.com/AraBlocks/ara-contracts/commit/9ba73a1))
 * error handling ([22f6734](https://github.com/AraBlocks/ara-contracts/commit/22f6734))
-* fixed AFSestimate contract name, deployed standard 3 ([0b78610](https://github.com/AraBlocks/ara-contracts/commit/0b78610))
-* forgot to deploy bytecode ([ef9d10f](https://github.com/AraBlocks/ara-contracts/commit/ef9d10f))
-* improve allocateRewards ([0424929](https://github.com/AraBlocks/ara-contracts/commit/0424929))
+* fixed AFSestimate contract name, deployed standard 3 ([e6db15a](https://github.com/AraBlocks/ara-contracts/commit/e6db15a))
+* forgot to deploy bytecode ([ffe7ddd](https://github.com/AraBlocks/ara-contracts/commit/ffe7ddd))
+* improve allocateRewards ([abe78bb](https://github.com/AraBlocks/ara-contracts/commit/abe78bb))
+* lint ([cf14f8a](https://github.com/AraBlocks/ara-contracts/commit/cf14f8a))
+* lint ([952c8fe](https://github.com/AraBlocks/ara-contracts/commit/952c8fe))
 * lint ([7924e02](https://github.com/AraBlocks/ara-contracts/commit/7924e02))
-* removed modifiers from AFSestimate, deployed standard 4 ([a73bc34](https://github.com/AraBlocks/ara-contracts/commit/a73bc34))
-* tests ([b51a9da](https://github.com/AraBlocks/ara-contracts/commit/b51a9da))
-* typo ([8d52582](https://github.com/AraBlocks/ara-contracts/commit/8d52582))
+* removed modifiers from AFSestimate, deployed standard 4 ([78278b3](https://github.com/AraBlocks/ara-contracts/commit/78278b3))
+* support mainnet standard version ([0945de8](https://github.com/AraBlocks/ara-contracts/commit/0945de8))
+* tests ([5b6aee6](https://github.com/AraBlocks/ara-contracts/commit/5b6aee6))
+* typo ([4c621a3](https://github.com/AraBlocks/ara-contracts/commit/4c621a3))
+* undo something ([85f265e](https://github.com/AraBlocks/ara-contracts/commit/85f265e))
 * use safemath ([c2bbaa4](https://github.com/AraBlocks/ara-contracts/commit/c2bbaa4))
 * wording ([6420a0f](https://github.com/AraBlocks/ara-contracts/commit/6420a0f))
 * **): lint; add(:** standard estimate proxy did ([8fc0f29](https://github.com/AraBlocks/ara-contracts/commit/8fc0f29))
-* undo something ([85f265e](https://github.com/AraBlocks/ara-contracts/commit/85f265e))
 
 
 ### Features
@@ -34,6 +28,7 @@
 * allow token transfer and balance with Etheruem address ([764674e](https://github.com/AraBlocks/ara-contracts/commit/764674e))
 * consolidate proxy usage to AraProxy ([f0da598](https://github.com/AraBlocks/ara-contracts/commit/f0da598))
 * dynamically determine standard compile label ([1ca775c](https://github.com/AraBlocks/ara-contracts/commit/1ca775c))
+* mainnet deploy ([7a7402b](https://github.com/AraBlocks/ara-contracts/commit/7a7402b))
 * refactor out AraRegistry dependency in AraProxy ([4c3cdfa](https://github.com/AraBlocks/ara-contracts/commit/4c3cdfa))
 * support estimate standard ([e0e4ce4](https://github.com/AraBlocks/ara-contracts/commit/e0e4ce4))
 * update Library contract to use uint32, redeploy to privatenet ([6321541](https://github.com/AraBlocks/ara-contracts/commit/6321541))
