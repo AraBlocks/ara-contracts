@@ -1,4 +1,4 @@
-# [0.25.0](https://github.com/AraBlocks/ara-contracts/compare/0.20.0...0.25.0) (2019-07-10)
+## [0.25.1](https://github.com/AraBlocks/ara-contracts/compare/0.20.0...0.25.1) (2019-08-12)
 
 
 ### Bug Fixes
@@ -10,11 +10,11 @@
 * fixed AFSestimate contract name, deployed standard 3 ([e6db15a](https://github.com/AraBlocks/ara-contracts/commit/e6db15a))
 * forgot to deploy bytecode ([ffe7ddd](https://github.com/AraBlocks/ara-contracts/commit/ffe7ddd))
 * improve allocateRewards ([abe78bb](https://github.com/AraBlocks/ara-contracts/commit/abe78bb))
-* lint ([cf14f8a](https://github.com/AraBlocks/ara-contracts/commit/cf14f8a))
+* lint ([059cda7](https://github.com/AraBlocks/ara-contracts/commit/059cda7))
 * lint ([952c8fe](https://github.com/AraBlocks/ara-contracts/commit/952c8fe))
 * lint ([7924e02](https://github.com/AraBlocks/ara-contracts/commit/7924e02))
 * removed modifiers from AFSestimate, deployed standard 4 ([78278b3](https://github.com/AraBlocks/ara-contracts/commit/78278b3))
-* support mainnet standard version ([0945de8](https://github.com/AraBlocks/ara-contracts/commit/0945de8))
+* support mainnet standard version ([e448275](https://github.com/AraBlocks/ara-contracts/commit/e448275))
 * tests ([5b6aee6](https://github.com/AraBlocks/ara-contracts/commit/5b6aee6))
 * typo ([4c621a3](https://github.com/AraBlocks/ara-contracts/commit/4c621a3))
 * undo something ([85f265e](https://github.com/AraBlocks/ara-contracts/commit/85f265e))
