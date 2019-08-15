@@ -11,7 +11,7 @@ contract AFS is Ownable {
   using SafeMath for uint256;
   using BytesLib for bytes;
 
-  string   public version_ = "1";
+  string   public version_ = "6";
 
   AraToken public token_;
   Library  public lib_;
@@ -120,11 +120,11 @@ contract AFS is Ownable {
   function allocateRewards(bytes32 _jobId, address[] _farmers, uint256[] _rewards) public budgetSubmitted(_jobId) {
     require(_farmers.length > 0, "Must allocate to at least one farmer.");
     require(_farmers.length == _rewards.length, "Unequal number of farmers and rewards.");
-    uint256 totalRewards;
+    uint256 totalRewards = 0;
     for (uint256 i = 0; i < _rewards.length; i++) {
       address farmer = _farmers[i];
       require(farmer != msg.sender, "Cannot allocate rewards to job creator.");
-      require(purchasers_[keccak256(abi.encodePacked(farmer))] || token_.amountDeposited(farmer) >= depositRequirement_, "Farmer must be a purchaser of this AFS or have sufficient token deposit.");
+      require(farmer == owner_ || purchasers_[keccak256(abi.encodePacked(farmer))] || token_.amountDeposited(farmer) >= depositRequirement_, "Farmer must be a purchaser of this AFS or have sufficient token deposit.");
       totalRewards = totalRewards.add(_rewards[i]);
     }
     require(totalRewards <= jobs_[_jobId].budget, "Insufficient budget.");
