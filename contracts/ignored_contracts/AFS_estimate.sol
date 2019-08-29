@@ -11,7 +11,7 @@ contract AFSestimate is Ownable {
   using SafeMath for uint256;
   using BytesLib for bytes;
 
-  string   public version_ = "6_estimate";
+  string   public version_ = "2_estimate";
 
   AraToken public token_;
   Library  public lib_;

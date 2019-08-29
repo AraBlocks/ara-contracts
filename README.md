@@ -24,8 +24,8 @@ This repository contains all contracts deployed by Ara. There are five global co
 | ------- | ------------ | -------------------------------------------- | ------------------------------------------------------------------------------------ |
 | Ropsten | `6`          | `0x54a206a07e18a1fed118e3f946db4e3b7de35049` | https://ropsten.etherscan.io/address/0x54a206a07e18a1fed118e3f946db4e3b7de35049#code |
 | Ropsten | `6_estimate` | `0x5437dF777Fa849dadD67A7F7fD88F9deB657166A` | https://ropsten.etherscan.io/address/0x5437df777fa849dadd67a7f7fd88f9deb657166a#code |
-| Mainnet | `1`          | `0x3731685Fc2AD19D0d8FE9C3715A522A68E7eABFA` | https://etherscan.io/address/0x3731685fc2ad19d0d8fe9c3715a522a68e7eabfa#code |
-| Mainnet | `1_estimate` | `0xC0C8e33f861DFa70572Bd959D49c9ABc4871b4F0` | https://etherscan.io/address/0xc0c8e33f861dfa70572bd959d49c9abc4871b4f0#code |
+| Mainnet | `2`          | `0x7bd36ca16161d8290986d4dca8265c2b5ca340fe` | https://etherscan.io/address/0x7bd36ca16161d8290986d4dca8265c2b5ca340fe#code |
+| Mainnet | `2_estimate` | `0x39798776e91874583abf1e36c77a49446a8f3cea` | https://etherscan.io/address/0x39798776e91874583abf1e36c77a49446a8f3cea#code |
 
 3. `Library.sol` - The contract where content ownership across the network is consolidated and tracked
 
