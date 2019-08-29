@@ -11,7 +11,7 @@ contract AFS is Ownable {
   using SafeMath for uint256;
   using BytesLib for bytes;
 
-  string   public version_ = "6";
+  string   public version_ = "2";
 
   AraToken public token_;
   Library  public lib_;
