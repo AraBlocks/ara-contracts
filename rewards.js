@@ -44,9 +44,10 @@ const {
  * @param  {String}         opts.password
  * @param  {Boolean}        [opts.estimate]
  * @param  {Object}         [opts.keyringOpts]
+ * @param  {Number}         [opts.gasPrice]
  * @param  {Object}         opts.job
- * @param  {string|Buffer}  opts.job.jobId
- * @param  {number}         opts.job.budget
+ * @param  {String|Buffer}  opts.job.jobId
+ * @param  {Number}         opts.job.budget
  * @returns {Object}
  * @throws {Error,TypeError}
  */
@@ -63,10 +64,13 @@ async function submit(opts) {
     throw TypeError('Expecting job object.')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw TypeError('Expecting opts.estimate to be of type boolean')
+  } else if (opts.gasPrice && ('number' !== typeof opts.gasPrice || opts.gasPrice < 0)) {
+    throw new TypeError(`Expected 'opts.gasPrice' to be a positive number. Got ${opts.gasPrice}.`)
   }
 
   const {
     requesterDid,
+    gasPrice = 0,
     keyringOpts,
     password,
     job
@@ -128,6 +132,7 @@ async function submit(opts) {
       password,
       spender: proxy,
       val: budget,
+      gasPrice,
       estimate
     })
 
@@ -142,6 +147,7 @@ async function submit(opts) {
       account: acct,
       to: proxy,
       gasLimit: 1000000,
+      gasPrice,
       data: {
         abi: afsAbi,
         functionName: 'submitBudget',
@@ -191,6 +197,7 @@ async function submit(opts) {
  * @param  {String}         opts.password
  * @param  {Boolean}        [opts.estimate]
  * @param  {Object}         [opts.keyringOpts]
+ * @param  {Number}         [opts.gasPrice]
  * @param  {Object}         opts.job
  * @param  {string|Buffer}  opts.job.jobId
  * @param  {Array}          opts.job.farmers
@@ -211,10 +218,13 @@ async function allocate(opts) {
     throw TypeError('Expecting job object.')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw TypeError('Expecting opts.estimate to be of type boolean')
+  } else if (opts.gasPrice && ('number' !== typeof opts.gasPrice || opts.gasPrice < 0)) {
+    throw new TypeError(`Expected 'opts.gasPrice' to be a positive number. Got ${opts.gasPrice}.`)
   }
 
   const {
     requesterDid,
+    gasPrice = 0,
     keyringOpts,
     password,
     job
@@ -299,6 +309,7 @@ async function allocate(opts) {
       account: acct,
       to: proxy,
       gasLimit: 4000000,
+      gasPrice,
       data: {
         abi: afsAbi,
         functionName: 'allocateRewards',
@@ -335,6 +346,7 @@ async function allocate(opts) {
  * @param  {String}         opts.password
  * @param  {Boolean}        [opts.estimate]
  * @param  {Object}         [opts.keyringOpts]
+ * @param  {Number}         [opts.gasPrice]
  * @throws {Error,TypeError}
  */
 async function redeem(opts) {
@@ -348,10 +360,18 @@ async function redeem(opts) {
     throw TypeError('Expecting non-empty password')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw TypeError('Expecting opts.estimate to be of type boolean')
+  } else if (opts.gasPrice && ('number' !== typeof opts.gasPrice || opts.gasPrice < 0)) {
+    throw new TypeError(`Expected 'opts.gasPrice' to be a positive number. Got ${opts.gasPrice}.`)
   }
 
-  const { farmerDid, password, keyringOpts } = opts
   let { contentDid } = opts
+  const {
+    farmerDid,
+    password,
+    keyringOpts,
+    gasPrice = 0
+  } = opts
+
   let did
   try {
     ({ did } = await validate({
@@ -381,6 +401,7 @@ async function redeem(opts) {
       account: acct,
       to: proxy,
       gasLimit: 1000000,
+      gasPrice,
       data: {
         abi: afsAbi,
         functionName: 'redeemBalance'

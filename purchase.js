@@ -38,6 +38,7 @@ const {
  * @param  {Number}  opts.budget
  * @param  {Boolean} opts.estimate
  * @param  {Object} [opts.keyringOpts]
+ * @param  {Number} [opts.gasPrice]
  * @throws {Error,TypeError}
  */
 async function purchase(opts) {
@@ -51,14 +52,17 @@ async function purchase(opts) {
     throw TypeError('Expecting non-empty password.')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError("Expected 'opts.estimate' to be a boolean")
-  } else if (opts.budget && ('number' !== typeof opts.budget || 0 >= opts.budget)) {
+  } else if (opts.budget && ('number' !== typeof opts.budget || 0 > opts.budget)) {
     throw TypeError('Expecting budget to be 0 or greater.')
+  } else if (opts.gasPrice && ('number' !== typeof opts.gasPrice || opts.gasPrice < 0)) {
+    throw new TypeError(`Expected 'opts.gasPrice' to be a positive number. Got ${opts.gasPrice}.`)
   }
 
   const {
     requesterDid,
     password,
-    keyringOpts
+    keyringOpts,
+    gasPrice = 0
   } = opts
 
   let { budget, contentDid } = opts
@@ -115,6 +119,7 @@ async function purchase(opts) {
         password,
         spender: proxy,
         val,
+        gasPrice,
         estimate
       })
 
@@ -131,6 +136,7 @@ async function purchase(opts) {
       account: acct,
       to: proxy,
       gasLimit: 1000000,
+      gasPrice,
       data: {
         abi: afsAbi,
         functionName: 'purchase',

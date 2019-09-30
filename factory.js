@@ -342,7 +342,7 @@ async function _checkExists(label, version) {
   }
 }
 
-async function _sendTx(acct, label, version, bytecode, data, upgrade = false) {
+async function _sendTx(acct, label, version, bytecode, data, upgrade = false, gasPrice = 0) {
   delete require.cache[require.resolve('./constants')]
   constants = require('./constants')
 
@@ -356,6 +356,7 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false) {
     account: acct,
     to: constants.ARA_REGISTRY_ADDRESS,
     gasLimit: 7000000,
+    gasPrice,
     data: {
       abi: registryAbi,
       functionName: upgrade ? 'upgradeContract' : 'addNewUpgradeableContract',

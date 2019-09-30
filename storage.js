@@ -35,14 +35,17 @@ async function write(opts, estimate = true, append = false) {
     throw new TypeError('Expecting opts.to to be valid Ethereum address')
   } else if (!opts.account || 'object' !== typeof opts.account) {
     throw new TypeError('Expecting opts.account to be valid Ethereum account')
+  } else if (opts.gasPrice && ('number' !== typeof opts.gasPrice || opts.gasPrice < 0)) {
+    throw new TypeError(`Expected 'opts.gasPrice' to be a positive number. Got ${opts.gasPrice}.`)
   }
 
   const { offsets: mtOffsets, buffer: mtBuffer } = opts.mtData
   const { offsets: msOffsets, buffer: msBuffer } = opts.msData
-  const { account, to } = opts
+  const { account, to, gasPrice = 0 } = opts
 
   const { tx: transaction, ctx } = await tx.create({
     gasLimit: 4000000,
+    gasPrice,
     account,
     to,
     data: {
