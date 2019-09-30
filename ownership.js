@@ -134,6 +134,7 @@ async function revokeOwnershipRequest(opts) {
  * @param  {String}  opts.password
  * @param  {String}  opts.afsPassword
  * @param  {Boolean} opts.estimate
+ * @param  {Number}  [opts.gasPrice]
  * @throws {Error|TypeError}
  * @return {Object}
  */
@@ -150,13 +151,16 @@ async function approveOwnershipTransfer(opts) {
     throw TypeError('Expecting non-empty password.')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting boolean for estimate')
+  } else if (opts.gasPrice && ('number' !== typeof opts.gasPrice || opts.gasPrice < 0)) {
+    throw new TypeError(`Expected 'opts.gasPrice' to be a positive number. Got ${opts.gasPrice}.`)
   }
 
   const {
     contentDid,
     password,
     newOwnerDid,
-    keyringOpts
+    keyringOpts,
+    gasPrice = 0
   } = opts
 
   let { afsPassword } = opts
@@ -190,6 +194,7 @@ async function approveOwnershipTransfer(opts) {
     account: acct,
     to: proxy,
     gasLimit: 1000000,
+    gasPrice,
     data: {
       abi,
       functionName: 'approveOwnershipTransfer',
@@ -221,12 +226,15 @@ async function _updateOwnershipRequest(opts, functionName = '') {
     throw new TypeError('Expecting non-empty password')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting boolean for estimate')
+  } else if (opts.gasPrice && ('number' !== typeof opts.gasPrice || opts.gasPrice < 0)) {
+    throw new TypeError(`Expected 'opts.gasPrice' to be a positive number. Got ${opts.gasPrice}.`)
   }
 
   const {
     keyringOpts,
     contentDid,
-    password
+    password,
+    gasPrice = 0
   } = opts
   let { requesterDid } = opts
 
@@ -256,6 +264,7 @@ async function _updateOwnershipRequest(opts, functionName = '') {
     account: acct,
     to: proxy,
     gasLimit: 1000000,
+    gasPrice,
     data: {
       abi,
       functionName

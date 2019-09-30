@@ -115,6 +115,7 @@ async function allowance(opts = {}) {
  * @param  {String} opts.did
  * @param  {String} opts.password
  * @param  {Object} [opts.keyringOpts]
+ * @param  {Number} [opts.gasPrice]
  * @return {Object}
  * @throws {TypeError|Error}
  */
@@ -127,10 +128,12 @@ async function transfer(opts = {}) {
     throw new TypeError(`Expected 'opts.did' to be non-empty Ara DID string. Got ${opts.did}. Ensure ${opts.did} is a valid Ara identity.`)
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${opts.password}.`)
+  } else if (opts.gasPrice && ('number' !== typeof opts.gasPrice || opts.gasPrice < 0)) {
+    throw new TypeError(`Expected 'opts.gasPrice' to be a positive number. Got ${opts.gasPrice}.`)
   }
 
   let { did, val, to } = opts
-  const { password, keyringOpts } = opts
+  const { password, keyringOpts, gasPrice = 0 } = opts
 
   try {
     ({ did } = await validate({
@@ -150,6 +153,7 @@ async function transfer(opts = {}) {
     const { tx: transferTx, ctx } = await tx.create({
       account: acct,
       to: ARA_TOKEN_ADDRESS,
+      gasPrice,
       data: {
         abi: tokenAbi,
         functionName: 'transfer',
@@ -171,6 +175,7 @@ async function transfer(opts = {}) {
  * @param  {String} opts.did
  * @param  {String} opts.password
  * @param  {Object} [opts.keyringOpts]
+ * @param  {Number} [opts.gasPrice]
  * @param  {Number} opts.val
  * @return {Object}
  * @throws {TypeError|Error}
@@ -179,7 +184,7 @@ async function approve(opts = {}) {
   _validateApprovalOpts(opts)
 
   let { did, spender, val } = opts
-  const { password, keyringOpts } = opts
+  const { password, keyringOpts, gasPrice = 0 } = opts
 
   try {
     ({ did } = await validate({
@@ -200,6 +205,7 @@ async function approve(opts = {}) {
     const { tx: approveTx, ctx } = await tx.create({
       account: acct,
       to: ARA_TOKEN_ADDRESS,
+      gasPrice,
       data: {
         abi: tokenAbi,
         functionName: 'approve',
@@ -223,6 +229,7 @@ async function approve(opts = {}) {
  * @param  {String} opts.did
  * @param  {String} opts.password
  * @param  {Object} [opts.keyringOpts]
+ * @param  {Object} [opts.gasPrice]
  * @return {Object}
  * @throws {TypeError|Error}
  */
@@ -237,6 +244,8 @@ async function transferFrom(opts = {}) {
     throw new TypeError(`Expected 'opts.did' to be non-empty Ara DID string. Got ${opts.did}. Ensure ${opts.did} is a valid Ara identity.`)
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${opts.password}.`)
+  } else if (opts.gasPrice && ('number' !== typeof opts.gasPrice || opts.gasPrice < 0)) {
+    throw new TypeError(`Expected 'opts.gasPrice' to be a positive number. Got ${opts.gasPrice}.`)
   }
 
   let {
@@ -245,7 +254,7 @@ async function transferFrom(opts = {}) {
     from,
     to
   } = opts
-  const { password, keyringOpts } = opts
+  const { password, keyringOpts, gasPrice = 0 } = opts
 
   try {
     ({ did } = await validate({
@@ -267,6 +276,7 @@ async function transferFrom(opts = {}) {
     const { tx: transferFromTx, ctx } = await tx.create({
       account: acct,
       to: ARA_TOKEN_ADDRESS,
+      gasPrice,
       data: {
         abi: tokenAbi,
         functionName: 'transferFrom',
@@ -289,6 +299,7 @@ async function transferFrom(opts = {}) {
  * @param  {String} opts.password
  * @param  {Number} opts.val
  * @param  {Object} [opts.keyringOpts]
+ * @param  {Number} [opts.gasPrice]
  * @return {Object}
  * @throws {TypeError|Error}
  */
@@ -296,7 +307,7 @@ async function increaseApproval(opts = {}) {
   _validateApprovalOpts(opts)
 
   let { did, spender, val } = opts
-  const { password, keyringOpts } = opts
+  const { password, keyringOpts, gasPrice = 0 } = opts
   const estimate = opts.estimate || false
 
   try {
@@ -318,6 +329,7 @@ async function increaseApproval(opts = {}) {
     const { tx: increaseApprovalTx, ctx } = await tx.create({
       account: acct,
       to: ARA_TOKEN_ADDRESS,
+      gasPrice,
       data: {
         abi: tokenAbi,
         functionName: 'increaseApproval',
@@ -347,6 +359,7 @@ async function increaseApproval(opts = {}) {
  * @param  {String} opts.password
  * @param  {Number} opts.val
  * @param  {Object} [opts.keyringOpts]
+ * @param  {Number} [opts.gasPrice]
  * @return {Object}
  * @throws {TypeError|Error}
  */
@@ -354,7 +367,7 @@ async function decreaseApproval(opts = {}) {
   _validateApprovalOpts(opts)
 
   let { did, spender } = opts
-  const { password, keyringOpts } = opts
+  const { password, keyringOpts, gasPrice = 0 } = opts
 
   try {
     ({ did } = await validate({
@@ -376,6 +389,7 @@ async function decreaseApproval(opts = {}) {
     const { tx: decreaseApprovalTx, ctx } = await tx.create({
       account: acct,
       to: ARA_TOKEN_ADDRESS,
+      gasPrice,
       data: {
         abi: tokenAbi,
         functionName: 'decreaseApproval',
@@ -443,7 +457,8 @@ function constrainTokenValue(val) {
  * @param  {String}   opts.password
  * @param  {String}   opts.val
  * @param  {?Boolean} opts.withdraw
- * @param  {Object} [opts.keyringOpts]
+ * @param  {Object}   [opts.keyringOpts]
+ * @param  {Number}   [opts.gasPrice]
  * @return {Object}
  * @throws {TypeError}
  */
@@ -456,10 +471,12 @@ async function modifyDeposit(opts = {}) {
     throw new TypeError(`Expected 'opts.val' to be greater than 0. Got ${opts.val}. Ensure ${opts.val} is a positive number.`)
   } else if (opts.withdraw && 'boolean' !== typeof opts.withdraw) {
     throw new TypeError(`Expected 'opts.withdraw' to be a boolean. Got ${opts.withdraw}.`)
+  } else if (opts.gasPrice && ('number' !== typeof opts.gasPrice || opts.gasPrice < 0)) {
+    throw new TypeError(`Expected 'opts.gasPrice' to be a positive number. Got ${opts.gasPrice}.`)
   }
 
   let { did, val, withdraw: wd } = opts
-  const { password, keyringOpts } = opts
+  const { password, keyringOpts, gasPrice = 0 } = opts
 
   try {
     ({ did } = await validate({
@@ -480,6 +497,7 @@ async function modifyDeposit(opts = {}) {
     const { tx: depositTx, ctx } = await tx.create({
       account: acct,
       to: ARA_TOKEN_ADDRESS,
+      gasPrice,
       data: {
         abi: tokenAbi,
         functionName: wd ? 'withdraw' : 'deposit',
@@ -539,6 +557,8 @@ function _validateApprovalOpts(opts) {
     throw new TypeError("Expected 'opts.estimate' to be a boolean")
   } else if (!opts.password || 'string' !== typeof opts.password) {
     throw new TypeError(`Expected 'opts.password' to be a non-empty string. Got ${opts.password}.`)
+  } else if (opts.gasPrice && ('number' !== typeof opts.gasPrice || opts.gasPrice < 0)) {
+    throw new TypeError(`Expected 'opts.gasPrice' to be a positive number. Got ${opts.gasPrice}.`)
   }
 }
 

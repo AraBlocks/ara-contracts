@@ -92,6 +92,7 @@ async function getProxyVersion(contentDid = '') {
  * @param  {String} opts.afsPassword
  * @param  {String|number} opts.version
  * @param  {Object} [opts.keyringOpts]
+ * @param  {Number} [opts.gasPrice]
  * @return {Bool}
  * @throws {Error,TypeError}
  */
@@ -108,10 +109,18 @@ async function upgradeProxy(opts) {
     throw new TypeError('Expecting non-empty version string or number')
   } else if (opts.estimate && 'boolean' !== typeof opts.estimate) {
     throw new TypeError('Expecting estimate to be of type boolean')
+  } else if (opts.gasPrice && ('number' !== typeof opts.gasPrice || opts.gasPrice < 0)) {
+    throw new TypeError(`Expected 'opts.gasPrice' to be a positive number. Got ${opts.gasPrice}.`)
   }
 
   let { version, afsPassword } = opts
-  const { contentDid, password, keyringOpts } = opts
+  const {
+    contentDid,
+    password,
+    keyringOpts,
+    gasPrice = 0
+  } = opts
+
   const estimate = opts.estimate || false
 
   afsPassword = afsPassword || password
@@ -145,6 +154,7 @@ async function upgradeProxy(opts) {
       account: acct,
       to: constants.REGISTRY_ADDRESS,
       gasLimit: 1000000,
+      gasPrice,
       data: {
         abi,
         functionName: 'upgradeProxy',
@@ -191,6 +201,7 @@ async function upgradeProxy(opts) {
  * @param  {Boolean} [opts.estimate]
  * @param  {Object} [opts.keyringOpts]
  * @param  {String} [opts.ownerDid] // only used for estimate
+ * @param  {Number} [opts.gasPrice]
  * @return {string}
  * @throws {Error,TypeError}
  */
@@ -207,10 +218,18 @@ async function deployProxy(opts) {
     throw new TypeError('Expecting estimate to be of type boolean')
   } else if (opts.ownerDid && 'string' !== typeof opts.ownerDid) {
     throw new TypeError('Expecting non-empty string for owner DID')
+  } else if (opts.gasPrice && ('number' !== typeof opts.gasPrice || opts.gasPrice < 0)) {
+    throw new TypeError(`Expected 'opts.gasPrice' to be a number. Got ${opts.gasPrice}.`)
   }
 
-  const { contentDid, password, keyringOpts } = opts
   let { ownerDid, afsPassword } = opts
+  const {
+    contentDid,
+    password,
+    keyringOpts,
+    gasPrice = 0
+  } = opts
+
   const estimate = opts.estimate || ownerDid || false
 
   afsPassword = afsPassword || password
@@ -275,6 +294,7 @@ async function deployProxy(opts) {
       account: acct,
       to: constants.REGISTRY_ADDRESS,
       gasLimit: 3000000,
+      gasPrice,
       data: {
         abi,
         functionName: 'createAFS',
@@ -403,6 +423,7 @@ async function _compileStandard(bytespath, paths) {
  * @param  {String} opts.paths
  * @param  {Object} [opts.keyringOpts]
  * @param  {String} [opts.compiledPath]
+ * @param  {Number} [opts.gasPrice]
  * @return {String}
  * @throws {Error,TypeError}
  */
@@ -421,6 +442,8 @@ async function deployNewStandard(opts) {
     throw TypeError('Expecting one or more paths')
   } else if (opts.compiledPath && 'string' !== typeof opts.compiledPath) {
     throw new TypeError('Expecting path to be a string.')
+  } else if (opts.gasPrice && ('number' !== typeof opts.gasPrice || opts.gasPrice < 0)) {
+    throw new TypeError(`Expected 'opts.gasPrice' to be a positive number. Got ${opts.gasPrice}.`)
   }
 
   if (null == opts.version || 'string' !== typeof opts.version || !opts.version) {
@@ -435,6 +458,7 @@ async function deployNewStandard(opts) {
   compiledPath = compiledPath || './build/contracts/AFS.json'
   const {
     requesterDid,
+    gasPrice = 0,
     keyringOpts,
     password,
     version,
@@ -499,6 +523,7 @@ async function deployNewStandard(opts) {
       account: acct,
       to: constants.REGISTRY_ADDRESS,
       gasLimit: 7000000,
+      gasPrice,
       data: {
         abi,
         functionName: 'addStandardVersion',
