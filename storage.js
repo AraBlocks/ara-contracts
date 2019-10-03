@@ -75,7 +75,13 @@ async function write(opts, estimate = true, append = false) {
     return cost
   }
 
-  const receipt = await tx.sendSignedTransaction(transaction, { onhash, onreceipt, onconfirmation, onerror, onmined })
+  const receipt = await tx.sendSignedTransaction(transaction, {
+    onhash,
+    onreceipt,
+    onconfirmation,
+    onerror,
+    onmined
+  })
   ctx.close()
   return receipt
 }

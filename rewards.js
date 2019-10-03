@@ -180,7 +180,8 @@ async function submit(opts) {
         submitTx,
         {
           onhash,
-          onreceipt: r => {
+          onreceipt: (r) => {
+            if ('function' === typeof onreceipt) onreceipt(r)
             resolve(r)
           },
           onconfirmation,
@@ -357,7 +358,13 @@ async function allocate(opts) {
       return cost
     }
 
-    const receipt = await tx.sendSignedTransaction(allocateTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
+    const receipt = await tx.sendSignedTransaction(allocateTx, {
+      onhash,
+      onreceipt,
+      onconfirmation,
+      onerror,
+      onmined
+    })
     ctx1.close()
     if (receipt.status) {
       debug('gas used', receipt.gasUsed)
@@ -458,7 +465,13 @@ async function redeem(opts) {
     const { contract: tokenContract, ctx: ctx3 } = await contract.get(tokenAbi, ARA_TOKEN_ADDRESS)
     balance = await new Promise((resolve, reject) => {
       const { web3 } = ctx3
-      tx.sendSignedTransaction(redeemTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
+      tx.sendSignedTransaction(redeemTx, {
+        onhash,
+        onreceipt,
+        onconfirmation,
+        onerror,
+        onmined
+      })
       tokenContract.events.Transfer({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { from, to, value } } = log
