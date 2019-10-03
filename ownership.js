@@ -235,7 +235,13 @@ async function approveOwnershipTransfer(opts) {
     return cost
   }
 
-  const receipt = await tx.sendSignedTransaction(approveTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
+  const receipt = await tx.sendSignedTransaction(approveTx, {
+    onhash,
+    onreceipt,
+    onconfirmation,
+    onerror,
+    onmined
+  })
   ctx.close()
   return receipt
 }
@@ -309,7 +315,13 @@ async function _updateOwnershipRequest(opts, functionName = '') {
     return cost
   }
 
-  const receipt = await tx.sendSignedTransaction(requestTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
+  const receipt = await tx.sendSignedTransaction(requestTx, {
+    onhash,
+    onreceipt,
+    onconfirmation,
+    onerror,
+    onmined
+  })
   ctx.close()
   return receipt
 }

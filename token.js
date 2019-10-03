@@ -174,7 +174,13 @@ async function transfer(opts = {}) {
         values: [ to, val ]
       }
     })
-    receipt = await tx.sendSignedTransaction(transferTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
+    receipt = await tx.sendSignedTransaction(transferTx, {
+      onhash,
+      onreceipt,
+      onconfirmation,
+      onerror,
+      onmined
+    })
     ctx.close()
   } catch (err) {
     throw err
@@ -240,7 +246,13 @@ async function approve(opts = {}) {
         values: [ spender, val ]
       }
     })
-    receipt = await tx.sendSignedTransaction(approveTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
+    receipt = await tx.sendSignedTransaction(approveTx, {
+      onhash,
+      onreceipt,
+      onconfirmation,
+      onerror,
+      onmined
+    })
     ctx.close()
   } catch (err) {
     throw err
@@ -325,7 +337,13 @@ async function transferFrom(opts = {}) {
         values: [ from, to, val ]
       }
     })
-    receipt = await tx.sendSignedTransaction(transferFromTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
+    receipt = await tx.sendSignedTransaction(transferFromTx, {
+      onhash,
+      onreceipt,
+      onconfirmation,
+      onerror,
+      onmined
+    })
     ctx.close()
   } catch (err) {
     throw err
@@ -400,7 +418,13 @@ async function increaseApproval(opts = {}) {
       return cost
     }
 
-    receipt = await tx.sendSignedTransaction(increaseApprovalTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
+    receipt = await tx.sendSignedTransaction(increaseApprovalTx, {
+      onhash,
+      onreceipt,
+      onconfirmation,
+      onerror,
+      onmined
+    })
     ctx.close()
   } catch (err) {
     throw err
@@ -467,7 +491,13 @@ async function decreaseApproval(opts = {}) {
         values: [ spender, val ]
       }
     })
-    receipt = await tx.sendSignedTransaction(decreaseApprovalTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
+    receipt = await tx.sendSignedTransaction(decreaseApprovalTx, {
+      onhash,
+      onreceipt,
+      onconfirmation,
+      onerror,
+      onmined
+    })
     ctx.close()
   } catch (err) {
     throw err
@@ -589,7 +619,13 @@ async function modifyDeposit(opts = {}) {
         values: [ val ]
       }
     })
-    receipt = await tx.sendSignedTransaction(depositTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
+    receipt = await tx.sendSignedTransaction(depositTx, {
+      onhash,
+      onreceipt,
+      onconfirmation,
+      onerror,
+      onmined
+    })
     ctx.close()
     if (receipt.status) {
       debug(wd ? 'withdrew' : 'deposited', constrainTokenValue(val), 'tokens')

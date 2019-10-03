@@ -164,7 +164,13 @@ async function purchase(opts) {
       return String(Number(cost) + Number(load || 0))
     }
 
-    receipt = await tx.sendSignedTransaction(purchaseTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
+    receipt = await tx.sendSignedTransaction(purchaseTx, {
+      onhash,
+      onreceipt,
+      onconfirmation,
+      onerror,
+      onmined
+    })
     ctx.close()
     if (receipt.status) {
       // 211296 gas
