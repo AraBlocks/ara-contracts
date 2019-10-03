@@ -87,12 +87,17 @@ async function getProxyVersion(contentDid = '') {
 
 /**
  * Upgrades a proxy to a new version // 33834 gas
- * @param  {String} opts.contentDid // unhashed
- * @param  {String} opts.password
- * @param  {String} opts.afsPassword
+ * @param  {String}        opts.contentDid // unhashed
+ * @param  {String}        opts.password
+ * @param  {String}        opts.afsPassword
  * @param  {String|number} opts.version
- * @param  {Object} [opts.keyringOpts]
- * @param  {Number} [opts.gasPrice]
+ * @param  {Object}        [opts.keyringOpts]
+ * @param  {Number}        [opts.gasPrice]
+ * @param  {Function}      [opts.onhash]
+ * @param  {Function}      [opts.onreceipt]
+ * @param  {Function}      [opts.onconfirmation]
+ * @param  {Function}      [opts.onerror]
+ * @param  {Function}      [opts.onmined]
  * @return {Bool}
  * @throws {Error,TypeError}
  */
@@ -118,7 +123,12 @@ async function upgradeProxy(opts) {
     contentDid,
     password,
     keyringOpts,
-    gasPrice = 0
+    gasPrice = 0,
+    onhash,
+    onreceipt,
+    onconfirmation,
+    onerror,
+    onmined
   } = opts
 
   const estimate = opts.estimate || false
@@ -173,7 +183,7 @@ async function upgradeProxy(opts) {
 
     const { contract: registry, ctx: ctx2 } = await contract.get(abi, constants.REGISTRY_ADDRESS)
     upgraded = await new Promise((resolve, reject) => {
-      tx.sendSignedTransaction(transaction).catch(err => reject(err))
+      tx.sendSignedTransaction(transaction, { onhash, onreceipt, onconfirmation, onerror, onmined })
       // listen to ProxyUpgraded event for proxy address
       registry.events.ProxyUpgraded({ fromBlock: 'latest' })
         .on('data', (log) => {
@@ -194,14 +204,19 @@ async function upgradeProxy(opts) {
 
 /**
  * Deploys a proxy contract for opts.contentDid // 349574 gas
- * @param  {String} opts.contentDid // unhashed
- * @param  {String} opts.password
- * @param  {String} opts.afsPassword
+ * @param  {String}        opts.contentDid // unhashed
+ * @param  {String}        opts.password
+ * @param  {String}        opts.afsPassword
  * @param  {String|number} opts.version
- * @param  {Boolean} [opts.estimate]
- * @param  {Object} [opts.keyringOpts]
- * @param  {String} [opts.ownerDid] // only used for estimate
- * @param  {Number} [opts.gasPrice]
+ * @param  {Boolean}       [opts.estimate]
+ * @param  {Object}        [opts.keyringOpts]
+ * @param  {String}        [opts.ownerDid] // only used for estimate
+ * @param  {Number}        [opts.gasPrice]
+ * @param  {Function}      [opts.onhash]
+ * @param  {Function}      [opts.onreceipt]
+ * @param  {Function}      [opts.onconfirmation]
+ * @param  {Function}      [opts.onerror]
+ * @param  {Function}      [opts.onmined]
  * @return {string}
  * @throws {Error,TypeError}
  */
@@ -227,7 +242,12 @@ async function deployProxy(opts) {
     contentDid,
     password,
     keyringOpts,
-    gasPrice = 0
+    gasPrice = 0,
+    onhash,
+    onreceipt,
+    onconfirmation,
+    onerror,
+    onmined
   } = opts
 
   const estimate = opts.estimate || ownerDid || false
@@ -313,7 +333,7 @@ async function deployProxy(opts) {
 
     const { contract: registry, ctx: ctx2 } = await contract.get(abi, constants.REGISTRY_ADDRESS)
     proxyAddress = await new Promise((resolve, reject) => {
-      tx.sendSignedTransaction(transaction).catch(err => reject(err))
+      tx.sendSignedTransaction(transaction, { onhash, onreceipt, onconfirmation, onerror, onmined })
       // listen to ProxyDeployed event for proxy address
       registry.events.ProxyDeployed({ fromBlock: 'latest' })
         .on('data', (log) => {
@@ -416,14 +436,19 @@ async function _compileStandard(bytespath, paths) {
 
 /**
  * Deploys a new AFS Standard // 2322093 gas (contract deploy) + 58053 gas (add standard)
- * @param  {Object} opts
- * @param  {String} opts.requesterDid
- * @param  {String} opts.password
- * @param  {String} opts.version
- * @param  {String} opts.paths
- * @param  {Object} [opts.keyringOpts]
- * @param  {String} [opts.compiledPath]
- * @param  {Number} [opts.gasPrice]
+ * @param  {Object}   opts
+ * @param  {String}   opts.requesterDid
+ * @param  {String}   opts.password
+ * @param  {String}   opts.version
+ * @param  {String}   opts.paths
+ * @param  {Object}   [opts.keyringOpts]
+ * @param  {String}   [opts.compiledPath]
+ * @param  {Number}   [opts.gasPrice]
+ * @param  {Function} [opts.onhash]
+ * @param  {Function} [opts.onreceipt]
+ * @param  {Function} [opts.onconfirmation]
+ * @param  {Function} [opts.onerror]
+ * @param  {Function} [opts.onmined]
  * @return {String}
  * @throws {Error,TypeError}
  */
@@ -462,7 +487,12 @@ async function deployNewStandard(opts) {
     keyringOpts,
     password,
     version,
-    paths
+    paths,
+    onhash,
+    onreceipt,
+    onconfirmation,
+    onerror,
+    onmined
   } = opts
 
   let did
@@ -536,7 +566,7 @@ async function deployNewStandard(opts) {
     // listen to ProxyDeployed event for proxy address
     const { contract: registry, ctx: ctx2 } = await contract.get(abi, constants.REGISTRY_ADDRESS)
     address = await new Promise((resolve, reject) => {
-      tx.sendSignedTransaction(transaction).catch(err => reject(err))
+      tx.sendSignedTransaction(transaction, { onhash, onreceipt, onconfirmation, onerror, onmined })
       registry.events.StandardAdded({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { _version, _address } } = log

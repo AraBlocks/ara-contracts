@@ -41,7 +41,16 @@ async function write(opts, estimate = true, append = false) {
 
   const { offsets: mtOffsets, buffer: mtBuffer } = opts.mtData
   const { offsets: msOffsets, buffer: msBuffer } = opts.msData
-  const { account, to, gasPrice = 0 } = opts
+  const {
+    account,
+    to,
+    gasPrice = 0,
+    onhash,
+    onreceipt,
+    onconfirmation,
+    onerror,
+    onmined
+  } = opts
 
   const { tx: transaction, ctx } = await tx.create({
     gasLimit: 4000000,
@@ -66,7 +75,7 @@ async function write(opts, estimate = true, append = false) {
     return cost
   }
 
-  const receipt = await tx.sendSignedTransaction(transaction)
+  const receipt = await tx.sendSignedTransaction(transaction, { onhash, onreceipt, onconfirmation, onerror, onmined })
   ctx.close()
   return receipt
 }

@@ -109,13 +109,18 @@ async function allowance(opts = {}) {
 
 /**
  * Transfers Ara from the sender account to a specified address.
- * @param  {Object} opts
- * @param  {String} opts.to
- * @param  {String} opts.val
- * @param  {String} opts.did
- * @param  {String} opts.password
- * @param  {Object} [opts.keyringOpts]
- * @param  {Number} [opts.gasPrice]
+ * @param  {Object}   opts
+ * @param  {String}   opts.to
+ * @param  {String}   opts.val
+ * @param  {String}   opts.did
+ * @param  {String}   opts.password
+ * @param  {Object}   [opts.keyringOpts]
+ * @param  {Number}   [opts.gasPrice]
+ * @param  {Function} [opts.onhash]
+ * @param  {Function} [opts.onreceipt]
+ * @param  {Function} [opts.onconfirmation]
+ * @param  {Function} [opts.onerror]
+ * @param  {Function} [opts.onmined]
  * @return {Object}
  * @throws {TypeError|Error}
  */
@@ -133,7 +138,16 @@ async function transfer(opts = {}) {
   }
 
   let { did, val, to } = opts
-  const { password, keyringOpts, gasPrice = 0 } = opts
+  const {
+    password,
+    keyringOpts,
+    gasPrice = 0,
+    onhash,
+    onreceipt,
+    onconfirmation,
+    onerror,
+    onmined
+  } = opts
 
   try {
     ({ did } = await validate({
@@ -160,7 +174,7 @@ async function transfer(opts = {}) {
         values: [ to, val ]
       }
     })
-    receipt = await tx.sendSignedTransaction(transferTx)
+    receipt = await tx.sendSignedTransaction(transferTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
     ctx.close()
   } catch (err) {
     throw err
@@ -174,9 +188,14 @@ async function transfer(opts = {}) {
  * @param  {String} opts.spender
  * @param  {String} opts.did
  * @param  {String} opts.password
+ * @param  {Number} opts.val
  * @param  {Object} [opts.keyringOpts]
  * @param  {Number} [opts.gasPrice]
- * @param  {Number} opts.val
+ * @param  {Function} [opts.onhash]
+ * @param  {Function} [opts.onreceipt]
+ * @param  {Function} [opts.onconfirmation]
+ * @param  {Function} [opts.onerror]
+ * @param  {Function} [opts.onmined]
  * @return {Object}
  * @throws {TypeError|Error}
  */
@@ -184,7 +203,16 @@ async function approve(opts = {}) {
   _validateApprovalOpts(opts)
 
   let { did, spender, val } = opts
-  const { password, keyringOpts, gasPrice = 0 } = opts
+  const {
+    password,
+    keyringOpts,
+    gasPrice = 0,
+    onhash,
+    onreceipt,
+    onconfirmation,
+    onerror,
+    onmined
+  } = opts
 
   try {
     ({ did } = await validate({
@@ -212,7 +240,7 @@ async function approve(opts = {}) {
         values: [ spender, val ]
       }
     })
-    receipt = await tx.sendSignedTransaction(approveTx)
+    receipt = await tx.sendSignedTransaction(approveTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
     ctx.close()
   } catch (err) {
     throw err
@@ -222,14 +250,19 @@ async function approve(opts = {}) {
 
 /**
  * Transfer Ara from one address to another.
- * @param  {Object} opts
- * @param  {String} opts.from
- * @param  {String} opts.to
- * @param  {Number} opts.val
- * @param  {String} opts.did
- * @param  {String} opts.password
- * @param  {Object} [opts.keyringOpts]
- * @param  {Object} [opts.gasPrice]
+ * @param  {Object}   opts
+ * @param  {String}   opts.from
+ * @param  {String}   opts.to
+ * @param  {Number}   opts.val
+ * @param  {String}   opts.did
+ * @param  {String}   opts.password
+ * @param  {Object}   [opts.keyringOpts]
+ * @param  {Object}   [opts.gasPrice]
+ * @param  {Function} [opts.onhash]
+ * @param  {Function} [opts.onreceipt]
+ * @param  {Function} [opts.onconfirmation]
+ * @param  {Function} [opts.onerror]
+ * @param  {Function} [opts.onmined]
  * @return {Object}
  * @throws {TypeError|Error}
  */
@@ -254,7 +287,16 @@ async function transferFrom(opts = {}) {
     from,
     to
   } = opts
-  const { password, keyringOpts, gasPrice = 0 } = opts
+  const {
+    password,
+    keyringOpts,
+    gasPrice = 0,
+    onhash,
+    onreceipt,
+    onconfirmation,
+    onerror,
+    onmined
+  } = opts
 
   try {
     ({ did } = await validate({
@@ -283,7 +325,7 @@ async function transferFrom(opts = {}) {
         values: [ from, to, val ]
       }
     })
-    receipt = await tx.sendSignedTransaction(transferFromTx)
+    receipt = await tx.sendSignedTransaction(transferFromTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
     ctx.close()
   } catch (err) {
     throw err
@@ -293,13 +335,19 @@ async function transferFrom(opts = {}) {
 
 /**
  * Increases the amount of Ara that an owner allowed to a spender.
- * @param  {Object} opts
- * @param  {String} opts.spender
- * @param  {String} opts.did
- * @param  {String} opts.password
- * @param  {Number} opts.val
- * @param  {Object} [opts.keyringOpts]
- * @param  {Number} [opts.gasPrice]
+ * @param  {Object}   opts
+ * @param  {String}   opts.spender
+ * @param  {String}   opts.did
+ * @param  {String}   opts.password
+ * @param  {Number}   opts.val
+ * @param  {Object}   [opts.keyringOpts]
+ * @param  {Number}   [opts.gasPrice]
+ * @param  {Object}   [opts.gasPrice]
+ * @param  {Function} [opts.onhash]
+ * @param  {Function} [opts.onreceipt]
+ * @param  {Function} [opts.onconfirmation]
+ * @param  {Function} [opts.onerror]
+ * @param  {Function} [opts.onmined]
  * @return {Object}
  * @throws {TypeError|Error}
  */
@@ -307,7 +355,16 @@ async function increaseApproval(opts = {}) {
   _validateApprovalOpts(opts)
 
   let { did, spender, val } = opts
-  const { password, keyringOpts, gasPrice = 0 } = opts
+  const {
+    password,
+    keyringOpts,
+    gasPrice = 0,
+    onhash,
+    onreceipt,
+    onconfirmation,
+    onerror,
+    onmined
+  } = opts
   const estimate = opts.estimate || false
 
   try {
@@ -343,7 +400,7 @@ async function increaseApproval(opts = {}) {
       return cost
     }
 
-    receipt = await tx.sendSignedTransaction(increaseApprovalTx)
+    receipt = await tx.sendSignedTransaction(increaseApprovalTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
     ctx.close()
   } catch (err) {
     throw err
@@ -353,13 +410,18 @@ async function increaseApproval(opts = {}) {
 
 /**
  * Decreased the amount of Ara that an owner allowed to a spender.
- * @param  {Object} opts
- * @param  {String} opts.spender
- * @param  {String} opts.did
- * @param  {String} opts.password
- * @param  {Number} opts.val
- * @param  {Object} [opts.keyringOpts]
- * @param  {Number} [opts.gasPrice]
+ * @param  {Object}   opts
+ * @param  {String}   opts.spender
+ * @param  {String}   opts.did
+ * @param  {String}   opts.password
+ * @param  {Number}   opts.val
+ * @param  {Object}   [opts.keyringOpts]
+ * @param  {Number}   [opts.gasPrice]
+ * @param  {Function} [opts.onhash]
+ * @param  {Function} [opts.onreceipt]
+ * @param  {Function} [opts.onconfirmation]
+ * @param  {Function} [opts.onerror]
+ * @param  {Function} [opts.onmined]
  * @return {Object}
  * @throws {TypeError|Error}
  */
@@ -367,7 +429,16 @@ async function decreaseApproval(opts = {}) {
   _validateApprovalOpts(opts)
 
   let { did, spender } = opts
-  const { password, keyringOpts, gasPrice = 0 } = opts
+  const {
+    password,
+    keyringOpts,
+    gasPrice = 0,
+    onhash,
+    onreceipt,
+    onconfirmation,
+    onerror,
+    onmined
+  } = opts
 
   try {
     ({ did } = await validate({
@@ -396,7 +467,7 @@ async function decreaseApproval(opts = {}) {
         values: [ spender, val ]
       }
     })
-    receipt = await tx.sendSignedTransaction(decreaseApprovalTx)
+    receipt = await tx.sendSignedTransaction(decreaseApprovalTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
     ctx.close()
   } catch (err) {
     throw err
@@ -459,6 +530,11 @@ function constrainTokenValue(val) {
  * @param  {?Boolean} opts.withdraw
  * @param  {Object}   [opts.keyringOpts]
  * @param  {Number}   [opts.gasPrice]
+ * @param  {Function} [opts.onhash]
+ * @param  {Function} [opts.onreceipt]
+ * @param  {Function} [opts.onconfirmation]
+ * @param  {Function} [opts.onerror]
+ * @param  {Function} [opts.onmined]
  * @return {Object}
  * @throws {TypeError}
  */
@@ -476,7 +552,16 @@ async function modifyDeposit(opts = {}) {
   }
 
   let { did, val, withdraw: wd } = opts
-  const { password, keyringOpts, gasPrice = 0 } = opts
+  const {
+    password,
+    keyringOpts,
+    gasPrice = 0,
+    onhash,
+    onreceipt,
+    onconfirmation,
+    onerror,
+    onmined
+  } = opts
 
   try {
     ({ did } = await validate({
@@ -504,7 +589,7 @@ async function modifyDeposit(opts = {}) {
         values: [ val ]
       }
     })
-    receipt = await tx.sendSignedTransaction(depositTx)
+    receipt = await tx.sendSignedTransaction(depositTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
     ctx.close()
     if (receipt.status) {
       debug(wd ? 'withdrew' : 'deposited', constrainTokenValue(val), 'tokens')

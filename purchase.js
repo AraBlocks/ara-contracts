@@ -31,14 +31,19 @@ const {
 
 /**
  * Purchase contentDid // 256649 gas
- * @param  {Object}  opts
- * @param  {String}  opts.requesterDid
- * @param  {String}  opts.contentDid
- * @param  {String}  opts.password
- * @param  {Number}  opts.budget
- * @param  {Boolean} opts.estimate
- * @param  {Object} [opts.keyringOpts]
- * @param  {Number} [opts.gasPrice]
+ * @param  {Object}   opts
+ * @param  {String}   opts.requesterDid
+ * @param  {String}   opts.contentDid
+ * @param  {String}   opts.password
+ * @param  {Number}   opts.budget
+ * @param  {Boolean}  opts.estimate
+ * @param  {Object}   [opts.keyringOpts]
+ * @param  {Number}   [opts.gasPrice]
+ * @param  {Function} [opts.onhash]
+ * @param  {Function} [opts.onreceipt]
+ * @param  {Function} [opts.onconfirmation]
+ * @param  {Function} [opts.onerror]
+ * @param  {Function} [opts.onmined]
  * @throws {Error,TypeError}
  */
 async function purchase(opts) {
@@ -62,7 +67,12 @@ async function purchase(opts) {
     requesterDid,
     password,
     keyringOpts,
-    gasPrice = 0
+    gasPrice = 0,
+    onhash,
+    onreceipt,
+    onconfirmation,
+    onerror,
+    onmined
   } = opts
 
   let { budget, contentDid } = opts
@@ -154,7 +164,7 @@ async function purchase(opts) {
       return String(Number(cost) + Number(load || 0))
     }
 
-    receipt = await tx.sendSignedTransaction(purchaseTx)
+    receipt = await tx.sendSignedTransaction(purchaseTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
     ctx.close()
     if (receipt.status) {
       // 211296 gas

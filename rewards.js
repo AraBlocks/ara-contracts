@@ -42,12 +42,17 @@ const {
  * @param  {String}         opts.requesterDid
  * @param  {String}         opts.contentDid
  * @param  {String}         opts.password
- * @param  {Boolean}        [opts.estimate]
- * @param  {Object}         [opts.keyringOpts]
- * @param  {Number}         [opts.gasPrice]
  * @param  {Object}         opts.job
  * @param  {String|Buffer}  opts.job.jobId
  * @param  {Number}         opts.job.budget
+ * @param  {Boolean}        [opts.estimate]
+ * @param  {Object}         [opts.keyringOpts]
+ * @param  {Number}         [opts.gasPrice]
+ * @param  {Function}       [opts.onhash]
+ * @param  {Function}       [opts.onreceipt]
+ * @param  {Function}       [opts.onconfirmation]
+ * @param  {Function}       [opts.onerror]
+ * @param  {Function}       [opts.onmined]
  * @returns {Object}
  * @throws {Error,TypeError}
  */
@@ -73,7 +78,12 @@ async function submit(opts) {
     gasPrice = 0,
     keyringOpts,
     password,
-    job
+    job,
+    onhash,
+    onreceipt,
+    onconfirmation,
+    onerror,
+    onmined
   } = opts
 
   let { budget, jobId } = job
@@ -166,13 +176,23 @@ async function submit(opts) {
 
     const { contract: proxyContract, ctx: ctx2 } = await contract.get(afsAbi, proxy)
     receipt = await new Promise((resolve, reject) => {
-      const r = tx.sendSignedTransaction(submitTx).catch(err => reject(err))
+      tx.sendSignedTransaction(
+        submitTx,
+        {
+          onhash,
+          onreceipt: r => {
+            resolve(r)
+          },
+          onconfirmation,
+          onerror,
+          onmined
+        }
+      )
       proxyContract.events.BudgetSubmitted({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { _did, _jobId, _budget } } = log
           if (_jobId === jobId) {
             debug(`budgetted ${token.constrainTokenValue(_budget)} Ara for job ${_jobId} in ${_did}`)
-            resolve(r)
           }
         })
         .on('error', log => reject(log))
@@ -195,13 +215,18 @@ async function submit(opts) {
  * @param  {String}         opts.requesterDid
  * @param  {String}         opts.contentDid
  * @param  {String}         opts.password
- * @param  {Boolean}        [opts.estimate]
- * @param  {Object}         [opts.keyringOpts]
- * @param  {Number}         [opts.gasPrice]
  * @param  {Object}         opts.job
  * @param  {string|Buffer}  opts.job.jobId
  * @param  {Array}          opts.job.farmers
  * @param  {Array}          opts.job.rewards
+ * @param  {Boolean}        [opts.estimate]
+ * @param  {Object}         [opts.keyringOpts]
+ * @param  {Number}         [opts.gasPrice]
+ * @param  {Function}       [opts.onhash]
+ * @param  {Function}       [opts.onreceipt]
+ * @param  {Function}       [opts.onconfirmation]
+ * @param  {Function}       [opts.onerror]
+ * @param  {Function}       [opts.onmined]
  * @returns {Object}
  * @throws {Error,TypeError}
  */
@@ -227,7 +252,12 @@ async function allocate(opts) {
     gasPrice = 0,
     keyringOpts,
     password,
-    job
+    job,
+    onhash,
+    onreceipt,
+    onconfirmation,
+    onerror,
+    onmined
   } = opts
 
   const { farmers, rewards } = job
@@ -327,7 +357,7 @@ async function allocate(opts) {
       return cost
     }
 
-    const receipt = await tx.sendSignedTransaction(allocateTx)
+    const receipt = await tx.sendSignedTransaction(allocateTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
     ctx1.close()
     if (receipt.status) {
       debug('gas used', receipt.gasUsed)
@@ -340,13 +370,18 @@ async function allocate(opts) {
 
 /**
  * Redeem balance from AFS contract
- * @param  {Object}         opts
- * @param  {String}         opts.farmerDid
- * @param  {String}         opts.contentDid
- * @param  {String}         opts.password
- * @param  {Boolean}        [opts.estimate]
- * @param  {Object}         [opts.keyringOpts]
- * @param  {Number}         [opts.gasPrice]
+ * @param  {Object}   opts
+ * @param  {String}   opts.farmerDid
+ * @param  {String}   opts.contentDid
+ * @param  {String}   opts.password
+ * @param  {Boolean}  [opts.estimate]
+ * @param  {Object}   [opts.keyringOpts]
+ * @param  {Number}   [opts.gasPrice]
+ * @param  {Function} [opts.onhash]
+ * @param  {Function} [opts.onreceipt]
+ * @param  {Function} [opts.onconfirmation]
+ * @param  {Function} [opts.onerror]
+ * @param  {Function} [opts.onmined]
  * @throws {Error,TypeError}
  */
 async function redeem(opts) {
@@ -369,7 +404,12 @@ async function redeem(opts) {
     farmerDid,
     password,
     keyringOpts,
-    gasPrice = 0
+    gasPrice = 0,
+    onhash,
+    onreceipt,
+    onconfirmation,
+    onerror,
+    onmined
   } = opts
 
   let did
@@ -418,7 +458,7 @@ async function redeem(opts) {
     const { contract: tokenContract, ctx: ctx3 } = await contract.get(tokenAbi, ARA_TOKEN_ADDRESS)
     balance = await new Promise((resolve, reject) => {
       const { web3 } = ctx3
-      tx.sendSignedTransaction(redeemTx).catch(err => reject(err))
+      tx.sendSignedTransaction(redeemTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
       tokenContract.events.Transfer({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { from, to, value } } = log

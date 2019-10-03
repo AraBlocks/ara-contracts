@@ -367,7 +367,15 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false, ga
   const { contract: registry, ctx: ctx2 } = await contract.get(registryAbi, constants.ARA_REGISTRY_ADDRESS)
   if (!upgrade) {
     address = await new Promise((resolve, reject) => {
-      tx.sendSignedTransaction(transaction).catch(err => reject(err))
+      tx.sendSignedTransaction(transaction,
+        {
+          onhash: (hash) => debug('onhash:', hash),
+          onreceipt: (receipt) => debug('onreceipt:', receipt),
+          onconfirmation: (confNumber, receipt) => debug('onconfirmation:', confNumber, receipt),
+          onerror: (error) => debug('onerror:', error),
+          onmined: (receipt) => debug('onmined:', receipt)
+        }
+      )
       registry.events.UpgradeableContractAdded({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { _contractName, _address } } = log
@@ -389,7 +397,15 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false, ga
     })
   } else {
     await new Promise((resolve, reject) => {
-      tx.sendSignedTransaction(transaction).catch(err => reject(err))
+      tx.sendSignedTransaction(transaction,
+        {
+          onhash: (hash) => debug('onhash:', hash),
+          onreceipt: (receipt) => debug('onreceipt:', receipt),
+          onconfirmation: (confNumber, receipt) => debug('onconfirmation:', confNumber, receipt),
+          onerror: (error) => debug('onerror:', error),
+          onmined: (receipt) => debug('onmined:', receipt)
+        }
+      )
       registry.events.ContractUpgraded()
         .on('data', (log) => {
           const { returnValues: { _contractName, _version } } = log
