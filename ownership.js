@@ -99,11 +99,18 @@ async function hasRequested(opts) {
 
 /**
  * Requests ownership of an AFS.
- * @param  {Object} opts
- * @param  {String} opts.requesterDid
- * @param  {String} opts.contentDid
- * @param  {String} opts.password
- * @param  {String} opts.estimate
+ * @param  {Object}   opts
+ * @param  {String}   opts.requesterDid
+ * @param  {String}   opts.contentDid
+ * @param  {String}   opts.password
+ * @param  {String}   opts.estimate
+ * @param  {Object}   [opts.keyringOpts]
+ * @param  {Number}   [opts.gasPrice]
+ * @param  {Function} [opts.onhash]
+ * @param  {Function} [opts.onreceipt]
+ * @param  {Function} [opts.onconfirmation]
+ * @param  {Function} [opts.onerror]
+ * @param  {Function} [opts.onmined]
  * @throws {Error|TypeError}
  * @return {Object}
  */
@@ -113,11 +120,18 @@ async function requestOwnership(opts) {
 
 /**
  * Revokes an outstanding ownership request of an AFS.
- * @param  {Object} opts
- * @param  {String} opts.requesterDid
- * @param  {String} opts.contentDid
- * @param  {String} opts.password
- * @param  {String} opts.estimate
+ * @param  {Object}   opts
+ * @param  {String}   opts.requesterDid
+ * @param  {String}   opts.contentDid
+ * @param  {String}   opts.password
+ * @param  {String}   opts.estimate
+ * @param  {Object}   [opts.keyringOpts]
+ * @param  {Number}   [opts.gasPrice]
+ * @param  {Function} [opts.onhash]
+ * @param  {Function} [opts.onreceipt]
+ * @param  {Function} [opts.onconfirmation]
+ * @param  {Function} [opts.onerror]
+ * @param  {Function} [opts.onmined]
  * @throws {Error|TypeError}
  * @return {Object}
  */
@@ -128,13 +142,19 @@ async function revokeOwnershipRequest(opts) {
 /**
  * Approves an ownership transfer request.
  * This officially transfers ownership for the given AFS.
- * @param  {Object}  opts
- * @param  {String}  opts.contentDid
- * @param  {String}  opts.newOwnerDid
- * @param  {String}  opts.password
- * @param  {String}  opts.afsPassword
- * @param  {Boolean} opts.estimate
- * @param  {Number}  [opts.gasPrice]
+ * @param  {Object}   opts
+ * @param  {String}   opts.contentDid
+ * @param  {String}   opts.newOwnerDid
+ * @param  {String}   opts.password
+ * @param  {String}   opts.afsPassword
+ * @param  {Boolean}  opts.estimate
+ * @param  {Object}   [opts.keyringOpts]
+ * @param  {Number}   [opts.gasPrice]
+ * @param  {Function} [opts.onhash]
+ * @param  {Function} [opts.onreceipt]
+ * @param  {Function} [opts.onconfirmation]
+ * @param  {Function} [opts.onerror]
+ * @param  {Function} [opts.onmined]
  * @throws {Error|TypeError}
  * @return {Object}
  */
@@ -160,7 +180,12 @@ async function approveOwnershipTransfer(opts) {
     password,
     newOwnerDid,
     keyringOpts,
-    gasPrice = 0
+    gasPrice = 0,
+    onhash,
+    onreceipt,
+    onconfirmation,
+    onerror,
+    onmined
   } = opts
 
   let { afsPassword } = opts
@@ -210,7 +235,7 @@ async function approveOwnershipTransfer(opts) {
     return cost
   }
 
-  const receipt = await tx.sendSignedTransaction(approveTx)
+  const receipt = await tx.sendSignedTransaction(approveTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
   ctx.close()
   return receipt
 }
@@ -234,7 +259,12 @@ async function _updateOwnershipRequest(opts, functionName = '') {
     keyringOpts,
     contentDid,
     password,
-    gasPrice = 0
+    gasPrice = 0,
+    onhash,
+    onreceipt,
+    onconfirmation,
+    onerror,
+    onmined
   } = opts
   let { requesterDid } = opts
 
@@ -279,7 +309,7 @@ async function _updateOwnershipRequest(opts, functionName = '') {
     return cost
   }
 
-  const receipt = await tx.sendSignedTransaction(requestTx)
+  const receipt = await tx.sendSignedTransaction(requestTx, { onhash, onreceipt, onconfirmation, onerror, onmined })
   ctx.close()
   return receipt
 }
