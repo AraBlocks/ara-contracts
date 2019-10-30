@@ -39,11 +39,16 @@ const {
  * @param  {Boolean}  opts.estimate
  * @param  {Object}   [opts.keyringOpts]
  * @param  {Number}   [opts.gasPrice]
- * @param  {Function} [opts.onhash]
- * @param  {Function} [opts.onreceipt]
- * @param  {Function} [opts.onconfirmation]
- * @param  {Function} [opts.onerror]
- * @param  {Function} [opts.onmined]
+ * @param  {Function} [opts.approveCallbacks.onhash]
+ * @param  {Function} [opts.approveCallbacks.onreceipt]
+ * @param  {Function} [opts.approveCallbacks.onconfirmation]
+ * @param  {Function} [opts.approveCallbacks.onerror]
+ * @param  {Function} [opts.approveCallbacks.onmined]
+ * @param  {Function} [opts.purchaseCallbacks.onhash]
+ * @param  {Function} [opts.purchaseCallbacks.onreceipt]
+ * @param  {Function} [opts.purchaseCallbacks.onconfirmation]
+ * @param  {Function} [opts.purchaseCallbacks.onerror]
+ * @param  {Function} [opts.purchaseCallbacks.onmined]
  * @throws {Error,TypeError}
  */
 async function purchase(opts) {
@@ -68,11 +73,20 @@ async function purchase(opts) {
     password,
     keyringOpts,
     gasPrice = 0,
-    onhash,
-    onreceipt,
-    onconfirmation,
-    onerror,
-    onmined
+    approveCallbacks: {
+      onhash: approveonhash,
+      onreceipt: approveonreceipt,
+      onconfirmation: approveonconfirmation,
+      onerror: approveonerror,
+      onmined: approveonmined
+    } = {},
+    purchaseCallbacks: {
+      onhash: purchaseonhash,
+      onreceipt: purchaseonreceipt,
+      onconfirmation: purchaseonconfirmation,
+      onerror: purchaseonerror,
+      onmined: purchaseonmined
+    } = {}
   } = opts
 
   let { budget, contentDid } = opts
@@ -130,7 +144,12 @@ async function purchase(opts) {
         spender: proxy,
         val,
         gasPrice,
-        estimate
+        estimate,
+        onhash: approveonhash,
+        onreceipt: approveonreceipt,
+        onconfirmation: approveonconfirmation,
+        onerror: approveonerror,
+        onmined: approveonmined
       })
 
       if (load.status) {
@@ -165,11 +184,11 @@ async function purchase(opts) {
     }
 
     receipt = await tx.sendSignedTransaction(purchaseTx, {
-      onhash,
-      onreceipt,
-      onconfirmation,
-      onerror,
-      onmined
+      onhash: purchaseonhash,
+      onreceipt: purchaseonreceipt,
+      onconfirmation: purchaseonconfirmation,
+      onerror: purchaseonerror,
+      onmined: purchaseonmined
     })
     ctx.close()
     if (receipt.status) {

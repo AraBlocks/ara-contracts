@@ -17,7 +17,6 @@ const {
   getDocumentOwner,
   web3: {
     tx,
-    sha3,
     call,
     account,
     contract,
@@ -556,11 +555,11 @@ async function deployNewStandard(opts) {
 
   let address = null
   try {
-    const { contractAddress } = await contract.deploy({
+    ({ contractAddress: address } = await contract.deploy({
       account: acct,
       abi: afsAbi,
       bytecode: bytes
-    })
+    }))
     const { tx: transaction, ctx: ctx1 } = await tx.create({
       account: acct,
       to: constants.REGISTRY_ADDRESS,
@@ -571,31 +570,18 @@ async function deployNewStandard(opts) {
         functionName: 'addStandardVersion',
         values: [
           version,
-          contractAddress
+          address
         ]
       }
     })
     // listen to ProxyDeployed event for proxy address
-    const { contract: registry, ctx: ctx2 } = await contract.get(abi, constants.REGISTRY_ADDRESS)
-    address = await new Promise((resolve, reject) => {
-      tx.sendSignedTransaction(transaction, {
-        onhash,
-        onreceipt,
-        onconfirmation,
-        onerror,
-        onmined
-      })
-      registry.events.StandardAdded({ fromBlock: 'latest' })
-        .on('data', (log) => {
-          const { returnValues: { _version, _address } } = log
-          if (_version === sha3(version, false)) {
-            resolve(_address)
-          }
-        })
-        .on('error', log => reject(log))
+    await tx.sendSignedTransaction(transaction, {
+      onhash,
+      onreceipt,
+      onconfirmation,
+      onerror,
+      onmined
     })
-    address = address || contractAddress
-    ctx2.close()
     ctx1.close()
   } catch (err) {
     throw err
