@@ -39,6 +39,7 @@ const {
  * @param  {Boolean}  opts.estimate
  * @param  {Object}   [opts.keyringOpts]
  * @param  {Number}   [opts.gasPrice]
+ * @param  {Boolean}  [opts.approve]
  * @param  {Function} [opts.approveCallbacks.onhash]
  * @param  {Function} [opts.approveCallbacks.onreceipt]
  * @param  {Function} [opts.approveCallbacks.onconfirmation]
@@ -73,6 +74,7 @@ async function purchase(opts) {
     password,
     keyringOpts,
     gasPrice = 0,
+    approve = true,
     approveCallbacks: {
       onhash: approveonhash,
       onreceipt: approveonreceipt,
@@ -135,7 +137,7 @@ async function purchase(opts) {
     price = Number(token.constrainTokenValue(price))
 
     let val = budget + price
-    if (val) {
+    if (approve && val) {
       val = val.toString()
 
       load = await token.increaseApproval({
