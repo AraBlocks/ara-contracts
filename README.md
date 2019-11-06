@@ -152,7 +152,16 @@ Purchases an `AFS` and adds it to the requester's library.
   - `contentDid` - The `DID` of the content being purchased
   - `password` - The requester's password
   - `budget` - The budget in Ara to allocate for the initial download job
-  - `keyringOpts` - optional Keyring options
+  - `gasPrice` - Optional gas price in GWei
+  - `approve` - Optional boolean indicating whether to send the Approve transaction prior to the Purchase transaction
+  - `keyringOpts` - Optional keyring options
+  - `approveCallbacks` - Optional callbacks for the Approve transaction
+    - `onhash`
+    - `onreceipt`
+    - `onconfirmation`
+    - `onerror`
+    - `onmined`
+  - `purchaseCallbacks` - Optional callbacks for the Purchase transaction
 
 Returns `object`:
   - `receipt` - Transaction receipt
@@ -204,7 +213,13 @@ Upgrades a proxy to another `AFS` standard.
   - `password` - The password of the owner of the proxy
   - `afsPassword` - The password of the AFS
   - `version` - The `AFS` standard version to upgrade to
-  - `keyringOpts` - optional Keyring options
+  - `gasPrice` - Optional gas price in GWei
+  - `keyringOpts` - Optional keyring options
+  - `onhash`
+  - `onreceipt`
+  - `onconfirmation`
+  - `onerror`
+  - `onmined`
 
 Returns a `boolean` indicating whether the proxy was successfully upgraded.
 
@@ -222,9 +237,15 @@ Deploys a proxy to an `AFS` standard.
   - `password` - The password of the owner of the `AFS`
   - `afsPassword` - The password of the AFS
   - `version` - The version to use with this proxy
-  - `estimate` - optional Flag to check cost of `deployProxy`
-  - `keyringOpts` - optional Keyring options
-  - `ownerDid` - optional Owner `DID` used in conjunction with `estimate` to bypass needing a real AFS
+  - `estimate` - Optional flag to check cost of `deployProxy`
+  - `ownerDid` - Optional owner `DID` used in conjunction with `estimate` to bypass needing a real AFS
+  - `gasPrice` - Optional gas price in GWei
+  - `keyringOpts` - Optional keyring options
+  - `onhash`
+  - `onreceipt`
+  - `onconfirmation`
+  - `onerror`
+  - `onmined`
 
 Returns the address at which the proxy was deployed.
 
@@ -273,7 +294,13 @@ Compiles and deploys a new `AFS` standard.
   - `password` - The password of the person deploying the standard
   - `version` - The version of the standard
   - `paths` - The solidity dependencies of the standard
-  - `keyringOpts` - optional Keyring options
+  - `gasPrice` - Optional gas price in GWei
+  - `keyringOpts` - Optional keyring options
+  - `onhash`
+  - `onreceipt`
+  - `onconfirmation`
+  - `onerror`
+  - `onmined`
 
 Returns the address at which the standard was deployed.
 
@@ -351,10 +378,16 @@ Submits new DCDN job.
   - `requesterDid` - The `DID` of the person submitting the job
   - `contentDid` - The `DID` of the content this job is for
   - `password` - The password of the person submitting the job
-  - `keyringOpts` - optional Keyring options
   - `job`
     - `jobId` - The `jobId` of the job being submitted
     - `budget` - The budget to allocate for the job
+  - `gasPrice` - Optional gas price in GWei
+  - `keyringOpts` - Optional keyring options
+  - `onhash`
+  - `onreceipt`
+  - `onconfirmation`
+  - `onerror`
+  - `onmined`
 
 Returns transaction `receipt` object.
 
@@ -381,11 +414,17 @@ Allocates `rewards` amongst `farmers` for `jobId`.
   - `requesterDid` - The `DID` of the person who submitted the job
   - `contentDid` - The `DID` of the content the job is for
   - `password` - The password of the person who submitted the job
-  - `keyringOpts` - optional Keyring options
   - `job`
     - `jobId` - The `jobId` of the job to allocate for
     - `farmers` - The Ethereum addresses of the farmers to reward
     - `rewards` - The reward amounts in Ara tokens to split amongst `farmers`, respectively
+  - `gasPrice` - Optional gas price in GWei
+  - `keyringOpts` - Optional keyring options
+  - `onhash`
+  - `onreceipt`
+  - `onconfirmation`
+  - `onerror`
+  - `onmined`
 
 ```js
 const jobId = '0x7dc039cfb220029c371d0f4aabf4a956ed0062d66c447df7b4595d7e11187271'
@@ -415,7 +454,13 @@ Redeem Ara tokens (resulting from allocation return or from rewards) from `AFS` 
   - `farmerDid` - The `DID` of the person redeeming tokens
   - `contentDid` - The `DID` of the content to redeem from
   - `password` - The password of the person redeeming tokens
-  - `keyringOpts` - optional Keyring options
+  - `gasPrice` - Optional gas price in GWei
+  - `keyringOpts` - Optional keyring options
+  - `onhash`
+  - `onreceipt`
+  - `onconfirmation`
+  - `onerror`
+  - `onmined`
 
 Returns the number of Ara tokens redeemed.
 
@@ -524,7 +569,13 @@ Transfers Ara from one account to another.
   - `password` - Password of the account sending Ara
   - `to` - `DID` of the account to receive the tokens
   - `val` - Amount to transfer
-  - `keyringOpts` - optional Keyring options
+  - `gasPrice` - Optional gas price in GWei
+  - `keyringOpts` - Optional keyring options
+  - `onhash`
+  - `onreceipt`
+  - `onconfirmation`
+  - `onerror`
+  - `onmined`
 
 Returns transaction `receipt` object.
 
@@ -551,7 +602,13 @@ Sets the approved token amount to be spent on an owner's behalf. This will overw
   - `password` - Password of the owning account
   - `spender` - `DID` of the account that will be spending the tokens
   - `val` - Amount to approve
-  - `keyringOpts` - optional Keyring options
+  - `gasPrice` - Optional gas price in GWei
+  - `keyringOpts` - Optional keyring options
+  - `onhash`
+  - `onreceipt`
+  - `onconfirmation`
+  - `onerror`
+  - `onmined`
 
 Returns transaction `receipt` object.
 
@@ -579,7 +636,13 @@ Transfers Ara from one address to another. This differs from `transfer` by requi
   - `val` - Amount of Ara to transfer
   - `did` - `DID` of the account initiating the transfer on behalf of `from`
   - `password` - Password of the account initiating the transfer
-  - `keyringOpts` - optional Keyring options
+  - `gasPrice` - Optional gas price in GWei
+  - `keyringOpts` - Optional keyring options
+  - `onhash`
+  - `onreceipt`
+  - `onconfirmation`
+  - `onerror`
+  - `onmined`
 
 Returns transaction `receipt` object.
 
@@ -608,7 +671,13 @@ Increases the approved amount that a `spender` can spend on behalf of an `owner`
   - `did` - `DID` of the account that owns the Ara
   - `password` - Password of the owning account
   - `val` - Amount to increase the approval by
-  - `keyringOpts` - optional Keyring options
+  - `gasPrice` - Optional gas price in GWei
+  - `keyringOpts` - Optional keyring options
+  - `onhash`
+  - `onreceipt`
+  - `onconfirmation`
+  - `onerror`
+  - `onmined`
 
 Returns transaction `receipt` object.
 
@@ -635,7 +704,13 @@ Decreases the approved amount that a `spender` can spend on behalf of an `owner`
   - `did` - `DID` of the account that owns the Ara
   - `password` - Password of the owning account
   - `val` - Amount to decrease the approval by
-  - `keyringOpts` - optional Keyring options
+  - `gasPrice` - Optional gas price in GWei
+  - `keyringOpts` - Optional keyring options
+  - `onhash`
+  - `onreceipt`
+  - `onconfirmation`
+  - `onerror`
+  - `onmined`
 
 Returns transaction `receipt` object.
 
@@ -662,7 +737,13 @@ Modifies the current amount deposited for rewards for a particular account.
   - `password` - password of the account
   - `val` - value as `string` to deposit/withdraw
   - `withdraw` - `boolean` whether this should be a deposit or withdraw (defaults to `false` if not given)
-  - `keyringOpts` - optional Keyring options
+  - `gasPrice` - Optional gas price in GWei
+  - `keyringOpts` - Optional keyring options
+  - `onhash`
+  - `onreceipt`
+  - `onconfirmation`
+  - `onerror`
+  - `onmined`
 
 Returns transaction `receipt` object.
 
@@ -737,6 +818,13 @@ Approves an AFS ownership transfer request.
   - `afsPassword` - The password of the AFS
   - `newOwnerDid` - The `DID` of the account to transfer ownership to
   - `estimate` - optional Flag to check cost of `approveOwnershipTransfer`
+  - `gasPrice` - Optional gas price in GWei
+  - `keyringOpts` - Optional keyring options
+  - `onhash`
+  - `onreceipt`
+  - `onconfirmation`
+  - `onerror`
+  - `onmined`
 
 Returns transaction `receipt` object.
 
@@ -759,6 +847,13 @@ Revokes an outstanding ownership request of an AFS.
   - `contentDid` - The `DID` of the content to transfer ownership
   - `password` - The password of the account requesting ownership
   - `estimate` - optional Flag to check cost of `revokeOwnershipRequest`
+  - `gasPrice` - Optional gas price in GWei
+  - `keyringOpts` - Optional keyring options
+  - `onhash`
+  - `onreceipt`
+  - `onconfirmation`
+  - `onerror`
+  - `onmined`
 
 Returns transaction `receipt` object.
 
@@ -780,7 +875,13 @@ Requests ownership of an AFS.
   - `contentDid` - The `DID` of the content to transfer ownership
   - `password` - The password of the account requesting ownership
   - `estimate` - optional Flag to check cost of `requestOwnership`
-  - `keyringOpts` - optional Keyring options
+  - `gasPrice` - Optional gas price in GWei
+  - `keyringOpts` - Optional keyring options
+  - `onhash`
+  - `onreceipt`
+  - `onconfirmation`
+  - `onerror`
+  - `onmined`
 
 Returns transaction `receipt` object.
 
