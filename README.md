@@ -85,7 +85,8 @@ The contracts in this repository are currently deployed on [Ara Privatenet](http
 
 ## API
 
-> Any value inputted into token functions must be strings to avoid precision errors
+> Any value inputted into token functions must be strings to avoid precision error
+> All transaction callbacks (`onhash`, `onreceipt`, `onconfirmation`, `onerror`, and `onmined`) are optional. For more information, see [`ara-util`](https://github.com/AraBlocks/ara-util#sendSignedTransaction).
 
 ### Purchase
 
@@ -162,6 +163,11 @@ Purchases an `AFS` and adds it to the requester's library.
     - `onerror`
     - `onmined`
   - `purchaseCallbacks` - Optional callbacks for the Purchase transaction
+    - `onhash`
+    - `onreceipt`
+    - `onconfirmation`
+    - `onerror`
+    - `onmined`
 
 Returns `object`:
   - `receipt` - Transaction receipt
