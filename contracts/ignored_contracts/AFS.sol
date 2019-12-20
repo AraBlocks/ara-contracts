@@ -56,7 +56,7 @@ contract AFS is Ownable {
   modifier purchaseRequired()
   {
     require(
-      purchasers_[keccak256(abi.encodePacked(msg.sender))],
+      purchasers_[keccak256(abi.encodePacked(msg.sender))] || msg.sender == owner_,
       "Content was never purchased."
     );
     _;

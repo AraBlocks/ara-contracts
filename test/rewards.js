@@ -110,7 +110,7 @@ test.serial('submit(opts) has not purchased', async (t) => {
   proxyAddress = await registry.deployProxy({ contentDid, password, version: '2.1' })
 
   await t.throwsAsync(rewards.submit({
-    requesterDid,
+    requesterDid: TEST_FARMER_DID1,
     contentDid,
     password,
     job: {

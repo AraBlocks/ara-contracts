@@ -15,6 +15,8 @@ const {
   getProxyAddress
 } = require('./registry')
 
+const { getOwner } = require('./ownership')
+
 const {
   validate,
   getIdentifier,
@@ -125,9 +127,10 @@ async function submit(opts) {
   debug(`${did} submitting ${budget} Ara as rewards for ${jobId} in ${contentDid}`)
 
   // make sure user hasn't already purchased
+  const isOwner = (await getOwner(contentDid)).toLowerCase() === (await getAddressFromDID(did)).toLowerCase()
   const purchased = await hasPurchased({ contentDid, purchaserDid: did })
-  if (!purchased) {
-    throw new Error(`${did} has not purchased AFS ${contentDid}, cannot submit budget.`)
+  if (!purchased && !isOwner) {
+    throw new Error(`${did} is not the owner of and has not purchased AFS ${contentDid}, cannot submit budget.`)
   }
 
   let receipt
