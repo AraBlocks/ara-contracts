@@ -11,7 +11,7 @@ contract AFSestimate is Ownable {
   using SafeMath for uint256;
   using BytesLib for bytes;
 
-  string   public version_ = "2_estimate";
+  string   public version_ = "7_estimate";
 
   AraToken public token_;
   Library  public lib_;
@@ -47,7 +47,7 @@ contract AFSestimate is Ownable {
   modifier purchaseRequired()
   {
     require(
-      purchasers_[keccak256(abi.encodePacked(msg.sender))],
+      purchasers_[keccak256(abi.encodePacked(msg.sender))] || msg.sender == owner_,
       "Content was never purchased."
     );
     _;

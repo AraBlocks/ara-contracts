@@ -22,8 +22,8 @@ This repository contains all contracts deployed by Ara. There are five global co
 
 | Network | Version      | Address                                      | Verified Source                                                                      |
 | ------- | ------------ | -------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Ropsten | `6`          | `0x54a206a07e18a1fed118e3f946db4e3b7de35049` | https://ropsten.etherscan.io/address/0x54a206a07e18a1fed118e3f946db4e3b7de35049#code |
-| Ropsten | `6_estimate` | `0x5437dF777Fa849dadD67A7F7fD88F9deB657166A` | https://ropsten.etherscan.io/address/0x5437df777fa849dadd67a7f7fd88f9deb657166a#code |
+| Ropsten | `7`          | `0xA70379FF23f3d5865f8A1D72A0a6dC236c010BF1` | https://ropsten.etherscan.io/address/0xA70379FF23f3d5865f8A1D72A0a6dC236c010BF1#code |
+| Ropsten | `7_estimate` | `0xA2d98BF45Eca1915cBf3747b6AA7275f1c8D1e75` | https://ropsten.etherscan.io/address/0xA2d98BF45Eca1915cBf3747b6AA7275f1c8D1e75#code |
 | Mainnet | `2`          | `0x7bd36ca16161d8290986d4dca8265c2b5ca340fe` | https://etherscan.io/address/0x7bd36ca16161d8290986d4dca8265c2b5ca340fe#code |
 | Mainnet | `2_estimate` | `0x39798776e91874583abf1e36c77a49446a8f3cea` | https://etherscan.io/address/0x39798776e91874583abf1e36c77a49446a8f3cea#code |
 
