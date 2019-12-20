@@ -325,9 +325,10 @@ async function allocate(opts) {
   const estimate = opts.estimate || false
 
   // make sure user hasn't already purchased
+  const isOwner = (await getOwner(contentDid)).toLowerCase() === (await getAddressFromDID(did)).toLowerCase()
   const purchased = await hasPurchased({ contentDid, purchaserDid: did })
-  if (!purchased) {
-    throw new Error(`${did} has not purchased AFS ${contentDid}, cannot submit budget.`)
+  if (!purchased && !isOwner) {
+    throw new Error(`${did} is not the owner of and has not purchased AFS ${contentDid}, cannot allocate rewards.`)
   }
 
   const jobOwner = await getJobOwner({ contentDid, jobId })
