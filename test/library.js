@@ -44,22 +44,22 @@ test.serial('hasPurchased(opts)', async (t) => {
 test.serial('hasPurchased(opts) invalid opts', async (t) => {
   const purchaserDid = getDid(t)
 
-  await t.throwsAsync(library.hasPurchased(), TypeError)
-  await t.throwsAsync(library.hasPurchased({ }), TypeError)
-  await t.throwsAsync(library.hasPurchased([ ]), TypeError)
+  await t.throwsAsync(library.hasPurchased(), {instanceOf: TypeError})
+  await t.throwsAsync(library.hasPurchased({ }), {instanceOf: TypeError})
+  await t.throwsAsync(library.hasPurchased([ ]), {instanceOf: TypeError})
 
-  await t.throwsAsync(library.hasPurchased({ purchaserDid }), TypeError)
-  await t.throwsAsync(library.hasPurchased({ purchaserDid: '' }), TypeError)
-  await t.throwsAsync(library.hasPurchased({ purchaserDid: 'did:ara:invalid' }), Error)
-  await t.throwsAsync(library.hasPurchased({ purchaserDid: 123 }), TypeError)
-  await t.throwsAsync(library.hasPurchased({ purchaserDid: true }), TypeError)
-  await t.throwsAsync(library.hasPurchased({ purchaserDid: { } }), TypeError)
+  await t.throwsAsync(library.hasPurchased({ purchaserDid }), {instanceOf: TypeError})
+  await t.throwsAsync(library.hasPurchased({ purchaserDid: '' }), {instanceOf: TypeError})
+  await t.throwsAsync(library.hasPurchased({ purchaserDid: 'did:ara:invalid' }), {instanceOf: Error})
+  await t.throwsAsync(library.hasPurchased({ purchaserDid: 123 }), {instanceOf: TypeError})
+  await t.throwsAsync(library.hasPurchased({ purchaserDid: true }), {instanceOf: TypeError})
+  await t.throwsAsync(library.hasPurchased({ purchaserDid: { } }), {instanceOf: TypeError})
 
-  await t.throwsAsync(library.hasPurchased({ purchaserDid, contentDid: '' }), TypeError)
-  await t.throwsAsync(library.hasPurchased({ purchaserDid, contentDid: 'did:ara:invalid' }), Error)
-  await t.throwsAsync(library.hasPurchased({ purchaserDid, contentDid: 123 }), TypeError)
-  await t.throwsAsync(library.hasPurchased({ purchaserDid, contentDid: true }), TypeError)
-  await t.throwsAsync(library.hasPurchased({ purchaserDid, contentDid: { } }), TypeError)
+  await t.throwsAsync(library.hasPurchased({ purchaserDid, contentDid: '' }), {instanceOf: TypeError})
+  await t.throwsAsync(library.hasPurchased({ purchaserDid, contentDid: 'did:ara:invalid' }), {instanceOf: Error})
+  await t.throwsAsync(library.hasPurchased({ purchaserDid, contentDid: 123 }), {instanceOf: TypeError})
+  await t.throwsAsync(library.hasPurchased({ purchaserDid, contentDid: true }), {instanceOf: TypeError})
+  await t.throwsAsync(library.hasPurchased({ purchaserDid, contentDid: { } }), {instanceOf: TypeError})
 })
 
 test.serial('getLibrarySize(requesterDid)', async (t) => {
@@ -71,11 +71,11 @@ test.serial('getLibrarySize(requesterDid)', async (t) => {
 })
 
 test.serial('getLibrarySize(requesterDid) invalid opts', async (t) => {
-  await t.throwsAsync(library.getLibrarySize(), TypeError)
-  await t.throwsAsync(library.getLibrarySize(''), TypeError)
-  await t.throwsAsync(library.getLibrarySize(123), TypeError)
-  await t.throwsAsync(library.getLibrarySize(true), TypeError)
-  await t.throwsAsync(library.getLibrarySize({ }), TypeError)
+  await t.throwsAsync(library.getLibrarySize(), {instanceOf: TypeError})
+  await t.throwsAsync(library.getLibrarySize(''), {instanceOf: TypeError})
+  await t.throwsAsync(library.getLibrarySize(123), {instanceOf: TypeError})
+  await t.throwsAsync(library.getLibrarySize(true), {instanceOf: TypeError})
+  await t.throwsAsync(library.getLibrarySize({ }), {instanceOf: TypeError})
 })
 
 test.serial('getLibraryItem(opts)', async (t) => {
@@ -87,22 +87,22 @@ test.serial('getLibraryItem(opts)', async (t) => {
 test.serial('getLibraryItem(opts) invalid index', async (t) => {
   const requesterDid = getDid(t)
 
-  await t.throwsAsync(library.getLibraryItem({ requesterDid, index: 2 }), Error)
-  await t.throwsAsync(library.getLibraryItem({ requesterDid, index: 3 }), Error)
+  await t.throwsAsync(library.getLibraryItem({ requesterDid, index: 2 }), {instanceOf: Error})
+  await t.throwsAsync(library.getLibraryItem({ requesterDid, index: 3 }), {instanceOf: Error})
 })
 
 test.serial('getLibraryItem(opts) invalid opts', async (t) => {
   const requesterDid = getDid(t)
 
-  await t.throwsAsync(library.getLibraryItem(), TypeError)
-  await t.throwsAsync(library.getLibraryItem({ }), TypeError)
-  await t.throwsAsync(library.getLibraryItem([ ]), TypeError)
+  await t.throwsAsync(library.getLibraryItem(), {instanceOf: TypeError})
+  await t.throwsAsync(library.getLibraryItem({ }), {instanceOf: TypeError})
+  await t.throwsAsync(library.getLibraryItem([ ]), {instanceOf: TypeError})
 
-  await t.throwsAsync(library.getLibraryItem({ requesterDid }), TypeError)
-  await t.throwsAsync(library.getLibraryItem({ requesterDid: '' }), TypeError)
-  await t.throwsAsync(library.getLibraryItem({ requesterDid: 123 }), TypeError)
-  await t.throwsAsync(library.getLibraryItem({ requesterDid: true }), TypeError)
-  await t.throwsAsync(library.getLibraryItem({ requesterDid: { } }), TypeError)
+  await t.throwsAsync(library.getLibraryItem({ requesterDid }), {instanceOf: TypeError})
+  await t.throwsAsync(library.getLibraryItem({ requesterDid: '' }), {instanceOf: TypeError})
+  await t.throwsAsync(library.getLibraryItem({ requesterDid: 123 }), {instanceOf: TypeError})
+  await t.throwsAsync(library.getLibraryItem({ requesterDid: true }), {instanceOf: TypeError})
+  await t.throwsAsync(library.getLibraryItem({ requesterDid: { } }), {instanceOf: TypeError})
 
   await t.throwsAsync(library.getLibraryItem({ requesterDid, index: '' }))
   await t.throwsAsync(library.getLibraryItem({ requesterDid, index: -1 }))
@@ -120,10 +120,10 @@ test.serial('getLibrary(requesterDid)', async (t) => {
 })
 
 test.serial('getLibrary(requesterDid) invalid opts', async (t) => {
-  await t.throwsAsync(library.getLibrary(), TypeError)
-  await t.throwsAsync(library.getLibrary({ }), TypeError)
-  await t.throwsAsync(library.getLibrary([ ]), TypeError)
-  await t.throwsAsync(library.getLibrary(''), TypeError)
-  await t.throwsAsync(library.getLibrary(123), TypeError)
-  await t.throwsAsync(library.getLibrary(true), TypeError)
+  await t.throwsAsync(library.getLibrary(), {instanceOf: TypeError})
+  await t.throwsAsync(library.getLibrary({ }), {instanceOf: TypeError})
+  await t.throwsAsync(library.getLibrary([ ]), {instanceOf: TypeError})
+  await t.throwsAsync(library.getLibrary(''), {instanceOf: TypeError})
+  await t.throwsAsync(library.getLibrary(123), {instanceOf: TypeError})
+  await t.throwsAsync(library.getLibrary(true), {instanceOf: TypeError})
 })

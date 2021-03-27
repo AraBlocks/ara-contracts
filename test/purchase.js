@@ -64,13 +64,13 @@ test.serial('purchase(opts) already purchased', async (t) => {
   const contentDid = getAfsDid1(t)
   const requesterDid = getDid(t)
 
-  await t.throwsAsync(purchase({ requesterDid, contentDid, password }), Error)
+  await t.throwsAsync(purchase({ requesterDid, contentDid, password }), {instanceOf: Error})
 })
 
 test.serial('purchase(opts) no proxy', async (t) => {
   const requesterDid = getDid(t)
 
-  await t.throwsAsync(purchase({ requesterDid, contentDid: TEST_DID, password }), Error)
+  await t.throwsAsync(purchase({ requesterDid, contentDid: TEST_DID, password }), {instanceOf: Error})
 })
 
 test.serial('purchase(opts) budget', async (t) => {
@@ -85,59 +85,59 @@ test('purchase(opts) invalid opts', async (t) => {
   const contentDid = getAfsDid1(t)
   const requesterDid = getDid(t)
 
-  await t.throwsAsync(purchase(), TypeError)
-  await t.throwsAsync(purchase({ }), TypeError)
-  await t.throwsAsync(purchase('opts'), TypeError)
-  await t.throwsAsync(purchase(true), TypeError)
-  await t.throwsAsync(purchase(123), TypeError)
+  await t.throwsAsync(purchase(), {instanceOf: TypeError})
+  await t.throwsAsync(purchase({ }), {instanceOf: TypeError})
+  await t.throwsAsync(purchase('opts'), {instanceOf: TypeError})
+  await t.throwsAsync(purchase(true), {instanceOf: TypeError})
+  await t.throwsAsync(purchase(123), {instanceOf: TypeError})
 
-  await t.throwsAsync(purchase({ requesterDid }), TypeError)
-  await t.throwsAsync(purchase({ requesterDid: '' }), TypeError)
-  await t.throwsAsync(purchase({ requesterDid: 'did:ara:invalid' }), Error)
-  await t.throwsAsync(purchase({ requesterDid: { } }), TypeError)
-  await t.throwsAsync(purchase({ requesterDid: 123 }), TypeError)
-  await t.throwsAsync(purchase({ requesterDid: true }), TypeError)
+  await t.throwsAsync(purchase({ requesterDid }), {instanceOf: TypeError})
+  await t.throwsAsync(purchase({ requesterDid: '' }), {instanceOf: TypeError})
+  await t.throwsAsync(purchase({ requesterDid: 'did:ara:invalid' }), {instanceOf: Error})
+  await t.throwsAsync(purchase({ requesterDid: { } }), {instanceOf: TypeError})
+  await t.throwsAsync(purchase({ requesterDid: 123 }), {instanceOf: TypeError})
+  await t.throwsAsync(purchase({ requesterDid: true }), {instanceOf: TypeError})
 
-  await t.throwsAsync(purchase({ requesterDid, contentDid }), TypeError)
-  await t.throwsAsync(purchase({ requesterDid, contentDid: '' }), TypeError)
-  await t.throwsAsync(purchase({ requesterDid, contentDid: 'did:ara:invalid' }), Error)
-  await t.throwsAsync(purchase({ requesterDid, contentDid: { } }), TypeError)
-  await t.throwsAsync(purchase({ requesterDid, contentDid: 123 }), TypeError)
-  await t.throwsAsync(purchase({ requesterDid, contentDid: true }), TypeError)
+  await t.throwsAsync(purchase({ requesterDid, contentDid }), {instanceOf: TypeError})
+  await t.throwsAsync(purchase({ requesterDid, contentDid: '' }), {instanceOf: TypeError})
+  await t.throwsAsync(purchase({ requesterDid, contentDid: 'did:ara:invalid' }), {instanceOf: Error})
+  await t.throwsAsync(purchase({ requesterDid, contentDid: { } }), {instanceOf: TypeError})
+  await t.throwsAsync(purchase({ requesterDid, contentDid: 123 }), {instanceOf: TypeError})
+  await t.throwsAsync(purchase({ requesterDid, contentDid: true }), {instanceOf: TypeError})
 
-  await t.throwsAsync(purchase({ requesterDid, contentDid, password: '' }), TypeError)
-  await t.throwsAsync(purchase({ requesterDid, contentDid, password: 'wrong' }), Error)
-  await t.throwsAsync(purchase({ requesterDid, contentDid, password: 123 }), TypeError)
-  await t.throwsAsync(purchase({ requesterDid, contentDid, password: { } }), TypeError)
-  await t.throwsAsync(purchase({ requesterDid, contentDid, password: true }), TypeError)
+  await t.throwsAsync(purchase({ requesterDid, contentDid, password: '' }), {instanceOf: TypeError})
+  await t.throwsAsync(purchase({ requesterDid, contentDid, password: 'wrong' }), {instanceOf: Error})
+  await t.throwsAsync(purchase({ requesterDid, contentDid, password: 123 }), {instanceOf: TypeError})
+  await t.throwsAsync(purchase({ requesterDid, contentDid, password: { } }), {instanceOf: TypeError})
+  await t.throwsAsync(purchase({ requesterDid, contentDid, password: true }), {instanceOf: TypeError})
 
   await t.throwsAsync(purchase({
     requesterDid,
     contentDid,
     password,
     budget: '0'
-  }), TypeError)
+  }), {instanceOf: TypeError})
 
   await t.throwsAsync(purchase({
     requesterDid,
     contentDid,
     password,
     budget: { }
-  }), TypeError)
+  }), {instanceOf: TypeError})
 
   await t.throwsAsync(purchase({
     requesterDid,
     contentDid,
     password,
     budget: true
-  }), TypeError)
+  }), {instanceOf: TypeError})
 
   await t.throwsAsync(purchase({
     requesterDid,
     contentDid,
     password,
     budget: -1
-  }), TypeError)
+  }), {instanceOf: TypeError})
 })
 
 async function _purchaseWithBudget(contentDid, budget, t) {
