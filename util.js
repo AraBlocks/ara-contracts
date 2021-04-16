@@ -1,5 +1,5 @@
-const { JOB_ID_LENGTH } = require('./constants')
 const isBuffer = require('is-buffer')
+const { JOB_ID_LENGTH } = require('./constants')
 
 function isValidJobId(jobId) {
   if (!jobId || ('string' !== typeof jobId && !isBuffer(jobId))) {

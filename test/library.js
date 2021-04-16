@@ -1,6 +1,6 @@
 const { toHexString } = require('ara-util/transform')
-const { library } = require('../')
 const test = require('ava')
+const { library } = require('..')
 
 const {
   TEST_OWNER_DID_NO_METHOD,

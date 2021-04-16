@@ -1,9 +1,9 @@
-let constants = require('../constants')
-const factory = require('../factory')
 const pify = require('pify')
 const path = require('path')
 const test = require('ava')
 const fs = require('fs')
+const factory = require('../factory')
+let constants = require('../constants')
 
 const {
   TEST_OWNER_DID_NO_METHOD,

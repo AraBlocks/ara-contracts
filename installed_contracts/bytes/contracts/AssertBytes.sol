@@ -1,4 +1,13 @@
-pragma solidity ^0.4.19;
+// SPDX-License-Identifier: Unlicense
+/*
+ * @title Solidity Bytes Assertion Library
+ * @author Gonçalo Sá <goncalo.sa@consensys.net>
+ *
+ * @dev A Solidity library built to complete assertions in Solidity unit tests.
+ *      This library is compliant with the test event convention that the Truffle suite uses.
+ */
+
+pragma solidity >=0.5.0 <0.7.0;
 
 
 library AssertBytes {
@@ -27,7 +36,7 @@ library AssertBytes {
             // if lengths don't match the arrays are not equal
             switch eq(length, mload(_b))
             case 1 {
-                // cb is a circuit breaker in the for loop since there's 
+                // cb is a circuit breaker in the for loop since there's
                 //  no said feature for inline assembly loops
                 // cb = 1 - don't breaker
                 // cb = 0 - break
@@ -39,7 +48,7 @@ library AssertBytes {
                 for {
                     let cc := add(_b, 0x20)
                 // the next line is the loop condition:
-                // while(uint(mc < end) + cb == 2)
+                // while(uint256(mc < end) + cb == 2)
                 } eq(add(lt(mc, end), cb), 2) {
                     mc := add(mc, 0x20)
                     cc := add(cc, 0x20)
@@ -61,7 +70,7 @@ library AssertBytes {
         return returnBool;
     }
 
-    function equal(bytes memory _a, bytes memory _b, string message) internal returns (bool) {
+    function equal(bytes memory _a, bytes memory _b, string memory message) internal returns (bool) {
         bool returnBool = _equal(_a, _b);
 
         _report(returnBool, message);
@@ -69,7 +78,7 @@ library AssertBytes {
         return returnBool;
     }
 
-    function notEqual(bytes memory _a, bytes memory _b, string message) internal returns (bool) {
+    function notEqual(bytes memory _a, bytes memory _b, string memory message) internal returns (bool) {
         bool returnBool = _equal(_a, _b);
 
         _report(!returnBool, message);
@@ -117,7 +126,7 @@ library AssertBytes {
                         }
                     }
                     default {
-                        // cb is a circuit breaker in the for loop since there's 
+                        // cb is a circuit breaker in the for loop since there's
                         //  no said feature for inline assembly loops
                         // cb = 1 - don't breaker
                         // cb = 0 - break
@@ -126,12 +135,12 @@ library AssertBytes {
                         // get the keccak hash to get the contents of the array
                         mstore(0x0, _a_slot)
                         let sc := keccak256(0x0, 0x20)
-                        
+
                         let mc := add(_b, 0x20)
                         let end := add(mc, mlength)
 
                         // the next line is the loop condition:
-                        // while(uint(mc < end) + cb == 2)
+                        // while(uint256(mc < end) + cb == 2)
                         for {} eq(add(lt(mc, end), cb), 2) {
                             sc := add(sc, 1)
                             mc := add(mc, 0x20)
@@ -154,7 +163,7 @@ library AssertBytes {
         return returnBool;
     }
 
-    function equalStorage(bytes storage _a, bytes memory _b, string message) internal returns (bool) {
+    function equalStorage(bytes storage _a, bytes memory _b, string memory message) internal returns (bool) {
         bool returnBool = _equalStorage(_a, _b);
 
         _report(returnBool, message);
@@ -162,7 +171,7 @@ library AssertBytes {
         return returnBool;
     }
 
-    function notEqualStorage(bytes storage _a, bytes memory _b, string message) internal returns (bool) {
+    function notEqualStorage(bytes storage _a, bytes memory _b, string memory message) internal returns (bool) {
         bool returnBool = _equalStorage(_a, _b);
 
         _report(!returnBool, message);
@@ -182,11 +191,10 @@ library AssertBytes {
             result (bool) - The test result (true or false).
             message (string) - The message that is sent if the assertion fails.
     */
-
-    function _report(bool result, string message) internal {
+    function _report(bool result, string memory message) internal {
         if (result)
-            TestEvent(true, "");
+            emit TestEvent(true, "");
         else
-            TestEvent(false, message);
+            emit TestEvent(false, message);
     }
 }

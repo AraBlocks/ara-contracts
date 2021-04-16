@@ -1,17 +1,17 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.16;
 
-import "./Ownable.sol";
-import "./Library.sol";
-import "./AraToken.sol";
-import "bytes/BytesLib.sol";
+import './Ownable.sol';
+import './Library.sol';
+import './AraToken.sol';
+import 'bytes/BytesLib.sol';
 import '../SafeMath32.sol';
-import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
+import '../SafeMath.sol';
 
 contract AFS is Ownable {
   using SafeMath for uint256;
   using BytesLib for bytes;
 
-  string   public version_ = "2";
+  string   public version_ = '2';
 
   AraToken public token_;
   Library  public lib_;
@@ -48,7 +48,7 @@ contract AFS is Ownable {
   {
     require(
       msg.sender == _account,
-      "Sender not authorized."
+      'Sender not authorized.'
     );
     _;
   }
@@ -57,7 +57,7 @@ contract AFS is Ownable {
   {
     require(
       purchasers_[keccak256(abi.encodePacked(msg.sender))],
-      "Content was never purchased."
+      'Content was never purchased.'
     );
     _;
   }
@@ -66,12 +66,12 @@ contract AFS is Ownable {
   {
     require(
       jobs_[_jobId].sender == msg.sender && jobs_[_jobId].budget > 0,
-      "Job is invalid."
+      'Job is invalid.'
     );
     _;
   }
 
-  function init(bytes _data) public {
+  function init(bytes memory _data) public {
     require(owner_ == address(0), 'This AFS standard has already been initialized.');
   
     uint256 btsptr;
@@ -107,7 +107,7 @@ contract AFS is Ownable {
   function submitBudget(bytes32 _jobId, uint256 _budget) public purchaseRequired {
     uint256 allowance = token_.allowance(msg.sender, address(this));
     require(_jobId != bytes32(0) && _budget > 0 && allowance >= _budget
-      && (jobs_[_jobId].sender == address(0) || jobs_[_jobId].sender == msg.sender), "Job submission invalid.");
+      && (jobs_[_jobId].sender == address(0) || jobs_[_jobId].sender == msg.sender), 'Job submission invalid.');
 
     if (token_.transferFrom(msg.sender, address(this), _budget)) {
       jobs_[_jobId].budget = jobs_[_jobId].budget.add(_budget);
@@ -117,17 +117,17 @@ contract AFS is Ownable {
     }
   }
 
-  function allocateRewards(bytes32 _jobId, address[] _farmers, uint256[] _rewards) public budgetSubmitted(_jobId) {
-    require(_farmers.length > 0, "Must allocate to at least one farmer.");
-    require(_farmers.length == _rewards.length, "Unequal number of farmers and rewards.");
+  function allocateRewards(bytes32 _jobId, address[] memory _farmers, uint256[] memory _rewards) public budgetSubmitted(_jobId) {
+    require(_farmers.length > 0, 'Must allocate to at least one farmer.');
+    require(_farmers.length == _rewards.length, 'Unequal number of farmers and rewards.');
     uint256 totalRewards = 0;
     for (uint256 i = 0; i < _rewards.length; i++) {
       address farmer = _farmers[i];
-      require(farmer != msg.sender, "Cannot allocate rewards to job creator.");
-      require(farmer == owner_ || purchasers_[keccak256(abi.encodePacked(farmer))] || token_.amountDeposited(farmer) >= depositRequirement_, "Farmer must be a purchaser of this AFS or have sufficient token deposit.");
+      require(farmer != msg.sender, 'Cannot allocate rewards to job creator.');
+      require(farmer == owner_ || purchasers_[keccak256(abi.encodePacked(farmer))] || token_.amountDeposited(farmer) >= depositRequirement_, 'Farmer must be a purchaser of this AFS or have sufficient token deposit.');
       totalRewards = totalRewards.add(_rewards[i]);
     }
-    require(totalRewards <= jobs_[_jobId].budget, "Insufficient budget.");
+    require(totalRewards <= jobs_[_jobId].budget, 'Insufficient budget.');
     for (uint256 j = 0; j < _farmers.length; j++) {
       assert(jobs_[_jobId].budget >= _rewards[j]);
       bytes32 hashedFarmer = keccak256(abi.encodePacked(_farmers[j]));
@@ -140,7 +140,7 @@ contract AFS is Ownable {
   function redeemBalance() public {
     if (msg.sender == owner_ || token_.amountDeposited(msg.sender) >= depositRequirement_ || purchasers_[keccak256(abi.encodePacked(msg.sender))]) {
       bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
-      require(rewards_[hashedAddress] > 0, "No balance to redeem.");
+      require(rewards_[hashedAddress] > 0, 'No balance to redeem.');
       if (token_.transfer(msg.sender, rewards_[hashedAddress])) {
         emit Redeemed(msg.sender, rewards_[hashedAddress]);
         rewards_[hashedAddress] = 0;
@@ -167,10 +167,10 @@ contract AFS is Ownable {
    * @param _budget The reward budget for jobId, or 0 if N/A
    */
   function purchase(bytes32 _purchaser, bytes32 _jobId, uint256 _budget) external {
-    require(listed_, "Content is not listed for purchase.");
+    require(listed_, 'Content is not listed for purchase.');
     uint256 allowance = token_.allowance(msg.sender, address(this));
     bytes32 hashedAddress = keccak256(abi.encodePacked(msg.sender));
-    require (!purchasers_[hashedAddress] && allowance >= price_.add(_budget), "Unable to purchase.");
+    require (!purchasers_[hashedAddress] && allowance >= price_.add(_budget), 'Unable to purchase.');
 
     if (token_.transferFrom(msg.sender, owner_, price_)) {
       purchasers_[hashedAddress] = true;
@@ -183,10 +183,10 @@ contract AFS is Ownable {
     }
   }
 
-  function append(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
-    bytes _msBuffer) external onlyBy(owner_) {
+  function append(uint256[] calldata _mtOffsets, uint256[] calldata _msOffsets, bytes calldata _mtBuffer,
+    bytes calldata _msBuffer) external onlyBy(owner_) {
     
-    require(listed_, "AFS is unlisted.");
+    require(listed_, 'AFS is unlisted.');
     
     uint256 maxOffsetLength = _mtOffsets.length > _msOffsets.length 
       ? _mtOffsets.length 
@@ -207,13 +207,13 @@ contract AFS is Ownable {
     emit Commit(did_);
   }
 
-  function write(uint256[] _mtOffsets, uint256[] _msOffsets, bytes _mtBuffer, 
-    bytes _msBuffer) public onlyBy(owner_) {
+  function write(uint256[] memory _mtOffsets, uint256[] memory _msOffsets, bytes memory _mtBuffer,
+    bytes memory _msBuffer) public onlyBy(owner_) {
 
-    require(listed_, "AFS is unlisted.");
+    require(listed_, 'AFS is unlisted.');
 
-    uint256 maxOffsetLength = _mtOffsets.length > _msOffsets.length 
-      ? _mtOffsets.length 
+    uint256 maxOffsetLength = _mtOffsets.length > _msOffsets.length
+      ? _mtOffsets.length
       : _msOffsets.length;
 
     // add headers
@@ -225,7 +225,7 @@ contract AFS is Ownable {
       if (i <= _mtOffsets.length - 1) {
         metadata_[0][_mtOffsets[i]] = _mtBuffer.slice(_mtOffsets[i], mtBufferSize_);
       }
-      
+
       // metadata/signatures
       if (i <= _msOffsets.length - 1) {
         metadata_[1][_msOffsets[i]] = _msBuffer.slice(_msOffsets[i], msBufferSize_);
@@ -235,14 +235,14 @@ contract AFS is Ownable {
     emit Commit(did_);
   }
 
-  function read(uint8 _file, uint256 _offset) public view returns (bytes buffer) {
+  function read(uint8 _file, uint256 _offset) public view returns (bytes memory buffer) {
     if (!listed_) {
-      return ""; // empty bytes
+      return ''; // empty bytes
     }
     return metadata_[_file][_offset];
   }
 
-  function hasBuffer(uint8 _file, uint256 _offset, bytes _buffer) public view returns (bool exists) {
+  function hasBuffer(uint8 _file, uint256 _offset, bytes memory _buffer) public view returns (bool exists) {
     return metadata_[_file][_offset].equal(_buffer);
   }
 

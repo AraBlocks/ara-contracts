@@ -1,12 +1,12 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.16;
 
 /**
  * NOTE: This contract will be removed once openzeppelin-solidity releases this code as an official release.
- * -Charles 
+ * -Charles
  */
 
-import "./ERC20.sol";
-import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
+import './ERC20.sol';
+import '../SafeMath.sol';
 
 /**
  * @title Standard ERC20 token
@@ -168,7 +168,7 @@ contract StandardToken is ERC20 {
    * @param _amount The amount that will be created.
    */
   function _mint(address _account, uint256 _amount) internal {
-    require(_account != 0);
+    require(_account != address(0));
     totalSupply_ = totalSupply_.add(_amount);
     balances_[_account] = balances_[_account].add(_amount);
     emit Transfer(address(0), _account, _amount);
@@ -181,7 +181,7 @@ contract StandardToken is ERC20 {
    * @param _amount The amount that will be burnt.
    */
   function _burn(address _account, uint256 _amount) internal {
-    require(_account != 0);
+    require(_account != address(0));
     require(_amount <= balances_[_account]);
 
     totalSupply_ = totalSupply_.sub(_amount);

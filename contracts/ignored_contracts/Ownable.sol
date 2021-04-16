@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.16;
 
 contract Ownable {
 
@@ -17,13 +17,13 @@ contract Ownable {
 
   modifier hasNotRequested() {
     require(!requesters_[keccak256(abi.encodePacked(msg.sender))],
-      "Ownership request already active.");
+      'Ownership request already active.');
     _;
   }
 
   modifier hasRequested(address _newOwner) {
-    require(requesters_[keccak256(abi.encodePacked(_newOwner))], 
-      "Owner request has not been sent.");
+    require(requesters_[keccak256(abi.encodePacked(_newOwner))],
+      'Owner request has not been sent.');
     _;
   }
 

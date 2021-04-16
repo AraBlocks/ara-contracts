@@ -1,8 +1,8 @@
 /* eslint-disable quotes */
 
 const { web3: { account } } = require('ara-util')
-const { storage, registry } = require('../')
 const test = require('ava')
+const { storage, registry } = require("..")
 
 const {
   PASSWORD: password,
@@ -131,9 +131,9 @@ test("hasBuffer(opts) invalid buffer", async (t) => {
     account: { }
   }
   await t.throwsAsync(storage.hasBuffer(opts), TypeError)
-  await t.throwsAsync(storage.hasBuffer(Object.assign({}, opts, { buffer: false })), TypeError)
-  await t.throwsAsync(storage.hasBuffer(Object.assign({}, opts, { buffer: 0xff })), TypeError)
-  await t.throwsAsync(storage.hasBuffer(Object.assign({}, opts, { buffer: [] })), TypeError)
+  await t.throwsAsync(storage.hasBuffer({ ...opts, buffer: false }), TypeError)
+  await t.throwsAsync(storage.hasBuffer({ ...opts, buffer: 0xff }), TypeError)
+  await t.throwsAsync(storage.hasBuffer({ ...opts, buffer: [] }), TypeError)
 })
 
 test.serial("hasBuffer(opts) buffer does not exist", async (t) => {

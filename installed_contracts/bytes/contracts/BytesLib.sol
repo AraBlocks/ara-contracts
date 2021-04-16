@@ -1,16 +1,23 @@
+// SPDX-License-Identifier: Unlicense
 /*
  * @title Solidity Bytes Arrays Utils
- * @author Nick Johnson <arachnid@notdot.net>
+ * @author Gonçalo Sá <goncalo.sa@consensys.net>
  *
  * @dev Bytes tightly packed arrays utility library for ethereum contracts written in Solidity.
  *      The library lets you concatenate, slice and type cast bytes arrays both in memory and storage.
  */
-
-pragma solidity ^0.4.19;
+pragma solidity >=0.5.0 <0.7.0;
 
 
 library BytesLib {
-    function concat(bytes memory _preBytes, bytes memory _postBytes) internal pure returns (bytes) {
+    function concat(
+        bytes memory _preBytes,
+        bytes memory _postBytes
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
         bytes memory tempBytes;
 
         assembly {
@@ -70,7 +77,7 @@ library BytesLib {
             // Update the free-memory pointer by padding our last write location
             // to 32 bytes: add 31 bytes to the end of tempBytes to move to the
             // next 32 byte block, then round down to the nearest multiple of
-            // 32. If the sum of the length of the two arrays is zero then add 
+            // 32. If the sum of the length of the two arrays is zero then add
             // one before rounding down to leave a blank 32 bytes (the length block with 0).
             mstore(0x40, and(
               add(add(end, iszero(add(length, mload(_preBytes)))), 31),
@@ -200,8 +207,8 @@ library BytesLib {
                 let mask := sub(exp(0x100, submod), 1)
 
                 sstore(sc, add(sload(sc), and(mload(mc), mask)))
-                
-                for { 
+
+                for {
                     sc := add(sc, 1)
                     mc := add(mc, 0x20)
                 } lt(mc, end) {
@@ -218,8 +225,18 @@ library BytesLib {
         }
     }
 
-    function slice(bytes _bytes, uint _start, uint _length) internal  pure returns (bytes) {
-        require(_bytes.length >= (_start + _length));
+    function slice(
+        bytes memory _bytes,
+        uint256 _start,
+        uint256 _length
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        require(_length + 31 >= _length, "slice_overflow");
+        require(_start + _length >= _start, "slice_overflow");
+        require(_bytes.length >= _start + _length, "slice_outOfBounds");
 
         bytes memory tempBytes;
 
@@ -267,6 +284,9 @@ library BytesLib {
             //if we want a zero-length slice let's just return a zero-length array
             default {
                 tempBytes := mload(0x40)
+                //zero out the 32 bytes slice we are about to return
+                //we need to do it because Solidity does not garbage collect
+                mstore(tempBytes, 0)
 
                 mstore(0x40, add(tempBytes, 0x20))
             }
@@ -275,8 +295,9 @@ library BytesLib {
         return tempBytes;
     }
 
-    function toAddress(bytes _bytes, uint _start) internal  pure returns (address) {
-        require(_bytes.length >= (_start + 20));
+    function toAddress(bytes memory _bytes, uint256 _start) internal pure returns (address) {
+        require(_start + 20 >= _start, "toAddress_overflow");
+        require(_bytes.length >= _start + 20, "toAddress_outOfBounds");
         address tempAddress;
 
         assembly {
@@ -286,8 +307,81 @@ library BytesLib {
         return tempAddress;
     }
 
-    function toUint(bytes _bytes, uint _start) internal  pure returns (uint256) {
-        require(_bytes.length >= (_start + 32));
+    function toUint8(bytes memory _bytes, uint256 _start) internal pure returns (uint8) {
+        require(_start + 1 >= _start, "toUint8_overflow");
+        require(_bytes.length >= _start + 1 , "toUint8_outOfBounds");
+        uint8 tempUint;
+
+        assembly {
+            tempUint := mload(add(add(_bytes, 0x1), _start))
+        }
+
+        return tempUint;
+    }
+
+    function toUint16(bytes memory _bytes, uint256 _start) internal pure returns (uint16) {
+        require(_start + 2 >= _start, "toUint16_overflow");
+        require(_bytes.length >= _start + 2, "toUint16_outOfBounds");
+        uint16 tempUint;
+
+        assembly {
+            tempUint := mload(add(add(_bytes, 0x2), _start))
+        }
+
+        return tempUint;
+    }
+
+    function toUint32(bytes memory _bytes, uint256 _start) internal pure returns (uint32) {
+        require(_start + 4 >= _start, "toUint32_overflow");
+        require(_bytes.length >= _start + 4, "toUint32_outOfBounds");
+        uint32 tempUint;
+
+        assembly {
+            tempUint := mload(add(add(_bytes, 0x4), _start))
+        }
+
+        return tempUint;
+    }
+
+    function toUint64(bytes memory _bytes, uint256 _start) internal pure returns (uint64) {
+        require(_start + 8 >= _start, "toUint64_overflow");
+        require(_bytes.length >= _start + 8, "toUint64_outOfBounds");
+        uint64 tempUint;
+
+        assembly {
+            tempUint := mload(add(add(_bytes, 0x8), _start))
+        }
+
+        return tempUint;
+    }
+
+    function toUint96(bytes memory _bytes, uint256 _start) internal pure returns (uint96) {
+        require(_start + 12 >= _start, "toUint96_overflow");
+        require(_bytes.length >= _start + 12, "toUint96_outOfBounds");
+        uint96 tempUint;
+
+        assembly {
+            tempUint := mload(add(add(_bytes, 0xc), _start))
+        }
+
+        return tempUint;
+    }
+
+    function toUint128(bytes memory _bytes, uint256 _start) internal pure returns (uint128) {
+        require(_start + 16 >= _start, "toUint128_overflow");
+        require(_bytes.length >= _start + 16, "toUint128_outOfBounds");
+        uint128 tempUint;
+
+        assembly {
+            tempUint := mload(add(add(_bytes, 0x10), _start))
+        }
+
+        return tempUint;
+    }
+
+    function toUint256(bytes memory _bytes, uint256 _start) internal pure returns (uint256) {
+        require(_start + 32 >= _start, "toUint256_overflow");
+        require(_bytes.length >= _start + 32, "toUint256_outOfBounds");
         uint256 tempUint;
 
         assembly {
@@ -297,8 +391,9 @@ library BytesLib {
         return tempUint;
     }
 
-    function toBytes32(bytes _bytes, uint _start) internal  pure returns (bytes32) {
-        require(_bytes.length >= (_start + 32));
+    function toBytes32(bytes memory _bytes, uint256 _start) internal pure returns (bytes32) {
+        require(_start + 32 >= _start, "toBytes32_overflow");
+        require(_bytes.length >= _start + 32, "toBytes32_outOfBounds");
         bytes32 tempBytes32;
 
         assembly {
@@ -329,7 +424,7 @@ library BytesLib {
                 for {
                     let cc := add(_postBytes, 0x20)
                 // the next line is the loop condition:
-                // while(uint(mc < end) + cb == 2)
+                // while(uint256(mc < end) + cb == 2)
                 } eq(add(lt(mc, end), cb), 2) {
                     mc := add(mc, 0x20)
                     cc := add(cc, 0x20)
@@ -351,7 +446,14 @@ library BytesLib {
         return success;
     }
 
-    function equalStorage(bytes storage _preBytes, bytes memory _postBytes) internal view returns (bool) {
+    function equalStorage(
+        bytes storage _preBytes,
+        bytes memory _postBytes
+    )
+        internal
+        view
+        returns (bool)
+    {
         bool success = true;
 
         assembly {
@@ -393,7 +495,7 @@ library BytesLib {
                         let end := add(mc, mlength)
 
                         // the next line is the loop condition:
-                        // while(uint(mc < end) + cb == 2)
+                        // while(uint256(mc < end) + cb == 2)
                         for {} eq(add(lt(mc, end), cb), 2) {
                             sc := add(sc, 1)
                             mc := add(mc, 0x20)

@@ -1,6 +1,6 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.16;
 
-import "./AraProxy.sol";
+import './AraProxy.sol';
 
 contract AraRegistry {
   address public owner_;
@@ -9,7 +9,7 @@ contract AraRegistry {
   struct UpgradeableContract {
     bool initialized_;
 
-    address proxy_;
+    address payable proxy_;
     string latestVersion_;
     mapping (string => address) versions_;
   }
@@ -25,7 +25,7 @@ contract AraRegistry {
   modifier restricted() {
     require (
       msg.sender == owner_,
-      "Sender not authorized."
+      'Sender not authorized.'
     );
     _;
   }
@@ -34,12 +34,12 @@ contract AraRegistry {
     return contracts_[_contractName].versions_[contracts_[_contractName].latestVersion_];
   }
 
-  function getUpgradeableContractAddress(bytes32 _contractName, string _version) public view returns (address) {
+  function getUpgradeableContractAddress(bytes32 _contractName, string memory _version) public view returns (address) {
     return contracts_[_contractName].versions_[_version];
   }
 
-  function addNewUpgradeableContract(bytes32 _contractName, string _version, bytes _code, bytes _data) public restricted {
-    require(!contracts_[_contractName].initialized_, "Upgradeable contract already exists. Try upgrading instead.");
+  function addNewUpgradeableContract(bytes32 _contractName, string memory _version, bytes memory _code, bytes memory _data) public restricted {
+    require(!contracts_[_contractName].initialized_, 'Upgradeable contract already exists. Try upgrading instead.');
     address deployedAddress;
     assembly {
       deployedAddress := create(0, add(_code, 0x20), mload(_code))
@@ -53,8 +53,8 @@ contract AraRegistry {
     emit UpgradeableContractAdded(_contractName, _version, deployedAddress);
   }
 
-  function upgradeContract(bytes32 _contractName, string _version, bytes _code) public restricted {
-    require(contracts_[_contractName].initialized_, "Upgradeable contract must exist before it can be upgraded. Try adding one instead.");
+  function upgradeContract(bytes32 _contractName, string memory _version, bytes memory _code) public restricted {
+    require(contracts_[_contractName].initialized_, 'Upgradeable contract must exist before it can be upgraded. Try adding one instead.');
     address deployedAddress;
     assembly {
       deployedAddress := create(0, add(_code, 0x20), mload(_code))
@@ -69,12 +69,13 @@ contract AraRegistry {
     emit ContractUpgraded(_contractName, _version, deployedAddress);
   }
 
-  function _deployProxy(bytes32 _contractName, address _implementationAddress, bytes _data) private {
-    require(contracts_[_contractName].proxy_ == address(0), "Only one proxy can exist per upgradeable contract.");
+  function _deployProxy(bytes32 _contractName, address _implementationAddress, bytes memory _data) private {
+    require(contracts_[_contractName].proxy_ == address(0), 'Only one proxy can exist per upgradeable contract.');
     AraProxy proxy = new AraProxy(address(this), _implementationAddress);
-    require(address(proxy).call(abi.encodeWithSignature("init(bytes)", _data)), "Init failed.");
-    contracts_[_contractName].proxy_ = proxy;
+    (bool success, ) = address(proxy).call(abi.encodeWithSignature('init(bytes)', _data));
+    require(success, 'Init failed.');
+    contracts_[_contractName].proxy_ = address(proxy);
 
-    emit ProxyDeployed(_contractName, proxy);
+    emit ProxyDeployed(_contractName, address(proxy));
   }
 }

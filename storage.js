@@ -1,4 +1,3 @@
-const { abi } = require('./build/contracts/AFS.json')
 const isBuffer = require('is-buffer')
 
 const {
@@ -8,6 +7,7 @@ const {
     tx
   }
 } = require('ara-util')
+const { abi } = require('./build/contracts/AFS.json')
 
 async function read(opts) {
   _validateOpts(opts)

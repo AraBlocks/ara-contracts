@@ -10,17 +10,16 @@ const {
 } = require('ara-util')
 
 const {
-  AID_PREFIX,
-  ARA_TOKEN_ADDRESS,
-  TOKEN_DECIMALS
-} = require('./constants')
-
-const {
   isAddress,
   account,
   call,
   tx
 } = require('ara-util/web3')
+const {
+  AID_PREFIX,
+  ARA_TOKEN_ADDRESS,
+  TOKEN_DECIMALS
+} = require('./constants')
 
 /**
  * Get the Ara balance of a specific Ara DID or Ethereum address.

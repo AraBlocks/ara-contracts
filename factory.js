@@ -1,7 +1,5 @@
-const { abi: registryAbi } = require('./build/contracts/AraRegistry.json')
 const debug = require('debug')('ara-contracts:factory')
 const replace = require('replace-in-file')
-let constants = require('./constants')
 const mkdirp = require('mkdirp')
 const pify = require('pify')
 const path = require('path')
@@ -20,17 +18,12 @@ const {
   }
 } = require('ara-util')
 
+const { abi: registryAbi } = require('./build/contracts/AraRegistry.json')
+let constants = require('./constants')
+
 async function compileAndDeployAraContracts(opts) {
-  try {
-    await compileAraContracts()
-  } catch (err) {
-    debug(`compilation failed with error: ${err.message}`)
-  }
-  try {
-    return deployAraContracts(opts)
-  } catch (err) {
-    throw err
-  }
+  await compileAraContracts()
+  return deployAraContracts(opts)
 }
 
 /*
@@ -41,18 +34,14 @@ async function compileAraContracts() {
   delete require.cache[require.resolve('./constants')]
   constants = require('./constants')
 
-  try {
-    debug('Compiling contracts...')
-    await pify(mkdirp)(constants.BYTESDIR)
+  debug('Compiling contracts...')
+  await mkdirp(constants.BYTESDIR)
 
-    await _compileRegistry()
-    await _compileLibrary()
-    await _compileToken()
+  await _compileRegistry()
+  await _compileLibrary()
+  await _compileToken()
 
-    debug('Contracts compiled.')
-  } catch (err) {
-    throw err
-  }
+  debug('Contracts compiled.')
 }
 
 /*
@@ -67,28 +56,19 @@ async function deployAraContracts(opts) {
   delete require.cache[require.resolve('./constants')]
   constants = require('./constants')
 
-  let acct
-  try {
-    acct = await _validateMasterOpts(opts)
-  } catch (err) {
-    throw err
-  }
+  const acct = await _validateMasterOpts(opts)
 
-  try {
-    debug('Deploying...')
-    const registryAddress = await _deployRegistry(acct)
-    const libraryAddress = await _deployLibrary(acct, registryAddress)
-    const tokenAddress = await _deployToken(acct)
+  debug('Deploying...')
+  const registryAddress = await _deployRegistry(acct)
+  const libraryAddress = await _deployLibrary(acct, registryAddress)
+  const tokenAddress = await _deployToken(acct)
 
-    await _replaceConstants(registryAddress, libraryAddress, tokenAddress)
+  await _replaceConstants(registryAddress, libraryAddress, tokenAddress)
 
-    return {
-      registryAddress,
-      libraryAddress,
-      tokenAddress
-    }
-  } catch (err) {
-    throw err
+  return {
+    registryAddress,
+    libraryAddress,
+    tokenAddress
   }
 }
 
@@ -112,7 +92,7 @@ async function compileAndUpgradeRegistry(opts) {
   constants = require('./constants')
 
   try {
-    await pify(mkdirp)(constants.BYTESDIR)
+    await mkdirp(constants.BYTESDIR)
     await _compileRegistry()
     await _deployRegistry(acct, true)
   } catch (err) {
@@ -140,7 +120,7 @@ async function compileAndUpgradeLibrary(opts) {
   constants = require('./constants')
 
   try {
-    await pify(mkdirp)(constants.BYTESDIR)
+    await mkdirp(constants.BYTESDIR)
     await _compileLibrary()
     await _deployLibrary(acct, constants.REGISTRY_ADDRESS, true)
   } catch (err) {
@@ -168,7 +148,7 @@ async function compileAndUpgradeToken(opts) {
   constants = require('./constants')
 
   try {
-    await pify(mkdirp)(constants.BYTESDIR)
+    await mkdirp(constants.BYTESDIR)
     await _compileToken()
     await _deployToken(acct, true)
   } catch (err) {
@@ -242,9 +222,21 @@ async function _validateMasterOpts(opts) {
 }
 
 async function _compile(contractname, sources, bytespath) {
-  const compiledFile = solc.compile({ sources }, 1)
-  const compiledContract = compiledFile.contracts[`${contractname}`]
-  const { bytecode } = compiledContract
+  sources = Object.keys(sources).reduce((o, k) => ({
+    ...o,
+    [k]: { content: sources[k] }
+  }), {})
+
+  const compiledFile = JSON.parse(solc.compile(JSON.stringify({
+    language: 'Solidity',
+    sources,
+    settings: { outputSelection: { '*': { '*': [ '*' ] } } }
+  })))
+  const filename = contractname.split(':')[0]
+  // eslint-disable-next-line
+  contractname = contractname.split(':')[1]
+  const compiledContract = compiledFile.contracts[filename][contractname]
+  const bytecode = compiledContract.evm.bytecode.object
 
   await pify(fs.writeFile)(path.resolve(__dirname, `${bytespath}`), `0x${bytecode}`)
 }
@@ -285,7 +277,7 @@ async function _compileToken() {
       'AraToken.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/AraToken.sol'), 'utf8'),
       'StandardToken.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/StandardToken.sol'), 'utf8'),
       'ERC20.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/ignored_contracts/ERC20.sol'), 'utf8'),
-      'openzeppelin-solidity/contracts/math/SafeMath.sol': await pify(fs.readFile)(path.resolve(__dirname, './node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol'), 'utf8'),
+      'SafeMath.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/SafeMath.sol'), 'utf8'),
     },
     `${constants.BYTESDIR}/Token_${constants.TOKEN_VERSION}`
   )
@@ -323,23 +315,19 @@ async function _deployToken(acct, upgrade = false) {
 }
 
 async function _checkExists(label, version) {
-  try {
-    const address = await call({
-      abi: registryAbi,
-      address: constants.ARA_REGISTRY_ADDRESS,
-      functionName: 'getUpgradeableContractAddress',
-      arguments: [
-        sha3(label, false), version
-      ]
-    })
+  const address = await call({
+    abi: registryAbi,
+    address: constants.ARA_REGISTRY_ADDRESS,
+    functionName: 'getUpgradeableContractAddress',
+    arguments: [
+      sha3(label, false), version
+    ]
+  })
 
-    if (!/^0x0+$/.test(address)) {
-      return true
-    }
-    return false
-  } catch (err) {
-    throw err
+  if (!/^0x0+$/.test(address)) {
+    return true
   }
+  return false
 }
 
 async function _sendTx(acct, label, version, bytecode, data, upgrade = false, gasPrice = 0) {
@@ -370,11 +358,11 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false, ga
       tx.sendSignedTransaction(
         transaction,
         {
-          onhash: hash => debug('onhash:', hash),
-          onreceipt: receipt => debug('onreceipt:', receipt),
+          onhash: (hash) => debug('onhash:', hash),
+          onreceipt: (receipt) => debug('onreceipt:', receipt),
           onconfirmation: (confNumber, receipt) => debug('onconfirmation:', confNumber, receipt),
-          onerror: error => debug('onerror:', error),
-          onmined: receipt => debug('onmined:', receipt)
+          onerror: (error) => debug('onerror:', error),
+          onmined: (receipt) => debug('onmined:', receipt)
         }
       )
       registry.events.UpgradeableContractAdded({ fromBlock: 'latest' })
@@ -385,7 +373,7 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false, ga
             debug(label, 'abi-encoded constructor parameters:', web3Abi.encodeParameters([ 'address', 'address' ], [ constants.ARA_REGISTRY_ADDRESS, _address ]))
           }
         })
-        .on('error', log => reject(log))
+        .on('error', (log) => reject(log))
       registry.events.ProxyDeployed({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { _contractName, _address } } = log
@@ -394,18 +382,18 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false, ga
             resolve(_address)
           }
         })
-        .on('error', log => reject(log))
+        .on('error', (log) => reject(log))
     })
   } else {
     await new Promise((resolve, reject) => {
       tx.sendSignedTransaction(
         transaction,
         {
-          onhash: hash => debug('onhash:', hash),
-          onreceipt: receipt => debug('onreceipt:', receipt),
+          onhash: (hash) => debug('onhash:', hash),
+          onreceipt: (receipt) => debug('onreceipt:', receipt),
           onconfirmation: (confNumber, receipt) => debug('onconfirmation:', confNumber, receipt),
-          onerror: error => debug('onerror:', error),
-          onmined: receipt => debug('onmined:', receipt)
+          onerror: (error) => debug('onerror:', error),
+          onmined: (receipt) => debug('onmined:', receipt)
         }
       )
       registry.events.ContractUpgraded()
@@ -416,7 +404,7 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false, ga
             resolve()
           }
         })
-        .on('error', log => reject(log))
+        .on('error', (log) => reject(log))
     })
   }
   ctx.close()

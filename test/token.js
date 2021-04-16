@@ -5,9 +5,9 @@
  * Charles Kelly <charles@ara.one>
  */
 
-const { mirrorIdentity, cleanup } = require('./_util')
-const { token } = require('../')
 const test = require('ava')
+const { mirrorIdentity, cleanup } = require('./_util')
+const { token } = require('..')
 
 const {
   TEST_OWNER_DID_NO_METHOD,

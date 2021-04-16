@@ -34,7 +34,7 @@ module.exports = {
   get ARA_REGISTRY_ADDRESS() {
     const local = '0xf996af566992c7e34e6fd0bd3df79ec16296f5aa'
     const privatenet = '0x19a33cbb0c43baa965b262ca382f367309ac3622'
-    const testnet = '0x6bda4b9fcb082e72b30081393d4ae7b05360e517'
+    const testnet = '0xF996AF566992c7e34e6Fd0Bd3df79EC16296f5aa'
     const mainnet = '0xf8314584346fc84e96b36113784f6b562e5b01af'
     return getAddress(local, privatenet, testnet, mainnet)
   },

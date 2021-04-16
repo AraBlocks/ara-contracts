@@ -196,7 +196,7 @@ async function submit(opts) {
             debug(`budgetted ${token.constrainTokenValue(_budget)} Ara for job ${_jobId} in ${_did}`)
           }
         })
-        .on('error', log => reject(log))
+        .on('error', (log) => reject(log))
     })
     ctx2.close()
     ctx1.close()
@@ -481,7 +481,7 @@ async function redeem(opts) {
             resolve(balance)
           }
         })
-        .on('error', log => reject(log))
+        .on('error', (log) => reject(log))
 
       proxyContract.events.InsufficientDeposit({ fromBlock: 'latest' })
         .on('data', (log) => {
@@ -491,7 +491,7 @@ async function redeem(opts) {
             reject(new Error('Insufficent Deposit'))
           }
         })
-        .on('error', log => reject(log))
+        .on('error', (log) => reject(log))
     })
     ctx3.close()
     ctx2.close()

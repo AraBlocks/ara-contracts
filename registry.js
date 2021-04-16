@@ -9,8 +9,6 @@ const path = require('path')
 const solc = require('solc')
 const fs = require('fs')
 
-let constants = require('./constants')
-
 const {
   validate,
   getIdentifier,
@@ -26,6 +24,7 @@ const {
     toHexString
   }
 } = require('ara-util')
+let constants = require('./constants')
 
 async function proxyExists(contentDid = '') {
   try {
@@ -197,7 +196,7 @@ async function upgradeProxy(opts) {
             resolve(true)
           }
         })
-        .on('error', log => reject(log))
+        .on('error', (log) => reject(log))
     })
     ctx2.close()
     ctx1.close()
@@ -353,7 +352,7 @@ async function deployProxy(opts) {
             resolve(_address)
           }
         })
-        .on('error', log => reject(log))
+        .on('error', (log) => reject(log))
     })
     ctx2.close()
     ctx1.close()
@@ -413,36 +412,32 @@ async function getStandard(version) {
 }
 
 async function _compileStandard(bytespath, paths) {
-  try {
-    // compile AFS sources and dependencies
-    const sources = {
-      'ERC20.sol': await pify(fs.readFile)(resolve(__dirname, './contracts/ignored_contracts/ERC20.sol'), 'utf8'),
-      'StandardToken.sol': await pify(fs.readFile)(resolve(__dirname, './contracts/ignored_contracts/StandardToken.sol'), 'utf8'),
-      'openzeppelin-solidity/contracts/math/SafeMath.sol': await pify(fs.readFile)(resolve(__dirname, './node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol'), 'utf8'),
-      'Ownable.sol': await pify(fs.readFile)(resolve(__dirname, './contracts/ignored_contracts/Ownable.sol'), 'utf8'),
-      'bytes/BytesLib.sol': await pify(fs.readFile)(resolve(__dirname, './installed_contracts/bytes/contracts/BytesLib.sol'), 'utf8'),
-      'SafeMath32.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/SafeMath32.sol'), 'utf8')
-    }
-
-    paths.forEach((path) => {
-      const src = fs.readFileSync(path, 'utf8')
-      path = parse(path).base
-      sources[path] = src
-    })
-
-    const compiledFile = solc.compile({ sources }, 1)
-    const label = Object.keys(compiledFile.contracts)[0]
-    debug(`writing bytecode for ${label}`)
-    const compiledContract = compiledFile.contracts[label]
-    const afsAbi = JSON.parse(compiledContract.interface)
-    const { bytecode } = compiledContract
-    const bytes = toHexString(bytecode, { encoding: 'hex', ethify: true })
-
-    await pify(fs.writeFile)(bytespath, bytes)
-    return { bytes, afsAbi }
-  } catch (err) {
-    throw err
+  // compile AFS sources and dependencies
+  const sources = {
+    'ERC20.sol': await pify(fs.readFile)(resolve(__dirname, './contracts/ignored_contracts/ERC20.sol'), 'utf8'),
+    'StandardToken.sol': await pify(fs.readFile)(resolve(__dirname, './contracts/ignored_contracts/StandardToken.sol'), 'utf8'),
+    'SafeMath.sol': await pify(fs.readFile)(resolve(__dirname, './contracts/SafeMath.sol'), 'utf8'),
+    'Ownable.sol': await pify(fs.readFile)(resolve(__dirname, './contracts/ignored_contracts/Ownable.sol'), 'utf8'),
+    'bytes/BytesLib.sol': await pify(fs.readFile)(resolve(__dirname, './installed_contracts/bytes/contracts/BytesLib.sol'), 'utf8'),
+    'SafeMath32.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/SafeMath32.sol'), 'utf8')
   }
+
+  paths.forEach((path) => {
+    const src = fs.readFileSync(path, 'utf8')
+    path = parse(path).base
+    sources[path] = src
+  })
+
+  const compiledFile = solc.compile({ sources }, 1)
+  const label = Object.keys(compiledFile.contracts)[0]
+  debug(`writing bytecode for ${label}`)
+  const compiledContract = compiledFile.contracts[label]
+  const afsAbi = JSON.parse(compiledContract.interface)
+  const { bytecode } = compiledContract
+  const bytes = toHexString(bytecode, { encoding: 'hex', ethify: true })
+
+  await pify(fs.writeFile)(bytespath, bytes)
+  return { bytes, afsAbi }
 }
 
 /**

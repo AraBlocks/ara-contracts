@@ -1,9 +1,14 @@
 /* eslint-disable object-curly-newline */
 /* eslint-disable no-await-in-loop */
 
-const { rewards, purchase, registry, token } = require('../')
-const { abi } = require('../build/contracts/AFS.json')
 const test = require('ava')
+const {
+  web3: {
+    contract
+  }
+} = require('ara-util')
+const { rewards, purchase, registry, token } = require('..')
+const { abi } = require('../build/contracts/AFS.json')
 
 const {
   TEST_OWNER_DID,
@@ -18,12 +23,6 @@ const {
   VALID_JOBID,
   TEST_OWNER_ADDRESS
 } = require('./_constants')
-
-const {
-  web3: {
-    contract
-  }
-} = require('ara-util')
 
 const {
   sendEthAraAndDeposit,

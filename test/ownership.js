@@ -1,6 +1,6 @@
 const { getAddressFromDID } = require('ara-util')
-const ownership = require('../ownership')
 const test = require('ava')
+const ownership = require('../ownership')
 
 const {
   TEST_OWNER_DID,

@@ -1,10 +1,8 @@
 const { getAddressFromDID, getIdentifier } = require('ara-util')
 const { createIdentityKeyPath } = require('ara-identity')
-const { transfer, modifyDeposit } = require('../token')
 const createContext = require('ara-context')
 const replace = require('replace-in-file')
 const { blake2b } = require('ara-crypto')
-const constants = require('../constants')
 const mirror = require('mirror-folder')
 const { readFile } = require('fs')
 const mkdirp = require('mkdirp')
@@ -12,16 +10,18 @@ const rimraf = require('rimraf')
 const pify = require('pify')
 
 const {
+  resolve,
+  parse
+} = require('path')
+const {
   TEST_OWNER_DID,
   TEST_OWNER_ADDRESS,
   PASSWORD,
   BYTESDIR
 } = require('./_constants')
 
-const {
-  resolve,
-  parse
-} = require('path')
+const constants = require('../constants')
+const { transfer, modifyDeposit } = require('../token')
 
 module.exports = {
 
@@ -34,7 +34,7 @@ module.exports = {
     const ddo = JSON.parse(await pify(readFile)(ddoPath, 'utf8'))
     const identityPath = createIdentityKeyPath(ddo)
     const parsed = parse(identityPath)
-    await pify(mkdirp)(parsed.dir)
+    await mkdirp(parsed.dir)
     await pify(mirror)(resolve(path, hash), identityPath)
     return { ddo, did: testDID, identityPath }
   },

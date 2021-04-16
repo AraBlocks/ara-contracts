@@ -1,16 +1,4 @@
-const { abi } = require('../build/contracts/AFS.json')
-const { purchase, registry } = require('../')
 const test = require('ava')
-
-const {
-  TEST_OWNER_DID_NO_METHOD,
-  TEST_AFS_DID1,
-  TEST_AFS_DID2,
-  TEST_DID,
-  PASSWORD: password,
-  ZERO_BYTES32
-} = require('./_constants')
-
 const {
   hashDID,
   web3: {
@@ -20,6 +8,17 @@ const {
     toHexString
   }
 } = require('ara-util')
+const { abi } = require('../build/contracts/AFS.json')
+const { purchase, registry } = require('..')
+
+const {
+  TEST_OWNER_DID_NO_METHOD,
+  TEST_AFS_DID1,
+  TEST_AFS_DID2,
+  TEST_DID,
+  PASSWORD: password,
+  ZERO_BYTES32
+} = require('./_constants')
 
 const {
   mirrorIdentity,

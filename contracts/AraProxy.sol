@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.16;
 
 /**
  * @title AraProxy
@@ -6,8 +6,8 @@ pragma solidity ^0.4.24;
  */
 contract AraProxy {
 
-  bytes32 private constant registryPosition_ = keccak256("io.ara.proxy.registry");
-  bytes32 private constant implementationPosition_ = keccak256("io.ara.proxy.implementation");
+  bytes32 private constant registryPosition_ = keccak256('io.ara.proxy.registry');
+  bytes32 private constant implementationPosition_ = keccak256('io.ara.proxy.implementation');
 
   modifier restricted() {
     bytes32 registryPosition = registryPosition_;
@@ -17,7 +17,7 @@ contract AraProxy {
     }
     require(
       msg.sender == registryAddress,
-      "Only the AraRegistry can upgrade this proxy."
+      'Only the AraRegistry can upgrade this proxy.'
     );
     _;
   }
@@ -46,7 +46,7 @@ contract AraProxy {
   * @dev Fallback function allowing to perform a delegatecall to the given implementation.
   * This function will return whatever the implementation call returns
   */
-  function () payable public {
+  function () external payable {
     bytes32 implementationPosition = implementationPosition_;
     address _impl;
     assembly {

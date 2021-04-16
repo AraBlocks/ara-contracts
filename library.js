@@ -1,14 +1,5 @@
 /* eslint-disable no-await-in-loop */
 
-const { abi: libAbi } = require('./build/contracts/Library.json')
-const { abi: proxyAbi } = require('./build/contracts/AFS.json')
-const { LIBRARY_ADDRESS } = require('./constants')
-
-const {
-  proxyExists,
-  getProxyAddress
-} = require('./registry')
-
 const {
   hashDID,
   getIdentifier,
@@ -22,6 +13,14 @@ const {
   },
   getAddressFromDID
 } = require('ara-util')
+const { abi: libAbi } = require('./build/contracts/Library.json')
+const { abi: proxyAbi } = require('./build/contracts/AFS.json')
+const { LIBRARY_ADDRESS } = require('./constants')
+
+const {
+  proxyExists,
+  getProxyAddress
+} = require('./registry')
 
 /**
  * Returns requesterDid's library

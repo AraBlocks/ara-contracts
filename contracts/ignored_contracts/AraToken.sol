@@ -1,15 +1,15 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.16;
 
-import "./StandardToken.sol";
+import './StandardToken.sol';
 
 contract AraToken is StandardToken {
 
   // metadata
   bool    private initialized;
-  string  public constant name = "Ara Token";
-  string  public constant symbol = "ARA";
+  string  public constant name = 'Ara Token';
+  string  public constant symbol = 'ARA';
   uint256 public constant decimals = 18;
-  string  public version = "1.0";
+  string  public version = '1.0';
 
 
   mapping (address => uint256) private deposits_;
@@ -17,10 +17,10 @@ contract AraToken is StandardToken {
   event Deposit(address indexed from, uint256 value, uint256 total);
   event Withdraw(address indexed to, uint256 value, uint256 total);
 
-  function init(bytes _data) public {
+  function init(bytes memory _data) public {
     require(!initialized, 'Ara Token has already been initialized.');
     initialized = true;
-    
+
     uint256 btsptr;
     address ownerAddr;
     assembly {

@@ -1,7 +1,4 @@
-const { abi } = require('./build/contracts/AFS.json')
 const hasDIDMethod = require('has-did-method')
-const { AID_PREFIX } = require('./constants')
-
 const {
   getAddressFromDID,
   getDocumentOwner,
@@ -14,6 +11,8 @@ const {
     tx
   }
 } = require('ara-util')
+const { abi } = require('./build/contracts/AFS.json')
+const { AID_PREFIX } = require('./constants')
 
 const {
   getProxyAddress,

@@ -1,14 +1,14 @@
 #!/bin/bash
 safeRunCommand() {
-  typeset cmnd="$*"
+  typeset cmd="$*"
   typeset ret_code
 
-  echo cmnd=$cmnd
-  eval $cmnd
+  echo cmd="$cmd"
+  eval "$cmd"
 
   ret_code=$?
   if [ $ret_code != 0 ]; then
-    printf "Error : [%d] when executing command: '$cmndE'" $ret_code
+    printf "Error : [%d] when executing command: '$cmd'" $ret_code
     exit $ret_code
   fi
 }
@@ -22,10 +22,14 @@ chmod +r ~/.ara/identities/
 cp -a test/fixtures/identities/. ~/.ara/identities/
 
 # installation
-npm install -g ganache-cli truffle@4.1.14
+if ! which ganache-cli > /dev/null; then
+  npm install -g ganache-cli truffle@5.3.1
+fi
 
 # run local ganache node
-ganache-cli -l 0x7A1200 -q &
+pkill -f ganache
+ganache-cli -l 0x7A1200  &
+pid=$!
 sleep 5
 
 command="truffle migrate --reset --network local"
@@ -63,3 +67,4 @@ safeRunCommand "$command"
 
 # cleanup
 pkill -f ganache
+kill -9 "$pid"

@@ -1,10 +1,10 @@
 const { isAddress } = require('ara-util/web3')
-const { BYTESDIR } = require('../constants')
-const { registry } = require('../')
 const { resolve } = require('path')
 const rimraf = require('rimraf')
 const pify = require('pify')
 const test = require('ava')
+const { registry } = require('..')
+const { BYTESDIR } = require('../constants')
 
 const {
   TEST_OWNER_DID_NO_METHOD,
