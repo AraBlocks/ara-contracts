@@ -65,7 +65,7 @@ test.after(async (t) => {
 test.serial('getOwner(contentDid) no proxy', async (t) => {
   const contentDid = getAfsDid2(t)
 
-  await t.throwsAsync(ownership.getOwner(contentDid), Error)
+  await t.throwsAsync(ownership.getOwner(contentDid), { instanceOf: Error })
 })
 
 test.serial('hasRequested(opts) no proxy', async (t) => {
@@ -79,7 +79,7 @@ test.serial('approveOwnershipTransfer(opts) no proxy', async (t) => {
   const contentDid = getAfsDid2(t)
   const newOwnerDid = getOwnerDid2(t)
 
-  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid, password }), Error)
+  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid, password }), { instanceOf: Error })
 })
 
 test.serial('requestOwnership and revokeOwnershipRequest no proxy', async (t) => {
@@ -133,7 +133,7 @@ test.serial('requestOwnership(opts) already requested', async (t) => {
   const contentDid = getAfsDid1(t)
   const requesterDid = getOwnerDid2(t)
 
-  await t.throwsAsync(ownership.requestOwnership({ requesterDid, contentDid, password }), Error)
+  await t.throwsAsync(ownership.requestOwnership({ requesterDid, contentDid, password }), { instanceOf: Error })
 })
 
 test.serial('hasRequested(opts) true', async (t) => {
@@ -168,7 +168,7 @@ test.serial('revokeOwnershipRequest(opts) already revoked', async (t) => {
   const contentDid = getAfsDid1(t)
   const requesterDid = getOwnerDid3(t)
 
-  await t.throwsAsync(ownership.revokeOwnershipRequest({ requesterDid, contentDid, password }), Error)
+  await t.throwsAsync(ownership.revokeOwnershipRequest({ requesterDid, contentDid, password }), { instanceOf: Error })
 })
 
 test.serial('approveOwnershipTransfer(opts)', async (t) => {
@@ -193,96 +193,96 @@ test.serial('approveOwnershipTransfer(opts)', async (t) => {
 test.serial('hasRequested(opts) invalid opts', async (t) => {
   const requesterDid = getOwnerDid2(t)
 
-  await t.throwsAsync(ownership.hasRequested(), TypeError)
-  await t.throwsAsync(ownership.hasRequested({ }), TypeError)
-  await t.throwsAsync(ownership.hasRequested(''), TypeError)
-  await t.throwsAsync(ownership.hasRequested('opts'), TypeError)
-  await t.throwsAsync(ownership.hasRequested(123), TypeError)
-  await t.throwsAsync(ownership.hasRequested([ ]), TypeError)
-  await t.throwsAsync(ownership.hasRequested(true), TypeError)
+  await t.throwsAsync(ownership.hasRequested(), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.hasRequested({ }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.hasRequested(''), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.hasRequested('opts'), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.hasRequested(123), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.hasRequested([ ]), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.hasRequested(true), { instanceOf: TypeError })
 
-  await t.throwsAsync(ownership.hasRequested({ requesterDid }), TypeError)
-  await t.throwsAsync(ownership.hasRequested({ requesterDid: '' }), TypeError)
-  await t.throwsAsync(ownership.hasRequested({ requesterDid: 'did:ara:invalid' }), Error)
-  await t.throwsAsync(ownership.hasRequested({ requesterDid: 123 }), TypeError)
-  await t.throwsAsync(ownership.hasRequested({ requesterDid: true }), TypeError)
-  await t.throwsAsync(ownership.hasRequested({ requesterDid: { } }), TypeError)
+  await t.throwsAsync(ownership.hasRequested({ requesterDid }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.hasRequested({ requesterDid: '' }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.hasRequested({ requesterDid: 'did:ara:invalid' }), { instanceOf: Error })
+  await t.throwsAsync(ownership.hasRequested({ requesterDid: 123 }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.hasRequested({ requesterDid: true }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.hasRequested({ requesterDid: { } }), { instanceOf: TypeError })
 
-  await t.throwsAsync(ownership.hasRequested({ requesterDid, contentDid: '' }), TypeError)
-  await t.throwsAsync(ownership.hasRequested({ requesterDid, contentDid: 'did:ara:invalid' }), Error)
-  await t.throwsAsync(ownership.hasRequested({ requesterDid, contentDid: 123 }), TypeError)
-  await t.throwsAsync(ownership.hasRequested({ requesterDid, contentDid: true }), TypeError)
-  await t.throwsAsync(ownership.hasRequested({ requesterDid, contentDid: { } }), TypeError)
+  await t.throwsAsync(ownership.hasRequested({ requesterDid, contentDid: '' }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.hasRequested({ requesterDid, contentDid: 'did:ara:invalid' }), { instanceOf: Error })
+  await t.throwsAsync(ownership.hasRequested({ requesterDid, contentDid: 123 }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.hasRequested({ requesterDid, contentDid: true }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.hasRequested({ requesterDid, contentDid: { } }), { instanceOf: TypeError })
 })
 
 test.serial('getOwner(contentDid) invalid opts', async (t) => {
-  await t.throwsAsync(ownership.getOwner(), TypeError)
-  await t.throwsAsync(ownership.getOwner(''), TypeError)
-  await t.throwsAsync(ownership.getOwner({ }), TypeError)
-  await t.throwsAsync(ownership.getOwner('did:ara:invalid'), Error)
-  await t.throwsAsync(ownership.getOwner(123), TypeError)
-  await t.throwsAsync(ownership.getOwner(true), TypeError)
+  await t.throwsAsync(ownership.getOwner(), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.getOwner(''), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.getOwner({ }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.getOwner('did:ara:invalid'), { instanceOf: Error })
+  await t.throwsAsync(ownership.getOwner(123), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.getOwner(true), { instanceOf: TypeError })
 })
 
 test.serial('approveOwnershipTransfer(opts) invalid opts', async (t) => {
   const contentDid = getAfsDid1(t)
   const newOwnerDid = getOwnerDid2(t)
 
-  await t.throwsAsync(ownership.approveOwnershipTransfer(), TypeError)
-  await t.throwsAsync(ownership.approveOwnershipTransfer({ }), TypeError)
-  await t.throwsAsync(ownership.approveOwnershipTransfer(''), TypeError)
-  await t.throwsAsync(ownership.approveOwnershipTransfer('opts'), TypeError)
-  await t.throwsAsync(ownership.approveOwnershipTransfer(123), TypeError)
-  await t.throwsAsync(ownership.approveOwnershipTransfer([ ]), TypeError)
-  await t.throwsAsync(ownership.approveOwnershipTransfer(true), TypeError)
+  await t.throwsAsync(ownership.approveOwnershipTransfer(), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.approveOwnershipTransfer({ }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.approveOwnershipTransfer(''), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.approveOwnershipTransfer('opts'), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.approveOwnershipTransfer(123), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.approveOwnershipTransfer([ ]), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.approveOwnershipTransfer(true), { instanceOf: TypeError })
 
-  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid }), TypeError)
-  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid: '' }), TypeError)
-  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid: 'did:ara:invalid' }), Error)
-  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid: 123 }), TypeError)
-  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid: true }), TypeError)
-  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid: { } }), TypeError)
+  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid: '' }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid: 'did:ara:invalid' }), { instanceOf: Error })
+  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid: 123 }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid: true }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid: { } }), { instanceOf: TypeError })
 
-  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid }), TypeError)
-  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid: '' }), TypeError)
-  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid: 'did:ara:invalid' }), Error)
-  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid: 123 }), TypeError)
-  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid: true }), TypeError)
-  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid: { } }), TypeError)
+  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid: '' }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid: 'did:ara:invalid' }), { instanceOf: Error })
+  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid: 123 }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid: true }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid: { } }), { instanceOf: TypeError })
 
-  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid, password: '' }), TypeError)
-  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid, password: 'wrong' }), Error)
-  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid, password: 123 }), TypeError)
-  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid, password: true }), TypeError)
-  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid, password: { } }), TypeError)
+  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid, password: '' }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid, password: 'wrong' }), { instanceOf: Error })
+  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid, password: 123 }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid, password: true }), { instanceOf: TypeError })
+  await t.throwsAsync(ownership.approveOwnershipTransfer({ contentDid, newOwnerDid, password: { } }), { instanceOf: TypeError })
 
   await t.throwsAsync(ownership.approveOwnershipTransfer({
     contentDid,
     newOwnerDid,
     password,
     estimate: { }
-  }), TypeError)
+  }), { instanceOf: TypeError })
 
   await t.throwsAsync(ownership.approveOwnershipTransfer({
     contentDid,
     newOwnerDid,
     password,
     estimate: 'estimate'
-  }), TypeError)
+  }), { instanceOf: TypeError })
 
   await t.throwsAsync(ownership.approveOwnershipTransfer({
     contentDid,
     newOwnerDid,
     password,
     estimate: 123
-  }), TypeError)
+  }), { instanceOf: TypeError })
 
   await t.throwsAsync(ownership.approveOwnershipTransfer({
     contentDid,
     newOwnerDid: RANDOM_DID,
     password,
     estimate: true
-  }), Error)
+  }), { instanceOf: Error })
 })
 
 test.serial('requestOwnership and revokeOwnershipRequest invalid generic opts', async (t) => {
@@ -293,60 +293,60 @@ test.serial('requestOwnership and revokeOwnershipRequest invalid generic opts', 
   const promises = []
   for (const func of funcMap) {
     promises.push(new Promise(async (resolve) => {
-      await t.throwsAsync(func(), TypeError)
-      await t.throwsAsync(func({ }), TypeError)
-      await t.throwsAsync(func(''), TypeError)
-      await t.throwsAsync(func('opts'), TypeError)
-      await t.throwsAsync(func(123), TypeError)
-      await t.throwsAsync(func([ ]), TypeError)
-      await t.throwsAsync(func(true), TypeError)
+      await t.throwsAsync(func(), { instanceOf: TypeError })
+      await t.throwsAsync(func({ }), { instanceOf: TypeError })
+      await t.throwsAsync(func(''), { instanceOf: TypeError })
+      await t.throwsAsync(func('opts'), { instanceOf: TypeError })
+      await t.throwsAsync(func(123), { instanceOf: TypeError })
+      await t.throwsAsync(func([ ]), { instanceOf: TypeError })
+      await t.throwsAsync(func(true), { instanceOf: TypeError })
 
-      await t.throwsAsync(func({ contentDid }), TypeError)
-      await t.throwsAsync(func({ contentDid: '' }), TypeError)
-      await t.throwsAsync(func({ contentDid: 'did:ara:invalid' }), Error)
-      await t.throwsAsync(func({ contentDid: 123 }), TypeError)
-      await t.throwsAsync(func({ contentDid: true }), TypeError)
-      await t.throwsAsync(func({ contentDid: { } }), TypeError)
+      await t.throwsAsync(func({ contentDid }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ contentDid: '' }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ contentDid: 'did:ara:invalid' }), { instanceOf: Error })
+      await t.throwsAsync(func({ contentDid: 123 }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ contentDid: true }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ contentDid: { } }), { instanceOf: TypeError })
 
-      await t.throwsAsync(func({ contentDid, requesterDid }), TypeError)
-      await t.throwsAsync(func({ contentDid, requesterDid: '' }), TypeError)
-      await t.throwsAsync(func({ contentDid, requesterDid: 'did:ara:invalid' }), Error)
-      await t.throwsAsync(func({ contentDid, requesterDid: 123 }), TypeError)
-      await t.throwsAsync(func({ contentDid, requesterDid: true }), TypeError)
-      await t.throwsAsync(func({ contentDid, requesterDid: { } }), TypeError)
+      await t.throwsAsync(func({ contentDid, requesterDid }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ contentDid, requesterDid: '' }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ contentDid, requesterDid: 'did:ara:invalid' }), { instanceOf: Error })
+      await t.throwsAsync(func({ contentDid, requesterDid: 123 }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ contentDid, requesterDid: true }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ contentDid, requesterDid: { } }), { instanceOf: TypeError })
 
-      await t.throwsAsync(func({ contentDid, requesterDid, password: '' }), TypeError)
-      await t.throwsAsync(func({ contentDid, requesterDid, password: 'wrong' }), Error)
-      await t.throwsAsync(func({ contentDid, requesterDid, password: 123 }), TypeError)
-      await t.throwsAsync(func({ contentDid, requesterDid, password: true }), TypeError)
-      await t.throwsAsync(func({ contentDid, requesterDid, password: { } }), TypeError)
+      await t.throwsAsync(func({ contentDid, requesterDid, password: '' }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ contentDid, requesterDid, password: 'wrong' }), { instanceOf: Error })
+      await t.throwsAsync(func({ contentDid, requesterDid, password: 123 }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ contentDid, requesterDid, password: true }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ contentDid, requesterDid, password: { } }), { instanceOf: TypeError })
 
       await t.throwsAsync(func({
         contentDid,
         requesterDid,
         password,
         estimate: { }
-      }), TypeError)
+      }), { instanceOf: TypeError })
 
       await t.throwsAsync(func({
         contentDid,
         requesterDid,
         password,
         estimate: 'estimate'
-      }), TypeError)
+      }), { instanceOf: TypeError })
 
       await t.throwsAsync(func({
         contentDid,
         requesterDid,
         password,
         estimate: 123
-      }), TypeError)
+      }), { instanceOf: TypeError })
 
       await t.throwsAsync(func({
         contentDid: undeployedDid,
         requesterDid,
         password
-      }), Error)
+      }), { instanceOf: Error })
       resolve()
     }))
   }

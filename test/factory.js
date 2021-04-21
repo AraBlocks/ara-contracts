@@ -46,24 +46,24 @@ test.after(async () => {
 })
 
 test.serial('getLatestVersionAddress(label) invalid args', async (t) => {
-  await t.throwsAsync(factory.getLatestVersionAddress(), TypeError)
-  await t.throwsAsync(factory.getLatestVersionAddress(''), TypeError)
-  await t.throwsAsync(factory.getLatestVersionAddress(123), TypeError)
-  await t.throwsAsync(factory.getLatestVersionAddress(true), TypeError)
-  await t.throwsAsync(factory.getLatestVersionAddress({ }), TypeError)
+  await t.throwsAsync(factory.getLatestVersionAddress(), { instanceOf: TypeError })
+  await t.throwsAsync(factory.getLatestVersionAddress(''), { instanceOf: TypeError })
+  await t.throwsAsync(factory.getLatestVersionAddress(123), { instanceOf: TypeError })
+  await t.throwsAsync(factory.getLatestVersionAddress(true), { instanceOf: TypeError })
+  await t.throwsAsync(factory.getLatestVersionAddress({ }), { instanceOf: TypeError })
 })
 
 test.serial('getUpgradeableContractAddress(label, version) invalid args', async (t) => {
-  await t.throwsAsync(factory.getUpgradeableContractAddress(), TypeError)
-  await t.throwsAsync(factory.getUpgradeableContractAddress(''), TypeError)
-  await t.throwsAsync(factory.getUpgradeableContractAddress(123), TypeError)
-  await t.throwsAsync(factory.getUpgradeableContractAddress(true), TypeError)
-  await t.throwsAsync(factory.getUpgradeableContractAddress({ }), TypeError)
+  await t.throwsAsync(factory.getUpgradeableContractAddress(), { instanceOf: TypeError })
+  await t.throwsAsync(factory.getUpgradeableContractAddress(''), { instanceOf: TypeError })
+  await t.throwsAsync(factory.getUpgradeableContractAddress(123), { instanceOf: TypeError })
+  await t.throwsAsync(factory.getUpgradeableContractAddress(true), { instanceOf: TypeError })
+  await t.throwsAsync(factory.getUpgradeableContractAddress({ }), { instanceOf: TypeError })
 
-  await t.throwsAsync(factory.getUpgradeableContractAddress('label', ''), TypeError)
-  await t.throwsAsync(factory.getUpgradeableContractAddress('label', 123), TypeError)
-  await t.throwsAsync(factory.getUpgradeableContractAddress('label', true), TypeError)
-  await t.throwsAsync(factory.getUpgradeableContractAddress('label', { }), TypeError)
+  await t.throwsAsync(factory.getUpgradeableContractAddress('label', ''), { instanceOf: TypeError })
+  await t.throwsAsync(factory.getUpgradeableContractAddress('label', 123), { instanceOf: TypeError })
+  await t.throwsAsync(factory.getUpgradeableContractAddress('label', true), { instanceOf: TypeError })
+  await t.throwsAsync(factory.getUpgradeableContractAddress('label', { }), { instanceOf: TypeError })
 })
 
 test.serial('compileAraContracts()', async (t) => {
@@ -109,22 +109,22 @@ test.serial('deploy functions invalid generic opts', async (t) => {
 
   for (const func of funcMap) {
     promises.push(new Promise(async (resolve) => {
-      await t.throwsAsync(func(), TypeError)
-      await t.throwsAsync(func('opts'), TypeError)
-      await t.throwsAsync(func({ }), TypeError)
+      await t.throwsAsync(func(), { instanceOf: TypeError })
+      await t.throwsAsync(func('opts'), { instanceOf: TypeError })
+      await t.throwsAsync(func({ }), { instanceOf: TypeError })
 
-      await t.throwsAsync(func({ masterDid }), TypeError)
-      await t.throwsAsync(func({ password }), TypeError)
-      await t.throwsAsync(func({ masterDid: '' }), TypeError)
-      await t.throwsAsync(func({ password: '' }), TypeError)
+      await t.throwsAsync(func({ masterDid }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ password }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ masterDid: '' }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ password: '' }), { instanceOf: TypeError })
 
-      await t.throwsAsync(func({ masterDid: '', password }), TypeError)
-      await t.throwsAsync(func({ masterDid: 'did:ara:invalid', password }), TypeError)
-      await t.throwsAsync(func({ masterDid: true, password }), TypeError)
+      await t.throwsAsync(func({ masterDid: '', password }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ masterDid: 'did:ara:invalid', password }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ masterDid: true, password }), { instanceOf: TypeError })
 
-      await t.throwsAsync(func({ masterDid, password: '' }), TypeError)
-      await t.throwsAsync(func({ masterDid, password: 123 }), TypeError)
-      await t.throwsAsync(func({ masterDid, password: true }), TypeError)
+      await t.throwsAsync(func({ masterDid, password: '' }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ masterDid, password: 123 }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ masterDid, password: true }), { instanceOf: TypeError })
       resolve()
     }))
   }
@@ -139,7 +139,7 @@ test.serial('deploy functions already deployed', async (t) => {
 
   for (const func of funcMap) {
     promises.push(new Promise(async (resolve) => {
-      await t.throwsAsync(func(opts), Error)
+      await t.throwsAsync(func(opts), { instanceOf: Error })
       resolve()
     }))
   }

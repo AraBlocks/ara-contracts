@@ -37,29 +37,29 @@ test("hasBuffer(opts) read(opts) invalid opts", async (t) => {
   for (const func of funcs) {
     promises.push(new Promise(async (resolve) => {
       // opts
-      await t.throwsAsync(func(), TypeError)
-      await t.throwsAsync(func('opts'), TypeError)
-      await t.throwsAsync(func({ }), TypeError)
+      await t.throwsAsync(func(), { instanceOf: TypeError })
+      await t.throwsAsync(func('opts'), { instanceOf: TypeError })
+      await t.throwsAsync(func({ }), { instanceOf: TypeError })
 
       // address
-      await t.throwsAsync(func({ address: null }), TypeError)
-      await t.throwsAsync(func({ address: '0x123' }), TypeError)
-      await t.throwsAsync(func({ address: 0x123 }), TypeError)
-      await t.throwsAsync(func({ address: { } }), TypeError)
+      await t.throwsAsync(func({ address: null }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ address: '0x123' }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ address: 0x123 }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ address: { } }), { instanceOf: TypeError })
 
       // random address to test with
       const address = '0xCd626bc764E1d553e0D75a42f5c4156B91a63F23'
 
       // fileIndex
-      await t.throwsAsync(func({ address }), TypeError)
-      await t.throwsAsync(func({ address, fileIndex: null }), TypeError)
-      await t.throwsAsync(func({ address, fileIndex: '0' }), TypeError)
+      await t.throwsAsync(func({ address }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ address, fileIndex: null }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ address, fileIndex: '0' }), { instanceOf: TypeError })
 
       const fileIndex = 0
       // offset
-      await t.throwsAsync(func({ address, fileIndex }), TypeError)
-      await t.throwsAsync(func({ address, fileIndex, offset: null }), TypeError)
-      await t.throwsAsync(func({ address, fileIndex, offset: '32' }), TypeError)
+      await t.throwsAsync(func({ address, fileIndex }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ address, fileIndex, offset: null }), { instanceOf: TypeError })
+      await t.throwsAsync(func({ address, fileIndex, offset: '32' }), { instanceOf: TypeError })
       resolve()
     }))
   }
@@ -68,29 +68,29 @@ test("hasBuffer(opts) read(opts) invalid opts", async (t) => {
 
 test("write(opts) invalid opts", async (t) => {
   // opts
-  await t.throwsAsync(storage.write(), TypeError)
-  await t.throwsAsync(storage.write('opts'), TypeError)
-  await t.throwsAsync(storage.write({ }), TypeError)
+  await t.throwsAsync(storage.write(), { instanceOf: TypeError })
+  await t.throwsAsync(storage.write('opts'), { instanceOf: TypeError })
+  await t.throwsAsync(storage.write({ }), { instanceOf: TypeError })
 
   // mtData
-  await t.throwsAsync(storage.write({ mtData: null }), TypeError)
-  await t.throwsAsync(storage.write({ mtData: 'data' }), TypeError)
-  await t.throwsAsync(storage.write({ mtData: 123 }), TypeError)
-  await t.throwsAsync(storage.write({ mtData: [] }), TypeError)
+  await t.throwsAsync(storage.write({ mtData: null }), { instanceOf: TypeError })
+  await t.throwsAsync(storage.write({ mtData: 'data' }), { instanceOf: TypeError })
+  await t.throwsAsync(storage.write({ mtData: 123 }), { instanceOf: TypeError })
+  await t.throwsAsync(storage.write({ mtData: [] }), { instanceOf: TypeError })
 
   // msData
   const mtData = { }
-  await t.throwsAsync(storage.write({ mtData, msData: null }), TypeError)
-  await t.throwsAsync(storage.write({ mtData, msData: 'data' }), TypeError)
-  await t.throwsAsync(storage.write({ mtData, msData: 123 }), TypeError)
-  await t.throwsAsync(storage.write({ mtData, msData: [] }), TypeError)
+  await t.throwsAsync(storage.write({ mtData, msData: null }), { instanceOf: TypeError })
+  await t.throwsAsync(storage.write({ mtData, msData: 'data' }), { instanceOf: TypeError })
+  await t.throwsAsync(storage.write({ mtData, msData: 123 }), { instanceOf: TypeError })
+  await t.throwsAsync(storage.write({ mtData, msData: [] }), { instanceOf: TypeError })
 
   // to
   const msData = { }
-  await t.throwsAsync(storage.write({ mtData, msData, to: null }), TypeError)
-  await t.throwsAsync(storage.write({ mtData, msData, to: '0x123' }), TypeError)
-  await t.throwsAsync(storage.write({ mtData, msData, to: 0x123 }), TypeError)
-  await t.throwsAsync(storage.write({ mtData, msData, to: { } }), TypeError)
+  await t.throwsAsync(storage.write({ mtData, msData, to: null }), { instanceOf: TypeError })
+  await t.throwsAsync(storage.write({ mtData, msData, to: '0x123' }), { instanceOf: TypeError })
+  await t.throwsAsync(storage.write({ mtData, msData, to: 0x123 }), { instanceOf: TypeError })
+  await t.throwsAsync(storage.write({ mtData, msData, to: { } }), { instanceOf: TypeError })
 
   // account
   const to = '0xCd626bc764E1d553e0D75a42f5c4156B91a63F23'
@@ -99,28 +99,28 @@ test("write(opts) invalid opts", async (t) => {
     mtData,
     msData,
     to
-  }), TypeError)
+  }), { instanceOf: TypeError })
 
   await t.throwsAsync(storage.write({
     account: 'data',
     mtData,
     msData,
     to
-  }), TypeError)
+  }), { instanceOf: TypeError })
 
   await t.throwsAsync(storage.write({
     account: 123,
     mtData,
     msData,
     to
-  }), TypeError)
+  }), { instanceOf: TypeError })
 
   await t.throwsAsync(storage.write({
     account: [],
     mtData,
     msData,
     to
-  }), TypeError)
+  }), { instanceOf: TypeError })
 })
 
 test("hasBuffer(opts) invalid buffer", async (t) => {
@@ -130,10 +130,10 @@ test("hasBuffer(opts) invalid buffer", async (t) => {
     msData: { },
     account: { }
   }
-  await t.throwsAsync(storage.hasBuffer(opts), TypeError)
-  await t.throwsAsync(storage.hasBuffer({ ...opts, buffer: false }), TypeError)
-  await t.throwsAsync(storage.hasBuffer({ ...opts, buffer: 0xff }), TypeError)
-  await t.throwsAsync(storage.hasBuffer({ ...opts, buffer: [] }), TypeError)
+  await t.throwsAsync(storage.hasBuffer(opts), { instanceOf: TypeError })
+  await t.throwsAsync(storage.hasBuffer({ ...opts, buffer: false }), { instanceOf: TypeError })
+  await t.throwsAsync(storage.hasBuffer({ ...opts, buffer: 0xff }), { instanceOf: TypeError })
+  await t.throwsAsync(storage.hasBuffer({ ...opts, buffer: [] }), { instanceOf: TypeError })
 })
 
 test.serial("hasBuffer(opts) buffer does not exist", async (t) => {

@@ -555,6 +555,7 @@ async function deployNewStandard(opts) {
       abi: afsAbi,
       bytecode: bytes
     }))
+
     const { tx: transaction, ctx: ctx1 } = await tx.create({
       account: acct,
       to: constants.REGISTRY_ADDRESS,
@@ -569,6 +570,7 @@ async function deployNewStandard(opts) {
         ]
       }
     })
+
     // listen to ProxyDeployed event for proxy address
     await tx.sendSignedTransaction(transaction, {
       onhash,

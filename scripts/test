@@ -14,7 +14,7 @@ safeRunCommand() {
 }
 
 # ara node_modules/.bin to PATH
-PATH=$(npm bin):$PATH
+#PATH=$(npm bin):$PATH
 
 # move deploy identity to home dir
 mkdir -p ~/.ara/identities/
@@ -26,8 +26,16 @@ if ! which ganache-cli > /dev/null; then
   npm install -g ganache-cli truffle@5.3.1
 fi
 
+# kill any existing ganache
+if command -v pkill &> /dev/null
+then
+  pkill -f ganache
+else
+  echo "pkill could not be found"
+fi
+
 # run local ganache node
-pkill -f ganache
+which ganache-cli
 ganache-cli -l 0x7A1200  &
 pid=$!
 sleep 5
@@ -65,6 +73,16 @@ safeRunCommand "$command"
 command="ava test/factory.js --verbose"
 safeRunCommand "$command"
 
+# kill ganache
+if command -v pkill &> /dev/null
+then
+  pkill -f ganache
+elif command -v Taskkill &> /dev/null
+then
+  Taskkill /PID $pid -F
+else
+  echo "pkill and Taskkill could not be found"
+fi
+
 # cleanup
-pkill -f ganache
 kill -9 "$pid"

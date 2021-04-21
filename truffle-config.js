@@ -6,6 +6,7 @@ module.exports = {
       network_id: '*',
       host: 'localhost',
       port: 8545,
+      websockets: true
       // gas: 4000000
     },
     testnet: {
@@ -18,7 +19,8 @@ module.exports = {
       host: 'localhost',
       port: 8545,
       from: '0xa0b3a0ca8523e036a116184c5c07ca932e611d06',
-      gas: 8000000
+      gas: 8000000,
+      websockets: true
     }
   }
 }

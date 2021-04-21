@@ -46,11 +46,11 @@ test('constrainTokenValue(val)', (t) => {
 })
 
 test('constrainTokenValue(val) invalid input', (t) => {
-  t.throws(() => token.constrainTokenValue(), TypeError)
-  t.throws(() => token.constrainTokenValue(123), TypeError)
-  t.throws(() => token.constrainTokenValue({ }), TypeError)
-  t.throws(() => token.constrainTokenValue([ ]), TypeError)
-  t.throws(() => token.constrainTokenValue([ '1' ]), TypeError)
+  t.throws(() => token.constrainTokenValue(), { instanceOf: TypeError })
+  t.throws(() => token.constrainTokenValue(123), { instanceOf: TypeError })
+  t.throws(() => token.constrainTokenValue({ }), { instanceOf: TypeError })
+  t.throws(() => token.constrainTokenValue([ ]), { instanceOf: TypeError })
+  t.throws(() => token.constrainTokenValue([ '1' ]), { instanceOf: TypeError })
 })
 
 test('expandTokenValue(val)', (t) => {
@@ -60,21 +60,21 @@ test('expandTokenValue(val)', (t) => {
 })
 
 test('expandTokenValue(val) invalid input', (t) => {
-  t.throws(() => token.expandTokenValue(), TypeError)
-  t.throws(() => token.expandTokenValue({ }), TypeError)
-  t.throws(() => token.expandTokenValue([ ]), TypeError)
-  t.throws(() => token.expandTokenValue([ '1' ]), TypeError)
+  t.throws(() => token.expandTokenValue(), { instanceOf: TypeError })
+  t.throws(() => token.expandTokenValue({ }), { instanceOf: TypeError })
+  t.throws(() => token.expandTokenValue([ ]), { instanceOf: TypeError })
+  t.throws(() => token.expandTokenValue([ '1' ]), { instanceOf: TypeError })
   // too small
-  t.throws(() => token.expandTokenValue('0.0000000000000000001'), Error)
+  t.throws(() => token.expandTokenValue('0.0000000000000000001'), { instanceOf: Error })
 })
 
 test('balanceOf(address) invalid address', async (t) => {
-  await t.throwsAsync(token.balanceOf(), TypeError)
-  await t.throwsAsync(token.balanceOf({ }), TypeError)
-  await t.throwsAsync(token.balanceOf(1234), TypeError)
-  await t.throwsAsync(token.balanceOf([]), TypeError)
-  await t.throwsAsync(token.balanceOf('did:ara:1234'), Error)
-  await t.throwsAsync(token.balanceOf(RANDOM_DID), Error)
+  await t.throwsAsync(token.balanceOf(), { instanceOf: TypeError })
+  await t.throwsAsync(token.balanceOf({ }), { instanceOf: TypeError })
+  await t.throwsAsync(token.balanceOf(1234), { instanceOf: TypeError })
+  await t.throwsAsync(token.balanceOf([]), { instanceOf: TypeError })
+  await t.throwsAsync(token.balanceOf('did:ara:1234'), { instanceOf: Error })
+  await t.throwsAsync(token.balanceOf(RANDOM_DID), { instanceOf: Error })
 })
 
 test.serial('balanceOf(address)', async (t) => {
@@ -248,49 +248,49 @@ test.serial('transferFrom(opts) valid transfer', async (t) => {
 })
 
 test('getAmountDeposited(did) invalid did', async (t) => {
-  await t.throwsAsync(token.getAmountDeposited(), TypeError)
-  await t.throwsAsync(token.getAmountDeposited({ }), TypeError)
-  await t.throwsAsync(token.getAmountDeposited(1234), TypeError)
-  await t.throwsAsync(token.getAmountDeposited([]), TypeError)
-  await t.throwsAsync(token.getAmountDeposited(TEST_OWNER_ADDRESS), Error)
-  await t.throwsAsync(token.getAmountDeposited('did:ara:1234'), Error)
-  await t.throwsAsync(token.getAmountDeposited(RANDOM_DID), Error)
+  await t.throwsAsync(token.getAmountDeposited(), { instanceOf: TypeError })
+  await t.throwsAsync(token.getAmountDeposited({ }), { instanceOf: TypeError })
+  await t.throwsAsync(token.getAmountDeposited(1234), { instanceOf: TypeError })
+  await t.throwsAsync(token.getAmountDeposited([]), { instanceOf: TypeError })
+  await t.throwsAsync(token.getAmountDeposited(TEST_OWNER_ADDRESS), { instanceOf: Error })
+  await t.throwsAsync(token.getAmountDeposited('did:ara:1234'), { instanceOf: Error })
+  await t.throwsAsync(token.getAmountDeposited(RANDOM_DID), { instanceOf: Error })
 })
 
 test('allowance(opts) invalid opts', async (t) => {
   const { did } = t.context.defaultAccount
 
-  await t.throwsAsync(token.allowance(), TypeError)
-  await t.throwsAsync(token.allowance({ }), TypeError)
-  await t.throwsAsync(token.allowance([]), TypeError)
-  await t.throwsAsync(token.allowance({ owner: null }), TypeError)
-  await t.throwsAsync(token.allowance({ owner: 123 }), TypeError)
-  await t.throwsAsync(token.allowance({ owner: TEST_OWNER_ADDRESS }), TypeError)
+  await t.throwsAsync(token.allowance(), { instanceOf: TypeError })
+  await t.throwsAsync(token.allowance({ }), { instanceOf: TypeError })
+  await t.throwsAsync(token.allowance([]), { instanceOf: TypeError })
+  await t.throwsAsync(token.allowance({ owner: null }), { instanceOf: TypeError })
+  await t.throwsAsync(token.allowance({ owner: 123 }), { instanceOf: TypeError })
+  await t.throwsAsync(token.allowance({ owner: TEST_OWNER_ADDRESS }), { instanceOf: TypeError })
   await t.throwsAsync(token.allowance({ owner: did }))
-  await t.throwsAsync(token.allowance({ owner: did, spender: null }), Error)
-  await t.throwsAsync(token.allowance({ owner: did, spender: 123 }), Error)
-  await t.throwsAsync(token.allowance({ owner: RANDOM_DID, spender: did }), Error)
-  await t.throwsAsync(token.allowance({ owner: did, spender: RANDOM_DID }), Error)
+  await t.throwsAsync(token.allowance({ owner: did, spender: null }), { instanceOf: Error })
+  await t.throwsAsync(token.allowance({ owner: did, spender: 123 }), { instanceOf: Error })
+  await t.throwsAsync(token.allowance({ owner: RANDOM_DID, spender: did }), { instanceOf: Error })
+  await t.throwsAsync(token.allowance({ owner: did, spender: RANDOM_DID }), { instanceOf: Error })
 })
 
 test('modifyDeposit(opts) invalid opts', async (t) => {
   const { did } = t.context.defaultAccount
   const { did: testDID } = t.context.testAccount
 
-  await t.throwsAsync(token.modifyDeposit(), TypeError)
-  await t.throwsAsync(token.modifyDeposit({ }), TypeError)
-  await t.throwsAsync(token.modifyDeposit({ to: '' }), TypeError)
-  await t.throwsAsync(token.modifyDeposit({ to: 1234 }), TypeError)
-  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: 1000 }), TypeError)
-  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: -1 }), TypeError)
-  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '10.00' }), TypeError)
-  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '-1' }), TypeError)
+  await t.throwsAsync(token.modifyDeposit(), { instanceOf: TypeError })
+  await t.throwsAsync(token.modifyDeposit({ }), { instanceOf: TypeError })
+  await t.throwsAsync(token.modifyDeposit({ to: '' }), { instanceOf: TypeError })
+  await t.throwsAsync(token.modifyDeposit({ to: 1234 }), { instanceOf: TypeError })
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: 1000 }), { instanceOf: TypeError })
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: -1 }), { instanceOf: TypeError })
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '10.00' }), { instanceOf: TypeError })
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '-1' }), { instanceOf: TypeError })
 
   // did
-  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did: null }), TypeError)
-  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did: '' }), TypeError)
-  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did: 1234 }), TypeError)
-  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did: 1234 }), TypeError)
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did: null }), { instanceOf: TypeError })
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did: '' }), { instanceOf: TypeError })
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did: 1234 }), { instanceOf: TypeError })
+  await t.throwsAsync(token.modifyDeposit({ to: testDID, val: '1000', did: 1234 }), { instanceOf: TypeError })
 
   await t.throwsAsync(token.modifyDeposit({
     to: testDID,
@@ -330,21 +330,21 @@ test('modifyDeposit(opts) invalid opts', async (t) => {
     val: '1000',
     did,
     password: null
-  }), TypeError)
+  }), { instanceOf: TypeError })
 
   await t.throwsAsync(token.modifyDeposit({
     to: testDID,
     val: '1000',
     did,
     password: 123
-  }), TypeError)
+  }), { instanceOf: TypeError })
 
   await t.throwsAsync(token.modifyDeposit({
     to: did,
     val: '1000',
     did,
     password: 'wrong'
-  }), Error)
+  }), { instanceOf: Error })
 })
 
 test('invalid generic opts group 1', async (t) => {
@@ -352,30 +352,30 @@ test('invalid generic opts group 1', async (t) => {
   const { did: testDID } = t.context.testAccount
 
   for (const func of funcMap1) {
-    await t.throwsAsync(func(), TypeError)
-    await t.throwsAsync(func({ }), TypeError)
-    await t.throwsAsync(func({ to: '' }), TypeError)
-    await t.throwsAsync(func({ to: 1234 }), TypeError)
-    await t.throwsAsync(func({ to: testDID, val: 1000 }), TypeError)
-    await t.throwsAsync(func({ to: testDID, val: -1000 }), TypeError)
-    await t.throwsAsync(func({ to: testDID, val: '10.00' }), TypeError)
-    await t.throwsAsync(func({ to: testDID, val: '1000', did: null }), TypeError)
-    await t.throwsAsync(func({ to: testDID, val: '1000', did: '' }), TypeError)
-    await t.throwsAsync(func({ to: testDID, val: '1000', did: 1234 }), TypeError)
+    await t.throwsAsync(func(), { instanceOf: TypeError })
+    await t.throwsAsync(func({ }), { instanceOf: TypeError })
+    await t.throwsAsync(func({ to: '' }), { instanceOf: TypeError })
+    await t.throwsAsync(func({ to: 1234 }), { instanceOf: TypeError })
+    await t.throwsAsync(func({ to: testDID, val: 1000 }), { instanceOf: TypeError })
+    await t.throwsAsync(func({ to: testDID, val: -1000 }), { instanceOf: TypeError })
+    await t.throwsAsync(func({ to: testDID, val: '10.00' }), { instanceOf: TypeError })
+    await t.throwsAsync(func({ to: testDID, val: '1000', did: null }), { instanceOf: TypeError })
+    await t.throwsAsync(func({ to: testDID, val: '1000', did: '' }), { instanceOf: TypeError })
+    await t.throwsAsync(func({ to: testDID, val: '1000', did: 1234 }), { instanceOf: TypeError })
     await t.throwsAsync(func({
       to: testDID,
       val: '1000',
       did: 1234,
       password,
       from: did
-    }), TypeError)
+    }), { instanceOf: TypeError })
 
     await t.throwsAsync(func({
       to: testDID,
       val: -1000,
       did,
       password
-    }), TypeError)
+    }), { instanceOf: TypeError })
 
     await t.throwsAsync(func({
       to: testDID,
@@ -383,7 +383,7 @@ test('invalid generic opts group 1', async (t) => {
       val: -1000,
       did,
       password
-    }), TypeError)
+    }), { instanceOf: TypeError })
 
     await t.throwsAsync(func({
       to: testDID,
@@ -391,14 +391,14 @@ test('invalid generic opts group 1', async (t) => {
       val: '1000',
       did,
       password: 'wrong'
-    }), Error)
+    }), { instanceOf: Error })
 
     await t.throwsAsync(func({
       to: testDID,
       val: '1000',
       did,
       password: null
-    }), TypeError)
+    }), { instanceOf: TypeError })
 
     await t.throwsAsync(func({
       to: testDID,
@@ -406,7 +406,7 @@ test('invalid generic opts group 1', async (t) => {
       did,
       from: did,
       password: 123
-    }), TypeError)
+    }), { instanceOf: TypeError })
 
     await t.throwsAsync(func({
       to: RANDOM_DID,
@@ -414,7 +414,7 @@ test('invalid generic opts group 1', async (t) => {
       did,
       from: did,
       password
-    }), Error)
+    }), { instanceOf: Error })
   }
 })
 
@@ -427,7 +427,7 @@ test('transferFrom(opts) invalid from', async (t) => {
     did,
     from: RANDOM_DID,
     password
-  }), Error)
+  }), { instanceOf: Error })
 })
 
 test('invalid generic opts group 2', async (t) => {
@@ -435,27 +435,27 @@ test('invalid generic opts group 2', async (t) => {
   const { did: testDID } = t.context.testAccount
 
   for (const func of funcMap2) {
-    await t.throwsAsync(func(), TypeError)
-    await t.throwsAsync(func({ }), TypeError)
-    await t.throwsAsync(func({ spender: '' }), TypeError)
-    await t.throwsAsync(func({ spender: 1234 }), TypeError)
-    await t.throwsAsync(func({ spender: testDID, val: 1000 }), TypeError)
-    await t.throwsAsync(func({ spender: testDID, val: -1000 }), TypeError)
-    await t.throwsAsync(func({ spender: testDID, val: '10.00' }), TypeError)
-    await t.throwsAsync(func({ spender: testDID, val: '1000', did: null }), TypeError)
-    await t.throwsAsync(func({ spender: testDID, val: '1000', did: '' }), TypeError)
-    await t.throwsAsync(func({ spender: testDID, val: '1000', did: 1234 }), TypeError)
+    await t.throwsAsync(func(), { instanceOf: TypeError })
+    await t.throwsAsync(func({ }), { instanceOf: TypeError })
+    await t.throwsAsync(func({ spender: '' }), { instanceOf: TypeError })
+    await t.throwsAsync(func({ spender: 1234 }), { instanceOf: TypeError })
+    await t.throwsAsync(func({ spender: testDID, val: 1000 }), { instanceOf: TypeError })
+    await t.throwsAsync(func({ spender: testDID, val: -1000 }), { instanceOf: TypeError })
+    await t.throwsAsync(func({ spender: testDID, val: '10.00' }), { instanceOf: TypeError })
+    await t.throwsAsync(func({ spender: testDID, val: '1000', did: null }), { instanceOf: TypeError })
+    await t.throwsAsync(func({ spender: testDID, val: '1000', did: '' }), { instanceOf: TypeError })
+    await t.throwsAsync(func({ spender: testDID, val: '1000', did: 1234 }), { instanceOf: TypeError })
 
     await t.throwsAsync(func({
       spender: testDID, val: '1000', did, password: null
-    }), TypeError)
+    }), { instanceOf: TypeError })
 
     await t.throwsAsync(func({
       spender: testDID, val: '1000', did, password: 123
-    }), TypeError)
+    }), { instanceOf: TypeError })
 
     await t.throwsAsync(func({
       spender: RANDOM_DID, val: '1000', did, password
-    }), Error)
+    }), { instanceOf: Error })
   }
 })

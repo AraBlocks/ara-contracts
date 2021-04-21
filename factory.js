@@ -58,7 +58,6 @@ async function deployAraContracts(opts) {
 
   const acct = await _validateMasterOpts(opts)
 
-  debug('Deploying...')
   const registryAddress = await _deployRegistry(acct)
   const libraryAddress = await _deployLibrary(acct, registryAddress)
   const tokenAddress = await _deployToken(acct)
@@ -354,6 +353,7 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false, ga
 
   const { contract: registry, ctx: ctx2 } = await contract.get(registryAbi, constants.ARA_REGISTRY_ADDRESS)
   if (!upgrade) {
+    debug('awaiting address...')
     address = await new Promise((resolve, reject) => {
       tx.sendSignedTransaction(
         transaction,
@@ -365,6 +365,8 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false, ga
           onmined: (receipt) => debug('onmined:', receipt)
         }
       )
+      debug('address is', address)
+
       registry.events.UpgradeableContractAdded({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { _contractName, _address } } = log
@@ -374,6 +376,8 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false, ga
           }
         })
         .on('error', (log) => reject(log))
+
+        debug('registry events...')
       registry.events.ProxyDeployed({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { _contractName, _address } } = log
