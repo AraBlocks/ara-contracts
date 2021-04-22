@@ -104,10 +104,10 @@ test.serial('getLibraryItem(opts) invalid opts', async (t) => {
   await t.throwsAsync(library.getLibraryItem({ requesterDid: true }), { instanceOf: TypeError })
   await t.throwsAsync(library.getLibraryItem({ requesterDid: { } }), { instanceOf: TypeError })
 
-  await t.throwsAsync(library.getLibraryItem({ requesterDid, index: '' }))
-  await t.throwsAsync(library.getLibraryItem({ requesterDid, index: -1 }))
-  await t.throwsAsync(library.getLibraryItem({ requesterDid, index: true }))
-  await t.throwsAsync(library.getLibraryItem({ requesterDid, index: { } }))
+  await t.throwsAsync(library.getLibraryItem({ requesterDid, index: '' }), { instanceOf: Error })
+  await t.throwsAsync(library.getLibraryItem({ requesterDid, index: -1 }), { instanceOf: Error })
+  await t.throwsAsync(library.getLibraryItem({ requesterDid, index: true }), { instanceOf: Error })
+  await t.throwsAsync(library.getLibraryItem({ requesterDid, index: { } }), { instanceOf: Error })
 })
 
 test.serial('getLibrary(requesterDid)', async (t) => {

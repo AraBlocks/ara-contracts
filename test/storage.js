@@ -246,8 +246,8 @@ test.serial("write(opts) read(opts) append", async (t) => {
 })
 
 test.serial("isEmpty(did) invalid did", async (t) => {
-  await t.throwsAsync(storage.isEmpty())
-  await t.throwsAsync(storage.isEmpty({ }))
-  await t.throwsAsync(storage.isEmpty(null))
-  await t.throwsAsync(storage.isEmpty('0x1234'))
+  await t.throwsAsync(storage.isEmpty(), { instanceOf: Error })
+  await t.throwsAsync(storage.isEmpty({ }), { instanceOf: Error })
+  await t.throwsAsync(storage.isEmpty(null), { instanceOf: Error })
+  await t.throwsAsync(storage.isEmpty('0x1234'), { instanceOf: Error })
 })

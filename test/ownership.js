@@ -72,7 +72,7 @@ test.serial('hasRequested(opts) no proxy', async (t) => {
   const contentDid = getAfsDid2(t)
   const requesterDid = getOwnerDid2(t)
 
-  await t.throwsAsync(ownership.hasRequested({ requesterDid, contentDid }))
+  await t.throwsAsync(ownership.hasRequested({ requesterDid, contentDid }), { instanceOf: Error })
 })
 
 test.serial('approveOwnershipTransfer(opts) no proxy', async (t) => {
@@ -89,7 +89,7 @@ test.serial('requestOwnership and revokeOwnershipRequest no proxy', async (t) =>
   const promises = []
   for (const func of funcMap) {
     promises.push(new Promise(async (resolve) => {
-      await t.throwsAsync(func({ contentDid, requesterDid, password }))
+      await t.throwsAsync(func({ contentDid, requesterDid, password }), { instanceOf: Error })
       resolve()
     }))
   }

@@ -258,8 +258,8 @@ test.serial('deployProxy() invalid opts', async (t) => {
 
   await t.throwsAsync(registry.deployProxy({ contentDid, password, version: true }), { instanceOf: Error })
   await t.throwsAsync(registry.deployProxy({ contentDid, password, version: { } }), { instanceOf: Error })
-  await t.throwsAsync(registry.deployProxy({ contentDid: 'did:ara:invalid', password, version: '1' }))
-  await t.throwsAsync(registry.deployProxy({ contentDid, password: 'invalid', version: '1' }))
+  await t.throwsAsync(registry.deployProxy({ contentDid: 'did:ara:invalid', password, version: '1' }), { instanceOf: Error })
+  await t.throwsAsync(registry.deployProxy({ contentDid, password: 'invalid', version: '1' }), { instanceOf: Error })
 
   await t.throwsAsync(registry.deployProxy({
     contentDid,
@@ -299,9 +299,9 @@ test.serial('upgradeProxy() invalid opts', async (t) => {
 
   await t.throwsAsync(registry.upgradeProxy({ contentDid, password, version: true }), { instanceOf: Error })
   await t.throwsAsync(registry.upgradeProxy({ contentDid, password, version: { } }), { instanceOf: Error })
-  await t.throwsAsync(registry.upgradeProxy({ contentDid: 'did:ara:invalid', password, version: '1' }))
-  await t.throwsAsync(registry.upgradeProxy({ contentDid, password: 'invalid', version: '1' }))
-  await t.throwsAsync(registry.upgradeProxy({ contentDid, password, version: '10000' }))
+  await t.throwsAsync(registry.upgradeProxy({ contentDid: 'did:ara:invalid', password, version: '1' }), { instanceOf: Error })
+  await t.throwsAsync(registry.upgradeProxy({ contentDid, password: 'invalid', version: '1' }), { instanceOf: Error })
+  await t.throwsAsync(registry.upgradeProxy({ contentDid, password, version: '10000' }), { instanceOf: Error })
 
   await t.throwsAsync(registry.upgradeProxy({
     contentDid,

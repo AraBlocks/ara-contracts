@@ -266,7 +266,7 @@ test('allowance(opts) invalid opts', async (t) => {
   await t.throwsAsync(token.allowance({ owner: null }), { instanceOf: TypeError })
   await t.throwsAsync(token.allowance({ owner: 123 }), { instanceOf: TypeError })
   await t.throwsAsync(token.allowance({ owner: TEST_OWNER_ADDRESS }), { instanceOf: TypeError })
-  await t.throwsAsync(token.allowance({ owner: did }))
+  await t.throwsAsync(token.allowance({ owner: did }), { instanceOf: Error })
   await t.throwsAsync(token.allowance({ owner: did, spender: null }), { instanceOf: Error })
   await t.throwsAsync(token.allowance({ owner: did, spender: 123 }), { instanceOf: Error })
   await t.throwsAsync(token.allowance({ owner: RANDOM_DID, spender: did }), { instanceOf: Error })
@@ -297,7 +297,7 @@ test('modifyDeposit(opts) invalid opts', async (t) => {
     val: '-1000',
     did,
     password
-  }))
+  }), { instanceOf: Error })
 
   // withdraw
   await t.throwsAsync(token.modifyDeposit({
@@ -306,7 +306,7 @@ test('modifyDeposit(opts) invalid opts', async (t) => {
     did,
     password,
     withdraw: 'true'
-  }))
+  }), { instanceOf: Error })
 
   await t.throwsAsync(token.modifyDeposit({
     to: testDID,
@@ -314,7 +314,7 @@ test('modifyDeposit(opts) invalid opts', async (t) => {
     did,
     password,
     withdraw: { }
-  }))
+  }), { instanceOf: Error })
 
   await t.throwsAsync(token.modifyDeposit({
     to: testDID,
@@ -322,7 +322,7 @@ test('modifyDeposit(opts) invalid opts', async (t) => {
     did,
     password,
     withdraw: 123
-  }))
+  }), { instanceOf: Error })
 
   // password
   await t.throwsAsync(token.modifyDeposit({

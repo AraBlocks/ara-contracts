@@ -274,7 +274,7 @@ test.serial('redeem(opts) insufficient deposit', async (t) => {
   const amountDeposited = await token.getAmountDeposited(TEST_FARMER_DID2)
   t.is(amountDeposited, '0')
 
-  await t.throwsAsync(rewards.redeem({ farmerDid: TEST_FARMER_DID2, contentDid, password }), Error)
+  await t.throwsAsync(rewards.redeem({ farmerDid: TEST_FARMER_DID2, contentDid, password }), { instanceOf: Error })
 })
 
 test.serial('redeem(opts)', async (t) => {
