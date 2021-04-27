@@ -353,20 +353,7 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false, ga
 
   const { contract: registry, ctx: ctx2 } = await contract.get(registryAbi, constants.ARA_REGISTRY_ADDRESS)
   if (!upgrade) {
-    debug('awaiting address...')
     address = await new Promise((resolve, reject) => {
-      tx.sendSignedTransaction(
-        transaction,
-        {
-          onhash: (hash) => debug('onhash:', hash),
-          onreceipt: (receipt) => debug('onreceipt:', receipt),
-          onconfirmation: (confNumber, receipt) => debug('onconfirmation:', confNumber, receipt),
-          onerror: (error) => debug('onerror:', error),
-          onmined: (receipt) => debug('onmined:', receipt)
-        }
-      )
-      debug('address is', address)
-
       registry.events.UpgradeableContractAdded({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { _contractName, _address } } = log
@@ -376,8 +363,6 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false, ga
           }
         })
         .on('error', (log) => reject(log))
-
-        debug('registry events...')
       registry.events.ProxyDeployed({ fromBlock: 'latest' })
         .on('data', (log) => {
           const { returnValues: { _contractName, _address } } = log
@@ -387,9 +372,28 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false, ga
           }
         })
         .on('error', (log) => reject(log))
+      tx.sendSignedTransaction(
+        transaction,
+        {
+          onhash: (hash) => debug('onhash:', hash),
+          onreceipt: (receipt) => debug('onreceipt:', receipt),
+          onconfirmation: (confNumber, receipt) => debug('onconfirmation:', confNumber, receipt),
+          onerror: (error) => reject(error),
+          onmined: (receipt) => debug('onmined:', receipt)
+        }
+      )
     })
   } else {
     await new Promise((resolve, reject) => {
+      registry.events.ContractUpgraded()
+        .on('data', (log) => {
+          const { returnValues: { _contractName, _version } } = log
+          if (sha3(label, false) === _contractName && version === _version) {
+            debug(`${label} upgraded to version ${version}.`)
+            resolve()
+          }
+        })
+        .on('error', (log) => reject(log))
       tx.sendSignedTransaction(
         transaction,
         {
@@ -400,15 +404,6 @@ async function _sendTx(acct, label, version, bytecode, data, upgrade = false, ga
           onmined: (receipt) => debug('onmined:', receipt)
         }
       )
-      registry.events.ContractUpgraded()
-        .on('data', (log) => {
-          const { returnValues: { _contractName, _version } } = log
-          if (sha3(label, false) === _contractName && version === _version) {
-            debug(`${label} upgraded to version ${version}.`)
-            resolve()
-          }
-        })
-        .on('error', (log) => reject(log))
     })
   }
   ctx.close()

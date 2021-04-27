@@ -1,8 +1,10 @@
 const HDWalletProvider = require('@truffle/hdwallet-provider')
+const Web3 = require('web3')
 
 module.exports = {
   networks: {
     local: {
+      provider: () => new Web3.providers.WebsocketProvider('ws://localhost:8545'),
       network_id: '*',
       host: 'localhost',
       port: 8545,
@@ -15,6 +17,7 @@ module.exports = {
       gas: 4000000
     },
     privatenet: {
+      provider: () => new Web3.providers.WebsocketProvider('ws://localhost:8545'),
       network_id: 1337,
       host: 'localhost',
       port: 8545,

@@ -414,26 +414,39 @@ async function getStandard(version) {
 async function _compileStandard(bytespath, paths) {
   // compile AFS sources and dependencies
   const sources = {
-    'ERC20.sol': await pify(fs.readFile)(resolve(__dirname, './contracts/ignored_contracts/ERC20.sol'), 'utf8'),
-    'StandardToken.sol': await pify(fs.readFile)(resolve(__dirname, './contracts/ignored_contracts/StandardToken.sol'), 'utf8'),
-    'SafeMath.sol': await pify(fs.readFile)(resolve(__dirname, './contracts/SafeMath.sol'), 'utf8'),
-    'Ownable.sol': await pify(fs.readFile)(resolve(__dirname, './contracts/ignored_contracts/Ownable.sol'), 'utf8'),
-    'bytes/BytesLib.sol': await pify(fs.readFile)(resolve(__dirname, './installed_contracts/bytes/contracts/BytesLib.sol'), 'utf8'),
-    'SafeMath32.sol': await pify(fs.readFile)(path.resolve(__dirname, './contracts/SafeMath32.sol'), 'utf8')
+    'ERC20.sol': { content: await pify(fs.readFile)(resolve(__dirname, './contracts/ignored_contracts/ERC20.sol'), 'utf8')},
+    'StandardToken.sol': { content: await pify(fs.readFile)(resolve(__dirname, './contracts/ignored_contracts/StandardToken.sol'), 'utf8')},
+    'SafeMath.sol': { content: await pify(fs.readFile)(resolve(__dirname, './contracts/SafeMath.sol'), 'utf8')},
+    'Ownable.sol': { content: await pify(fs.readFile)(resolve(__dirname, './contracts/ignored_contracts/Ownable.sol'), 'utf8')},
+    'bytes/BytesLib.sol': { content: await pify(fs.readFile)(resolve(__dirname, './installed_contracts/bytes/contracts/BytesLib.sol'), 'utf8')},
+    'SafeMath32.sol': { content: await pify(fs.readFile)(path.resolve(__dirname, './contracts/SafeMath32.sol'), 'utf8')}
   }
-
+  
   paths.forEach((path) => {
     const src = fs.readFileSync(path, 'utf8')
     path = parse(path).base
-    sources[path] = src
+    sources[path] = { content: src }
   })
 
-  const compiledFile = solc.compile({ sources }, 1)
+  var input = {
+    language: 'Solidity',
+    sources: sources,
+    settings: {
+      outputSelection: {
+        '*': {
+          '*': ['*']
+        }
+      }
+    }
+  }
+
+  const compiledFile = JSON.parse(solc.compile(JSON.stringify(input)))
+
   const label = Object.keys(compiledFile.contracts)[0]
   debug(`writing bytecode for ${label}`)
-  const compiledContract = compiledFile.contracts[label]
-  const afsAbi = JSON.parse(compiledContract.interface)
-  const { bytecode } = compiledContract
+  const compiledContract = compiledFile.contracts[label]['AFS']
+  const afsAbi = compiledContract.abi
+  const bytecode = compiledContract.evm.bytecode.object
   const bytes = toHexString(bytecode, { encoding: 'hex', ethify: true })
 
   await pify(fs.writeFile)(bytespath, bytes)
@@ -521,6 +534,7 @@ async function deployNewStandard(opts) {
 
   const prefixedDid = `${constants.AID_PREFIX}${did}`
   const acct = await account.load({ did: prefixedDid, password })
+
   const registryOwner = await call({
     abi,
     address: constants.REGISTRY_ADDRESS,
@@ -550,6 +564,7 @@ async function deployNewStandard(opts) {
 
   let address = null
   try {
+
     ({ contractAddress: address } = await contract.deploy({
       account: acct,
       abi: afsAbi,

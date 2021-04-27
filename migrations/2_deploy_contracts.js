@@ -77,11 +77,12 @@ async function ondeployararegistrycomplete() {
     from: [ constants.ARA_REGISTRY_ADDRESS ],
     to: [ AraRegistry.address ]
   }
+
   await replace(options)
 }
 
 async function deploycore() {
-  console.log('\tDeploying Ara Registry, Library, and Token...')
+  console.log('\tDeploying Registry, Library, and Token...')
   const {
     registryAddress,
     libraryAddress,
@@ -99,7 +100,6 @@ async function deploystandard() {
   console.log('\tDeploying AFS Standard...')
   const address = await new Promise((resolve, reject) => {
     setTimeout(async () => {
-      console.log('\t...deploying')
       try {
         const a = await deployNewStandard({
           requesterDid: constants.TEMP_OWNER_DID,
