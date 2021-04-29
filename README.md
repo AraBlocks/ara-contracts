@@ -15,6 +15,8 @@ This repository contains all contracts deployed by Ara. There are five global co
 | ------- | -------------- | -------------------------------------------- | ------------------------------------------------------------------------------------ |
 | Ropsten | Proxy          | `0x06be7386f99c38d26d53d83cbf1b9f438930694b` | https://ropsten.etherscan.io/address/0x06be7386f99c38d26d53d83cbf1b9f438930694b#code |
 | Ropsten | Implementation | `0xc349b831e83248368aa69c42fa717f700fecb8ce` | https://ropsten.etherscan.io/address/0xc349b831e83248368aa69c42fa717f700fecb8ce#code |
+| Kovan   | Proxy          | `0xD4769Dcb3e93F928839A823C4940B100E25FE530` | https://kovan.etherscan.io/address/0xD4769Dcb3e93F928839A823C4940B100E25FE530#code   |
+| Kovan   | Implementation | `0x734622578D7Fc39E4DFCb98Ff5F79341eADA032B` | https://kovan.etherscan.io/address/0x734622578D7Fc39E4DFCb98Ff5F79341eADA032B#code   |
 | Mainnet | Proxy          | `0xa92e7c82b11d10716ab534051b271d2f6aef7df5` | https://etherscan.io/address/0xa92e7c82b11d10716ab534051b271d2f6aef7df5#code         |
 | Mainnet | Implementation | `0xb8ca408aff631b65021850cd7ebf8eac7f3c0312` | https://etherscan.io/address/0xb8ca408aff631b65021850cd7ebf8eac7f3c0312#code         |
 
@@ -33,6 +35,8 @@ This repository contains all contracts deployed by Ara. There are five global co
 | ------- | -------------- | -------------------------------------------- | ------------------------------------------------------------------------------------ |
 | Ropsten | Proxy          | `0xec26659b209e9e89a23d26298ba0359b1b6c7f76` | https://ropsten.etherscan.io/address/0xec26659b209e9e89a23d26298ba0359b1b6c7f76#code |
 | Ropsten | Implementation | `0x991198dac7e5aa586ed129735e142c01ad81ed69` | https://ropsten.etherscan.io/address/0x991198dac7e5aa586ed129735e142c01ad81ed69#code |
+| Kovan   | Proxy          | `0x76Cbef669C17671dF504043a4348aC9B8f6d0b26` | https://kovan.etherscan.io/address/0x76Cbef669C17671dF504043a4348aC9B8f6d0b26#code   |
+| Kovan   | Implementation | `0x360F41eb117B4588D17f032EBe80cB113Fb1e04e` | https://kovan.etherscan.io/address/0x360F41eb117B4588D17f032EBe80cB113Fb1e04e#code   |
 | Mainnet | Proxy          | `0xC04B27294bb3d1abaAC39F2F97B4A95810bA91dd` | https://etherscan.io/address/0xc04b27294bb3d1abaac39f2f97b4a95810ba91dd#code |
 | Mainnet | Implementation | `0x991198dac7e5aa586ed129735e142c01ad81ed69` | https://etherscan.io/address/0xfdb1b5adf9cc13d8434f3d493f345a8bc46afcdc#code |
 
@@ -42,6 +46,8 @@ This repository contains all contracts deployed by Ara. There are five global co
 | ------- | -------------- | -------------------------------------------- | ------------------------------------------------------------------------------------ |
 | Ropsten | Proxy          | `0xdb8f8d6cc69a346d608e64c2ddb5b3ed7e4b32d6` | https://ropsten.etherscan.io/address/0xdb8f8d6cc69a346d608e64c2ddb5b3ed7e4b32d6#code |
 | Ropsten | Implementation | `0xbbc4d435c7426cef12c4b6d4d12552a1e7de24ef` | https://ropsten.etherscan.io/address/0xbbc4d435c7426cef12c4b6d4d12552a1e7de24ef#code |
+| Kovan   | Proxy          | `0xcE831f80a24aC12Ce31008badFd3477721b013b2` | https://kovan.etherscan.io/address/0xcE831f80a24aC12Ce31008badFd3477721b013b2#code   |
+| Kovan   | Implementation | `0xfcC76908DDbF0155592854c0354B944A6C8CBE79` | https://kovan.etherscan.io/address/0xfcC76908DDbF0155592854c0354B944A6C8CBE79#code   |
 | Mainnet | Proxy          | `0x17a6033535b1ab8cbbb430c62782d164d8f6ac45` | https://etherscan.io/address/0x17a6033535b1ab8cbbb430c62782d164d8f6ac45#code |
 | Mainnet | Implementation | `0x814F2ca790454c795F5e515A394CbFB7bE499737` | https://etherscan.io/address/0x814f2ca790454c795f5e515a394cbfb7be499737#code |
 
@@ -50,6 +56,7 @@ This repository contains all contracts deployed by Ara. There are five global co
 | Network | Type           | Address                                      | Verified Source                                                                      |
 | ------- | -------------- | -------------------------------------------- | ------------------------------------------------------------------------------------ |
 | Ropsten | Implementation | `0x6bda4b9fcb082e72b30081393d4ae7b05360e517` | https://ropsten.etherscan.io/address/0x6bda4b9fcb082e72b30081393d4ae7b05360e517#code |
+| Kovan   | Implementation | `0x852ec7Ae212D794F55D336461599a8f85338aCa5` | https://kovan.etherscan.io/address/0x852ec7Ae212D794F55D336461599a8f85338aCa5#code   |
 | Mainnet | Implementation | `0xf8314584346fc84e96b36113784f6b562e5b01af` | https://etherscan.io/address/0xf8314584346fc84e96b36113784f6b562e5b01af#code         |
 
 This repository also provides programmatic (see the API section) and command-line interfaces (see the Usage section) for interacting with the contracts.

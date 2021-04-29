@@ -12,7 +12,8 @@ module.exports = {
     const privatenet = '0xe9827a1648e70f20dFad0E4b86AdEB7d2C4D4543'
     const testnet = '0xdB8f8D6cc69A346D608e64C2DDb5b3Ed7e4B32D6'
     const mainnet = '0x17a6033535b1ab8cbbb430c62782d164d8f6ac45'
-    return getAddress(local, privatenet, testnet, mainnet)
+    const kovan = '0xcE831f80a24aC12Ce31008badFd3477721b013b2'
+    return getAddress(local, privatenet, testnet, mainnet, kovan)
   },
 
   get LIBRARY_ADDRESS() {
@@ -20,7 +21,8 @@ module.exports = {
     const privatenet = '0xd4BDB6Dd223895a1083A47E8a03C923f5B0c0Dcb'
     const testnet = '0xeC26659b209e9e89a23d26298BA0359B1b6C7f76'
     const mainnet = '0xC04B27294bb3d1abaAC39F2F97B4A95810bA91dd'
-    return getAddress(local, privatenet, testnet, mainnet)
+    const kovan = '0x76Cbef669C17671dF504043a4348aC9B8f6d0b26'
+    return getAddress(local, privatenet, testnet, mainnet, kovan)
   },
 
   get ARA_TOKEN_ADDRESS() {
@@ -28,15 +30,17 @@ module.exports = {
     const privatenet = '0x4A034151724cee964bE2f84065DF2A36128510b7'
     const testnet = '0x06be7386F99C38d26d53d83CBf1b9F438930694B'
     const mainnet = '0xa92E7c82B11d10716aB534051B271D2f6aEf7Df5'
-    return getAddress(local, privatenet, testnet, mainnet)
+    const kovan = '0xD4769Dcb3e93F928839A823C4940B100E25FE530'
+    return getAddress(local, privatenet, testnet, mainnet, kovan)
   },
 
   get ARA_REGISTRY_ADDRESS() {
-    const local = '0x231b665a03fFeDd96B497e123861498D87F4a65f'
+    const local = '0x852ec7Ae212D794F55D336461599a8f85338aCa5'
     const privatenet = '0xF996AF566992c7e34e6Fd0Bd3df79EC16296f5aa'
     const testnet = '0xF996AF566992c7e34e6Fd0Bd3df79EC16296f5aa'
     const mainnet = '0x231b665a03fFeDd96B497e123861498D87F4a65f'
-    return getAddress(local, privatenet, testnet, mainnet)
+    const kovan = '0x852ec7Ae212D794F55D336461599a8f85338aCa5'
+    return getAddress(local, privatenet, testnet, mainnet, kovan)
   },
 
   REGISTRY_LABEL: 'Registry.sol:Registry',
@@ -54,6 +58,9 @@ module.exports = {
 
   ROPSTEN_DEPLOY_DID: 'did:ara:f07e6462ff1fe42af1f98e2bb474936b60a4fc05669458f60dfdc98f1750f1b9',
   ROPSTEN_DEPLOY_ADDRESS: '0x91287ec5e2eff90bdb1750abe9359d7576f744d3',
+
+  KOVAN_DEPLOY_DID: 'did:ara:0a89f475aefc26a640dd81ae1af618e5086f6439a2fce5fb66be245d557895ca',
+  KOVAN_DEPLOY_ADDRESS: '0xEDF03c12b1b1cd1461B5231103f7002984C245AE',
 
   MAINNET_DEPLOY_DID: 'did:ara:4de9f36634e8df9d0201c8537320df5dbf1a7ef5057ca8b570e22b743d41225b',
   MAINNET_DEPLOY_ADDRESS: '0xe4127f775e738f30ca3672f62d0f63fd3aab66b8',
@@ -87,7 +94,7 @@ module.exports = {
 
 const rc = require('ara-runtime-configuration')()
 
-function getAddress(local, privatenet, testnet, mainnet) {
+function getAddress(local, privatenet, testnet, mainnet, kovan) {
   let address
   switch (module.exports.WEB3_NETWORK) {
   case 'local':
@@ -102,6 +109,10 @@ function getAddress(local, privatenet, testnet, mainnet) {
   case 'mainnet':
     address = mainnet
     break
+  case 'kovan-fork':
+  case 'kovan':
+    address = kovan
+    break  
   default:
     address = local
   }

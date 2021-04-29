@@ -17,7 +17,8 @@ module.exports = (deployer, network, defaultAccounts) => {
     const {
       DEFAULT_ADDRESS,
       ROPSTEN_DEPLOY_ADDRESS,
-      MAINNET_DEPLOY_ADDRESS
+      MAINNET_DEPLOY_ADDRESS,
+      KOVAN_DEPLOY_ADDRESS
     } = constants
 
     let from
@@ -28,6 +29,8 @@ module.exports = (deployer, network, defaultAccounts) => {
       from = defaultAccounts[index]
     } else if ('testnet' === network) {
       from = ROPSTEN_DEPLOY_ADDRESS
+    } else if ('kovan-fork' === network || 'kovan' === network) {
+      from = KOVAN_DEPLOY_ADDRESS
     } else if ('mainnet' === network) {
       from = MAINNET_DEPLOY_ADDRESS
     } else {
