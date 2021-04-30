@@ -72,7 +72,7 @@ module.exports = {
     const options = {
       files: constantsPath,
       from: [ 'path.resolve(__dirname, \'./bytecode\')' ],
-      to: [ `'${BYTESDIR}'` ]
+      to: [ 'path.resolve(__dirname, \'./bytecode_test\')' ]
     }
     await replace(options)
   },
@@ -83,7 +83,7 @@ module.exports = {
 
     const options = {
       files: constantsPath,
-      from: [ `'${BYTESDIR}'` ],
+      from: [ 'path.resolve(__dirname, \'./bytecode_test\')' ],
       to: [ 'path.resolve(__dirname, \'./bytecode\')' ]
     }
     await replace(options)
