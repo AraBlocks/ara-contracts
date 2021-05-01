@@ -22,13 +22,16 @@ chmod +r ~/.ara/identities/
 cp -a test/fixtures/identities/. ~/.ara/identities/
 
 # installation
-if ! which ganache-cli > /dev/null; then
-  npm install -g ganache-cli truffle@5.3.1
+if ! command -v ganache-cli &> /dev/null; then
+  npm install -g ganache-cli
+fi
+
+if ! command -v truffle &> /dev/null; then
+  npm install -g truffle@5.3.1
 fi
 
 # kill any existing ganache
-if command -v pkill &> /dev/null
-then
+if command -v pkill &> /dev/null; then
   pkill -f ganache
 else
   echo "pkill could not be found"
