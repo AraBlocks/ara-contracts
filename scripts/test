@@ -49,28 +49,28 @@ sleep 20
 command="ava test/util.js --verbose"
 safeRunCommand "$command"
 
-command="ava test/token.js --verbose"
+command="ava test/token.js --verbose --timeout=20s"
 safeRunCommand "$command"
 
-command="ava test/registry.js --verbose"
+command="ava test/registry.js --verbose --timeout=20s"
 safeRunCommand "$command"
 
-command="ava test/purchase.js --verbose"
+command="ava test/purchase.js --verbose --timeout=20s"
 safeRunCommand "$command"
 
-command="ava test/library.js --verbose"
+command="ava test/library.js --verbose --timeout=20s"
 safeRunCommand "$command"
 
-command="ava test/storage.js --verbose"
+command="ava test/storage.js --verbose --timeout=20s"
 safeRunCommand "$command"
 
-command="ava test/ownership.js --verbose"
+command="ava test/ownership.js --verbose --timeout=20s"
 safeRunCommand "$command"
 
-command="ava test/rewards.js --verbose"
+command="ava test/rewards.js --verbose --timeout=20s"
 safeRunCommand "$command"
 
-command="ava test/factory.js --verbose"
+command="ava test/factory.js --verbose --timeout=20s"
 safeRunCommand "$command"
 
 # kill ganache
