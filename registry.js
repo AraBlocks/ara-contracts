@@ -444,7 +444,7 @@ async function _compileStandard(bytespath, paths) {
 
   const label = Object.keys(compiledFile.contracts)[0]
   debug(`writing bytecode for ${label}`)
-  const compiledContract = compiledFile.contracts[label]['AFS']
+  const compiledContract = compiledFile.contracts[label][label.replace('.sol', '')]
   const afsAbi = compiledContract.abi
   const bytecode = compiledContract.evm.bytecode.object
   const bytes = toHexString(bytecode, { encoding: 'hex', ethify: true })
